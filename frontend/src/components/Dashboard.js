@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth, useToast, api } from '../App';
 import { 
   Home, Bell, Plus, User, Settings, CreditCard, LogOut,
-  Palette, Mic, Share2, FileText, Briefcase, Zap, Copy, Download
+  Zap, Copy, Download
 } from 'lucide-react';
 
 // App definitions
