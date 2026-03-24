@@ -108,22 +108,38 @@ Convert static HTML/CSS/JS Intermaven website into a fully functional full-stack
 - [ ] Card payment flow completion
 
 ### P1 - High Priority
-- [ ] Password reset functionality
-- [ ] Email notifications (SendGrid/Resend)
-- [ ] WhatsApp notifications (Twilio) - credentials pending from user
-- [ ] Social AI multi-account management
+- [ ] EPK Builder System (See ROADMAP.md Section 2)
+  - Hosted profiles at intermaven.io/artist/[username]
+  - Downloadable PDF export
+  - Analytics tracking
+- [ ] File Management System (See ROADMAP.md Section 5)
+  - Google Drive-style interface
+  - Storage tiers by plan
+- [ ] WhatsApp notifications (Twilio) - credentials pending
 
 ### P2 - Medium Priority
-- [ ] EPK Builder tool
-- [ ] Distribution Tracker tool
-- [ ] Sync Pitch AI tool completion
-- [ ] Music Bio AI tool completion
+- [ ] CRM & Communication System (See ROADMAP.md Section 3)
+  - Contact management
+  - Email campaigns (Resend/SendGrid)
+  - WhatsApp & SMS broadcasting
+  - Automation workflows
+- [ ] User Management System (See ROADMAP.md Section 4)
+  - Admin dashboard
+  - Support ticket system
+  - User analytics
 
 ### P3 - Future
+- [ ] App Marketplace Landing Pages (See ROADMAP.md Section 6)
+  - brandkit.intermaven.io
+  - musicbio.intermaven.io
+  - social.intermaven.io
+  - etc.
 - [ ] POS System for businesses
 - [ ] Invoicing module
 - [ ] Contract templates
 - [ ] Dark/Light theme toggle
+
+**Full technical specifications available in:** `/app/memory/ROADMAP.md`
 
 ## API Endpoints
 ```
