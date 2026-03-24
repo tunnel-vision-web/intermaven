@@ -159,13 +159,33 @@ GET  /api/payments/transactions - Get transactions
 GET  /api/health - Health check
 ```
 
+## Database Configuration
+
+### Production Database (Railway MongoDB) ✅ ACTIVE
+```
+Host:     centerbeam.proxy.rlwy.net
+Port:     20600
+Username: mongo
+Password: IzypDlPIOWEIyNZSoybbZmWzvPYAeuym
+Database: intermaven
+
+Connection String:
+mongodb://mongo:IzypDlPIOWEIyNZSoybbZmWzvPYAeuym@centerbeam.proxy.rlwy.net:20600
+```
+
+**Status:** Connected and operational  
+**Provider:** Railway  
+**Collections:** users, notifications, ai_runs, activities, transactions
+
+---
+
 ## Environment Variables Required
 ```
 # Backend
-MONGO_URL=mongodb://localhost:27017
+MONGO_URL=mongodb://mongo:IzypDlPIOWEIyNZSoybbZmWzvPYAeuym@centerbeam.proxy.rlwy.net:20600
 DB_NAME=intermaven
-JWT_SECRET=<secret>
-EMERGENT_LLM_KEY=<key>
+JWT_SECRET=intermaven_jwt_secret_key_2025_secure
+EMERGENT_LLM_KEY=sk-emergent-a3a79EeF44b2f09684
 PESAPAL_CONSUMER_KEY=<pending>
 PESAPAL_CONSUMER_SECRET=<pending>
 PESAPAL_ENVIRONMENT=sandbox
@@ -173,6 +193,19 @@ PESAPAL_ENVIRONMENT=sandbox
 # Frontend
 REACT_APP_BACKEND_URL=<preview_url>
 ```
+
+---
+
+## Documentation
+
+Full technical documentation available at: `/app/DOCUMENTATION.md`
+
+Includes:
+- Complete API reference
+- Database schema
+- Go-live checklist
+- Future roadmap with timelines
+- All credentials and environment variables
 
 ## File Structure
 ```
