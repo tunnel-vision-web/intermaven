@@ -286,9 +286,9 @@
 
 /* Sidebar - 30% width */
 .sidebar {
-  width: var(--sidebar-width);
-  min-width: 280px;
-  max-width: 360px;
+  width: 30%;
+  min-width: 300px;
+  max-width: 400px;
   background: var(--bg2);
   border-right: 1px solid var(--b1);
   display: flex;
@@ -511,15 +511,13 @@
 /* Main Content - 70% */
 .main-content {
   flex: 1;
-  margin-left: var(--sidebar-width);
+  margin-left: 30%;
   min-width: 0;
-  padding-left: calc(360px - var(--sidebar-width));
 }
 
 @media (max-width: 1200px) {
   .main-content {
-    margin-left: 280px;
-    padding-left: 0;
+    margin-left: 300px;
   }
 }
 
