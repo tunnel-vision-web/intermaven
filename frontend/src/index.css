@@ -1,0 +1,132 @@
+:root {
+  --bg: #08090d;
+  --bg2: #0f1117;
+  --bg3: #161820;
+  --bg4: #1c1f2a;
+  --b1: rgba(255, 255, 255, 0.07);
+  --b2: rgba(255, 255, 255, 0.13);
+  --b3: rgba(255, 255, 255, 0.21);
+  --tx: #f0f0f5;
+  --mu: #9096b8;
+  --mu2: #555870;
+  --btn: #7c6ff7;
+  --bth: #6a5ee0;
+  --a2: #c084fc;
+  --a3: #22d3ee;
+  --gr: #10b981;
+  --am: #f59e0b;
+  --rd: #ef4444;
+  --ca: rgba(255, 255, 255, 0.05);
+  --ch: rgba(255, 255, 255, 0.08);
+  --r: 6px;
+  --sidebar-width: 30%;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  min-height: 100vh;
+}
+
+body {
+  background: var(--bg);
+  color: var(--tx);
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg2);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--b2);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--b3);
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Toast Container */
+.toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast {
+  background: var(--bg4);
+  border: 1px solid var(--b2);
+  border-radius: var(--r);
+  padding: 12px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 320px;
+  animation: slideIn 0.3s ease;
+  border-left: 3px solid var(--btn);
+}
+
+.toast.success {
+  border-left-color: var(--gr);
+}
+
+.toast.error {
+  border-left-color: var(--rd);
+}
+
+.toast-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.toast-content {
+  flex: 1;
+}
+
+.toast-title {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.toast-message {
+  font-size: 12px;
+  color: var(--mu);
+  margin-top: 2px;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
