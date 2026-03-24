@@ -1,0 +1,22 @@
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--tx);
+  font-family: var(--ff);
+  font-size: 15px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+button, input, select, textarea { font-family: var(--ff); }
+
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-thumb { background: var(--b2); border-radius: 3px; }
+
+/* ── Shared utilities ── */
+.cn  { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+.sl2 { font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: var(--a2); font-weight: 700; margin-bottom: 8px; }
+.st  { font-size: clamp(24px, 3.5vw, 38px); font-weight: 800; line-height: 1.2; letter-spacing: -.5px; }

@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Dashboard — Intermaven</title>
+<link rel="stylesheet" href="css/variables.css"/>
+<link rel="stylesheet" href="css/base.css"/>
+<link rel="stylesheet" href="css/components.css"/>
+<link rel="stylesheet" href="css/layout.css"/>
+<link rel="stylesheet" href="css/pages.css"/>
+</head>
+<body>
+<div id="tc"></div>
+
+<!-- LEGAL MODAL -->
+<div class="ov" id="legal-ov"><div class="wiz" style="max-width:520px"><div class="wh"><div class="wl">INTER<b>MAVEN</b></div><button class="wx" onclick="document.getElementById('legal-ov').classList.remove('op')">&#x2715;</button></div><div class="wb"><div class="wti" id="legal-title">Policy</div><div id="legal-body" style="font-size:13px;color:var(--mu);line-height:1.8;max-height:55vh;overflow-y:auto"></div><button class="bp" style="margin-top:16px" onclick="document.getElementById('legal-ov').classList.remove('op')">Close</button></div></div></div>
+
+<!-- APP INFO MODAL -->
+<div class="app-modal-bg" id="app-modal-bg" onclick="closeAppModal(event)">
+<div class="app-modal" id="app-modal">
+  <div class="am-hero" id="am-hero"><div class="am-hero-glow" id="am-glow"></div><div class="am-hero-icon" id="am-icon">&#127912;</div><button class="am-close" onclick="closeAppModalDirect()">&#x2715;</button></div>
+  <div class="am-body"><div class="am-badge" id="am-badge"></div><div class="am-name" id="am-name"></div><div class="am-tag" id="am-tag"></div><div class="am-pitch" id="am-pitch"></div><div class="am-how"><h4>How it works</h4><div class="am-steps" id="am-steps"></div></div><div class="am-cta-row"><button class="am-cta" id="am-cta-btn">Get started &#8594;</button><button class="am-cta-ghost" onclick="closeAppModalDirect()">Maybe later</button></div><div class="am-credits" id="am-credits"></div></div>
+</div></div>
+
+<!-- ADD APP WIZARD (trimmed — steps 4-6 only, no account/plan steps) -->
+<div class="ov" id="auth-ov"><div class="wiz">
+  <div class="wh"><div class="wl">INTER<b>MAVEN</b></div><button class="wx" onclick="closeAuth()">&#x2715;</button></div>
+  <div class="wds" id="wds"></div>
+  <div class="wb">
+    <!-- Steps 1-3 kept so wizard JS works without modification -->
+    <div class="sp on" id="ws1" style="display:none"></div>
+    <div class="sp" id="ws2" style="display:none"></div>
+    <div class="sp" id="ws3" style="display:none"></div>
+    <div class="sp" id="ws4"><div class="wti" id="ws4-title">Add apps</div><div class="wsu" id="ws4-sub">Select additional apps for your dashboard.</div><div class="ag" id="apsel"></div><div class="brow"><button class="bg2x" id="ws4-back" onclick="closeAuth()">Cancel</button><button class="bp" onclick="closeAuth();toast('Apps added!','su','&#10003;')">Save &#8594;</button></div></div>
+    <div class="sp" id="ws5"><div class="wti">Notification preferences</div><div class="nch"><div class="ncp on" id="nc-email" onclick="togCh('email')">&#9993; Email</div><div class="ncp on" id="nc-whatsapp" onclick="togCh('whatsapp')">&#128172; WhatsApp</div><div class="ncp" id="nc-sms" onclick="togCh('sms')">&#128241; SMS</div><div class="ncp" id="nc-push" onclick="togCh('push')">&#128276; Push</div></div><div class="nlist" id="nlst"></div><div class="brow" style="margin-top:13px"><button class="bg2x" onclick="closeAuth()">Cancel</button><button class="bp" onclick="closeAuth()">Save &#8594;</button></div></div>
+    <div class="sp" id="ws6"><div class="wti">Meet your AI guide</div><div class="aic" id="aicha"></div><div class="qrs" id="qrs"></div><div class="arow"><input class="ainp" id="aiinp" placeholder="Type or pick a suggestion..." onkeydown="if(event.key==='Enter')sendAI()"/><button class="asnd" onclick="sendAI()">Send</button></div><div style="margin-top:13px"><button class="bp" id="finbtn" style="display:none" onclick="closeAuth()">Done &#8594;</button></div></div>
+  </div>
+</div></div>
+
+<!-- DASHBOARD LAYOUT -->
+<div class="dl">
+
+  <!-- SIDEBAR -->
+  <div class="dsb">
+    <div class="sbl">INTER<b>MAVEN</b> <span class="sbb" id="db-badge">Music</span></div>
+    <div class="sbu" onclick="shP('settings',null);shST('profile',null)" title="Edit profile">
+      <div class="sbav" id="db-av">A</div>
+      <div><div class="sbn" id="db-name">User</div><div class="sbpl" id="db-plan">Free plan</div><div class="sbed">&#9998; Edit profile</div></div>
+    </div>
+    <div class="sbc">
+      <span class="cbl">Credits</span><span class="cbv" id="db-cred">150</span>
+      <div class="cbb"><div class="cbf" id="cbf" style="width:100%"></div></div>
+    </div>
+    <div class="sbnv">
+      <div class="ns">Overview</div>
+      <button class="ni on" onclick="shP('overview',this)"><span class="ico">&#127968;</span>Dashboard</button>
+      <button class="ni" onclick="shP('notifs',this)"><span class="ico">&#128276;</span>Notifications<span class="nbdg" id="nbadge">3</span></button>
+      <div class="ns">My Apps</div>
+      <div id="sb-apps"></div>
+      <button class="ni" onclick="openAddApp()"><span class="ico">&#43;</span>Add app</button>
+      <div class="ns">Account</div>
+      <button class="ni" onclick="shP('settings',this);shST('profile',null)"><span class="ico">&#128100;</span>Profile</button>
+      <button class="ni" onclick="shP('settings',this);shST('notifs',null)"><span class="ico">&#128276;</span>Notifications</button>
+      <button class="ni" onclick="shP('settings',this);shST('security',null)"><span class="ico">&#128274;</span>Security</button>
+      <button class="ni" onclick="shP('billing',this)"><span class="ico">&#128179;</span>Billing &amp; Credits</button>
+      <div class="ns">Navigate</div>
+      <a class="ni" href="tools.html"><span class="ico">&#9889;</span>AI Tools (public)</a>
+      <a class="ni" href="apps.html"><span class="ico">&#128722;</span>App Marketplace</a>
+      <a class="ni" href="pricing.html"><span class="ico">&#128242;</span>Pricing</a>
+    </div>
+    <div class="sbot"><button class="ni" onclick="signOut()" style="color:var(--rd)"><span class="ico">&#128682;</span>Sign out</button></div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="dm">
+    <div class="dtop">
+      <h1 id="ptitle">Dashboard</h1>
+      <div class="dtr">
+        <div class="bell" onclick="shP('notifs',null)">&#128276;<div class="ndot2" id="ndot"></div></div>
+        <div class="tav" id="top-av" onclick="shP('settings',null);shST('profile',null)" title="Edit profile">A</div>
+      </div>
+    </div>
+
+    <!-- OVERVIEW PANEL -->
+    <div class="dp on" id="dp-overview">
+      <div id="upg-wrap"></div>
+
+      <!-- Stats row -->
+      <div class="sgrid">
+        <div class="sc"><div class="scl">Credits remaining</div><div class="scv" id="dov-cr">150</div><div class="sct" id="dov-plan-lbl">Free plan</div></div>
+        <div class="sc"><div class="scl">AI runs this week</div><div class="scv" id="dov-runs">0</div><div class="sct up">Getting started</div></div>
+        <div class="sc"><div class="scl">Active apps</div><div class="scv" id="dov-ap">0</div><div class="sct">Selected at signup</div></div>
+        <div class="sc"><div class="scl">Scheduled posts</div><div class="scv">0</div><div class="sct">Social AI queue</div></div>
+      </div>
+
+      <!-- Quick actions -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:22px">
+        <button onclick="shP('app-brandkit',null);bldDashTools()" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--r);background:var(--ca);border:1px solid var(--b1);font-size:11px;font-weight:600;color:var(--tx);cursor:pointer;transition:.15s" onmouseover="this.style.background='var(--ch)'" onmouseout="this.style.background='var(--ca)'">&#127912; Brand Kit</button>
+        <button onclick="shP('app-musicbio',null);bldDashTools()" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--r);background:var(--ca);border:1px solid var(--b1);font-size:11px;font-weight:600;color:var(--tx);cursor:pointer;transition:.15s" onmouseover="this.style.background='var(--ch)'" onmouseout="this.style.background='var(--ca)'">&#127908; Press Kit</button>
+        <button onclick="shP('app-social',null);bldDashTools()" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--r);background:var(--ca);border:1px solid var(--b1);font-size:11px;font-weight:600;color:var(--tx);cursor:pointer;transition:.15s" onmouseover="this.style.background='var(--ch)'" onmouseout="this.style.background='var(--ca)'">&#128241; Social AI</button>
+        <button onclick="shP('app-syncpitch',null);bldDashTools()" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--r);background:var(--ca);border:1px solid var(--b1);font-size:11px;font-weight:600;color:var(--tx);cursor:pointer;transition:.15s" onmouseover="this.style.background='var(--ch)'" onmouseout="this.style.background='var(--ca)'">&#128196; Sync Pitch</button>
+        <button onclick="shP('app-bizpitch',null);bldDashTools()" style="display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--r);background:var(--ca);border:1px solid var(--b1);font-size:11px;font-weight:600;color:var(--tx);cursor:pointer;transition:.15s" onmouseover="this.style.background='var(--ch)'" onmouseout="this.style.background='var(--ca)'">&#128203; Pitch Deck</button>
+      </div>
+
+      <!-- App cards -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px">
+        <h3 style="font-size:11px;font-weight:700">Your apps</h3>
+        <button onclick="openAddApp()" style="padding:4px 10px;border-radius:var(--r);font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;background:rgba(124,111,247,.15);color:var(--a2);border:1px solid rgba(124,111,247,.3);cursor:pointer">+ Add app</button>
+      </div>
+      <div class="dagrid" id="dov-apps"></div>
+
+      <!-- Activity feed -->
+      <div class="afeed"><h3>Recent activity</h3><div id="dactlist"><div class="es">No activity yet. Pick a tool above to get started.</div></div></div>
+    </div>
+
+    <!-- APP PANELS -->
+    <div class="dp" id="dp-app-brandkit"></div>
+    <div class="dp" id="dp-app-musicbio"></div>
+    <div class="dp" id="dp-app-social"></div>
+    <div class="dp" id="dp-app-syncpitch"></div>
+    <div class="dp" id="dp-app-bizpitch"></div>
+
+    <!-- NOTIFICATIONS -->
+    <div class="dp" id="dp-notifs"><div class="nf"><h3>Notifications</h3><div id="nfl"></div></div></div>
+
+    <!-- SETTINGS -->
+    <div class="dp" id="dp-settings">
+      <div class="stg">
+        <div class="stnav">
+          <button class="stni on" onclick="shST('profile',this)">&#128100; Profile</button>
+          <button class="stni" onclick="shST('notifs',this)">&#128276; Notifications</button>
+          <button class="stni" onclick="shST('security',this)">&#128274; Security</button>
+          <button class="stni" onclick="shST('portal',this)">&#127760; Portal</button>
+        </div>
+        <div>
+          <!-- Profile -->
+          <div class="stp on" id="st-profile"><div class="stc"><h3>Profile</h3>
+            <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+              <div style="width:52px;height:52px;border-radius:50%;background:rgba(124,111,247,.3);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--a2);flex-shrink:0" id="prof-av-big">A</div>
+              <div><div style="font-size:12px;font-weight:600" id="prof-name-big">Your Name</div><div style="font-size:10px;color:var(--mu)" id="prof-email-big">your@email.com</div><div style="font-size:9px;color:var(--a2);font-weight:600;text-transform:uppercase;letter-spacing:.4px;margin-top:2px" id="prof-plan-big">Free plan</div></div>
+            </div>
+            <div class="fr"><div class="fi"><label>First name</label><input id="sf-fn"/></div><div class="fi"><label>Last name</label><input id="sf-ln"/></div></div>
+            <div class="fi"><label>Email</label><input id="sf-em" type="email"/></div>
+            <div class="fi"><label>Phone</label><input id="sf-ph"/></div>
+            <div class="fi"><label>Brand / Artist name</label><input id="sf-bz"/></div>
+            <div class="fi"><label>Bio (optional)</label><textarea id="sf-bio" style="height:60px;resize:vertical" placeholder="Short bio for your EPK and profile..."></textarea></div>
+            <button class="bp" style="max-width:160px" onclick="saveProf()">Save changes</button>
+          </div></div>
+          <!-- Notifications -->
+          <div class="stp" id="st-notifs"><div class="stc"><h3>Channels</h3>
+            <div class="tr"><div><div class="trl">Email</div><div class="trd">Notifications to your email</div></div><button class="tsw on" onclick="this.classList.toggle('on')"></button></div>
+            <div class="tr"><div><div class="trl">WhatsApp</div><div class="trd">Messages to your WhatsApp</div></div><button class="tsw on" onclick="this.classList.toggle('on')"></button></div>
+            <div class="tr"><div><div class="trl">SMS</div><div class="trd">Text messages to your phone</div></div><button class="tsw" onclick="this.classList.toggle('on')"></button></div>
+            <div class="tr"><div><div class="trl">Push</div><div class="trd">Browser push alerts</div></div><button class="tsw" onclick="this.classList.toggle('on')"></button></div>
+          </div></div>
+          <!-- Security -->
+          <div class="stp" id="st-security"><div class="stc"><h3>Change password</h3>
+            <div class="fi"><label>Current password</label><input type="password" placeholder="Current password"/></div>
+            <div class="fi"><label>New password</label><input type="password" placeholder="Min 8 characters"/></div>
+            <div class="fi"><label>Confirm new password</label><input type="password" placeholder="Repeat new password"/></div>
+            <button class="bp" style="max-width:160px" onclick="toast('Password updated!','su','&#128274;')">Update password</button>
+          </div>
+          <div class="stc"><h3>Connected accounts</h3>
+            <div class="tr"><div><div class="trl">Google</div><div class="trd">Not connected</div></div><button class="bg2x" style="max-width:80px;padding:5px;font-size:9px" onclick="toast('Google connected!','su','&#128309;')">Connect</button></div>
+            <div class="tr"><div><div class="trl">Facebook</div><div class="trd">Not connected</div></div><button class="bg2x" style="max-width:80px;padding:5px;font-size:9px" onclick="toast('Facebook connected!','su','&#128311;')">Connect</button></div>
+          </div>
+          <div class="stc"><h3>Danger zone</h3>
+            <div class="tr"><div><div class="trl">Delete account</div><div class="trd">Permanently remove account and data</div></div><button class="bg2x" style="max-width:100px;padding:5px;font-size:9px;border-color:rgba(239,68,68,.4);color:var(--rd)" onclick="toast('Contact support to delete your account.','','&#9888;')">Delete</button></div>
+          </div></div>
+          <!-- Portal -->
+          <div class="stp" id="st-portal"><div class="stc"><h3>Default portal</h3>
+            <p style="font-size:11px;color:var(--mu);margin-bottom:12px">Choose which portal opens when you sign in.</p>
+            <div style="display:flex;gap:9px">
+              <div class="pc sl" style="flex:1;cursor:pointer" onclick="toast('Default set to Music','su','&#127925;')"><div class="pn">Music</div><div style="font-size:16px;margin:4px 0">&#127925;</div><div style="font-size:9px;color:var(--mu)">music.intermaven.io</div></div>
+              <div class="pc" style="flex:1;cursor:pointer" onclick="toast('Default set to Business','su','&#127970;')"><div class="pn">Business</div><div style="font-size:16px;margin:4px 0">&#127970;</div><div style="font-size:9px;color:var(--mu)">intermaven.io</div></div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BILLING -->
+    <div class="dp" id="dp-billing">
+      <div class="bilc"><h3>Current plan &amp; credits</h3>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px;margin-bottom:16px">
+          <div><div style="font-size:18px;font-weight:800" id="bil-pl">Free plan</div><div style="font-size:11px;color:var(--mu);margin-top:1px" id="bil-cr">150 credits remaining</div></div>
+          <a href="pricing.html" style="padding:9px 16px;border-radius:var(--r);font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;background:var(--btn);color:#fff;text-decoration:none">Upgrade / Top up &#8594;</a>
+        </div>
+        <div style="background:var(--bg3);border-radius:var(--r);overflow:hidden;height:6px;margin-bottom:8px"><div id="bil-bar" style="height:100%;background:var(--btn);transition:.5s;width:100%"></div></div>
+        <p style="font-size:10px;color:var(--mu)" id="bil-bar-lbl">150 / 150 credits</p>
+      </div>
+      <div class="bilc"><h3>Upgrade plan</h3>
+        <div class="prg" style="margin-top:0">
+          <div class="prc">
+            <div class="prn">Creator pack</div><div class="prp">KES 500 <span>one-time</span></div><div class="prce">600 credits</div>
+            <ul class="prf"><li>Priority AI speed</li><li>Social AI (6 accounts)</li><li>Save &amp; organise outputs</li></ul>
+            <button class="prb prbp" onclick="toast('M-Pesa payment coming soon!','su','&#128242;')">Buy with M-Pesa</button>
+          </div>
+          <div class="prc pop">
+            <div class="popb">Recommended</div>
+            <div class="prn">Pro bundle</div><div class="prp">KES 1,500 <span>one-time</span></div><div class="prce">2,500 credits</div>
+            <ul class="prf"><li>Everything in Creator</li><li>White-label output</li><li>API access (beta)</li><li>Priority WhatsApp support</li></ul>
+            <button class="prb prbp" onclick="toast('M-Pesa payment coming soon!','su','&#128242;')">Buy with M-Pesa</button>
+          </div>
+        </div>
+        <p style="font-size:11px;color:var(--mu);margin-top:12px;text-align:center">Or <a href="pricing.html" style="color:var(--btn)">see the full pricing page</a> for payment options including card and PayPal.</p>
+      </div>
+      <div class="bilc"><h3>Transaction history</h3><div id="txlist"><div class="es">No transactions yet.</div></div></div>
+    </div>
+
+  </div><!-- end .dm -->
+</div><!-- end .dl -->
+
+<script src="js/data.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/portal.js"></script>
+<script src="js/dashboard.js"></script>
+<script>
+  /* Auto-login with demo account for prototype */
+  S.fn = 'Demo'; S.ln = 'User';
+  S.em = 'demo@intermaven.io'; S.ph = '+254 712 345 678';
+  S.apps = ['brandkit','musicbio','social','syncpitch','bizpitch'];
+  S.plan = 'creator'; S.credits = 600; S.loggedIn = true;
+
+  mkWDots();
+  /* Portal switcher is not visible on dashboard but data.js needs it initialised */
+  PORTALS.music.apps    = ALLAPS.filter(function(a){ return a.p==='both'||a.p==='music'; });
+  PORTALS.business.apps = ALLAPS.filter(function(a){ return a.p==='both'||a.p==='business'; });
+  PORTALS.music.tools    = LAND_TOOLS.music;
+  PORTALS.business.tools = LAND_TOOLS.business;
+
+  popDash();
+  bldNotifs();
+  bldDashTools();
+  selPlan('creator');
+
+  function signOut() {
+    window.location.href = 'index.html';
+  }
+
+  function openAddApp() {
+    S.preApp = null;
+    S.loggedIn = true;
+    document.getElementById('auth-ov').classList.add('op');
+    mkWDots();
+    gstep(4);
+  }
+</script>
+</body>
+</html>
