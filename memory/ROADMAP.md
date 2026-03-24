@@ -1284,7 +1284,60 @@ db.support_tickets.createIndex({ created_at: -1 })
 
 ## 9. Infrastructure Requirements
 
-### 9.1 Current Infrastructure
+### 9.1 Current Infrastructure (Development/Preview)
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                     CURRENT DATABASE SETUP                                  │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  DATABASE: MongoDB                                                          │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  Host:     localhost:27017 (Local instance in preview container)            │
+│  Database: intermaven                                                       │
+│  Status:   Development/Preview only - NOT PRODUCTION READY                  │
+│                                                                             │
+│  ⚠️  WARNING: Current database is ephemeral!                                │
+│      Data may be lost when the preview container restarts.                  │
+│                                                                             │
+│  COLLECTIONS:                                                               │
+│  • users          - User accounts and profiles                              │
+│  • notifications  - User notifications                                      │
+│  • ai_runs        - AI generation history                                   │
+│  • activities     - User activity log                                       │
+│  • transactions   - Payment transactions                                    │
+│                                                                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                     REQUIRED FOR GO-LIVE                                    │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  PRODUCTION DATABASE: MongoDB Atlas                                         │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│                                                                             │
+│  Recommended Setup:                                                         │
+│  • Provider: MongoDB Atlas (https://cloud.mongodb.com)                      │
+│  • Tier: M10 Dedicated Cluster (~$60/month)                                 │
+│  • Region: eu-west-1 or af-south-1 (closest to Nairobi)                     │
+│  • Features: Auto-backup, monitoring, scaling                               │
+│                                                                             │
+│  Free Tier Option (for initial launch):                                     │
+│  • M0 Sandbox (512MB storage) - FREE                                        │
+│  • Good for up to ~1,000 users                                              │
+│  • Upgrade as you grow                                                      │
+│                                                                             │
+│  Setup Steps:                                                               │
+│  1. Create MongoDB Atlas account                                            │
+│  2. Create cluster (M0 free or M10 dedicated)                               │
+│  3. Create database user with readWrite access                              │
+│  4. Whitelist IP addresses (or allow all: 0.0.0.0/0)                        │
+│  5. Get connection string                                                   │
+│  6. Update backend/.env:                                                    │
+│     MONGO_URL=mongodb+srv://user:pass@cluster.mongodb.net/intermaven        │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 9.2 Production Infrastructure
 - **Backend:** FastAPI on single container
 - **Frontend:** React SPA
 - **Database:** MongoDB (single instance)
@@ -1349,6 +1402,71 @@ db.support_tickets.createIndex({ created_at: -1 })
 ---
 
 ## 10. Implementation Phases
+
+### 🚀 GO-LIVE STRATEGY: Phased Feature Launch
+
+We can launch features incrementally to start generating users and revenue while continuing development:
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                        PHASED GO-LIVE TIMELINE                              │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  ✅ LIVE NOW (Current State)                                                │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  • Brand Kit AI ✓                                                           │
+│  • Music Bio & Press Kit AI ✓                                               │
+│  • Social AI ✓                                                              │
+│  • Sync Pitch AI ✓                                                          │
+│  • Pitch Deck AI ✓                                                          │
+│  • User Authentication ✓                                                    │
+│  • Landing Pages ✓                                                          │
+│                                                                             │
+│  🎯 GO-LIVE 1: MVP Launch (Week 1-2)                                        │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  Requirements to go live:                                                   │
+│  • [ ] Configure Pesapal credentials (M-Pesa payments)                      │
+│  • [ ] Set up MongoDB Atlas (production database)                           │
+│  • [ ] Deploy to production (Vercel + Railway)                              │
+│  • [ ] Configure custom domain (intermaven.io)                              │
+│  • [ ] SSL certificates                                                     │
+│                                                                             │
+│  Features available at launch:                                              │
+│  ✓ Brand Kit AI, Social AI, Music Bio AI (all 5 AI tools)                   │
+│  ✓ Credit-based payments via M-Pesa                                         │
+│  ✓ User accounts and dashboard                                              │
+│                                                                             │
+│  🎯 GO-LIVE 2: EPK Builder Launch (Week 3-6)                                │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  • [ ] EPK Builder UI                                                       │
+│  • [ ] Public EPK pages (intermaven.io/artist/username)                     │
+│  • [ ] Basic file uploads for EPK photos                                    │
+│  • [ ] PDF export                                                           │
+│                                                                             │
+│  Marketing moment: "Create your professional artist page"                   │
+│                                                                             │
+│  🎯 GO-LIVE 3: File Manager (Week 7-8)                                      │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  • [ ] Full file management system                                          │
+│  • [ ] Storage tiers by plan                                                │
+│  • [ ] File sharing links                                                   │
+│                                                                             │
+│  🎯 GO-LIVE 4: CRM & Communication (Week 10-14)                             │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  • [ ] Contact management                                                   │
+│  • [ ] Email campaigns                                                      │
+│  • [ ] WhatsApp integration                                                 │
+│                                                                             │
+│  🎯 GO-LIVE 5: Admin & App Pages (Week 16-20)                               │
+│  ─────────────────────────────────────────────────────────────────────────  │
+│  • [ ] Admin dashboard                                                      │
+│  • [ ] Individual app landing pages                                         │
+│  • [ ] Advanced analytics                                                   │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
 
 ### Phase 1: Foundation (Weeks 1-4)
 **Goal:** Core infrastructure and EPK MVP
