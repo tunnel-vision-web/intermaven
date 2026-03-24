@@ -1,10 +1,10 @@
 import React, { useState, useEffect, createContext, useContext } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './App.css';
 
 // Components
-import AuthPage from './components/AuthPage';
+import AuthModal from './components/AuthModal';
 import Dashboard from './components/Dashboard';
 import Toast from './components/Toast';
 import { LandingLayout } from './components/landing';
@@ -34,25 +34,43 @@ api.interceptors.request.use((config) => {
 
 export { api };
 
-// Wrapper component to use navigate hook
-function LandingWrapper({ page, addToast }) {
+// Wrapper component for landing pages with optional auth modal
+function LandingWithAuth({ page, addToast, user }) {
   const navigate = useNavigate();
+  const location = useLocation();
+  const showAuth = location.pathname === '/auth';
   
   const handleOpenAuth = (appId) => {
-    navigate('/auth', { state: { preselectedApp: appId } });
+    navigate('/auth', { state: { preselectedApp: appId, backgroundPage: page } });
   };
   
   const handleOpenSignIn = () => {
-    navigate('/auth', { state: { mode: 'signin' } });
+    navigate('/auth', { state: { mode: 'signin', backgroundPage: page } });
+  };
+
+  const handleCloseAuth = () => {
+    // Go back to the previous page or home
+    const bgPage = location.state?.backgroundPage || 'home';
+    const pageMap = {
+      home: '/',
+      tools: '/tools',
+      apps: '/apps',
+      pricing: '/pricing',
+      about: '/about'
+    };
+    navigate(pageMap[bgPage] || '/');
   };
   
   return (
-    <LandingLayout 
-      page={page}
-      onOpenAuth={handleOpenAuth}
-      onOpenSignIn={handleOpenSignIn}
-      addToast={addToast}
-    />
+    <>
+      <LandingLayout 
+        page={page}
+        onOpenAuth={handleOpenAuth}
+        onOpenSignIn={handleOpenSignIn}
+        addToast={addToast}
+      />
+      {showAuth && !user && <AuthModal onClose={handleCloseAuth} />}
+    </>
   );
 }
 
@@ -137,38 +155,38 @@ function App() {
       <ToastContext.Provider value={{ addToast }}>
         <Router>
           <Routes>
-            {/* Auth Route */}
-            <Route 
-              path="/auth" 
-              element={user ? <Navigate to="/dashboard" /> : <AuthPage />} 
-            />
-            
             {/* Dashboard Route */}
             <Route 
               path="/dashboard/*" 
               element={user ? <Dashboard /> : <Navigate to="/auth" />} 
             />
             
-            {/* Landing Pages - if logged in, redirect to dashboard from home only */}
+            {/* Auth Route - shows modal over home page */}
+            <Route 
+              path="/auth" 
+              element={user ? <Navigate to="/dashboard" /> : <LandingWithAuth page="home" addToast={addToast} user={user} />} 
+            />
+            
+            {/* Landing Pages */}
             <Route 
               path="/" 
-              element={user ? <Navigate to="/dashboard" /> : <LandingWrapper page="home" addToast={addToast} />} 
+              element={user ? <Navigate to="/dashboard" /> : <LandingWithAuth page="home" addToast={addToast} user={user} />} 
             />
             <Route 
               path="/tools" 
-              element={user ? <Navigate to="/dashboard" /> : <LandingWrapper page="tools" addToast={addToast} />} 
+              element={user ? <Navigate to="/dashboard" /> : <LandingWithAuth page="tools" addToast={addToast} user={user} />} 
             />
             <Route 
               path="/apps" 
-              element={user ? <Navigate to="/dashboard" /> : <LandingWrapper page="apps" addToast={addToast} />} 
+              element={user ? <Navigate to="/dashboard" /> : <LandingWithAuth page="apps" addToast={addToast} user={user} />} 
             />
             <Route 
               path="/pricing" 
-              element={user ? <Navigate to="/dashboard" /> : <LandingWrapper page="pricing" addToast={addToast} />} 
+              element={user ? <Navigate to="/dashboard" /> : <LandingWithAuth page="pricing" addToast={addToast} user={user} />} 
             />
             <Route 
               path="/about" 
-              element={user ? <Navigate to="/dashboard" /> : <LandingWrapper page="about" addToast={addToast} />} 
+              element={user ? <Navigate to="/dashboard" /> : <LandingWithAuth page="about" addToast={addToast} user={user} />} 
             />
           </Routes>
         </Router>
