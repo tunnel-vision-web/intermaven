@@ -25,6 +25,16 @@ Convert static HTML/CSS/JS Intermaven website into a fully functional full-stack
 
 ## What's Been Implemented
 
+### March 24, 2026 - Auth Modal & Hero Animations
+- ✅ Converted auth page from full-page to modal overlay
+- ✅ Auth modal closes when clicking outside (on backdrop)
+- ✅ Auth modal shows landing page with faded background
+- ✅ Auth modal has close (X) button
+- ✅ Enhanced hero carousel with smooth animated transitions
+- ✅ Staggered entrance animations for hero content
+- ✅ Background scale transition during slide changes
+- ✅ All 5 AI tools now assigned by default on registration
+
 ### March 24, 2026 - Landing Pages Conversion
 - ✅ Converted all static HTML landing pages to React components
 - ✅ Home page with hero carousel (4 slides), features section

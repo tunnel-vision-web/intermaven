@@ -155,7 +155,7 @@ async def register(user_data: UserCreate):
         "phone": user_data.phone,
         "plan": "free",
         "credits": PLAN_CREDITS["free"],
-        "apps": ["brandkit", "social"],
+        "apps": ["brandkit", "musicbio", "social", "syncpitch", "bizpitch"],
         "portal": user_data.portal,
         "brand_name": "",
         "bio": "",
