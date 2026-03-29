@@ -1,7 +1,7 @@
 # Intermaven Platform Documentation
 ## Complete Technical Reference & Roadmap
 
-**Last Updated:** March 24, 2026  
+**Last Updated:** March 29, 2026  
 **Status:** Development Complete - Ready for Production Deployment  
 **Repository:** /app/
 
@@ -91,8 +91,8 @@ Intermaven is an AI-powered creative and business tools platform built for Afric
 
 - [ ] EPK Builder (hosted + PDF)
 - [ ] File Management System
-- [ ] CRM & Communication System
-- [ ] User Management (Admin Panel)
+- [ ] CRM & Communication System (full multi-platform)
+- [ ] User Management (Admin Panel with full edit access)
 - [ ] App Landing Pages (subdomains)
 
 ---
@@ -101,15 +101,20 @@ Intermaven is an AI-powered creative and business tools platform built for Afric
 
 ## 3.1 Tech Stack
 
-| Layer | Technology | Purpose |
-|-------|------------|---------|
-| Frontend | React 18 | Single Page Application |
-| UI Components | Custom CSS + Shadcn/UI | Design system |
-| Backend | FastAPI (Python 3.11) | REST API |
-| Database | MongoDB | Document store |
-| AI | Claude Sonnet 4.5 | Via Emergent LLM Key |
-| Payments | Pesapal | M-Pesa + Cards |
-| Hosting (Planned) | Vercel + Railway | Frontend + Backend |
+| Layer | Technology | Version | Purpose |
+|-------|------------|---------|---------|
+| Frontend | React | 18.2.0 | Single Page Application |
+| UI Components | Custom CSS + Shadcn/UI | - | Design system |
+| Backend | FastAPI | 0.104.1 | REST API |
+| Runtime | Python | 3.11.14 | Backend runtime |
+| Runtime | Node.js | 20.20.0 | Frontend build |
+| Package Manager | Yarn | 1.22.22 | Frontend dependencies |
+| Database | MongoDB | - | Document store |
+| AI | Claude Sonnet 4.5 | - | Via Emergent LLM Key |
+| Payments | Pesapal | - | M-Pesa + Cards |
+| Messaging | Twilio | - | WhatsApp & SMS (outbound + inbound) |
+| Email | Resend / SendGrid | - | Transactional & campaign emails |
+| Hosting (Planned) | Vercel + Railway | - | Frontend + Backend |
 
 ## 3.2 Project Structure
 
@@ -133,19 +138,24 @@ Intermaven is an AI-powered creative and business tools platform built for Afric
 │   │       ├── AuthModal.js   # Login/Register modal
 │   │       ├── Dashboard.js   # Main dashboard (847 lines)
 │   │       ├── Toast.js       # Notification toasts
+│   │       ├── admin/         # Admin components (future)
+│   │       │   ├── AdminPanel.js
+│   │       │   ├── UserTable.js
+│   │       │   ├── UserEditModal.js
+│   │       │   └── CreditGrant.js
 │   │       └── landing/
-│   │           ├── index.js           # Exports
-│   │           ├── LandingLayout.js   # Layout wrapper
-│   │           ├── HomePage.js        # Hero + features
-│   │           ├── ToolsPage.js       # AI tools listing
-│   │           ├── AppsPage.js        # App marketplace
-│   │           ├── PricingPage.js     # Pricing tiers
-│   │           ├── AboutPage.js       # Company info
-│   │           ├── Navbar.js          # Navigation
-│   │           ├── Netbar.js          # Portal switcher
-│   │           ├── Footer.js          # Footer
-│   │           ├── LegalModal.js      # Privacy/Terms
-│   │           └── AppInfoModal.js    # App details
+│   │           ├── index.js
+│   │           ├── LandingLayout.js
+│   │           ├── HomePage.js
+│   │           ├── ToolsPage.js
+│   │           ├── AppsPage.js
+│   │           ├── PricingPage.js
+│   │           ├── AboutPage.js
+│   │           ├── Navbar.js
+│   │           ├── Netbar.js
+│   │           ├── Footer.js
+│   │           ├── LegalModal.js
+│   │           └── AppInfoModal.js
 │   ├── package.json           # Node dependencies
 │   └── .env                   # Frontend environment
 │
@@ -244,7 +254,7 @@ Intermaven is an AI-powered creative and business tools platform built for Afric
 {
   _id: ObjectId,
   user_id: ObjectId,
-  type: String,               // 'ai_run', 'login', 'payment', etc.
+  type: String,               // 'ai_run', 'login', 'payment', 'credit_grant', etc.
   description: String,
   metadata: Object,
   created_at: DateTime
@@ -256,11 +266,95 @@ Intermaven is an AI-powered creative and business tools platform built for Afric
 {
   _id: ObjectId,
   user_id: ObjectId,
-  type: String,               // 'credit_purchase', 'plan_upgrade'
-  amount: Number,             // KES
+  type: String,               // 'credit_purchase', 'plan_upgrade', 'credit_grant'
+  amount: Number,             // KES (0 for admin grants)
   credits: Number,
   status: String,             // 'pending', 'completed', 'failed'
+  granted_by: ObjectId,       // Admin user ID (for credit_grant type)
+  note: String,               // Optional admin note for free credit grants
   pesapal_reference: String,
+  created_at: DateTime
+}
+```
+
+### crm_contacts (Future)
+```javascript
+{
+  _id: ObjectId,
+  user_id: ObjectId,          // Intermaven user who owns this contact
+  name: String,
+  email: String,
+  phone: String,              // WhatsApp / SMS number
+  tags: [String],             // e.g. ['label', 'fan', 'press']
+  lists: [String],            // Audience segments
+  source: String,             // 'manual', 'import', 'whatsapp', 'email_reply'
+  platform_data: {
+    last_whatsapp_at: DateTime,
+    last_sms_at: DateTime,
+    last_email_at: DateTime,
+    email_opens: Number,
+    email_clicks: Number,
+    whatsapp_messages_sent: Number,
+    sms_messages_sent: Number,
+    whatsapp_messages_received: Number
+  },
+  notes: String,
+  created_at: DateTime,
+  updated_at: DateTime
+}
+```
+
+### crm_messages (Future)
+```javascript
+{
+  _id: ObjectId,
+  sender_user_id: ObjectId,   // Intermaven user sending
+  contact_id: ObjectId,       // crm_contacts ref
+  channel: String,            // 'whatsapp', 'sms', 'email'
+  direction: String,          // 'outbound', 'inbound'
+  body: String,
+  subject: String,            // Email only
+  status: String,             // 'sent', 'delivered', 'read', 'failed'
+  twilio_sid: String,         // Twilio message SID
+  created_at: DateTime
+}
+```
+
+### crm_campaigns (Future)
+```javascript
+{
+  _id: ObjectId,
+  user_id: ObjectId,
+  name: String,
+  channel: String,            // 'whatsapp', 'sms', 'email'
+  audience: [ObjectId],       // Contact IDs or list name
+  body: String,
+  subject: String,            // Email only
+  status: String,             // 'draft', 'scheduled', 'sent', 'failed'
+  scheduled_at: DateTime,
+  sent_at: DateTime,
+  stats: {
+    total: Number,
+    sent: Number,
+    delivered: Number,
+    opened: Number,           // Email only
+    clicked: Number,          // Email only
+    failed: Number
+  },
+  created_at: DateTime
+}
+```
+
+### admin_credit_grants (Future)
+```javascript
+{
+  _id: ObjectId,
+  granted_by: ObjectId,       // Admin user ID
+  granted_to: ObjectId,       // Recipient user ID
+  credits: Number,
+  method: String,             // 'custom' or 'preset'
+  preset_label: String,       // e.g. '150 credits' (if method is preset)
+  note: String,               // Reason / internal note
   created_at: DateTime
 }
 ```
@@ -405,7 +499,120 @@ Pesapal IPN callback (webhook).
 ### GET /api/payments/transactions
 Get user's payment history.
 
-## 5.7 Other Endpoints
+## 5.7 CRM Endpoints (Future)
+
+### Contacts
+
+#### GET /api/crm/contacts
+List all contacts for the authenticated user. Supports filtering by tag, list, or search query.
+
+**Query params:** `?tag=press&list=fans&search=amara`
+
+#### POST /api/crm/contacts
+Create a new contact.
+
+**Request:**
+```json
+{
+  "name": "Amara Diallo",
+  "email": "amara@example.com",
+  "phone": "+254712345678",
+  "tags": ["press", "vip"],
+  "lists": ["newsletter"],
+  "source": "manual"
+}
+```
+
+#### PUT /api/crm/contacts/{contact_id}
+Update a contact's details, tags, or list membership.
+
+#### DELETE /api/crm/contacts/{contact_id}
+Delete a contact.
+
+#### POST /api/crm/contacts/import
+Bulk import contacts via CSV upload.
+
+### Messaging
+
+#### POST /api/crm/messages/send
+Send a single WhatsApp or SMS message to a contact via Twilio.
+
+**Request:**
+```json
+{
+  "contact_id": "...",
+  "channel": "whatsapp",
+  "body": "Hey Amara, your press kit is ready!"
+}
+```
+
+#### GET /api/crm/messages/{contact_id}
+Get full message thread for a contact across all channels.
+
+#### POST /api/crm/twilio/webhook
+Twilio inbound webhook. Receives incoming WhatsApp and SMS messages.
+
+### Campaigns
+
+#### GET /api/crm/campaigns
+List all campaigns for the authenticated user.
+
+#### POST /api/crm/campaigns
+Create a new campaign.
+
+#### POST /api/crm/campaigns/{campaign_id}/send
+Trigger immediate send of a campaign.
+
+#### GET /api/crm/campaigns/{campaign_id}/stats
+Get delivery and engagement stats for a campaign.
+
+## 5.8 Admin Endpoints (Future)
+
+All admin endpoints require `Authorization: Bearer <token>` where the token belongs to a user with an admin role.
+
+### User Management
+
+#### GET /api/admin/users
+List all users. Supports search and filters.
+
+#### GET /api/admin/users/{user_id}
+Get full profile for a specific user.
+
+#### PUT /api/admin/users/{user_id}
+Edit any field on a user account.
+
+#### POST /api/admin/users/{user_id}/grant-credits
+Grant free credits to a user.
+
+**Request:**
+```json
+{
+  "method": "custom",
+  "credits": 250,
+  "note": "Compensation for service disruption"
+}
+```
+
+**Preset Bundles:**
+| Label | Credits |
+|-------|---------|
+| Starter Boost | 50 |
+| Standard Grant | 150 |
+| Creator Boost | 500 |
+| Pro Grant | 1,000 |
+
+#### DELETE /api/admin/users/{user_id}
+Soft-delete a user account.
+
+### Admin Analytics
+
+#### GET /api/admin/stats
+Platform-wide stats.
+
+#### GET /api/admin/credit-grants
+List all credit grants across all admins.
+
+## 5.9 Other Endpoints
 
 ### GET /api/activities
 Get recent user activities.
@@ -428,6 +635,7 @@ Health check endpoint.
 | `/about` | AboutPage | No | Company info |
 | `/auth` | AuthModal | No | Login/Register modal |
 | `/dashboard/*` | Dashboard | Yes | User dashboard |
+| `/admin/*` | AdminPanel | Yes (admin role) | Admin panel (future) |
 
 ## 6.2 Key Components
 
@@ -450,6 +658,13 @@ Health check endpoint.
 - Includes Netbar, Navbar, Footer
 - Manages modals (Legal, AppInfo)
 - Portal switching (Music/Business)
+
+### AdminPanel.js *(future)*
+- Role-gated entry
+- Sidebar navigation: Users, Credit Grants, Analytics, Settings
+- UserTable with search, filter, and inline actions
+- UserEditModal for full field editing
+- CreditGrant modal with preset and custom amount options
 
 ## 6.3 Styling
 
@@ -530,6 +745,11 @@ EMERGENT_LLM_KEY=sk-emergent-a3a79EeF44b2f09684
 PESAPAL_CONSUMER_KEY=<your-key>
 PESAPAL_CONSUMER_SECRET=<your-secret>
 PESAPAL_ENVIRONMENT=production
+TWILIO_ACCOUNT_SID=<your-sid>
+TWILIO_AUTH_TOKEN=<your-token>
+TWILIO_WHATSAPP_NUMBER=whatsapp:+<number>
+TWILIO_SMS_NUMBER=+<number>
+RESEND_API_KEY=<your-key>
 ```
 
 **Frontend (.env):**
@@ -570,12 +790,14 @@ REACT_APP_BACKEND_URL=https://api.intermaven.io
 │  • Storage tiers by plan                                    │
 │                                                             │
 │  🎯 GO-LIVE 4: CRM & Communication (10-14 weeks)            │
-│  • Contact management                                       │
-│  • Email campaigns                                          │
-│  • WhatsApp & SMS integration                               │
+│  • Full contact management with multi-platform data         │
+│  • Twilio WhatsApp & SMS (outbound + inbound)               │
+│  • Email campaigns (Resend/SendGrid)                        │
+│  • Campaign analytics dashboard                             │
 │                                                             │
 │  🎯 GO-LIVE 5: Admin & App Pages (16-20 weeks)              │
-│  • Admin dashboard                                          │
+│  • Full admin panel with user management                    │
+│  • Free credit granting (custom + presets)                  │
 │  • Individual app landing pages                             │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
@@ -590,17 +812,42 @@ REACT_APP_BACKEND_URL=https://api.intermaven.io
 - **Analytics:** Views, clicks, geography tracking
 
 ### CRM & Communication
-- **Contact Management:** Import, tags, lists, segmentation
-- **Email Campaigns:** Resend/SendGrid integration
-- **WhatsApp:** Twilio integration, broadcasts
-- **SMS:** Africa's Talking for local delivery
-- **Automations:** Trigger-based workflows
+
+**Contact Management**
+- Import contacts via CSV or add manually
+- Tag and segment into lists
+- Full interaction history per contact
+- Source tracking
+
+**Multi-Platform Data Capture**
+| Data Source | Data Captured |
+|-------------|---------------|
+| Intermaven platform | AI runs, logins, payments |
+| WhatsApp (Twilio) | Messages sent/received |
+| SMS (Twilio) | Messages sent, delivery status |
+| Email (Resend) | Opens, clicks |
+
+**Twilio Integration**
+- Outbound: Send WhatsApp/SMS from CRM
+- Inbound: Receive replies via webhook
+- Message threads per contact
+- Delivery tracking
 
 ### User Management (Admin)
-- **Roles:** super_admin, admin, support, finance
-- **Features:** User search, bulk actions, impersonation
-- **Support:** Ticket system with SLA tracking
-- **Analytics:** User growth, revenue dashboards
+
+**Admin Roles**
+| Role | Permissions |
+|------|-------------|
+| super_admin | Full access |
+| admin | Edit users, grant credits, analytics |
+| support | View profiles, grant credits (capped) |
+| finance | View transactions only |
+
+**Features**
+- Full user editing (name, email, plan, credits, apps)
+- Free credit granting with presets
+- All changes logged for audit
+- User search and bulk actions
 
 ### File Management
 - **Interface:** Google Drive-style folders
@@ -646,11 +893,19 @@ PESAPAL_CONSUMER_SECRET=<pending>
 PESAPAL_ENVIRONMENT=sandbox
 ```
 
-### WhatsApp/SMS (Twilio) ⏳ PENDING
+### WhatsApp & SMS (Twilio) ⏳ PENDING
 ```
 TWILIO_ACCOUNT_SID=<pending>
 TWILIO_AUTH_TOKEN=<pending>
-TWILIO_WHATSAPP_NUMBER=<pending>
+TWILIO_WHATSAPP_NUMBER=whatsapp:+<number>
+TWILIO_SMS_NUMBER=+<number>
+Webhook URL: https://api.intermaven.io/api/crm/twilio/webhook
+```
+
+### Email (Resend) ⏳ PENDING
+```
+RESEND_API_KEY=<pending>
+Get from: https://resend.com/api-keys
 ```
 
 ## 9.2 Preview Environment
@@ -732,10 +987,22 @@ curl -X POST "https://<url>/api/ai/generate" \
   -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
   -d '{"tool":"brandkit","input":{"brand_name":"Test Brand","industry":"Music","target_audience":"Artists","brand_vibe":"Modern"}}'
+
+# Grant credits (admin) - Future
+curl -X POST "https://<url>/api/admin/users/<user_id>/grant-credits" \
+  -H "Authorization: Bearer <admin_token>" \
+  -H "Content-Type: application/json" \
+  -d '{"method":"preset","preset_label":"Standard Grant","credits":150,"note":"Onboarding bonus"}'
+
+# Send WhatsApp message via CRM - Future
+curl -X POST "https://<url>/api/crm/messages/send" \
+  -H "Authorization: Bearer <token>" \
+  -H "Content-Type: application/json" \
+  -d '{"contact_id":"<id>","channel":"whatsapp","body":"Hey! Your press kit is ready."}'
 ```
 
 ---
 
-*Document Version: 1.0*  
-*Last Updated: March 24, 2026*  
+*Document Version: 1.1*  
+*Last Updated: March 29, 2026*  
 *Platform: Intermaven - AI Tools for African Creatives*
