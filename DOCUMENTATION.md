@@ -949,6 +949,179 @@ Partners get a dedicated dashboard to manage their roster:
 4. All user activity tracked for commission calculation
 5. Partner sees user in their dashboard immediately
 
+**Invite System (Requires CRM Integration)**
+
+The invite system leverages the CRM's email capabilities and contact management:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  INVITE METHODS                                             │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  1. SINGLE EMAIL INVITE                                     │
+│  ─────────────────────────────────────────────────────────  │
+│  Partner enters email → System sends branded invite email   │
+│  → Recipient clicks link → Signs up with partner code       │
+│  → Auto-associated with partner account                     │
+│                                                             │
+│  2. REFERRAL LINK                                           │
+│  ─────────────────────────────────────────────────────────  │
+│  Partner gets unique link: intermaven.io/join/MAVIN2026     │
+│  → Share via any channel (WhatsApp, social, etc.)           │
+│  → Anyone who signs up via link is associated               │
+│                                                             │
+│  3. BULK CSV UPLOAD                                         │
+│  ─────────────────────────────────────────────────────────  │
+│  Partner uploads CSV with contacts                          │
+│  → System validates and imports to CRM                      │
+│  → Bulk invite email sent to all contacts                   │
+│  → Track delivery, opens, signups per contact               │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Bulk Upload CSV Format**
+
+Partners can upload contacts via CSV with the following columns:
+
+| Column | Required | Description | Example |
+|--------|----------|-------------|---------|
+| email | Yes | Contact email address | artist@email.com |
+| first_name | Yes | First name | Amara |
+| last_name | No | Last name | Diallo |
+| phone | No | Phone (WhatsApp/SMS) | +254712345678 |
+| tags | No | Comma-separated tags | artist,signed,priority |
+| notes | No | Internal notes | "Lead vocalist, signed Jan 2026" |
+
+**Sample CSV:**
+```csv
+email,first_name,last_name,phone,tags,notes
+ayra@email.com,Ayra,Starr,+2348012345678,"artist,priority","Lead artist"
+rema@email.com,Rema,,+2348023456789,artist,"New signing"
+crayon@email.com,Crayon,,+2348034567890,"artist,producer",""
+```
+
+**Bulk Upload Process Flow**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  BULK UPLOAD FLOW                                           │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  Step 1: Upload                                             │
+│  ─────────────────────────────────────────────────────────  │
+│  • Partner uploads CSV file                                 │
+│  • System validates format and required fields              │
+│  • Shows preview with validation errors (if any)            │
+│  • Partner confirms import                                  │
+│                                                             │
+│  Step 2: Import to CRM                                      │
+│  ─────────────────────────────────────────────────────────  │
+│  • Contacts added to partner's CRM contact list             │
+│  • Auto-tagged with 'invite_pending'                        │
+│  • Duplicates detected and flagged                          │
+│  • Import summary shown                                     │
+│                                                             │
+│  Step 3: Send Invites                                       │
+│  ─────────────────────────────────────────────────────────  │
+│  • Partner reviews imported contacts                        │
+│  • Selects all or specific contacts to invite               │
+│  • Customizes invite message (optional)                     │
+│  • Clicks "Send Invites"                                    │
+│                                                             │
+│  Step 4: Track & Follow-up                                  │
+│  ─────────────────────────────────────────────────────────  │
+│  • Real-time status updates (sent, delivered, opened)       │
+│  • Track signups from each invite                           │
+│  • Auto-reminder for unopened invites (optional)            │
+│  • CRM integration for follow-up campaigns                  │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Invite Email Template**
+
+```
+Subject: {{partner_name}} invites you to Intermaven
+
+Hi {{first_name}},
+
+{{partner_name}} has invited you to join Intermaven — 
+AI-powered tools for African creatives.
+
+As part of {{partner_name}}'s network, you'll get:
+✓ 150 free credits to start
+✓ Access to all AI tools (Brand Kit, Music Bio, Social AI & more)
+✓ Priority support through {{partner_name}}
+
+[Accept Invitation →]
+{{invite_link}}
+
+This invitation expires in 14 days.
+
+Questions? Reply to this email or contact {{partner_name}} directly.
+
+— The Intermaven Team
+```
+
+**Invite Status Tracking**
+
+| Status | Description | Actions Available |
+|--------|-------------|-------------------|
+| pending | Invite created, not yet sent | Send, Edit, Delete |
+| sent | Email dispatched | Resend, Cancel |
+| delivered | Email confirmed delivered | Resend, Cancel |
+| opened | Recipient opened email | Resend, Cancel |
+| clicked | Recipient clicked invite link | - |
+| accepted | User completed signup | View User |
+| expired | 14 days passed, not accepted | Resend (new invite) |
+| bounced | Email delivery failed | Edit Email, Resend |
+| cancelled | Partner cancelled invite | Delete |
+
+**CRM Integration Points**
+
+The invite system deeply integrates with the CRM:
+
+1. **Contact Sync:** Invited contacts automatically become CRM contacts
+2. **Tag Automation:** Auto-tags applied based on invite status
+3. **Activity Tracking:** All invite events logged in contact history
+4. **Campaign Integration:** Follow-up campaigns can target by invite status
+5. **Analytics:** Invite conversion rates in CRM dashboard
+
+**Partner Invite Dashboard**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  INVITES                          [Upload CSV] [+ Invite]   │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  SUMMARY                                                    │
+│  Total Sent: 156   Accepted: 89 (57%)   Pending: 42        │
+│                                                             │
+├─────────────────────────────────────────────────────────────┤
+│  Filter: [All ▼]  [Status ▼]  [Date ▼]    Search: [____]   │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  □  Contact          Email              Status    Sent      │
+│  ─────────────────────────────────────────────────────────  │
+│  □  Ayra Starr       ayra@email.com     ✓ Accepted  Mar 20 │
+│  □  Rema             rema@email.com     ○ Opened    Mar 22 │
+│  □  Crayon           crayon@email.com   ● Sent      Mar 24 │
+│  □  New Artist       new@email.com      ◐ Pending   -      │
+│                                                             │
+│  [Resend Selected]  [Cancel Selected]                       │
+│                                                             │
+├─────────────────────────────────────────────────────────────┤
+│  RECENT ACTIVITY                                            │
+│  • Ayra Starr accepted invite and signed up (2 hours ago)   │
+│  • Rema opened invite email (5 hours ago)                   │
+│  • Bulk upload: 25 contacts imported (yesterday)            │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Database Schema Additions for Invites**
+
 **Public Partners Page (`/partners`)**
 
 A public-facing page showcasing approved partners:
@@ -1124,12 +1297,33 @@ Collects:
   _id: ObjectId,
   partner_id: ObjectId,
   
-  // Invite details
+  // Contact info (synced with CRM)
+  contact_id: ObjectId,           // Reference to crm_contacts
   email: String,
-  invite_code: String,            // Unique per invite
+  first_name: String,
+  last_name: String,
+  phone: String,
   
-  // Status
-  status: String,                 // 'pending', 'accepted', 'expired', 'cancelled'
+  // Invite details
+  invite_code: String,            // Unique per invite
+  invite_link: String,            // Full URL
+  invite_type: String,            // 'single', 'bulk', 'referral_link'
+  bulk_upload_id: ObjectId,       // Reference to bulk upload batch (if bulk)
+  
+  // Custom message
+  custom_message: String,         // Partner's personalized message
+  
+  // Status tracking
+  status: String,                 // 'pending', 'sent', 'delivered', 'opened', 
+                                  // 'clicked', 'accepted', 'expired', 'bounced', 'cancelled'
+  
+  // Email tracking
+  email_provider_id: String,      // Resend/SendGrid message ID
+  delivered_at: DateTime,
+  opened_at: DateTime,
+  clicked_at: DateTime,
+  open_count: Number,
+  click_count: Number,
   
   // Result
   user_id: ObjectId,              // Created user (if accepted)
@@ -1137,8 +1331,49 @@ Collects:
   
   // Metadata
   sent_at: DateTime,
-  expires_at: DateTime,
-  resent_count: Number
+  expires_at: DateTime,           // Default: 14 days from sent
+  resent_count: Number,
+  last_resent_at: DateTime,
+  cancelled_at: DateTime,
+  cancelled_reason: String,
+  
+  created_at: DateTime,
+  updated_at: DateTime
+}
+
+// partner_bulk_uploads collection
+{
+  _id: ObjectId,
+  partner_id: ObjectId,
+  
+  // Upload details
+  filename: String,               // Original CSV filename
+  file_url: String,               // Stored file URL
+  
+  // Processing
+  status: String,                 // 'processing', 'completed', 'failed', 'partial'
+  total_rows: Number,
+  valid_rows: Number,
+  invalid_rows: Number,
+  duplicate_rows: Number,
+  
+  // Validation errors
+  errors: [{
+    row: Number,
+    column: String,
+    error: String,
+    value: String
+  }],
+  
+  // Invites created
+  invites_created: Number,
+  invites_sent: Number,
+  contacts_imported: Number,
+  
+  // Metadata
+  uploaded_at: DateTime,
+  processed_at: DateTime,
+  created_at: DateTime
 }
 ```
 
@@ -1149,16 +1384,33 @@ Collects:
 GET    /api/partners                      # List approved partners for public page
 POST   /api/partners/apply                # Submit partner application
 GET    /api/partners/verify/:code         # Verify referral code
+GET    /api/join/:referral_code           # Referral signup page
 
 # Partner Dashboard (requires partner role)
 GET    /api/partner/dashboard             # Dashboard stats
 GET    /api/partner/users                 # List users under partner
-POST   /api/partner/invite                # Send user invite
-DELETE /api/partner/invite/:id            # Cancel pending invite
 GET    /api/partner/commissions           # List commission history
 GET    /api/partner/payouts               # List payout history
 PUT    /api/partner/profile               # Update partner profile
 POST   /api/partner/payout/request        # Request payout
+
+# Partner Invites (requires partner role)
+GET    /api/partner/invites               # List all invites with status
+POST   /api/partner/invites               # Send single invite
+POST   /api/partner/invites/bulk          # Upload CSV and create invites
+GET    /api/partner/invites/bulk/:id      # Get bulk upload status/results
+POST   /api/partner/invites/bulk/:id/send # Send invites from bulk upload
+POST   /api/partner/invites/:id/resend    # Resend an invite
+DELETE /api/partner/invites/:id           # Cancel pending invite
+GET    /api/partner/invites/stats         # Invite conversion statistics
+GET    /api/partner/referral-link         # Get/regenerate referral link
+
+# Partner Contacts (CRM subset for partners)
+GET    /api/partner/contacts              # List partner's contacts
+POST   /api/partner/contacts              # Add single contact
+POST   /api/partner/contacts/import       # Import contacts from CSV (without invite)
+PUT    /api/partner/contacts/:id          # Update contact
+DELETE /api/partner/contacts/:id          # Remove contact
 
 # Admin
 GET    /api/admin/partners                # List all partners
@@ -1169,6 +1421,7 @@ POST   /api/admin/partners/:id/reject     # Reject application
 POST   /api/admin/partners/:id/payout     # Process payout
 GET    /api/admin/partners/applications   # List pending applications
 GET    /api/admin/partners/commissions    # All commissions report
+GET    /api/admin/partners/invites        # All invites across partners
 ```
 
 **Frontend Components (Partner)**
@@ -1177,12 +1430,153 @@ GET    /api/admin/partners/commissions    # All commissions report
 /app/frontend/src/components/partner/
 ├── PartnerDashboard.js       # Main partner dashboard
 ├── PartnerUsers.js           # User management table
-├── PartnerInvite.js          # Invite user modal
 ├── PartnerEarnings.js        # Commission & payout history
 ├── PartnerProfile.js         # Edit partner profile
 ├── PartnerSignup.js          # Application form
-└── PartnersPage.js           # Public partners listing page
+├── PartnersPage.js           # Public partners listing page
+│
+├── invites/
+│   ├── InviteDashboard.js    # Invite overview & stats
+│   ├── InviteList.js         # List all invites with filters
+│   ├── InviteSingle.js       # Single invite modal
+│   ├── InviteBulkUpload.js   # CSV upload wizard
+│   ├── InvitePreview.js      # Preview before sending
+│   ├── InviteStatus.js       # Status badge component
+│   └── InviteStats.js        # Conversion analytics
+│
+└── contacts/
+    ├── ContactList.js        # Partner's contact list
+    ├── ContactImport.js      # CSV import (no invite)
+    └── ContactDetail.js      # Single contact view
 ```
+
+**Bulk Upload UI Flow**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  BULK INVITE WIZARD                              Step 1/4   │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  UPLOAD CSV FILE                                            │
+│  ─────────────────────────────────────────────────────────  │
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │                                                     │   │
+│  │         Drag & drop your CSV file here             │   │
+│  │                    or                               │   │
+│  │              [Browse Files]                         │   │
+│  │                                                     │   │
+│  │         Supported: .csv (max 5MB, 1000 rows)       │   │
+│  │                                                     │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+│  [Download Template CSV]                                    │
+│                                                             │
+│                                        [Cancel] [Next →]    │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│  BULK INVITE WIZARD                              Step 2/4   │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  REVIEW & MAP COLUMNS                                       │
+│  ─────────────────────────────────────────────────────────  │
+│                                                             │
+│  Your CSV has 47 rows. Map columns to fields:               │
+│                                                             │
+│  CSV Column        →    Intermaven Field                    │
+│  ─────────────────────────────────────────────────────────  │
+│  "Email"           →    [Email (required) ▼]                │
+│  "Name"            →    [First Name ▼]                      │
+│  "Surname"         →    [Last Name ▼]                       │
+│  "Mobile"          →    [Phone ▼]                           │
+│  "Category"        →    [Tags ▼]                            │
+│                                                             │
+│  Preview (first 5 rows):                                    │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ ayra@email.com | Ayra | Starr | +234... | artist    │   │
+│  │ rema@email.com | Rema |       | +234... | artist    │   │
+│  │ ...                                                  │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+│                                      [← Back] [Next →]      │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│  BULK INVITE WIZARD                              Step 3/4   │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  VALIDATION RESULTS                                         │
+│  ─────────────────────────────────────────────────────────  │
+│                                                             │
+│  ✓ 42 contacts valid and ready to import                   │
+│  ⚠ 3 duplicates (already in your contacts)                 │
+│  ✗ 2 invalid rows (missing email)                          │
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ ISSUES (5)                                   [Fix]  │   │
+│  │ ─────────────────────────────────────────────────── │   │
+│  │ Row 12: Duplicate - rema@email.com exists           │   │
+│  │ Row 23: Duplicate - artist@email.com exists         │   │
+│  │ Row 31: Duplicate - new@email.com exists            │   │
+│  │ Row 45: Missing email address                       │   │
+│  │ Row 46: Invalid email format "not-an-email"         │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+│  [  ] Skip duplicates and import valid rows only           │
+│  [✓] Add to CRM contacts                                   │
+│  [✓] Send invite emails after import                       │
+│                                                             │
+│                                      [← Back] [Import →]    │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│  BULK INVITE WIZARD                              Step 4/4   │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  CUSTOMIZE INVITE MESSAGE (Optional)                        │
+│  ─────────────────────────────────────────────────────────  │
+│                                                             │
+│  Add a personal message to the invite email:                │
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ We're excited to have you join the Mavin family on  │   │
+│  │ Intermaven! Use these AI tools to level up your     │   │
+│  │ brand and reach new audiences.                      │   │
+│  │                                                     │   │
+│  │ - The Mavin Team                                    │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+│  Preview email: [View Preview]                              │
+│                                                             │
+│  ─────────────────────────────────────────────────────────  │
+│  SUMMARY                                                    │
+│  • 42 contacts will be imported                            │
+│  • 42 invite emails will be sent                           │
+│  • Estimated delivery: within 5 minutes                    │
+│                                                             │
+│                          [← Back] [Send 42 Invites →]       │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**Implementation Dependencies**
+
+The invite system requires these features to be functional first:
+
+| Dependency | Required For | Status |
+|------------|--------------|--------|
+| CRM Contacts | Contact storage & sync | Future (Phase 4) |
+| Email Integration | Sending invites | Future (Phase 4) |
+| File Upload | CSV processing | Future (Phase 3) |
+| Partner Auth | Partner role verification | Future (Phase 6) |
+
+**Recommended Implementation Order:**
+
+1. CRM Contact Management (Phase 4)
+2. Email Integration - Resend/SendGrid (Phase 4)
+3. File Upload System (Phase 3)
+4. Partner Program Base (Phase 6)
+5. Invite System with Bulk Upload (Phase 6)
 
 ---
 
@@ -1329,6 +1723,6 @@ curl -X POST "https://<url>/api/crm/messages/send" \
 
 ---
 
-*Document Version: 1.2*  
+*Document Version: 1.3*  
 *Last Updated: March 29, 2026*  
 *Platform: Intermaven - AI Tools for African Creatives*
