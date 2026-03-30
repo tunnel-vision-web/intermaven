@@ -10,10 +10,13 @@ function AuthModal({ onClose }) {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
+    confirm_password: '',
     first_name: '',
     last_name: '',
     phone: '',
@@ -30,11 +33,24 @@ function AuthModal({ onClose }) {
   }, [location.state]);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    
+    // Clear password error when typing
+    if (name === 'password' || name === 'confirm_password') {
+      setPasswordError('');
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Validate password match on signup
+    if (!isLogin && formData.password !== formData.confirm_password) {
+      setPasswordError('Passwords do not match');
+      return;
+    }
+    
     setLoading(true);
 
     let result;
@@ -189,7 +205,7 @@ function AuthModal({ onClose }) {
                 <input
                   type={showPassword ? 'text' : 'password'}
                   name="password"
-                  className="form-input"
+                  className={`form-input ${passwordError ? 'error' : ''}`}
                   placeholder={isLogin ? 'Your password' : 'Min 8 characters'}
                   value={formData.password}
                   onChange={handleChange}
@@ -208,6 +224,38 @@ function AuthModal({ onClose }) {
                 </button>
               </div>
             </div>
+
+            {!isLogin && (
+              <div className="form-group">
+                <label className="form-label">Confirm Password</label>
+                <div className="form-input-icon password-field">
+                  <Lock className="icon" size={16} />
+                  <input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    name="confirm_password"
+                    className={`form-input ${passwordError ? 'error' : ''}`}
+                    placeholder="Confirm your password"
+                    value={formData.confirm_password}
+                    onChange={handleChange}
+                    required
+                    minLength={8}
+                    data-testid="confirm-password-input"
+                  />
+                  <button
+                    type="button"
+                    className="password-toggle"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    data-testid="confirm-password-toggle"
+                    aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
+                {passwordError && (
+                  <div className="form-error" data-testid="password-error">{passwordError}</div>
+                )}
+              </div>
+            )}
 
             {!isLogin && (
               <div className="form-group">

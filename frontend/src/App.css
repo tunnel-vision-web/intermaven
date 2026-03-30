@@ -133,6 +133,16 @@
   background: var(--bg4);
 }
 
+.form-input.error {
+  border-color: var(--rd);
+}
+
+.form-error {
+  font-size: 11px;
+  color: var(--rd);
+  margin-top: 6px;
+}
+
 .form-input::placeholder {
   color: var(--mu2);
 }

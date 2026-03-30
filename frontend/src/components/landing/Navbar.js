@@ -1,13 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { ChevronDown } from 'lucide-react';
 
-function Navbar({ onOpenAuth, onOpenSignIn, portal = 'music' }) {
+function Navbar({ onOpenAuth, onOpenSignIn, portal = 'music', onToast }) {
   const location = useLocation();
   const currentPath = location.pathname;
+  const [communityOpen, setCommunityOpen] = useState(false);
 
   const isActive = (path) => {
     if (path === '/') return currentPath === '/';
     return currentPath.startsWith(path);
+  };
+
+  const handleForumClick = () => {
+    if (onToast) {
+      onToast('Forum', 'Coming soon!', '');
+    }
   };
 
   return (
@@ -46,6 +54,38 @@ function Navbar({ onOpenAuth, onOpenSignIn, portal = 'music' }) {
           >
             Pricing
           </Link>
+          
+          {/* Community Dropdown */}
+          <div 
+            className="nav-dropdown"
+            onMouseEnter={() => setCommunityOpen(true)}
+            onMouseLeave={() => setCommunityOpen(false)}
+            data-testid="nav-community"
+          >
+            <button className={`nl nav-dropdown-trigger ${isActive('/help') ? 'on' : ''}`}>
+              Community <ChevronDown size={14} className={`dropdown-chevron ${communityOpen ? 'open' : ''}`} />
+            </button>
+            {communityOpen && (
+              <div className="nav-dropdown-menu" data-testid="community-dropdown">
+                <Link 
+                  to="/help" 
+                  className="nav-dropdown-item"
+                  data-testid="nav-help"
+                >
+                  Help Center
+                </Link>
+                <button 
+                  className="nav-dropdown-item"
+                  onClick={handleForumClick}
+                  data-testid="nav-forum"
+                >
+                  Forum
+                  <span className="nav-dropdown-badge">Soon</span>
+                </button>
+              </div>
+            )}
+          </div>
+
           <Link 
             to="/about" 
             className={`nl ${isActive('/about') ? 'on' : ''}`}

@@ -121,6 +121,7 @@ function LandingLayout({ page = 'home', onOpenAuth, onOpenSignIn, addToast }) {
         portal={portal} 
         onOpenAuth={handleOpenAuthWrapper}
         onOpenSignIn={handleOpenSignInWrapper}
+        onToast={handleToast}
       />
       
       {renderPage()}
