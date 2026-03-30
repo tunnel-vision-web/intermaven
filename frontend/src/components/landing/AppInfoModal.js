@@ -1,4 +1,5 @@
 import React from 'react';
+import { FlatIcon } from '../FlatIcon';
 
 // App info data matching the original js/data.js
 const APP_INFO = {
@@ -101,14 +102,14 @@ const APP_INFO = {
 };
 
 const ALL_APPS = [
-  { id: 'brandkit', n: 'Brand Kit AI', i: '🎨', col: '#7c6ff7', d: 'Brand names, taglines, tone of voice', p: 'both' },
-  { id: 'musicbio', n: 'Music Bio & Press Kit', i: '🎤', col: '#22d3ee', d: 'Artist bios and press materials', p: 'music' },
-  { id: 'syncpitch', n: 'Sync Pitch AI', i: '📄', col: '#f59e0b', d: 'Film, TV and advertising pitches', p: 'music' },
-  { id: 'social', n: 'Social AI', i: '📱', col: '#f43f5e', d: 'Multi-platform social management', p: 'both' },
-  { id: 'bizpitch', n: 'Pitch Deck AI', i: '📋', col: '#8b5cf6', d: 'Investor and grant pitch decks', p: 'business' },
-  { id: 'pos', n: 'Intermaven POS', i: '🛒', col: '#0e9499', d: 'M-Pesa native point of sale', p: 'business' },
-  { id: 'epk', n: 'Electronic Press Kit', i: '📁', col: '#ec4899', d: 'Hosted EPK pages for artists', p: 'music' },
-  { id: 'distro', n: 'Distribution Tracker', i: '🌍', col: '#0ea5e9', d: 'Track music across platforms', p: 'music' }
+  { id: 'brandkit', n: 'Brand Kit AI', icon: 'brandkit', col: '#7c6ff7', d: 'Brand names, taglines, tone of voice', p: 'both' },
+  { id: 'musicbio', n: 'Music Bio & Press Kit', icon: 'musicbio', col: '#22d3ee', d: 'Artist bios and press materials', p: 'music' },
+  { id: 'syncpitch', n: 'Sync Pitch AI', icon: 'syncpitch', col: '#f59e0b', d: 'Film, TV and advertising pitches', p: 'music' },
+  { id: 'social', n: 'Social AI', icon: 'social', col: '#f43f5e', d: 'Multi-platform social management', p: 'both' },
+  { id: 'bizpitch', n: 'Pitch Deck AI', icon: 'pitchdeck', col: '#8b5cf6', d: 'Investor and grant pitch decks', p: 'business' },
+  { id: 'pos', n: 'Intermaven POS', icon: 'pos', col: '#0e9499', d: 'M-Pesa native point of sale', p: 'business' },
+  { id: 'epk', n: 'Electronic Press Kit', icon: 'epk', col: '#ec4899', d: 'Hosted EPK pages for artists', p: 'music' },
+  { id: 'distro', n: 'Distribution Tracker', icon: 'distro', col: '#0ea5e9', d: 'Track music across platforms', p: 'music' }
 ];
 
 function AppInfoModal({ isOpen, appId, onClose, onGetStarted, onToast }) {
@@ -149,7 +150,9 @@ function AppInfoModal({ isOpen, appId, onClose, onGetStarted, onToast }) {
             className="am-hero-glow" 
             style={{ background: `radial-gradient(circle, ${app.col} 0%, transparent 70%)` }}
           />
-          <div className="am-hero-icon">{app.i}</div>
+          <div className="am-hero-icon">
+            <FlatIcon name={app.icon} size={32} color={app.col} />
+          </div>
           <button className="am-close" onClick={onClose} data-testid="app-modal-close">
             ✕
           </button>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Check } from 'lucide-react';
+import { FlatIcon } from '../FlatIcon';
 
 // Portal configurations matching original data.js
 const PORTALS = {
@@ -50,10 +51,10 @@ const PORTALS = {
     ],
     ftitle: 'AI tools for every stage of your creative career',
     feats: [
-      { i: '🎨', bg: 'rgba(124,111,247,.15)', t: 'AI Brand Kit Generator', d: 'Name, taglines, tone, colour direction, and positioning.', tag: 'Free · 10 credits', tc: '#c084fc', tb: 'rgba(124,111,247,.15)', appId: 'brandkit' },
-      { i: '🎤', bg: 'rgba(34,211,238,.12)', t: 'Music Bio & Press Kit', d: 'Bio, press narrative, and media pitch for labels.', tag: 'Free · 15 credits', tc: '#22d3ee', tb: 'rgba(34,211,238,.12)', appId: 'musicbio' },
-      { i: '📱', bg: 'rgba(244,63,94,.12)', t: 'Social AI', d: 'Multi-account social management and insights.', tag: 'Free · 2 accounts', tc: '#f43f5e', tb: 'rgba(244,63,94,.12)', appId: 'social' },
-      { i: '🥁', bg: 'rgba(16,185,129,.1)', t: 'More apps coming', d: 'EPK builder, distribution tracker, and more.', tag: 'View roadmap', tc: 'var(--mu)', tb: 'rgba(255,255,255,.06)', appId: null, dash: true }
+      { icon: 'brandkit', bg: 'rgba(124,111,247,.15)', t: 'AI Brand Kit Generator', d: 'Name, taglines, tone, colour direction, and positioning.', tag: 'Free · 10 credits', tc: '#c084fc', tb: 'rgba(124,111,247,.15)', appId: 'brandkit' },
+      { icon: 'musicbio', bg: 'rgba(34,211,238,.12)', t: 'Music Bio & Press Kit', d: 'Bio, press narrative, and media pitch for labels.', tag: 'Free · 15 credits', tc: '#22d3ee', tb: 'rgba(34,211,238,.12)', appId: 'musicbio' },
+      { icon: 'social', bg: 'rgba(244,63,94,.12)', t: 'Social AI', d: 'Multi-account social management and insights.', tag: 'Free · 2 accounts', tc: '#f43f5e', tb: 'rgba(244,63,94,.12)', appId: 'social' },
+      { icon: 'more', bg: 'rgba(16,185,129,.1)', t: 'More apps coming', d: 'EPK builder, distribution tracker, and more.', tag: 'View roadmap', tc: 'var(--mu)', tb: 'rgba(255,255,255,.06)', appId: null, dash: true }
     ],
     btitle: 'Music & Creative App Marketplace',
     bsub: 'Standalone modules in a growing ecosystem for African artists.',
@@ -111,10 +112,10 @@ const PORTALS = {
     ],
     ftitle: 'AI and operational tools for Nairobi businesses',
     feats: [
-      { i: '🎨', bg: 'rgba(14,148,153,.15)', t: 'Business Brand Kit AI', d: 'Brand foundation for SMEs and service businesses.', tag: 'Free · 10 credits', tc: '#22d3ee', tb: 'rgba(14,148,153,.15)', appId: 'brandkit' },
-      { i: '📱', bg: 'rgba(244,63,94,.12)', t: 'Social AI', d: 'Multi-account social management and AI insights.', tag: 'Free · 2 accounts', tc: '#f43f5e', tb: 'rgba(244,63,94,.12)', appId: 'social' },
-      { i: '💳', bg: 'rgba(245,158,11,.15)', t: 'Invoicing & Payments', d: 'M-Pesa invoices, card payments, billing management.', tag: 'Beta', tc: '#f59e0b', tb: 'rgba(245,158,11,.15)', appId: 'invoicing' },
-      { i: '⚖', bg: 'rgba(100,116,139,.12)', t: 'Contract Templates', d: 'Kenya-law-compliant templates for all business types.', tag: 'Coming soon', tc: 'var(--mu)', tb: 'rgba(255,255,255,.06)', appId: null, dash: true }
+      { icon: 'brandkit', bg: 'rgba(14,148,153,.15)', t: 'Business Brand Kit AI', d: 'Brand foundation for SMEs and service businesses.', tag: 'Free · 10 credits', tc: '#22d3ee', tb: 'rgba(14,148,153,.15)', appId: 'brandkit' },
+      { icon: 'social', bg: 'rgba(244,63,94,.12)', t: 'Social AI', d: 'Multi-account social management and AI insights.', tag: 'Free · 2 accounts', tc: '#f43f5e', tb: 'rgba(244,63,94,.12)', appId: 'social' },
+      { icon: 'invoicing', bg: 'rgba(245,158,11,.15)', t: 'Invoicing & Payments', d: 'M-Pesa invoices, card payments, billing management.', tag: 'Beta', tc: '#f59e0b', tb: 'rgba(245,158,11,.15)', appId: 'invoicing' },
+      { icon: 'contracts', bg: 'rgba(100,116,139,.12)', t: 'Contract Templates', d: 'Kenya-law-compliant templates for all business types.', tag: 'Coming soon', tc: 'var(--mu)', tb: 'rgba(255,255,255,.06)', appId: null, dash: true }
     ],
     btitle: 'Business App Marketplace',
     bsub: 'Operational and AI tools for Nairobi entrepreneurs.',
@@ -307,7 +308,7 @@ function HomePage({ portal = 'music', onOpenAppModal, onOpenAuth, onToast }) {
                 data-testid={`feature-card-${index}`}
               >
                 <div className="fi2" style={{ background: feat.bg }}>
-                  {feat.i}
+                  <FlatIcon name={feat.icon} size={20} color={feat.tc} />
                 </div>
                 <h3>{feat.t}</h3>
                 <p>{feat.d}</p>
@@ -322,7 +323,9 @@ function HomePage({ portal = 'music', onOpenAppModal, onOpenAuth, onToast }) {
           </div>
           
           <div className="mban">
-            <div style={{ fontSize: '24px' }}>🥁</div>
+            <div style={{ fontSize: '24px' }}>
+              <FlatIcon name="rocket" size={24} color="var(--gr)" />
+            </div>
             <div style={{ flex: 1 }}>
               <h3>{portalData.btitle}</h3>
               <p>{portalData.bsub}</p>

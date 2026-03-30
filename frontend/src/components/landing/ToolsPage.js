@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { FlatIcon } from '../FlatIcon';
 
 // Tool definitions for landing page
 const TOOL_CARDS = [
-  { i: '🎨', n: 'Brand Kit AI', d: 'Name, taglines, tone of voice, colour direction', cost: '10 CREDITS', costColor: 'var(--a2)' },
-  { i: '🎤', n: 'Music Bio & Press Kit', d: 'Bio, press narrative, media pitch, interview angles', cost: '15 CREDITS', costColor: 'var(--a2)' },
-  { i: '📱', n: 'Social AI', d: 'Captions, hashtags, posting times for any platform', cost: 'FREE', costColor: 'var(--gr)' },
-  { i: '📄', n: 'Sync Pitch AI', d: 'Pitches for film, TV and advertising supervisors', cost: '20 CREDITS', costColor: 'var(--a2)' },
-  { i: '📋', n: 'Pitch Deck AI', d: 'Investor & grant pitch decks for East African markets', cost: '18 CREDITS', costColor: 'var(--a2)' }
+  { icon: 'brandkit', color: '#c084fc', n: 'Brand Kit AI', d: 'Name, taglines, tone of voice, colour direction', cost: '10 CREDITS', costColor: 'var(--a2)' },
+  { icon: 'musicbio', color: '#22d3ee', n: 'Music Bio & Press Kit', d: 'Bio, press narrative, media pitch, interview angles', cost: '15 CREDITS', costColor: 'var(--a2)' },
+  { icon: 'social', color: '#f43f5e', n: 'Social AI', d: 'Captions, hashtags, posting times for any platform', cost: 'FREE', costColor: 'var(--gr)' },
+  { icon: 'syncpitch', color: '#f59e0b', n: 'Sync Pitch AI', d: 'Pitches for film, TV and advertising supervisors', cost: '20 CREDITS', costColor: 'var(--a2)' },
+  { icon: 'pitchdeck', color: '#8b5cf6', n: 'Pitch Deck AI', d: 'Investor & grant pitch decks for East African markets', cost: '18 CREDITS', costColor: 'var(--a2)' }
 ];
 
 function ToolsPage({ portal = 'music', onOpenAuth, onToast }) {
@@ -109,7 +110,9 @@ function ToolsPage({ portal = 'music', onOpenAuth, onToast }) {
                 onClick={() => onOpenAuth()}
                 data-testid={`tool-card-${index}`}
               >
-                <div style={{ fontSize: '18px', marginBottom: '6px' }}>{tool.i}</div>
+                <div style={{ marginBottom: '6px' }}>
+                  <FlatIcon name={tool.icon} size={20} color={tool.color} />
+                </div>
                 <div style={{ fontSize: '12px', fontWeight: '700', marginBottom: '3px' }}>{tool.n}</div>
                 <div style={{ fontSize: '11px', color: 'var(--mu)' }}>{tool.d}</div>
                 <div style={{ 
@@ -133,7 +136,9 @@ function ToolsPage({ portal = 'music', onOpenAuth, onToast }) {
             textAlign: 'center',
             marginBottom: '28px'
           }}>
-            <div style={{ fontSize: '24px', marginBottom: '10px' }}>🚀</div>
+            <div style={{ marginBottom: '10px' }}>
+              <FlatIcon name="rocket" size={28} color="var(--gr)" />
+            </div>
             <div style={{ fontSize: '16px', fontWeight: '700', marginBottom: '6px' }}>
               Sign up to use AI tools
             </div>
@@ -159,7 +164,9 @@ function ToolsPage({ portal = 'music', onOpenAuth, onToast }) {
             padding: '28px', 
             textAlign: 'center' 
           }}>
-            <div style={{ fontSize: '22px', marginBottom: '10px' }}>🔥</div>
+            <div style={{ marginBottom: '10px' }}>
+              <FlatIcon name="fire" size={26} color="var(--am)" />
+            </div>
             <div style={{ fontSize: '16px', fontWeight: '700', marginBottom: '6px' }}>
               Need more credits?
             </div>

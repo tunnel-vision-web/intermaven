@@ -5,14 +5,15 @@ import {
   Home, Bell, Plus, User, Settings, CreditCard, LogOut,
   Zap, Copy, Download
 } from 'lucide-react';
+import { FlatIcon } from './FlatIcon';
 
 // App definitions
 const APPS = {
-  brandkit: { id: 'brandkit', name: 'Brand Kit AI', icon: '🎨', color: '#7c6ff7', desc: 'Brand names, taglines, tone of voice', cost: 10 },
-  musicbio: { id: 'musicbio', name: 'Music Bio & Press Kit', icon: '🎤', color: '#22d3ee', desc: 'Artist bios and press materials', cost: 15 },
-  social: { id: 'social', name: 'Social AI', icon: '📱', color: '#f43f5e', desc: 'Multi-platform social management', cost: 0 },
-  syncpitch: { id: 'syncpitch', name: 'Sync Pitch AI', icon: '📄', color: '#f59e0b', desc: 'Film, TV and advertising pitches', cost: 20 },
-  bizpitch: { id: 'bizpitch', name: 'Pitch Deck AI', icon: '📋', color: '#8b5cf6', desc: 'Investor and grant pitch decks', cost: 18 }
+  brandkit: { id: 'brandkit', name: 'Brand Kit AI', icon: 'brandkit', color: '#7c6ff7', desc: 'Brand names, taglines, tone of voice', cost: 10 },
+  musicbio: { id: 'musicbio', name: 'Music Bio & Press Kit', icon: 'musicbio', color: '#22d3ee', desc: 'Artist bios and press materials', cost: 15 },
+  social: { id: 'social', name: 'Social AI', icon: 'social', color: '#f43f5e', desc: 'Multi-platform social management', cost: 0 },
+  syncpitch: { id: 'syncpitch', name: 'Sync Pitch AI', icon: 'syncpitch', color: '#f59e0b', desc: 'Film, TV and advertising pitches', cost: 20 },
+  bizpitch: { id: 'bizpitch', name: 'Pitch Deck AI', icon: 'pitchdeck', color: '#8b5cf6', desc: 'Investor and grant pitch decks', cost: 18 }
 };
 
 const PLAN_CREDITS = { free: 150, creator: 600, pro: 2500 };
@@ -164,7 +165,7 @@ function Dashboard() {
                 onClick={() => setActivePanel(`app-${appId}`)}
                 data-testid={`nav-app-${appId}`}
               >
-                <span style={{ fontSize: '16px' }}>{app.icon}</span>
+                <FlatIcon name={app.icon} size={16} color={app.color} />
                 {app.name}
               </button>
             );
@@ -340,7 +341,7 @@ function OverviewPanel({ user, stats, activities, setActivePanel, creditPercent 
               onClick={() => setActivePanel(`app-${appId}`)}
               data-testid={`quick-action-${appId}`}
             >
-              <span className="icon">{app.icon}</span>
+              <FlatIcon name={app.icon} size={18} color={app.color} />
               {app.name}
             </button>
           );
@@ -364,7 +365,9 @@ function OverviewPanel({ user, stats, activities, setActivePanel, creditPercent 
                 data-testid={`app-card-${appId}`}
               >
                 <div className="app-card-accent" style={{ background: app.color }}></div>
-                <div className="app-card-icon">{app.icon}</div>
+                <div className="app-card-icon">
+                  <FlatIcon name={app.icon} size={24} color={app.color} />
+                </div>
                 <div className="app-card-name">{app.name}</div>
                 <div className="app-card-desc">{app.desc}</div>
                 <div className="app-card-action">Open app →</div>
@@ -760,7 +763,9 @@ function ToolPanel({ appId, user, updateUser, addToast, fetchStats, fetchActivit
   return (
     <div className="panel active tool-panel" data-testid={`tool-panel-${appId}`}>
       <div className="tool-header">
-        <span className="tool-icon">{app.icon}</span>
+        <span className="tool-icon">
+          <FlatIcon name={app.icon} size={28} color={app.color} />
+        </span>
         <div className="tool-info">
           <h2>{app.name}</h2>
           <p>{app.desc}</p>

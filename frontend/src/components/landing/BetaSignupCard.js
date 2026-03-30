@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MessageCircle, Check } from 'lucide-react';
+import { FlatIcon } from '../FlatIcon';
 
 const BETA_APPS = {
   epk: {
     id: 'epk',
     name: 'EPK Kit Generator',
-    icon: '📁',
+    icon: 'epk',
     color: '#6b5b95',
     desc: 'Create professional electronic press kits for labels, bookers, and media outlets.',
     portal: 'music'
@@ -13,7 +14,7 @@ const BETA_APPS = {
   lead_gen: {
     id: 'lead_gen',
     name: 'Lead Generation AI',
-    icon: '🎯',
+    icon: 'zap',
     color: '#5b7795',
     desc: 'AI-powered lead generation and prospecting for your creative business.',
     portal: 'both'
@@ -21,7 +22,7 @@ const BETA_APPS = {
   pos: {
     id: 'pos',
     name: 'Intermaven POS',
-    icon: '💳',
+    icon: 'pos',
     color: '#4a7c59',
     desc: 'Point of sale system with M-Pesa integration for Nairobi SMEs.',
     portal: 'business'
@@ -81,7 +82,7 @@ function BetaSignupCard({ appId, onToast }) {
       
       <div className="aph2">
         <div className="apiw" style={{ background: `${app.color}20` }}>
-          {app.icon}
+          <FlatIcon name={app.icon} size={18} color={app.color} />
         </div>
         <span className="beta-badge">
           <span className="beta-badge-dot" />

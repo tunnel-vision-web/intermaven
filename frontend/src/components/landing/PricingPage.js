@@ -1,9 +1,25 @@
 import React from 'react';
+import { FlatIcon } from '../FlatIcon';
 
 function PricingPage({ onOpenAuth, onToast }) {
   const handlePayment = () => {
     onToast('M-Pesa payment coming soon!', '', '📲');
   };
+
+  const valueProps = [
+    { icon: 'zap', color: 'var(--am)', title: 'Pay once', desc: 'No monthly fees. Buy credits when you need them.' },
+    { icon: 'mpesa', color: 'var(--gr)', title: 'M-Pesa native', desc: 'Pay via M-Pesa, card, or PayPal. Credits load instantly.' },
+    { icon: 'refresh', color: 'var(--a3)', title: 'Credits never expire', desc: 'Paid credits roll over forever. Use them at your own pace.' },
+    { icon: 'unlock', color: 'var(--a2)', title: 'No lock-in', desc: "Cancel nothing — there's nothing to cancel. Ever." }
+  ];
+
+  const creditCosts = [
+    { icon: 'brandkit', color: '#c084fc', name: 'Brand Kit AI', credits: '10 credits per run', price: 'KES 8.30 on Creator' },
+    { icon: 'musicbio', color: '#22d3ee', name: 'Music Bio & Press Kit', credits: '15 credits per run', price: 'KES 12.50 on Creator' },
+    { icon: 'social', color: '#f43f5e', name: 'Social AI', credits: 'Free — 0 credits', price: 'Always free', priceColor: 'var(--gr)' },
+    { icon: 'syncpitch', color: '#f59e0b', name: 'Sync Pitch AI', credits: '20 credits per run', price: 'KES 16.70 on Creator' },
+    { icon: 'pitchdeck', color: '#8b5cf6', name: 'Pitch Deck AI', credits: '18 credits per run', price: 'KES 15.00 on Creator' }
+  ];
 
   return (
     <>
@@ -28,12 +44,7 @@ function PricingPage({ onOpenAuth, onToast }) {
             gap: '10px', 
             marginBottom: '40px' 
           }}>
-            {[
-              { icon: '⚡', title: 'Pay once', desc: 'No monthly fees. Buy credits when you need them.' },
-              { icon: '📲', title: 'M-Pesa native', desc: 'Pay via M-Pesa, card, or PayPal. Credits load instantly.' },
-              { icon: '♻', title: 'Credits never expire', desc: 'Paid credits roll over forever. Use them at your own pace.' },
-              { icon: '🔓', title: 'No lock-in', desc: "Cancel nothing — there's nothing to cancel. Ever." }
-            ].map((item, index) => (
+            {valueProps.map((item, index) => (
               <div key={index} style={{ 
                 background: 'var(--ca)', 
                 border: '1px solid var(--b1)', 
@@ -41,7 +52,9 @@ function PricingPage({ onOpenAuth, onToast }) {
                 padding: '16px', 
                 textAlign: 'center' 
               }}>
-                <div style={{ fontSize: '22px', marginBottom: '6px' }}>{item.icon}</div>
+                <div style={{ marginBottom: '6px' }}>
+                  <FlatIcon name={item.icon} size={24} color={item.color} />
+                </div>
                 <div style={{ fontSize: '12px', fontWeight: '700', marginBottom: '3px' }}>{item.title}</div>
                 <div style={{ fontSize: '11px', color: 'var(--mu)' }}>{item.desc}</div>
               </div>
@@ -130,23 +143,20 @@ function PricingPage({ onOpenAuth, onToast }) {
             padding: '24px', 
             marginBottom: '32px' 
           }}>
-            <div style={{ fontSize: '13px', fontWeight: '700', marginBottom: '16px' }}>
-              ⚡ What does 1 credit run cost?
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
+              <FlatIcon name="zap" size={16} color="var(--am)" />
+              <span style={{ fontSize: '13px', fontWeight: '700' }}>What does 1 credit run cost?</span>
             </div>
             <div style={{ 
               display: 'grid', 
               gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', 
               gap: '10px' 
             }}>
-              {[
-                { icon: '🎨', name: 'Brand Kit AI', credits: '10 credits per run', price: 'KES 8.30 on Creator' },
-                { icon: '🎤', name: 'Music Bio & Press Kit', credits: '15 credits per run', price: 'KES 12.50 on Creator' },
-                { icon: '📱', name: 'Social AI', credits: 'Free — 0 credits', price: 'Always free', priceColor: 'var(--gr)' },
-                { icon: '📄', name: 'Sync Pitch AI', credits: '20 credits per run', price: 'KES 16.70 on Creator' },
-                { icon: '📋', name: 'Pitch Deck AI', credits: '18 credits per run', price: 'KES 15.00 on Creator' }
-              ].map((tool, index) => (
+              {creditCosts.map((tool, index) => (
                 <div key={index} style={{ background: 'var(--bg2)', borderRadius: 'var(--r)', padding: '12px' }}>
-                  <div style={{ fontSize: '16px', marginBottom: '4px' }}>{tool.icon}</div>
+                  <div style={{ marginBottom: '4px' }}>
+                    <FlatIcon name={tool.icon} size={18} color={tool.color} />
+                  </div>
                   <div style={{ fontSize: '11px', fontWeight: '600', marginBottom: '2px' }}>{tool.name}</div>
                   <div style={{ fontSize: '10px', color: 'var(--mu)' }}>{tool.credits}</div>
                   <div style={{ fontSize: '10px', color: tool.priceColor || 'var(--a2)', marginTop: '4px' }}>
@@ -159,7 +169,9 @@ function PricingPage({ onOpenAuth, onToast }) {
 
           {/* M-Pesa callout */}
           <div className="mpbox">
-            <div style={{ fontSize: '28px' }}>📲</div>
+            <div>
+              <FlatIcon name="mpesa" size={32} color="var(--gr)" />
+            </div>
             <div>
               <h4>Pay instantly with <strong>M-Pesa</strong></h4>
               <p>

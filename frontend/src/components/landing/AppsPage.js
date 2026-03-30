@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ALL_APPS } from './AppInfoModal';
 import BetaSignupCard, { BETA_APPS } from './BetaSignupCard';
+import { FlatIcon } from '../FlatIcon';
 
 const LIVE_APPS = ['brandkit', 'musicbio', 'syncpitch', 'social', 'bizpitch'];
 
@@ -127,7 +128,7 @@ function AppsPage({ portal = 'music', onOpenAppModal, onToast }) {
                   <div className="apacc" style={{ background: app.col }} />
                   <div className="aph2">
                     <div className="apiw" style={{ background: `${app.col}20` }}>
-                      {app.i}
+                      <FlatIcon name={app.icon} size={18} color={app.col} />
                     </div>
                     <span className={`aps ${isLive ? 'slv' : 'ssn'}`}>
                       {isLive ? 'Live' : 'Soon'}

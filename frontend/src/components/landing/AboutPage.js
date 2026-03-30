@@ -1,4 +1,5 @@
 import React from 'react';
+import { FlatIcon } from '../FlatIcon';
 
 function AboutPage({ portal = 'music', onToast }) {
   const handleContactSubmit = () => {
@@ -6,8 +7,14 @@ function AboutPage({ portal = 'music', onToast }) {
   };
 
   const handlePortalSwitch = () => {
-    onToast('Portal switch coming soon!', '', '🔄');
+    onToast('Portal switch coming soon!', '');
   };
+
+  const contacts = [
+    { icon: 'whatsapp', color: 'var(--gr)', title: 'WhatsApp support', desc: 'Fastest response — typically under 1 hour' },
+    { icon: 'mail', color: 'var(--a2)', title: 'hello@intermaven.io', desc: 'For partnerships and press enquiries' },
+    { icon: 'location', color: 'var(--am)', title: 'Nairobi, Kenya', desc: 'Intermaven Ltd — registered in Kenya' }
+  ];
 
   return (
     <>
@@ -119,7 +126,10 @@ function AboutPage({ portal = 'music', onToast }) {
 
               {/* Other portal */}
               <div className="alt" style={{ marginBottom: '16px' }}>
-                <h3>{portal === 'music' ? '🏢 Intermaven Business' : '🎵 Intermaven Music'}</h3>
+                <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <FlatIcon name={portal === 'music' ? 'building' : 'musicbio'} size={18} color="var(--a2)" />
+                  {portal === 'music' ? 'Intermaven Business' : 'Intermaven Music'}
+                </h3>
                 <p>
                   {portal === 'music' 
                     ? 'POS, invoicing, contracts and business AI at intermaven.io.'
@@ -190,22 +200,26 @@ function AboutPage({ portal = 'music', onToast }) {
             }}>
               {[
                 { 
-                  icon: '🌎', 
+                  icon: 'globe', 
+                  color: 'var(--a3)',
                   title: 'Africa is not a market to enter — it\'s a movement to serve', 
                   desc: "We don't build generic tools and localise them. We build for Nairobi first, and let the quality speak globally." 
                 },
                 { 
-                  icon: '💡', 
+                  icon: 'lightbulb', 
+                  color: 'var(--am)',
                   title: 'Talent is everywhere. Opportunity isn\'t. Yet.', 
                   desc: "The gap between a talented African artist and a Hollywood sync deal is not talent — it's access to the right words, tools, and positioning." 
                 },
                 { 
-                  icon: '🤝', 
+                  icon: 'handshake', 
+                  color: 'var(--a2)',
                   title: 'Simple pricing is a form of respect', 
                   desc: "No subscriptions. No lock-in. No dark patterns. Just credits you buy when you need them, that never expire." 
                 },
                 { 
-                  icon: '📱', 
+                  icon: 'whatsapp', 
+                  color: 'var(--gr)',
                   title: 'WhatsApp is infrastructure', 
                   desc: "We build notifications, support, and receipts through WhatsApp because that's where Nairobi does business." 
                 }
@@ -216,7 +230,9 @@ function AboutPage({ portal = 'music', onToast }) {
                   borderRadius: 'var(--r)', 
                   padding: '20px' 
                 }}>
-                  <div style={{ fontSize: '22px', marginBottom: '10px' }}>{belief.icon}</div>
+                  <div style={{ marginBottom: '10px' }}>
+                    <FlatIcon name={belief.icon} size={22} color={belief.color} />
+                  </div>
                   <div style={{ fontSize: '13px', fontWeight: '700', marginBottom: '6px' }}>{belief.title}</div>
                   <div style={{ fontSize: '12px', color: 'var(--mu)', lineHeight: '1.6' }}>{belief.desc}</div>
                 </div>
@@ -241,11 +257,7 @@ function AboutPage({ portal = 'music', onToast }) {
                 Fill in the form or email us directly.
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                {[
-                  { icon: '💬', title: 'WhatsApp support', desc: 'Fastest response — typically under 1 hour' },
-                  { icon: '✉', title: 'hello@intermaven.io', desc: 'For partnerships and press enquiries' },
-                  { icon: '🏠', title: 'Nairobi, Kenya', desc: 'Intermaven Ltd — registered in Kenya' }
-                ].map((contact, index) => (
+                {contacts.map((contact, index) => (
                   <div key={index} style={{ 
                     display: 'flex', 
                     alignItems: 'center', 
@@ -255,7 +267,7 @@ function AboutPage({ portal = 'music', onToast }) {
                     border: '1px solid var(--b1)', 
                     borderRadius: 'var(--r)' 
                   }}>
-                    <span style={{ fontSize: '16px' }}>{contact.icon}</span>
+                    <FlatIcon name={contact.icon} size={16} color={contact.color} />
                     <div>
                       <div style={{ fontSize: '11px', fontWeight: '600' }}>{contact.title}</div>
                       <div style={{ fontSize: '10px', color: 'var(--mu)' }}>{contact.desc}</div>
