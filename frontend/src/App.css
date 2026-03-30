@@ -807,6 +807,9 @@
 .app-card-icon {
   font-size: 28px;
   margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .app-card-name {
@@ -1426,3 +1429,151 @@
     white-space: nowrap;
   }
 }
+
+/* Add App Modal */
+.add-app-modal {
+  background: var(--bg2);
+  border: 1px solid var(--b2);
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.add-app-modal .modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--b1);
+}
+
+.add-app-modal .modal-header h3 {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.add-app-modal .modal-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: none;
+  border: none;
+  color: var(--mu);
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.add-app-modal .modal-close:hover {
+  background: var(--ca);
+  color: var(--tx);
+}
+
+.add-app-modal .modal-body {
+  padding: 20px 24px;
+}
+
+.add-app-modal .modal-desc {
+  font-size: 13px;
+  color: var(--mu);
+  margin-bottom: 20px;
+}
+
+.available-apps-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.available-app-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: var(--ca);
+  border: 1px solid var(--b1);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.available-app-card:hover {
+  background: var(--ch);
+  border-color: var(--btn);
+}
+
+.available-app-card .app-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.available-app-card .app-info h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 2px 0;
+}
+
+.available-app-card .app-info p {
+  font-size: 11px;
+  color: var(--mu);
+  margin: 0;
+}
+
+.available-app-card .app-cost {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--a2);
+  margin-top: 4px;
+}
+
+.no-apps-message {
+  text-align: center;
+  padding: 24px;
+  color: var(--mu);
+  font-size: 13px;
+}
+
+.coming-soon-section {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--b1);
+}
+
+.coming-soon-section h4 {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--mu);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.coming-soon-apps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.coming-soon-app {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--ca);
+  border: 1px solid var(--b1);
+  border-radius: 6px;
+  font-size: 11px;
+  color: var(--mu);
+}
+

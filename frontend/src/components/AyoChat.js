@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, X, Send, Sparkles, ChevronDown } from 'lucide-react';
+import { MessageCircle, X, Send, Sparkles, ChevronDown, Ticket, AlertCircle } from 'lucide-react';
 import './AyoChat.css';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const AYO_SUGGESTIONS = {
   homepage: [
@@ -38,7 +40,7 @@ const AYO_SUGGESTIONS = {
 const AYO_RESPONSES = {
   "what can intermaven do": "Intermaven is your AI-powered toolkit for African creatives! I can help you create professional brand kits, compelling music bios, social media content, sync licensing pitches, and business pitch decks. All powered by AI, designed for Africa. 🌍",
   
-  "how do i get started": "Getting started is easy! 1️⃣ Click 'Get started free' to create your account. 2️⃣ You'll receive 150 free credits. 3️⃣ Head to your dashboard and try any AI tool. I recommend starting with the Brand Kit Generator - it's a fan favorite!",
+  "how do i get started": "Getting started is easy! 1️⃣ Click 'Start free' to create your account. 2️⃣ You'll receive 150 free credits. 3️⃣ Head to your dashboard and try any AI tool. I recommend starting with the Brand Kit Generator - it's a fan favorite!",
   
   "tell me about the ai tools": "We have 5 powerful AI tools:\n\n🎨 **Brand Kit** - Generate logos, color palettes, and brand guidelines\n📝 **Music Bio** - Create professional artist bios and press materials\n📱 **Social AI** - Craft engaging social media content\n🎵 **Sync Pitch** - Write pitches for music licensing opportunities\n💼 **Pitch Deck** - Create business presentations\n\nEach tool costs between 5-25 credits per use.",
   
@@ -71,7 +73,7 @@ const AYO_RESPONSES = {
   "default": "I'm here to help! I can answer questions about:\n\n• Our AI tools (Brand Kit, Music Bio, Social AI, etc.)\n• Pricing and credits\n• How to get started\n• Technical support\n• Upcoming features\n\nWhat would you like to know?"
 };
 
-function AyoChat({ currentPage = 'default', isLoggedIn = false }) {
+function AyoChat({ currentPage = 'default', isLoggedIn = false, userEmail = null }) {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -79,8 +81,20 @@ function AyoChat({ currentPage = 'default', isLoggedIn = false }) {
   const [isTyping, setIsTyping] = useState(false);
   const [hasGreeted, setHasGreeted] = useState(false);
   const [showBubble, setShowBubble] = useState(false);
+  const [supportMode, setSupportMode] = useState(false);
+  const [ticketId, setTicketId] = useState(null);
+  const [preferredChannel, setPreferredChannel] = useState('email');
+  const [contactInfo, setContactInfo] = useState('');
+  const [showChannelPrompt, setShowChannelPrompt] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+
+  // Keywords that indicate support issues
+  const SUPPORT_KEYWORDS = [
+    'not working', "doesn't work", 'broken', 'error', 'bug', 'issue', 'problem',
+    'help me', 'support', 'refund', 'charged', 'payment failed', 'stuck',
+    'can\'t login', 'cannot login', 'locked out', 'reset password'
+  ];
 
   // Show greeting bubble after delay
   useEffect(() => {
@@ -130,40 +144,146 @@ function AyoChat({ currentPage = 'default', isLoggedIn = false }) {
   const findResponse = (input) => {
     const lower = input.toLowerCase();
     
+    // Check if this is a support issue that needs a ticket
+    const isSupportIssue = SUPPORT_KEYWORDS.some(keyword => lower.includes(keyword));
+    
+    if (isSupportIssue && !ticketId) {
+      setSupportMode(true);
+      return {
+        text: `I can see you're experiencing an issue. Let me create a support ticket to help you properly.\n\n**How would you like me to keep you updated?**`,
+        showChannelPrompt: true
+      };
+    }
+    
     for (const [key, response] of Object.entries(AYO_RESPONSES)) {
       if (key !== 'default' && lower.includes(key)) {
-        return response;
+        return { text: response };
       }
     }
     
     // Check for keywords
     if (lower.includes('credit') || lower.includes('cost')) {
-      return AYO_RESPONSES['how many credits'];
+      return { text: AYO_RESPONSES['how many credits'] };
     }
     if (lower.includes('pay') || lower.includes('mpesa') || lower.includes('m-pesa')) {
-      return AYO_RESPONSES['m-pesa'];
+      return { text: AYO_RESPONSES['m-pesa'] };
     }
     if (lower.includes('start') || lower.includes('begin') || lower.includes('new')) {
-      return AYO_RESPONSES['how do i get started'];
+      return { text: AYO_RESPONSES['how do i get started'] };
     }
     if (lower.includes('tool') || lower.includes('feature')) {
-      return AYO_RESPONSES['tell me about the ai tools'];
+      return { text: AYO_RESPONSES['tell me about the ai tools'] };
     }
     if (lower.includes('free')) {
-      return AYO_RESPONSES['free plan'];
+      return { text: AYO_RESPONSES['free plan'] };
     }
     if (lower.includes('hello') || lower.includes('hi') || lower.includes('hey')) {
-      return "Hello! 👋 Great to meet you. I'm Ayo, here to help you navigate Intermaven. What would you like to know about our AI tools for African creatives?";
+      return { text: "Hello! 👋 Great to meet you. I'm Ayo, here to help you navigate Intermaven. What would you like to know about our AI tools for African creatives?" };
     }
     if (lower.includes('thank')) {
-      return "You're welcome! 😊 Feel free to ask if you have more questions. I'm always here to help!";
+      return { text: "You're welcome! 😊 Feel free to ask if you have more questions. I'm always here to help!" };
     }
     
-    return AYO_RESPONSES['default'];
+    return { text: AYO_RESPONSES['default'] };
+  };
+
+  const createSupportTicket = async (subject, message, channel, contact) => {
+    try {
+      const response = await fetch(`${API_URL}/api/support/tickets`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          subject: subject,
+          message: message,
+          category: detectCategory(message),
+          preferred_channel: channel,
+          email: channel === 'email' ? contact : null,
+          phone: channel !== 'email' ? contact : null,
+          user_id: userEmail
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        return data;
+      }
+    } catch (error) {
+      console.error('Failed to create ticket:', error);
+    }
+    return null;
+  };
+
+  const detectCategory = (message) => {
+    const lower = message.toLowerCase();
+    if (lower.includes('payment') || lower.includes('credit') || lower.includes('refund') || lower.includes('charged')) {
+      return 'billing';
+    }
+    if (lower.includes('error') || lower.includes('bug') || lower.includes('broken') || lower.includes('not working')) {
+      return 'technical';
+    }
+    if (lower.includes('brand kit') || lower.includes('music bio') || lower.includes('social ai') || lower.includes('generate')) {
+      return 'ai-tools';
+    }
+    return 'general';
+  };
+
+  const handleChannelSelect = async (channel) => {
+    setPreferredChannel(channel);
+    setShowChannelPrompt(false);
+    
+    const placeholder = channel === 'email' ? 'your email address' : 'your phone number (+254...)';
+    setMessages(prev => [...prev, { 
+      role: 'assistant', 
+      content: `Great! Please provide ${placeholder} so I can keep you updated on your ticket.` 
+    }]);
+  };
+
+  const handleContactSubmit = async () => {
+    if (!contactInfo.trim()) return;
+    
+    setMessages(prev => [...prev, { role: 'user', content: contactInfo }]);
+    setIsTyping(true);
+    
+    // Find the original issue message
+    const issueMessage = messages.find(m => m.role === 'user')?.content || 'Support request';
+    
+    // Create the ticket
+    const ticketResult = await createSupportTicket(
+      issueMessage.substring(0, 100),
+      issueMessage,
+      preferredChannel,
+      contactInfo
+    );
+    
+    setIsTyping(false);
+    
+    if (ticketResult?.success) {
+      setTicketId(ticketResult.ticket_id);
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: `✅ **Ticket Created: ${ticketResult.ticket_id}**\n\nI've logged your issue and started investigating. Here's my initial assessment:\n\n${ticketResult.ai_response}\n\nI'll send updates via ${preferredChannel === 'email' ? 'email' : preferredChannel === 'whatsapp' ? 'WhatsApp' : 'SMS'} as I work on this. You can also check your ticket status anytime.`,
+        isTicket: true
+      }]);
+      setSupportMode(false);
+    } else {
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: 'I encountered an issue creating the ticket. Please try again or email support@intermaven.io directly.'
+      }]);
+    }
+    setContactInfo('');
   };
 
   const handleSend = async (text = inputValue) => {
     if (!text.trim()) return;
+    
+    // Check if we're waiting for contact info
+    if (supportMode && showChannelPrompt === false && !ticketId) {
+      setContactInfo(text);
+      await handleContactSubmit();
+      setInputValue('');
+      return;
+    }
     
     const userMessage = { role: 'user', content: text };
     setMessages(prev => [...prev, userMessage]);
@@ -173,8 +293,13 @@ function AyoChat({ currentPage = 'default', isLoggedIn = false }) {
     // Simulate typing delay
     await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 700));
     
-    const response = findResponse(text);
-    setMessages(prev => [...prev, { role: 'assistant', content: response }]);
+    const responseObj = findResponse(text);
+    
+    if (responseObj.showChannelPrompt) {
+      setShowChannelPrompt(true);
+    }
+    
+    setMessages(prev => [...prev, { role: 'assistant', content: responseObj.text }]);
     setIsTyping(false);
   };
 
@@ -245,10 +370,10 @@ function AyoChat({ currentPage = 'default', isLoggedIn = false }) {
               {/* Messages */}
               <div className="ayo-messages">
                 {messages.map((msg, idx) => (
-                  <div key={idx} className={`ayo-message ${msg.role}`}>
+                  <div key={idx} className={`ayo-message ${msg.role} ${msg.isTicket ? 'ticket' : ''}`}>
                     {msg.role === 'assistant' && (
                       <div className="ayo-message-avatar">
-                        <Sparkles size={12} />
+                        {msg.isTicket ? <Ticket size={12} /> : <Sparkles size={12} />}
                       </div>
                     )}
                     <div className="ayo-message-content">
@@ -258,6 +383,22 @@ function AyoChat({ currentPage = 'default', isLoggedIn = false }) {
                     </div>
                   </div>
                 ))}
+                
+                {/* Channel Selection Buttons */}
+                {showChannelPrompt && (
+                  <div className="ayo-channel-select">
+                    <button onClick={() => handleChannelSelect('email')} className="ayo-channel-btn">
+                      📧 Email
+                    </button>
+                    <button onClick={() => handleChannelSelect('whatsapp')} className="ayo-channel-btn">
+                      💬 WhatsApp
+                    </button>
+                    <button onClick={() => handleChannelSelect('sms')} className="ayo-channel-btn">
+                      📱 SMS
+                    </button>
+                  </div>
+                )}
+                
                 {isTyping && (
                   <div className="ayo-message assistant">
                     <div className="ayo-message-avatar">

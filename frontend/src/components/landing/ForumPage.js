@@ -260,7 +260,7 @@ function ForumPage({ addToast }) {
                 <h4>Join the conversation</h4>
                 <p>Create an account to comment, like, and share your own content.</p>
                 <Link to="/auth" className="hbp">
-                  Get Started Free
+                  Start Free
                 </Link>
               </div>
             </aside>

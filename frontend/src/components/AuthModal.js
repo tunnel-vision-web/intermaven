@@ -308,7 +308,7 @@ function AuthModal({ onClose }) {
 
           <div className="auth-link">
             {isLogin ? (
-              <>Don't have an account? <button onClick={() => setIsLogin(false)}>Get started free</button></>
+              <>Don't have an account? <button onClick={() => setIsLogin(false)}>Start free</button></>
             ) : (
               <>Already have an account? <button onClick={() => setIsLogin(true)}>Sign in</button></>
             )}

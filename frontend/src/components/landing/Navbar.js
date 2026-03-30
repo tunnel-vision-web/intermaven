@@ -91,9 +91,9 @@ function Navbar({ onOpenAuth, onOpenSignIn, portal = 'music', onToast }) {
             About
           </Link>
           <button className="ncta" onClick={onOpenAuth} data-testid="nav-get-started">
-            Get started free
+            Start free
           </button>
-          <button className="nsign" onClick={onOpenSignIn} data-testid="nav-sign-in">
+          <button className="ncta secondary" onClick={onOpenSignIn} data-testid="nav-sign-in">
             Sign in
           </button>
         </div>

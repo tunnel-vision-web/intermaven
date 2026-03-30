@@ -372,6 +372,17 @@ button, input, select, textarea { font-family: var(--ff); }
 
 .ncta:hover { background: var(--bth); }
 
+.ncta.secondary {
+  background: transparent;
+  border: 1px solid var(--btn);
+  color: var(--btn);
+}
+
+.ncta.secondary:hover {
+  background: rgba(107, 91, 149, 0.1);
+  color: var(--tx);
+}
+
 .nsign {
   background: none;
   border: none;
@@ -1335,9 +1346,17 @@ button, input, select, textarea { font-family: var(--ff); }
   transform: translateY(-2px);
 }
 
+.help-category.active {
+  background: rgba(107, 91, 149, 0.15);
+  border-color: var(--btn);
+}
+
 .help-category-icon {
   font-size: 28px;
   margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .help-category h3 {
@@ -1349,6 +1368,49 @@ button, input, select, textarea { font-family: var(--ff); }
 .help-category p {
   font-size: 11px;
   color: var(--mu);
+}
+
+.help-category-count {
+  display: block;
+  font-size: 10px;
+  color: var(--mu2);
+  margin-top: 8px;
+}
+
+.help-articles-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.help-articles-header h3 {
+  margin-bottom: 0;
+}
+
+.help-articles-count {
+  font-weight: 400;
+  color: var(--mu);
+  margin-left: 6px;
+}
+
+.help-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  border-radius: var(--r);
+  background: var(--ca);
+  border: 1px solid var(--b1);
+  color: var(--mu);
+  font-size: 11px;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.help-back-btn:hover {
+  background: var(--ch);
+  color: var(--tx);
 }
 
 .help-articles h3 {
@@ -1385,10 +1447,53 @@ button, input, select, textarea { font-family: var(--ff); }
 
 .help-article-icon {
   color: var(--a2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.help-article-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.help-article-category {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--mu);
+}
+
+.help-article-title {
+  font-size: 13px;
 }
 
 .help-article span {
   font-size: 13px;
+}
+
+.help-no-results {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--mu);
+}
+
+.help-no-results p {
+  margin-bottom: 16px;
+}
+
+.help-no-results button {
+  padding: 8px 16px;
+  border-radius: var(--r);
+  background: var(--btn);
+  color: #fff;
+  border: none;
+  font-size: 12px;
+  cursor: pointer;
 }
 
 .help-contact {

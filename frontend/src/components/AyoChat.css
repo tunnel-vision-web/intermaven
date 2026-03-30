@@ -241,6 +241,43 @@
   margin-top: 8px;
 }
 
+/* Ticket Message */
+.ayo-message.ticket .ayo-message-avatar {
+  background: linear-gradient(135deg, var(--gr) 0%, var(--a3) 100%);
+}
+
+.ayo-message.ticket .ayo-message-content {
+  background: rgba(74, 124, 89, 0.15);
+  border: 1px solid rgba(74, 124, 89, 0.3);
+}
+
+/* Channel Selection */
+.ayo-channel-select {
+  display: flex;
+  gap: 8px;
+  padding: 8px 16px;
+  flex-wrap: wrap;
+}
+
+.ayo-channel-btn {
+  padding: 10px 16px;
+  border-radius: var(--r);
+  background: var(--ca);
+  border: 1px solid var(--b2);
+  color: var(--tx);
+  font-size: 12px;
+  cursor: pointer;
+  transition: 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ayo-channel-btn:hover {
+  background: var(--ch);
+  border-color: var(--btn);
+}
+
 /* Typing Indicator */
 .ayo-typing {
   background: var(--bg3);

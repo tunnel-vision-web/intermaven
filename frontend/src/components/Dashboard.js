@@ -28,6 +28,8 @@ function Dashboard() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [activities, setActivities] = useState([]);
   const [settingsTab, setSettingsTab] = useState('profile');
+  const [showAddAppModal, setShowAddAppModal] = useState(false);
+  const [availableApps, setAvailableApps] = useState([]);
 
   const handleLogoClick = () => {
     // Log out and navigate to landing page
@@ -39,6 +41,7 @@ function Dashboard() {
     fetchStats();
     fetchNotifications();
     fetchActivities();
+    fetchAvailableApps();
   }, []);
 
   const fetchStats = async () => {
@@ -66,6 +69,28 @@ function Dashboard() {
       setActivities(response.data.activities);
     } catch (error) {
       console.error('Failed to fetch activities:', error);
+    }
+  };
+
+  const fetchAvailableApps = async () => {
+    try {
+      const response = await api.get('/api/apps/available');
+      setAvailableApps(Object.values(response.data.apps));
+    } catch (error) {
+      console.error('Failed to fetch available apps:', error);
+    }
+  };
+
+  const addApp = async (appId) => {
+    try {
+      const response = await api.post('/api/users/apps', { app_id: appId });
+      if (response.data.success) {
+        updateUser({ ...user, apps: response.data.apps });
+        addToast('App added!', `${APPS[appId]?.name || appId} is now in your dashboard.`, 'success');
+        setShowAddAppModal(false);
+      }
+    } catch (error) {
+      addToast('Failed to add app', error.response?.data?.detail || 'Please try again.', 'error');
     }
   };
 
@@ -374,13 +399,67 @@ function OverviewPanel({ user, stats, activities, setActivePanel, creditPercent 
               </div>
             );
           })}
-          <div className="app-card app-card-add">
+          <div 
+            className="app-card app-card-add"
+            onClick={() => setShowAddAppModal(true)}
+            data-testid="add-app-button"
+          >
             <Plus className="icon" size={28} />
             <div className="title">Add new app</div>
             <div className="subtitle">Browse the marketplace</div>
           </div>
         </div>
       </div>
+
+      {/* Add App Modal */}
+      {showAddAppModal && (
+        <div className="modal-overlay" onClick={() => setShowAddAppModal(false)}>
+          <div className="add-app-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Add App to Dashboard</h3>
+              <button className="modal-close" onClick={() => setShowAddAppModal(false)}>×</button>
+            </div>
+            <div className="modal-body">
+              <p className="modal-desc">Select an app to add to your dashboard</p>
+              <div className="available-apps-grid">
+                {availableApps.filter(app => app.status === 'live' && !user?.apps?.includes(app.id)).map(app => (
+                  <div 
+                    key={app.id}
+                    className="available-app-card"
+                    onClick={() => addApp(app.id)}
+                    data-testid={`add-app-${app.id}`}
+                  >
+                    <div className="app-icon-wrap" style={{ background: `${app.color}20` }}>
+                      <FlatIcon name={app.icon} size={22} color={app.color} />
+                    </div>
+                    <div className="app-info">
+                      <h4>{app.name}</h4>
+                      <p>{app.desc}</p>
+                      <span className="app-cost">{app.cost === 0 ? 'Free' : `${app.cost} credits`}</span>
+                    </div>
+                  </div>
+                ))}
+                {availableApps.filter(app => app.status === 'live' && !user?.apps?.includes(app.id)).length === 0 && (
+                  <div className="no-apps-message">
+                    You have all available apps! Check back soon for new releases.
+                  </div>
+                )}
+              </div>
+              <div className="coming-soon-section">
+                <h4>Coming Soon</h4>
+                <div className="coming-soon-apps">
+                  {availableApps.filter(app => app.status === 'coming_soon').map(app => (
+                    <div key={app.id} className="coming-soon-app">
+                      <FlatIcon name={app.icon} size={16} color={app.color} />
+                      <span>{app.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="activity-feed">
         <h3>Recent activity</h3>

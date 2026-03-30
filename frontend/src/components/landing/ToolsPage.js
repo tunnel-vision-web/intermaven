@@ -151,7 +151,7 @@ function ToolsPage({ portal = 'music', onOpenAuth, onToast }) {
               style={{ display: 'inline-block' }}
               data-testid="tools-get-started"
             >
-              Get started free →
+            Start free →
             </button>
           </div>
 
