@@ -7,10 +7,13 @@ import './App.css';
 import AuthModal from './components/AuthModal';
 import Dashboard from './components/Dashboard';
 import Toast from './components/Toast';
+import AyoChat from './components/AyoChat';
 import { LandingLayout } from './components/landing';
 import TermsPage from './components/landing/TermsPage';
 import PrivacyPage from './components/landing/PrivacyPage';
 import HelpPage from './components/landing/HelpPage';
+import ForumPage from './components/landing/ForumPage';
+import ArticlePage from './components/landing/ArticlePage';
 
 // Context
 const AuthContext = createContext(null);
@@ -196,7 +199,12 @@ function App() {
             <Route path="/terms" element={<TermsPage />} />
             <Route path="/privacy" element={<PrivacyPage />} />
             <Route path="/help" element={<HelpPage addToast={addToast} />} />
+            <Route path="/help/article/:slug" element={<ArticlePage />} />
+            <Route path="/forum" element={<ForumPage addToast={addToast} />} />
           </Routes>
+          
+          {/* Ayo Chat Assistant - shows on all pages */}
+          <AyoChat currentPage={window.location.pathname.split('/')[1] || 'homepage'} isLoggedIn={!!user} />
         </Router>
         <Toast toasts={toasts} />
       </ToastContext.Provider>

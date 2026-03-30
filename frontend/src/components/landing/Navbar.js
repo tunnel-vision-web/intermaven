@@ -13,9 +13,7 @@ function Navbar({ onOpenAuth, onOpenSignIn, portal = 'music', onToast }) {
   };
 
   const handleForumClick = () => {
-    if (onToast) {
-      onToast('Forum', 'Coming soon!', '');
-    }
+    // Forum is now available, no toast needed
   };
 
   return (
@@ -62,7 +60,7 @@ function Navbar({ onOpenAuth, onOpenSignIn, portal = 'music', onToast }) {
             onMouseLeave={() => setCommunityOpen(false)}
             data-testid="nav-community"
           >
-            <button className={`nl nav-dropdown-trigger ${isActive('/help') ? 'on' : ''}`}>
+            <button className={`nl nav-dropdown-trigger ${isActive('/help') || isActive('/forum') ? 'on' : ''}`}>
               Community <ChevronDown size={14} className={`dropdown-chevron ${communityOpen ? 'open' : ''}`} />
             </button>
             {communityOpen && (
@@ -74,14 +72,13 @@ function Navbar({ onOpenAuth, onOpenSignIn, portal = 'music', onToast }) {
                 >
                   Help Center
                 </Link>
-                <button 
+                <Link 
+                  to="/forum" 
                   className="nav-dropdown-item"
-                  onClick={handleForumClick}
                   data-testid="nav-forum"
                 >
                   Forum
-                  <span className="nav-dropdown-badge">Soon</span>
-                </button>
+                </Link>
               </div>
             )}
           </div>
