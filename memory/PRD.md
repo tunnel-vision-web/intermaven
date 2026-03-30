@@ -25,6 +25,22 @@ Convert static HTML/CSS/JS Intermaven website into a fully functional full-stack
 
 ## What's Been Implemented
 
+### March 30, 2026 - Quick UI Wins & Medium Complexity Features
+- ✅ Password visibility toggle (eye icon) on Auth modal
+- ✅ Dashboard sidebar logo click navigates to landing page
+- ✅ Newsletter subscription CTA on homepage with email signup
+- ✅ Payment method logos (M-Pesa, Visa, Mastercard) on homepage
+- ✅ Muted futuristic color palette update
+- ✅ Beta signup cards for Coming Soon apps (EPK, Lead Gen, POS)
+- ✅ Terms of Service page at /terms
+- ✅ Privacy Policy page at /privacy
+- ✅ Help Center page at /help with categories and search
+- ✅ Terms acceptance checkbox on registration form
+- ✅ Newsletter subscribe API: POST /api/newsletter/subscribe
+- ✅ Beta signup API: POST /api/beta/signup
+- ✅ Beta status API: GET /api/beta/status/{app_id}
+- ✅ New MongoDB collections: newsletter_subscribers, beta_signups
+
 ### March 24, 2026 - Auth Modal & Hero Animations
 - ✅ Converted auth page from full-page to modal overlay
 - ✅ Auth modal closes when clicking outside (on backdrop)
@@ -96,26 +112,27 @@ Convert static HTML/CSS/JS Intermaven website into a fully functional full-stack
 - transactions
 
 ## Testing Status
-- Backend: 100% (20/20 tests passed)
-- Frontend: 100% (Landing pages: 100%)
-- Last test: iteration_2.json - All landing page tests passed
+- Backend: 100% (All endpoints working)
+- Frontend: 100% (All pages and features working)
+- Last test: iteration_4.json - All Quick UI and Medium Complexity features passed
 
 ## Prioritized Backlog
 
-### P0 - Critical (Next Session)
-- [ ] Pesapal credentials configuration for live payments
-- [ ] M-Pesa STK Push implementation
-- [ ] Card payment flow completion
+### P0 - Critical (In Progress)
+- [ ] AI Chat Assistant (proactive pop-up based on user behavior)
+- [ ] Assets Manager (file upload/storage backend)
+- [ ] AI Output Library (auto-save generated content)
+- [ ] Bilingual support (English + Swahili i18n)
+- [ ] User Management Admin Dashboard
 
 ### P1 - High Priority
+- [ ] Pesapal payment integration (awaiting credentials)
+- [ ] Meta API integration for Social AI (awaiting credentials)
+- [ ] WhatsApp notifications via Twilio (awaiting credentials)
 - [ ] EPK Builder System (See ROADMAP.md Section 2)
   - Hosted profiles at intermaven.io/artist/[username]
   - Downloadable PDF export
   - Analytics tracking
-- [ ] File Management System (See ROADMAP.md Section 5)
-  - Google Drive-style interface
-  - Storage tiers by plan
-- [ ] WhatsApp notifications (Twilio) - credentials pending
 
 ### P2 - Medium Priority
 - [ ] CRM & Communication System (See ROADMAP.md Section 3)
@@ -156,6 +173,9 @@ GET  /api/activities - Get recent activities
 POST /api/payments/initiate - Start payment
 POST /api/payments/callback - Pesapal callback
 GET  /api/payments/transactions - Get transactions
+POST /api/newsletter/subscribe - Subscribe to newsletter
+POST /api/beta/signup - Join beta waitlist
+GET  /api/beta/status/{app_id} - Check beta signup status
 GET  /api/health - Health check
 ```
 
@@ -175,7 +195,7 @@ mongodb://mongo:IzypDlPIOWEIyNZSoybbZmWzvPYAeuym@centerbeam.proxy.rlwy.net:20600
 
 **Status:** Connected and operational  
 **Provider:** Railway  
-**Collections:** users, notifications, ai_runs, activities, transactions
+**Collections:** users, notifications, ai_runs, activities, transactions, newsletter_subscribers, beta_signups
 
 ---
 
@@ -236,12 +256,18 @@ Includes:
 │   │           ├── Netbar.js
 │   │           ├── Footer.js
 │   │           ├── LegalModal.js
-│   │           └── AppInfoModal.js
+│   │           ├── AppInfoModal.js
+│   │           ├── TermsPage.js
+│   │           ├── PrivacyPage.js
+│   │           ├── HelpPage.js
+│   │           └── BetaSignupCard.js
 │   ├── .env               # Frontend environment
 │   └── package.json       # Node dependencies
 ├── memory/
 │   └── PRD.md            # This file
 └── test_reports/
     ├── iteration_1.json  # Initial MVP tests
-    └── iteration_2.json  # Landing pages tests
+    ├── iteration_2.json  # Landing pages tests
+    ├── iteration_3.json  # E2E auth tests
+    └── iteration_4.json  # Quick UI & Medium Complexity tests
 ```
