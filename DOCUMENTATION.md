@@ -1,8 +1,10 @@
 # Intermaven Platform Documentation
 ## Complete Technical Reference & Roadmap
+### Africa's AI Marketplace
 
 **Last Updated:** March 29, 2026  
-**Status:** Development Complete - Ready for Production Deployment  
+**Version:** 2.0  
+**Status:** Pre-Launch Development  
 **Repository:** /app/
 
 ---
@@ -11,13 +13,14 @@
 
 1. [Project Overview](#1-project-overview)
 2. [Current Implementation Status](#2-current-implementation-status)
-3. [Technical Architecture](#3-technical-architecture)
-4. [Database Configuration](#4-database-configuration)
-5. [API Reference](#5-api-reference)
-6. [Frontend Structure](#6-frontend-structure)
-7. [Go-Live Checklist](#7-go-live-checklist)
-8. [Future Roadmap](#8-future-roadmap)
-9. [Credentials & Environment Variables](#9-credentials--environment-variables)
+3. [Pre-Launch Requirements](#3-pre-launch-requirements)
+4. [Technical Architecture](#4-technical-architecture)
+5. [Database Configuration](#5-database-configuration)
+6. [API Reference](#6-api-reference)
+7. [Frontend Structure](#7-frontend-structure)
+8. [Go-Live Checklist](#8-go-live-checklist)
+9. [Post-Launch Roadmap](#9-post-launch-roadmap)
+10. [Credentials & Environment Variables](#10-credentials--environment-variables)
 
 ---
 
@@ -25,17 +28,21 @@
 
 ## 1.1 What is Intermaven?
 
+**Tagline:** *Africa's AI Marketplace*
+
 Intermaven is an AI-powered creative and business tools platform built for African entrepreneurs and artists. The platform provides:
 
-- **AI Tools:** Brand Kit Generator, Music Bio & Press Kit, Social AI, Sync Pitch AI, Pitch Deck AI
+- **AI Tools:** Brand Kit Generator, Music Bio & Press Kit, Social AI, Sync Pitch AI, Pitch Deck AI, EPK Builder, Lead Generation
 - **Credit System:** Pay-per-use model with M-Pesa and card payments
 - **Two Portals:** Music (music.intermaven.io) and Business (intermaven.io)
+- **Multi-language Support:** English & Swahili (extensible to more African languages)
 
 ## 1.2 Target Users
 
-1. **African Musicians/Artists** - Need brand kits, press materials, sync pitches
+1. **African Musicians/Artists** - Need brand kits, press materials, sync pitches, EPKs
 2. **Creative Entrepreneurs** - Need business pitch decks, social media content
-3. **Small Business Owners** - Need branding, social management tools
+3. **Small Business Owners** - Need branding, social management, POS tools
+4. **Record Labels & Agencies** - Need to manage multiple artists/clients (Partner Program)
 
 ## 1.3 Business Model
 
@@ -80,1509 +87,1446 @@ Intermaven is an AI-powered creative and business tools platform built for Afric
 - [x] Production database configured (Railway)
 - [x] Collections: users, notifications, ai_runs, activities, transactions
 
-## 2.2 Pending for Go-Live ⏳
+## 2.2 Pre-Launch Features Required ⏳
 
-- [ ] Pesapal credentials (M-Pesa payments)
-- [ ] Production deployment (Vercel + Railway)
-- [ ] Custom domain configuration (intermaven.io)
-- [ ] SSL certificates
+See [Section 3: Pre-Launch Requirements](#3-pre-launch-requirements) for detailed specifications.
 
-## 2.3 Future Features 🔮
+## 2.3 Post-Launch Features 🔮
 
-- [ ] EPK Builder (hosted + PDF)
-- [ ] File Management System
-- [ ] CRM & Communication System (full multi-platform)
-- [ ] User Management (Admin Panel with full edit access)
-- [ ] App Landing Pages (subdomains)
-- [ ] Partner Program (corporate accounts with commission system)
+See [Section 9: Post-Launch Roadmap](#9-post-launch-roadmap) for detailed specifications.
 
 ---
 
-# 3. Technical Architecture
+# 3. Pre-Launch Requirements
 
-## 3.1 Tech Stack
+## 3.1 Beta Signup Cards (EPK, Lead Generation, POS)
+
+### Overview
+Add "Coming Soon" app cards that allow users to sign up for early beta testing. Users select their preferred communication method (Email, WhatsApp, SMS) and are added to the CRM for notifications when the feature launches.
+
+### Apps Requiring Beta Signup
+
+| App | Portal | Description |
+|-----|--------|-------------|
+| EPK Kit Generator | Music | Electronic Press Kit builder |
+| Lead Generation | Both | AI-powered lead gen tool |
+| POS System | Business | Point of sale for SMEs |
+
+### Beta Signup Card UI
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  APP CARD (Coming Soon)                                     │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │         [App Icon]                                   │   │
+│  │                                                     │   │
+│  │         EPK Kit Generator                           │   │
+│  │                                                     │   │
+│  │         Create professional press kits              │   │
+│  │         for labels and bookers                      │   │
+│  │                                                     │   │
+│  │         ┌─────────────────────────────────────┐     │   │
+│  │         │        COMING SOON                  │     │   │
+│  │         │                                     │     │   │
+│  │         │  Be first to know when it launches  │     │   │
+│  │         │                                     │     │   │
+│  │         │  How should we notify you?          │     │   │
+│  │         │                                     │     │   │
+│  │         │  [📧 Email] [💬 WhatsApp] [📱 SMS]  │     │   │
+│  │         │                                     │     │   │
+│  │         │  Email: [________________]          │     │   │
+│  │         │                                     │     │   │
+│  │         │  [Join Beta Waitlist →]             │     │   │
+│  │         └─────────────────────────────────────┘     │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Database Schema
+
+```javascript
+// beta_signups collection
+{
+  _id: ObjectId,
+  app_id: String,                // 'epk', 'lead_gen', 'pos'
+  email: String,
+  phone: String,                 // For WhatsApp/SMS
+  preferred_channel: String,     // 'email', 'whatsapp', 'sms'
+  portal: String,                // 'music', 'business'
+  user_id: ObjectId,             // If signed in user
+  status: String,                // 'waiting', 'notified', 'converted'
+  notified_at: DateTime,
+  converted_at: DateTime,
+  created_at: DateTime
+}
+```
+
+### API Endpoints
+
+```
+POST /api/beta/signup           # Sign up for beta
+GET  /api/beta/status/:app_id   # Check signup status
+POST /api/admin/beta/notify     # Send launch notification to waitlist
+```
+
+---
+
+## 3.2 AI Chat Assistant
+
+### Overview
+An AI-powered support assistant that is fully conversant with the Intermaven platform. It helps users with navigation, feature usage, troubleshooting, and general questions. The assistant tracks user behavior and proactively offers help.
+
+### Features
+
+1. **Platform Knowledge Base**
+   - Complete understanding of all features
+   - How-to guides for each tool
+   - Pricing and billing information
+   - Technical troubleshooting
+
+2. **Behavior Tracking & Proactive Help**
+   - Tracks time on page
+   - Detects user confusion (repeated clicks, back-and-forth navigation)
+   - Automatically pops up after configurable idle time (default: 60 seconds on landing page)
+   - Context-aware suggestions based on current page
+
+3. **Multi-language Support**
+   - English and Swahili
+   - Follows system language setting
+
+### Chat Assistant UI
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  AI ASSISTANT (Floating Widget)                             │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│                              ┌──────────────────────────┐   │
+│                              │  💬 Need help?           │   │
+│                              │                          │   │
+│                              │  I noticed you've been   │   │
+│                              │  on this page for a      │   │
+│                              │  while. Can I help you   │   │
+│                              │  get started?            │   │
+│                              │                          │   │
+│                              │  [Yes, help me]          │   │
+│                              │  [No thanks]             │   │
+│                              └──────────────────────────┘   │
+│                                                        🤖   │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────┐
+│  AI ASSISTANT (Expanded Chat)                               │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │  Intermaven Assistant                          [—]  │   │
+│  ├─────────────────────────────────────────────────────┤   │
+│  │                                                     │   │
+│  │  🤖 Hi! I'm your Intermaven assistant. I can help  │   │
+│  │     you with:                                       │   │
+│  │                                                     │   │
+│  │     • Using AI tools                               │   │
+│  │     • Managing your account                        │   │
+│  │     • Understanding pricing                        │   │
+│  │     • Technical issues                             │   │
+│  │                                                     │   │
+│  │     What can I help you with today?                │   │
+│  │                                                     │   │
+│  │  ─────────────────────────────────────────────────  │   │
+│  │                                                     │   │
+│  │  👤 How do I create a brand kit?                   │   │
+│  │                                                     │   │
+│  │  ─────────────────────────────────────────────────  │   │
+│  │                                                     │   │
+│  │  🤖 Great question! Here's how to create a brand   │   │
+│  │     kit:                                           │   │
+│  │                                                     │   │
+│  │     1. Go to your Dashboard                        │   │
+│  │     2. Click "Brand Kit AI" in the sidebar         │   │
+│  │     3. Fill in your brand details...              │   │
+│  │                                                     │   │
+│  │     [Show me →]                                    │   │
+│  │                                                     │   │
+│  ├─────────────────────────────────────────────────────┤   │
+│  │  [Type your question...]              [Send]        │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Proactive Trigger Rules
+
+| Trigger | Condition | Action |
+|---------|-----------|--------|
+| Idle time | 60+ seconds on landing page | Show "Need help?" popup |
+| Lost navigation | 3+ page changes in 30 seconds | Offer navigation help |
+| Tool confusion | Started but abandoned AI form | Offer tool-specific help |
+| Pricing page | 30+ seconds viewing pricing | Offer plan comparison |
+| Error encounter | API error displayed | Offer troubleshooting |
+
+### AI Knowledge Base Structure
+
+```
+/knowledge_base/
+├── platform/
+│   ├── overview.md
+│   ├── getting_started.md
+│   └── faq.md
+├── tools/
+│   ├── brand_kit.md
+│   ├── music_bio.md
+│   ├── social_ai.md
+│   ├── sync_pitch.md
+│   ├── pitch_deck.md
+│   ├── epk_builder.md
+│   └── lead_generation.md
+├── account/
+│   ├── registration.md
+│   ├── profile.md
+│   ├── billing.md
+│   └── credits.md
+├── troubleshooting/
+│   ├── common_issues.md
+│   └── error_codes.md
+└── legal/
+    ├── terms.md
+    └── privacy.md
+```
+
+### Database Schema
+
+```javascript
+// chat_sessions collection
+{
+  _id: ObjectId,
+  user_id: ObjectId,              // If logged in
+  session_id: String,             // For anonymous users
+  language: String,               // 'en', 'sw'
+  messages: [{
+    role: String,                 // 'user', 'assistant', 'system'
+    content: String,
+    timestamp: DateTime,
+    context: {
+      page: String,
+      trigger: String             // 'proactive', 'user_initiated'
+    }
+  }],
+  behavior: {
+    pages_visited: [String],
+    time_on_site: Number,
+    last_activity: DateTime
+  },
+  resolved: Boolean,
+  escalated_to_human: Boolean,
+  created_at: DateTime,
+  updated_at: DateTime
+}
+```
+
+### API Endpoints
+
+```
+POST /api/chat/message           # Send message to AI
+GET  /api/chat/history           # Get chat history
+POST /api/chat/escalate          # Escalate to human support
+GET  /api/chat/suggestions       # Get contextual suggestions
+```
+
+---
+
+## 3.3 Assets Manager (File Manager)
+
+### Overview
+A backend file management system where users can upload, organize, and manage their assets (images, videos, documents). These assets can be used across the platform (EPK, social posts, etc.).
+
+### Features
+
+1. **File Upload**
+   - Drag & drop upload
+   - Multi-file upload
+   - Progress indicator
+   - File type validation
+
+2. **Organization**
+   - Folders and subfolders
+   - Tags
+   - Favorites
+   - Search
+
+3. **File Types Supported**
+   - Images: jpg, jpeg, png, gif, webp, svg
+   - Videos: mp4, mov, webm
+   - Documents: pdf, doc, docx
+   - Audio: mp3, wav
+
+4. **Storage Tiers**
+   | Plan | Storage |
+   |------|---------|
+   | Free | 500 MB |
+   | Creator | 2 GB |
+   | Pro | 10 GB |
+
+### Assets Manager UI
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  ASSETS MANAGER                       [+ Upload] [+ Folder] │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  📁 My Assets                                               │
+│  ├── 📁 Press Photos (12)                                   │
+│  ├── 📁 Videos (4)                                          │
+│  ├── 📁 Documents (8)                                       │
+│  └── 📁 Brand Assets (15)                                   │
+│      ├── 📁 Logos                                           │
+│      └── 📁 Color Palettes                                  │
+│                                                             │
+│  ─────────────────────────────────────────────────────────  │
+│                                                             │
+│  RECENT FILES                                               │
+│  ┌─────┐  ┌─────┐  ┌─────┐  ┌─────┐  ┌─────┐              │
+│  │ 🖼️  │  │ 🖼️  │  │ 📄  │  │ 🎵  │  │ 🎬  │              │
+│  │     │  │     │  │     │  │     │  │     │              │
+│  └─────┘  └─────┘  └─────┘  └─────┘  └─────┘              │
+│  photo1   photo2   doc.pdf  track    video                 │
+│  2.4 MB   1.8 MB   156 KB   4.8 MB   12 MB                 │
+│                                                             │
+│  ─────────────────────────────────────────────────────────  │
+│  Storage: 245 MB / 500 MB used                [Upgrade]     │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Database Schema
+
+```javascript
+// files collection
+{
+  _id: ObjectId,
+  user_id: ObjectId,
+  filename: String,
+  original_filename: String,
+  mime_type: String,
+  size: Number,
+  extension: String,
+  storage_path: String,
+  storage_url: String,
+  thumbnail_url: String,
+  folder_id: ObjectId,
+  tags: [String],
+  is_favorite: Boolean,
+  metadata: {
+    width: Number,
+    height: Number,
+    duration: Number
+  },
+  created_at: DateTime,
+  updated_at: DateTime
+}
+
+// folders collection
+{
+  _id: ObjectId,
+  user_id: ObjectId,
+  name: String,
+  parent_id: ObjectId,
+  color: String,
+  created_at: DateTime
+}
+```
+
+---
+
+## 3.4 AI Output Library
+
+### Overview
+A dedicated library where users can store and organize all content generated by AI tools. This allows for:
+- Future reference
+- Re-use of strategies
+- Version history
+- Export and sharing
+
+### Features
+
+1. **Auto-save**: All AI generations automatically saved
+2. **Organization**: By tool, date, project, tags
+3. **Search**: Full-text search across all outputs
+4. **Versioning**: Keep multiple versions of regenerated content
+5. **Export**: PDF, TXT, Copy to clipboard
+6. **Templates**: Save as template for future use
+
+### Library UI
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  MY LIBRARY                               [Search] [Filter] │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  Filter by: [All Tools ▼] [All Dates ▼] [All Tags ▼]       │
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ 🎨 Brand Kit: Savanna Sounds                        │   │
+│  │    Created: Mar 24, 2026 • Credits used: 10         │   │
+│  │    Tags: music, afrobeats, brand                    │   │
+│  │                                                     │   │
+│  │    [View] [Copy] [Download] [Regenerate] [Delete]   │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ 🎤 Music Bio: Artist Press Kit                      │   │
+│  │    Created: Mar 23, 2026 • Credits used: 15         │   │
+│  │    Tags: press, bio, media                          │   │
+│  │    Versions: 3                                      │   │
+│  │                                                     │   │
+│  │    [View] [Copy] [Download] [Regenerate] [Delete]   │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+│  ─────────────────────────────────────────────────────────  │
+│  Showing 1-10 of 45 items            [< 1 2 3 4 5 >]        │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Database Schema
+
+```javascript
+// library_items collection
+{
+  _id: ObjectId,
+  user_id: ObjectId,
+  tool: String,
+  title: String,
+  input: Object,
+  output: String,
+  tags: [String],
+  is_favorite: Boolean,
+  is_template: Boolean,
+  versions: [{
+    version: Number,
+    output: String,
+    created_at: DateTime
+  }],
+  project_id: ObjectId,
+  credits_used: Number,
+  created_at: DateTime,
+  updated_at: DateTime
+}
+```
+
+---
+
+## 3.5 Multi-Language Support (i18n)
+
+### Overview
+Full internationalization support starting with English and Swahili, with a scalable architecture for adding more African languages.
+
+### Supported Languages (Phase 1)
+
+| Code | Language | Status |
+|------|----------|--------|
+| en | English | Primary |
+| sw | Swahili | Secondary |
+
+### Future Languages (Phase 2+)
+
+| Code | Language | Region |
+|------|----------|--------|
+| yo | Yoruba | Nigeria |
+| ha | Hausa | Nigeria/Niger |
+| am | Amharic | Ethiopia |
+| zu | Zulu | South Africa |
+| lg | Luganda | Uganda |
+| fr | French | Francophone Africa |
+
+### Implementation Architecture
+
+```
+/app/frontend/src/
+├── i18n/
+│   ├── index.js              # i18n configuration
+│   ├── locales/
+│   │   ├── en/
+│   │   │   ├── common.json   # Common translations
+│   │   │   ├── landing.json  # Landing page
+│   │   │   ├── dashboard.json # Dashboard
+│   │   │   ├── tools.json    # AI tools
+│   │   │   └── legal.json    # Terms, Privacy
+│   │   └── sw/
+│   │       ├── common.json
+│   │       ├── landing.json
+│   │       ├── dashboard.json
+│   │       ├── tools.json
+│   │       └── legal.json
+│   └── utils/
+│       └── languageDetector.js
+```
+
+### Adding New Languages
+
+1. Create new locale folder: `/i18n/locales/{code}/`
+2. Copy all JSON files from `/en/`
+3. Translate all strings
+4. Add language to config in `/i18n/index.js`
+5. Add language option to UI selector
+
+### Language Selector UI
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  LANGUAGE SELECTOR (Header)                                 │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  [🌐 English ▼]                                             │
+│                                                             │
+│  ┌─────────────────┐                                        │
+│  │ 🇬🇧 English     │                                        │
+│  │ 🇰🇪 Kiswahili   │                                        │
+│  └─────────────────┘                                        │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Translation Example
+
+**English (en/common.json):**
+```json
+{
+  "nav": {
+    "home": "Home",
+    "tools": "AI Tools",
+    "apps": "Apps",
+    "pricing": "Pricing",
+    "about": "About"
+  },
+  "cta": {
+    "get_started": "Get Started Free",
+    "sign_in": "Sign In"
+  }
+}
+```
+
+**Swahili (sw/common.json):**
+```json
+{
+  "nav": {
+    "home": "Nyumbani",
+    "tools": "Zana za AI",
+    "apps": "Programu",
+    "pricing": "Bei",
+    "about": "Kuhusu"
+  },
+  "cta": {
+    "get_started": "Anza Bure",
+    "sign_in": "Ingia"
+  }
+}
+```
+
+---
+
+## 3.6 Newsletter Signup
+
+### Overview
+Add a newsletter signup CTA prominently placed above the "Built for creatives across" trust section on the landing page.
+
+### UI Design
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  NEWSLETTER SIGNUP (Above trust section)                    │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │                                                     │   │
+│  │  📬 Stay in the loop                               │   │
+│  │                                                     │   │
+│  │  Get the latest AI tools, tips, and updates        │   │
+│  │  for African creatives. No spam, ever.             │   │
+│  │                                                     │   │
+│  │  [email@example.com________] [Subscribe →]         │   │
+│  │                                                     │   │
+│  │  ✓ Join 2,500+ creatives already subscribed       │   │
+│  │                                                     │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+│  ─────────────────────────────────────────────────────────  │
+│                                                             │
+│  Built for creatives across                                 │
+│  Nairobi • Lagos • Accra • Kampala • Dar es Salaam        │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 3.7 Terms of Service & Privacy Policy
+
+### Overview
+Comprehensive legal documents that users must read and accept before using the platform.
+
+### Requirements
+
+1. **Mandatory Acceptance**
+   - Checkbox required during registration
+   - "I have read and agree to the Terms of Service and Privacy Policy"
+   - Cannot proceed without checking
+
+2. **Version Tracking**
+   - Track which version user accepted
+   - Prompt re-acceptance when documents updated
+
+3. **Accessible Pages**
+   - Dedicated `/terms` and `/privacy` pages
+   - Also accessible from footer
+
+### Terms of Service Sections
+
+1. **Account Terms**
+   - Eligibility
+   - Account security
+   - Accurate information
+
+2. **Acceptable Use**
+   - Prohibited activities
+   - Content guidelines
+   - AI-generated content ownership
+
+3. **Credits & Payments**
+   - Credit system explanation
+   - Expiration policies
+   - Refund policy
+
+4. **Intellectual Property**
+   - User content ownership
+   - Platform rights
+   - AI output licensing
+
+5. **Limitation of Liability**
+   - Service availability
+   - Data loss
+   - Third-party services
+
+6. **Termination**
+   - Account suspension
+   - Data retention
+   - Refunds on termination
+
+7. **Governing Law**
+   - Kenya jurisdiction
+   - Dispute resolution
+
+### Privacy Policy Sections
+
+1. **Information We Collect**
+   - Personal information
+   - Usage data
+   - AI inputs/outputs
+
+2. **How We Use Information**
+   - Service provision
+   - Communication
+   - Improvement
+
+3. **Data Sharing**
+   - Third-party services
+   - Legal requirements
+   - Business transfers
+
+4. **Data Security**
+   - Encryption
+   - Access controls
+   - Incident response
+
+5. **Your Rights**
+   - Access
+   - Correction
+   - Deletion
+   - Export
+
+6. **Cookies**
+   - Essential cookies
+   - Analytics
+   - Preferences
+
+7. **Contact**
+   - Data protection officer
+   - Complaints
+
+### Database Schema
+
+```javascript
+// legal_acceptances collection
+{
+  _id: ObjectId,
+  user_id: ObjectId,
+  document_type: String,         // 'terms', 'privacy'
+  version: String,               // 'v1.0', 'v1.1'
+  accepted_at: DateTime,
+  ip_address: String,
+  user_agent: String
+}
+
+// legal_documents collection
+{
+  _id: ObjectId,
+  type: String,
+  version: String,
+  content: String,               // Markdown content
+  effective_date: DateTime,
+  created_at: DateTime
+}
+```
+
+---
+
+## 3.8 Password Visibility Toggle
+
+### Overview
+Add eye icon to show/hide password on sign in and sign up forms.
+
+### UI Implementation
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  PASSWORD INPUT                                             │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  Password                                                   │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ 🔒 ••••••••••••                              👁️    │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+│  [Click eye icon to toggle visibility]                      │
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ 🔒 MySecurePass123                           👁️‍🗨️   │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 3.9 Enhanced Social AI (Flagship Product)
+
+### Overview
+Social AI is the flagship product with deep Meta API integration. It allows users to:
+- Connect social accounts
+- Create and schedule posts
+- Preview posts as they'll appear
+- Run paid campaigns
+- Target specific audiences
+- Generate leads
+
+### Features
+
+#### A. Account Connection
+```
+┌─────────────────────────────────────────────────────────────┐
+│  CONNECT ACCOUNTS                                           │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  Connect your social accounts to manage from one place      │
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ 📘 Facebook       [Connect]                         │   │
+│  │    Pages, Groups, Ads                               │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ 📸 Instagram      [Connected ✓]         [Manage]    │   │
+│  │    @yourusername • Business Account                 │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ 🐦 Twitter/X      [Connect]                         │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ 🎵 TikTok         [Connect]                         │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### B. Post Creator with Preview
+```
+┌─────────────────────────────────────────────────────────────┐
+│  CREATE POST                                                │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌──────────────────────┐  ┌──────────────────────┐        │
+│  │ COMPOSE              │  │ PREVIEW              │        │
+│  │                      │  │                      │        │
+│  │ [📘] [📸] [🐦] [🎵] │  │ ┌──────────────────┐ │        │
+│  │                      │  │ │ Instagram        │ │        │
+│  │ ┌──────────────────┐ │  │ │                  │ │        │
+│  │ │                  │ │  │ │ @yourusername    │ │        │
+│  │ │ Write your      │ │  │ │                  │ │        │
+│  │ │ caption here... │ │  │ │ [Image Preview]  │ │        │
+│  │ │                  │ │  │ │                  │ │        │
+│  │ └──────────────────┘ │  │ │ Your caption    │ │        │
+│  │                      │  │ │ will appear...  │ │        │
+│  │ [🖼️ Add Media]       │  │ │                  │ │        │
+│  │                      │  │ │ #hashtags       │ │        │
+│  │ [🤖 AI Generate]     │  │ └──────────────────┘ │        │
+│  │                      │  │                      │        │
+│  │ Hashtags:            │  │ [📘 Facebook ▼]      │        │
+│  │ #music #afrobeats    │  │                      │        │
+│  │                      │  │                      │        │
+│  └──────────────────────┘  └──────────────────────┘        │
+│                                                             │
+│  [Save Draft] [Schedule] [Post Now]                         │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### C. Paid Campaigns (Meta Ads Integration)
+```
+┌─────────────────────────────────────────────────────────────┐
+│  CREATE CAMPAIGN                                            │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  Campaign Objective                                         │
+│  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐       │
+│  │ Reach   │  │ Traffic │  │ Engage  │  │ Leads   │       │
+│  └─────────┘  └─────────┘  └─────────┘  └─────────┘       │
+│                                                             │
+│  ─────────────────────────────────────────────────────────  │
+│                                                             │
+│  TARGETING                                                  │
+│                                                             │
+│  Location: [Kenya ▼] [+ Add more]                          │
+│                                                             │
+│  Age: [18] — [45]                                          │
+│                                                             │
+│  Gender: [All ▼]                                           │
+│                                                             │
+│  Interests:                                                 │
+│  [Afrobeats] [Music] [Entertainment] [+ Add]               │
+│                                                             │
+│  ─────────────────────────────────────────────────────────  │
+│                                                             │
+│  BUDGET                                                     │
+│                                                             │
+│  Daily Budget: KES [________]                               │
+│  Duration: [7 days ▼]                                       │
+│                                                             │
+│  Estimated Reach: 15,000 - 45,000 people                   │
+│                                                             │
+│  ─────────────────────────────────────────────────────────  │
+│                                                             │
+│  PAYMENT                                                    │
+│                                                             │
+│  Pay with: [M-Pesa] [Card] [Intermaven Credits]            │
+│                                                             │
+│  Total: KES 3,500                                          │
+│                                                             │
+│  [Cancel] [Launch Campaign →]                               │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### D. Lead Generation Integration
+- Leads from campaigns saved to CRM
+- Auto-tagging by campaign source
+- Follow-up automation
+
+### Meta API Integration Points
+
+| Feature | API | Permissions Required |
+|---------|-----|---------------------|
+| Page posting | Graph API | pages_manage_posts |
+| Instagram posting | Instagram Graph API | instagram_basic, instagram_content_publish |
+| Insights | Graph API | read_insights |
+| Ads management | Marketing API | ads_management |
+| Lead forms | Lead Ads API | leads_retrieval |
+| Audiences | Marketing API | ads_management |
+
+---
+
+## 3.10 User Management (Admin - Pre-Launch)
+
+### Overview
+Complete user management system for admins including the ability to view, edit, and grant credits to users.
+
+### Features
+
+1. **User List**
+   - Search and filter
+   - Pagination
+   - Bulk actions
+
+2. **User Details**
+   - Full profile view/edit
+   - Activity history
+   - Payment history
+
+3. **Credit Management**
+   - View credit balance
+   - Grant free credits
+   - Preset amounts + custom
+
+4. **Account Actions**
+   - Suspend/unsuspend
+   - Reset password
+   - Delete account
+
+### Admin Dashboard UI
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  ADMIN: USER MANAGEMENT                                     │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  [Search users...] [Plan ▼] [Status ▼] [Portal ▼]          │
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ □ | User          | Email            | Plan  | Cr   │   │
+│  ├─────────────────────────────────────────────────────┤   │
+│  │ □ | Amara Diallo  | amara@email.com  | Pro   | 2340 │   │
+│  │ □ | John Mwangi   | john@email.com   | Creat | 580  │   │
+│  │ □ | Sarah Okonkwo | sarah@email.com  | Free  | 120  │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+│  Selected: 0  [Grant Credits] [Export] [Bulk Actions ▼]    │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Grant Credits Modal
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  GRANT CREDITS                                         [X]  │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  User: Amara Diallo (amara@email.com)                      │
+│  Current Balance: 2,340 credits                            │
+│                                                             │
+│  ─────────────────────────────────────────────────────────  │
+│                                                             │
+│  QUICK AMOUNTS                                              │
+│  [50] [100] [150] [250] [500] [1000]                       │
+│                                                             │
+│  OR                                                         │
+│                                                             │
+│  Custom Amount: [________] credits                          │
+│                                                             │
+│  Note (optional):                                           │
+│  [Compensation for service disruption_________________]     │
+│                                                             │
+│                               [Cancel] [Grant Credits →]    │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 3.11 Help Center & Documentation
+
+### Overview
+A comprehensive help center with how-to guides, documentation, and a ticketing system. Structure based on the provided help.html template.
+
+### Help Center Structure
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  HELP CENTER                                                │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │            How can we help you today?               │   │
+│  │                                                     │   │
+│  │  [Search for help articles...____________] [🔍]    │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+│  CATEGORIES                                                 │
+│  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐       │
+│  │ 🚀      │  │ 🎨      │  │ 💳      │  │ 👤      │       │
+│  │ Getting │  │ AI      │  │ Billing │  │ Account │       │
+│  │ Started │  │ Tools   │  │         │  │         │       │
+│  └─────────┘  └─────────┘  └─────────┘  └─────────┘       │
+│                                                             │
+│  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐       │
+│  │ 📱      │  │ 🤝      │  │ ⚙️      │  │ 📞      │       │
+│  │ Social  │  │ Partner │  │ Tech    │  │ Contact │       │
+│  │ AI      │  │ Program │  │ Support │  │ Us      │       │
+│  └─────────┘  └─────────┘  └─────────┘  └─────────┘       │
+│                                                             │
+│  ─────────────────────────────────────────────────────────  │
+│                                                             │
+│  POPULAR ARTICLES                                           │
+│  • How to create your first brand kit                      │
+│  • Understanding credits and billing                        │
+│  • Connecting your social accounts                         │
+│  • Getting started with Social AI                          │
+│                                                             │
+│  ─────────────────────────────────────────────────────────  │
+│                                                             │
+│  Can't find what you're looking for?                       │
+│  [Submit a Support Ticket →]                                │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### How-to Guides (Per App)
+
+Each app will have a dedicated guide accessible from:
+1. Help center category
+2. Dashboard "?" icon next to each tool
+
+**Guide Structure:**
+- Overview
+- Step-by-step instructions
+- Screenshots/GIFs
+- Tips & best practices
+- FAQ
+- Troubleshooting
+
+### Ticketing System
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  SUBMIT A TICKET                                            │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  Category: [Select category ▼]                              │
+│  - Technical Issue                                          │
+│  - Billing Question                                         │
+│  - Feature Request                                          │
+│  - Account Problem                                          │
+│  - Other                                                    │
+│                                                             │
+│  Subject: [Brief description of your issue___________]      │
+│                                                             │
+│  Description:                                               │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ Please describe your issue in detail...            │   │
+│  │                                                     │   │
+│  │                                                     │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+│  Attachments: [+ Add files]                                 │
+│                                                             │
+│  Priority: [Normal ▼]                                       │
+│                                                             │
+│  [Cancel] [Submit Ticket →]                                 │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Admin Support Backend
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  ADMIN: SUPPORT TICKETS                                     │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  [All] [Open (12)] [Pending (5)] [Resolved (89)]           │
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ #1234 | Technical Issue | Payment not processing    │   │
+│  │ Amara Diallo | 2 hours ago | 🔴 High Priority       │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │ #1233 | Feature Request | Add TikTok support        │   │
+│  │ John Mwangi | 5 hours ago | 🟡 Normal               │   │
+│  └─────────────────────────────────────────────────────┘   │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 3.12 App Management (Backend)
+
+### Overview
+Allow users to add/remove apps from their dashboard. Some apps are included by default, others can be added.
+
+### Default vs Optional Apps
+
+| App | Default (Free) | Default (Creator) | Default (Pro) |
+|-----|---------------|-------------------|---------------|
+| Brand Kit AI | ✓ | ✓ | ✓ |
+| Music Bio AI | ✓ | ✓ | ✓ |
+| Social AI | ✓ | ✓ | ✓ |
+| Sync Pitch AI | ✓ | ✓ | ✓ |
+| Pitch Deck AI | ✓ | ✓ | ✓ |
+| EPK Builder | - | ✓ | ✓ |
+| Lead Generation | - | - | ✓ |
+| Asset Manager | - | ✓ | ✓ |
+| Library | ✓ | ✓ | ✓ |
+
+---
+
+## 3.13 Payment Method Logos
+
+### Overview
+Display M-Pesa, Visa, and Mastercard logos on the landing page to build trust and indicate accepted payment methods.
+
+### Placement Options
+
+1. **Footer** - Payment methods section
+2. **Pricing page** - Below plan cards
+3. **Hero area** - Trust indicators
+
+### Design
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  PAYMENT METHODS (Muted, professional styling)              │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  Secure payments via                                        │
+│                                                             │
+│  [M-Pesa logo] [Visa logo] [Mastercard logo]               │
+│                                                             │
+│  (Logos in muted/grayscale, slight opacity)                │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 3.14 Dashboard-to-Landing Navigation
+
+### Overview
+Allow users to navigate back to the public website from the dashboard by clicking the logo.
+
+### Implementation
+
+- Logo in dashboard sidebar links to `/` (landing page)
+- Opens in same tab (with confirmation if unsaved work)
+- Or add explicit "Back to website" link
+
+---
+
+## 3.15 Muted, Futuristic Color Palette
+
+### Overview
+Update all icons and accent colors to use muted, futuristic tones. Any color variations should be analogous (adjacent on color wheel).
+
+### Color Palette
+
+```css
+:root {
+  /* Primary (Muted Purple) */
+  --primary: #6b5b95;
+  --primary-muted: #534b6e;
+  --primary-light: #8677a9;
+  
+  /* Analogous Accents */
+  --accent-blue: #5b7795;      /* Blue-purple */
+  --accent-violet: #7b5b95;    /* Red-purple */
+  --accent-indigo: #5b6595;    /* Indigo */
+  
+  /* Neutrals */
+  --bg-dark: #0a0b0f;
+  --bg-medium: #12131a;
+  --bg-light: #1a1b25;
+  
+  /* Text */
+  --text-primary: #e8e8ec;
+  --text-muted: #8b8b9a;
+  --text-subtle: #5a5a6a;
+  
+  /* Status (Muted) */
+  --success: #4a7c59;
+  --warning: #7c6a4a;
+  --error: #7c4a4a;
+  --info: #4a5a7c;
+}
+```
+
+### Icon Styling
+
+```css
+.icon {
+  color: var(--text-muted);
+  opacity: 0.85;
+  transition: color 0.2s, opacity 0.2s;
+}
+
+.icon:hover {
+  color: var(--primary-light);
+  opacity: 1;
+}
+```
+
+---
+
+## 3.16 User Avatar Upload
+
+### Overview
+Allow users to upload a profile picture/avatar instead of just showing initials.
+
+### Implementation
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  PROFILE SETTINGS                                           │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌─────────┐                                                │
+│  │         │  [Upload Photo]                                │
+│  │   AD    │  [Remove]                                      │
+│  │         │                                                │
+│  └─────────┘  Max 2MB, JPG/PNG                              │
+│                                                             │
+│  First Name: [Amara__________]                              │
+│  Last Name:  [Diallo_________]                              │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Storage
+
+- Store in Assets Manager
+- Auto-resize to 256x256
+- Generate smaller thumbnails (64x64, 128x128)
+
+---
+
+## 3.17 Hero Images Configuration
+
+### Overview
+Setup dedicated folder for hero background images with proper naming and dimensions.
+
+### Folder Structure
+
+```
+/app/frontend/public/images/
+├── hero/
+│   ├── hero-music-1.jpg       # Music portal, slide 1
+│   ├── hero-music-2.jpg       # Music portal, slide 2
+│   ├── hero-music-3.jpg       # Music portal, slide 3
+│   ├── hero-music-4.jpg       # Music portal, slide 4
+│   ├── hero-business-1.jpg    # Business portal, slide 1
+│   ├── hero-business-2.jpg    # Business portal, slide 2
+│   ├── hero-business-3.jpg    # Business portal, slide 3
+│   └── hero-business-4.jpg    # Business portal, slide 4
+├── logos/
+│   ├── intermaven-white.svg
+│   ├── intermaven-black.svg
+│   ├── mpesa.svg
+│   ├── visa.svg
+│   └── mastercard.svg
+└── icons/
+    └── ... (app icons)
+```
+
+### Hero Image Specifications
+
+| Property | Value |
+|----------|-------|
+| Dimensions | 1920 x 1080 px (16:9) |
+| Format | JPEG (optimized) |
+| File size | Max 500KB |
+| Color profile | sRGB |
+| Quality | 80% compression |
+
+### Naming Convention
+
+```
+hero-{portal}-{slide_number}.jpg
+
+Examples:
+- hero-music-1.jpg
+- hero-music-2.jpg
+- hero-business-1.jpg
+```
+
+### Usage in Code
+
+```javascript
+const heroImages = {
+  music: [
+    '/images/hero/hero-music-1.jpg',
+    '/images/hero/hero-music-2.jpg',
+    '/images/hero/hero-music-3.jpg',
+    '/images/hero/hero-music-4.jpg'
+  ],
+  business: [
+    '/images/hero/hero-business-1.jpg',
+    '/images/hero/hero-business-2.jpg',
+    '/images/hero/hero-business-3.jpg',
+    '/images/hero/hero-business-4.jpg'
+  ]
+};
+```
+
+---
+
+# 4. Technical Architecture
+
+## 4.1 Tech Stack
 
 | Layer | Technology | Version | Purpose |
 |-------|------------|---------|---------|
 | Frontend | React | 18.2.0 | Single Page Application |
 | UI Components | Custom CSS + Shadcn/UI | - | Design system |
+| Internationalization | react-i18next | - | Multi-language support |
 | Backend | FastAPI | 0.104.1 | REST API |
 | Runtime | Python | 3.11.14 | Backend runtime |
 | Runtime | Node.js | 20.20.0 | Frontend build |
 | Package Manager | Yarn | 1.22.22 | Frontend dependencies |
 | Database | MongoDB | - | Document store |
+| File Storage | S3/Cloudflare R2 | - | Asset storage |
 | AI | Claude Sonnet 4.5 | - | Via Emergent LLM Key |
 | Payments | Pesapal | - | M-Pesa + Cards |
-| Messaging | Twilio | - | WhatsApp & SMS (outbound + inbound) |
-| Email | Resend / SendGrid | - | Transactional & campaign emails |
-| Hosting (Planned) | Vercel + Railway | - | Frontend + Backend |
+| Social | Meta API | - | Facebook/Instagram integration |
+| Messaging | Twilio | - | WhatsApp & SMS |
+| Email | Resend | - | Transactional emails |
+| Hosting | Vercel + Railway | - | Frontend + Backend |
 
-## 3.2 Project Structure
+## 4.2 Project Structure
 
 ```
 /app/
 ├── backend/
-│   ├── server.py              # FastAPI application (all routes)
-│   ├── requirements.txt       # Python dependencies
-│   └── .env                   # Environment variables
+│   ├── server.py
+│   ├── routes/
+│   │   ├── auth.py
+│   │   ├── users.py
+│   │   ├── ai.py
+│   │   ├── files.py
+│   │   ├── library.py
+│   │   ├── social.py
+│   │   ├── chat.py
+│   │   ├── admin.py
+│   │   ├── support.py
+│   │   └── beta.py
+│   ├── services/
+│   │   ├── ai_service.py
+│   │   ├── meta_service.py
+│   │   ├── storage_service.py
+│   │   └── email_service.py
+│   ├── models/
+│   │   └── schemas.py
+│   ├── knowledge_base/
+│   │   └── ... (AI assistant knowledge)
+│   ├── requirements.txt
+│   └── .env
 │
 ├── frontend/
 │   ├── public/
+│   │   ├── images/
+│   │   │   ├── hero/
+│   │   │   ├── logos/
+│   │   │   └── icons/
 │   │   └── index.html
 │   ├── src/
-│   │   ├── App.js             # Main router & auth context
-│   │   ├── App.css            # Global styles
-│   │   ├── index.js           # Entry point
-│   │   ├── styles/
-│   │   │   └── landing.css    # Landing page styles
-│   │   └── components/
-│   │       ├── AuthModal.js   # Login/Register modal
-│   │       ├── Dashboard.js   # Main dashboard (847 lines)
-│   │       ├── Toast.js       # Notification toasts
-│   │       ├── admin/         # Admin components (future)
-│   │       │   ├── AdminPanel.js
-│   │       │   ├── UserTable.js
-│   │       │   ├── UserEditModal.js
-│   │       │   └── CreditGrant.js
-│   │       └── landing/
-│   │           ├── index.js
-│   │           ├── LandingLayout.js
-│   │           ├── HomePage.js
-│   │           ├── ToolsPage.js
-│   │           ├── AppsPage.js
-│   │           ├── PricingPage.js
-│   │           ├── AboutPage.js
-│   │           ├── Navbar.js
-│   │           ├── Netbar.js
-│   │           ├── Footer.js
-│   │           ├── LegalModal.js
-│   │           └── AppInfoModal.js
-│   ├── package.json           # Node dependencies
-│   └── .env                   # Frontend environment
+│   │   ├── App.js
+│   │   ├── i18n/
+│   │   │   ├── index.js
+│   │   │   └── locales/
+│   │   │       ├── en/
+│   │   │       └── sw/
+│   │   ├── components/
+│   │   │   ├── AuthModal.js
+│   │   │   ├── Dashboard.js
+│   │   │   ├── ChatAssistant.js
+│   │   │   ├── landing/
+│   │   │   ├── admin/
+│   │   │   ├── social/
+│   │   │   ├── files/
+│   │   │   ├── library/
+│   │   │   └── help/
+│   │   └── styles/
+│   ├── package.json
+│   └── .env
 │
 ├── memory/
-│   ├── PRD.md                 # Product requirements
-│   └── ROADMAP.md             # Technical roadmap
+│   ├── PRD.md
+│   └── ROADMAP.md
 │
-├── test_reports/
-│   ├── iteration_1.json       # Initial MVP tests
-│   ├── iteration_2.json       # Landing pages tests
-│   └── iteration_3.json       # Auth modal tests
-│
-└── DOCUMENTATION.md           # This file
+└── DOCUMENTATION.md
 ```
 
 ---
 
-# 4. Database Configuration
+# 5-10. [Remaining Sections]
 
-## 4.1 Production Database (Railway MongoDB)
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│  PRODUCTION DATABASE - RAILWAY MONGODB                      │
-├─────────────────────────────────────────────────────────────┤
-│  Host:     centerbeam.proxy.rlwy.net                        │
-│  Port:     20600                                            │
-│  Username: mongo                                            │
-│  Password: IzypDlPIOWEIyNZSoybbZmWzvPYAeuym                  │
-│  Database: intermaven                                       │
-│                                                             │
-│  Connection String:                                         │
-│  mongodb://mongo:IzypDlPIOWEIyNZSoybbZmWzvPYAeuym@          │
-│  centerbeam.proxy.rlwy.net:20600                            │
-│                                                             │
-│  Status: ✅ ACTIVE & CONNECTED                              │
-└─────────────────────────────────────────────────────────────┘
-```
-
-## 4.2 Collections Schema
-
-### users
-```javascript
-{
-  _id: ObjectId,
-  email: String,              // Unique, lowercase
-  password: String,           // Hashed with bcrypt
-  first_name: String,
-  last_name: String,
-  phone: String,              // M-Pesa & WhatsApp
-  plan: String,               // 'free', 'creator', 'pro'
-  credits: Number,            // Available credits
-  apps: [String],             // ['brandkit', 'musicbio', 'social', 'syncpitch', 'bizpitch']
-  portal: String,             // 'music' or 'business'
-  brand_name: String,
-  bio: String,
-  channels: {
-    email: Boolean,
-    whatsapp: Boolean,
-    sms: Boolean,
-    push: Boolean
-  },
-  ai_runs: Number,
-  created_at: DateTime
-}
-```
-
-### notifications
-```javascript
-{
-  _id: ObjectId,
-  user_id: ObjectId,
-  icon: String,               // Emoji
-  title: String,
-  text: String,
-  read: Boolean,
-  created_at: DateTime
-}
-```
-
-### ai_runs
-```javascript
-{
-  _id: ObjectId,
-  user_id: ObjectId,
-  tool: String,               // 'brandkit', 'musicbio', etc.
-  input: Object,              // Tool-specific input
-  output: String,             // Generated content
-  credits_used: Number,
-  created_at: DateTime
-}
-```
-
-### activities
-```javascript
-{
-  _id: ObjectId,
-  user_id: ObjectId,
-  type: String,               // 'ai_run', 'login', 'payment', 'credit_grant', etc.
-  description: String,
-  metadata: Object,
-  created_at: DateTime
-}
-```
-
-### transactions
-```javascript
-{
-  _id: ObjectId,
-  user_id: ObjectId,
-  type: String,               // 'credit_purchase', 'plan_upgrade', 'credit_grant'
-  amount: Number,             // KES (0 for admin grants)
-  credits: Number,
-  status: String,             // 'pending', 'completed', 'failed'
-  granted_by: ObjectId,       // Admin user ID (for credit_grant type)
-  note: String,               // Optional admin note for free credit grants
-  pesapal_reference: String,
-  created_at: DateTime
-}
-```
-
-### crm_contacts (Future)
-```javascript
-{
-  _id: ObjectId,
-  user_id: ObjectId,          // Intermaven user who owns this contact
-  name: String,
-  email: String,
-  phone: String,              // WhatsApp / SMS number
-  tags: [String],             // e.g. ['label', 'fan', 'press']
-  lists: [String],            // Audience segments
-  source: String,             // 'manual', 'import', 'whatsapp', 'email_reply'
-  platform_data: {
-    last_whatsapp_at: DateTime,
-    last_sms_at: DateTime,
-    last_email_at: DateTime,
-    email_opens: Number,
-    email_clicks: Number,
-    whatsapp_messages_sent: Number,
-    sms_messages_sent: Number,
-    whatsapp_messages_received: Number
-  },
-  notes: String,
-  created_at: DateTime,
-  updated_at: DateTime
-}
-```
-
-### crm_messages (Future)
-```javascript
-{
-  _id: ObjectId,
-  sender_user_id: ObjectId,   // Intermaven user sending
-  contact_id: ObjectId,       // crm_contacts ref
-  channel: String,            // 'whatsapp', 'sms', 'email'
-  direction: String,          // 'outbound', 'inbound'
-  body: String,
-  subject: String,            // Email only
-  status: String,             // 'sent', 'delivered', 'read', 'failed'
-  twilio_sid: String,         // Twilio message SID
-  created_at: DateTime
-}
-```
-
-### crm_campaigns (Future)
-```javascript
-{
-  _id: ObjectId,
-  user_id: ObjectId,
-  name: String,
-  channel: String,            // 'whatsapp', 'sms', 'email'
-  audience: [ObjectId],       // Contact IDs or list name
-  body: String,
-  subject: String,            // Email only
-  status: String,             // 'draft', 'scheduled', 'sent', 'failed'
-  scheduled_at: DateTime,
-  sent_at: DateTime,
-  stats: {
-    total: Number,
-    sent: Number,
-    delivered: Number,
-    opened: Number,           // Email only
-    clicked: Number,          // Email only
-    failed: Number
-  },
-  created_at: DateTime
-}
-```
-
-### admin_credit_grants (Future)
-```javascript
-{
-  _id: ObjectId,
-  granted_by: ObjectId,       // Admin user ID
-  granted_to: ObjectId,       // Recipient user ID
-  credits: Number,
-  method: String,             // 'custom' or 'preset'
-  preset_label: String,       // e.g. '150 credits' (if method is preset)
-  note: String,               // Reason / internal note
-  created_at: DateTime
-}
-```
+*Sections 5-10 remain as previously documented with the following additions:*
 
 ---
 
-# 5. API Reference
+# 9. Post-Launch Roadmap
 
-## 5.1 Base URL
-- **Preview:** `https://151c44ef-2fa8-40cf-a20d-7837dfcf2942.preview.emergentagent.com`
-- **Production:** `https://api.intermaven.io` (to be configured)
+## 9.1 Community Forum
 
-## 5.2 Authentication Endpoints
+Build a community forum similar to Odoo's forum (https://www.odoo.com/forum/help-1).
 
-### POST /api/auth/register
-Create a new user account.
+### Features
+- Categories by topic
+- User reputation/karma
+- Upvoting/downvoting
+- Best answer marking
+- Search
+- Tags
+- User profiles
 
-**Request:**
-```json
-{
-  "email": "user@example.com",
-  "password": "minlength8",
-  "first_name": "Amara",
-  "last_name": "Diallo",
-  "phone": "+254712345678",
-  "portal": "music"
-}
+### Forum Structure
+```
+/forum
+├── /category/getting-started
+├── /category/ai-tools
+├── /category/social-ai
+├── /category/billing
+├── /category/feature-requests
+└── /category/general
 ```
 
-**Response:**
-```json
-{
-  "access_token": "eyJ...",
-  "token_type": "bearer",
-  "user": {
-    "id": "...",
-    "email": "user@example.com",
-    "first_name": "Amara",
-    "credits": 150,
-    "plan": "free",
-    "apps": ["brandkit", "musicbio", "social", "syncpitch", "bizpitch"]
-  }
-}
-```
+## 9.2 Advanced Dashboard Analytics
 
-### POST /api/auth/login
-Login to existing account.
+Comprehensive statistics dashboard for users:
 
-**Request:**
-```json
-{
-  "email": "user@example.com",
-  "password": "password123"
-}
-```
+### Metrics
+- Total leads generated
+- New leads (period)
+- Conversion rates
+- AI tool usage breakdown
+- Credit consumption trends
+- Social engagement metrics
+- Campaign performance
 
-### GET /api/auth/me
-Get current authenticated user.
+### Visualization
+- Line charts (trends)
+- Bar charts (comparisons)
+- Pie charts (breakdowns)
+- Data tables (details)
 
-**Headers:** `Authorization: Bearer <token>`
-
-## 5.3 User Endpoints
-
-### PUT /api/user/profile
-Update user profile.
-
-### POST /api/user/apps/toggle
-Add or remove an app from user's dashboard.
-
-**Request:**
-```json
-{
-  "app_id": "brandkit",
-  "action": "add"
-}
-```
-
-### GET /api/user/stats
-Get user statistics (credits, AI runs, active apps).
-
-## 5.4 AI Endpoints
-
-### POST /api/ai/generate
-Generate AI content using specified tool.
-
-**Request:**
-```json
-{
-  "tool": "brandkit",
-  "input": {
-    "brand_name": "Savanna Sounds",
-    "industry": "Music Production",
-    "target_audience": "African artists",
-    "brand_vibe": "Modern, authentic, professional"
-  }
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "output": "## Brand Name Analysis\n\n**Savanna Sounds** evokes...",
-  "credits_used": 10,
-  "credits_remaining": 140
-}
-```
-
-### Tool Credit Costs
-| Tool | Credits |
-|------|---------|
-| brandkit | 10 |
-| musicbio | 15 |
-| social | 0 (free) |
-| syncpitch | 20 |
-| bizpitch | 18 |
-
-## 5.5 Notification Endpoints
-
-### GET /api/notifications
-Get user notifications.
-
-### POST /api/notifications/mark-read
-Mark all notifications as read.
-
-## 5.6 Payment Endpoints
-
-### POST /api/payments/initiate
-Start a Pesapal payment.
-
-**Request:**
-```json
-{
-  "amount": 500,
-  "plan": "creator"
-}
-```
-
-### POST /api/payments/callback
-Pesapal IPN callback (webhook).
-
-### GET /api/payments/transactions
-Get user's payment history.
-
-## 5.7 CRM Endpoints (Future)
-
-### Contacts
-
-#### GET /api/crm/contacts
-List all contacts for the authenticated user. Supports filtering by tag, list, or search query.
-
-**Query params:** `?tag=press&list=fans&search=amara`
-
-#### POST /api/crm/contacts
-Create a new contact.
-
-**Request:**
-```json
-{
-  "name": "Amara Diallo",
-  "email": "amara@example.com",
-  "phone": "+254712345678",
-  "tags": ["press", "vip"],
-  "lists": ["newsletter"],
-  "source": "manual"
-}
-```
-
-#### PUT /api/crm/contacts/{contact_id}
-Update a contact's details, tags, or list membership.
-
-#### DELETE /api/crm/contacts/{contact_id}
-Delete a contact.
-
-#### POST /api/crm/contacts/import
-Bulk import contacts via CSV upload.
-
-### Messaging
-
-#### POST /api/crm/messages/send
-Send a single WhatsApp or SMS message to a contact via Twilio.
-
-**Request:**
-```json
-{
-  "contact_id": "...",
-  "channel": "whatsapp",
-  "body": "Hey Amara, your press kit is ready!"
-}
-```
-
-#### GET /api/crm/messages/{contact_id}
-Get full message thread for a contact across all channels.
-
-#### POST /api/crm/twilio/webhook
-Twilio inbound webhook. Receives incoming WhatsApp and SMS messages.
-
-### Campaigns
-
-#### GET /api/crm/campaigns
-List all campaigns for the authenticated user.
-
-#### POST /api/crm/campaigns
-Create a new campaign.
-
-#### POST /api/crm/campaigns/{campaign_id}/send
-Trigger immediate send of a campaign.
-
-#### GET /api/crm/campaigns/{campaign_id}/stats
-Get delivery and engagement stats for a campaign.
-
-## 5.8 Admin Endpoints (Future)
-
-All admin endpoints require `Authorization: Bearer <token>` where the token belongs to a user with an admin role.
-
-### User Management
-
-#### GET /api/admin/users
-List all users. Supports search and filters.
-
-#### GET /api/admin/users/{user_id}
-Get full profile for a specific user.
-
-#### PUT /api/admin/users/{user_id}
-Edit any field on a user account.
-
-#### POST /api/admin/users/{user_id}/grant-credits
-Grant free credits to a user.
-
-**Request:**
-```json
-{
-  "method": "custom",
-  "credits": 250,
-  "note": "Compensation for service disruption"
-}
-```
-
-**Preset Bundles:**
-| Label | Credits |
-|-------|---------|
-| Starter Boost | 50 |
-| Standard Grant | 150 |
-| Creator Boost | 500 |
-| Pro Grant | 1,000 |
-
-#### DELETE /api/admin/users/{user_id}
-Soft-delete a user account.
-
-### Admin Analytics
-
-#### GET /api/admin/stats
-Platform-wide stats.
-
-#### GET /api/admin/credit-grants
-List all credit grants across all admins.
-
-## 5.9 Other Endpoints
-
-### GET /api/activities
-Get recent user activities.
-
-### GET /api/health
-Health check endpoint.
+### Export/Import
+- Export reports (PDF, CSV, Excel)
+- Import authorized data
+- Scheduled reports (email)
 
 ---
 
-# 6. Frontend Structure
+## 9.3 Partner Program
 
-## 6.1 Routes
+Full partner program as previously documented (commission system, bulk invites, etc.)
 
-| Route | Component | Auth Required | Description |
-|-------|-----------|---------------|-------------|
-| `/` | HomePage | No | Landing page with hero |
-| `/tools` | ToolsPage | No | AI tools showcase |
-| `/apps` | AppsPage | No | App marketplace |
-| `/pricing` | PricingPage | No | Pricing plans |
-| `/about` | AboutPage | No | Company info |
-| `/partners` | PartnersPage | No | Partner companies listing |
-| `/partners/apply` | PartnerSignup | No | Partner application form |
-| `/auth` | AuthModal | No | Login/Register modal |
-| `/dashboard/*` | Dashboard | Yes | User dashboard |
-| `/partner/*` | PartnerDashboard | Yes (partner role) | Partner dashboard |
-| `/admin/*` | AdminPanel | Yes (admin role) | Admin panel (future) |
+## 9.4 EPK Builder
 
-## 6.2 Key Components
+Full implementation as previously documented.
 
-### AuthModal.js
-- Modal overlay with faded background
-- Click outside to close
-- Sign In / Create Account tabs
-- Form validation
+## 9.5 CRM & Communication
 
-### Dashboard.js
-- 30% sidebar width
-- Navigation: Dashboard, Notifications, Apps, Settings, Billing
-- Quick actions for AI tools
-- App cards grid
-- Activity feed
-- Tool panels with input forms
-
-### LandingLayout.js
-- Wraps all landing pages
-- Includes Netbar, Navbar, Footer
-- Manages modals (Legal, AppInfo)
-- Portal switching (Music/Business)
-
-### AdminPanel.js *(future)*
-- Role-gated entry
-- Sidebar navigation: Users, Credit Grants, Analytics, Settings
-- UserTable with search, filter, and inline actions
-- UserEditModal for full field editing
-- CreditGrant modal with preset and custom amount options
-
-## 6.3 Styling
-
-- **Global:** `/app/frontend/src/App.css`
-- **Landing:** `/app/frontend/src/styles/landing.css`
-- **CSS Variables:** Dark theme with purple/cyan accents
-
-```css
-:root {
-  --bg:   #08090d;
-  --bg2:  #0f1117;
-  --bg3:  #161820;
-  --tx:   #f0f0f5;
-  --btn:  #7c6ff7;
-  --a2:   #c084fc;
-  --a3:   #22d3ee;
-  --gr:   #10b981;
-}
-```
+Full implementation as previously documented.
 
 ---
 
-# 7. Go-Live Checklist
+# 10. Credentials & Environment Variables
 
-## 7.1 Completed ✅
-
-- [x] Backend API fully functional
-- [x] Frontend with all landing pages
-- [x] User authentication (JWT)
-- [x] All 5 AI tools working
-- [x] Production database (Railway MongoDB)
-- [x] Auth modal with proper UX
-- [x] Mobile responsive design
-- [x] Testing completed (100% pass rate)
-
-## 7.2 Required for Launch ⏳
-
-### A. Pesapal Payment Integration
-```
-Required credentials:
-- PESAPAL_CONSUMER_KEY
-- PESAPAL_CONSUMER_SECRET
-
-Get from: https://www.pesapal.com/dashboard
-```
-
-### B. Production Deployment
-
-**Option 1: Vercel + Railway**
-```
-Frontend: Vercel
-Backend: Railway
-Database: Railway MongoDB (already configured)
-```
-
-**Option 2: All on Railway**
-```
-Frontend: Railway (static site)
-Backend: Railway
-Database: Railway MongoDB
-```
-
-### C. Domain Configuration
-```
-intermaven.io           → Frontend
-api.intermaven.io       → Backend
-music.intermaven.io     → Music portal (future)
-```
-
-### D. Environment Variables for Production
-
-**Backend (.env):**
-```
-MONGO_URL=mongodb://mongo:IzypDlPIOWEIyNZSoybbZmWzvPYAeuym@centerbeam.proxy.rlwy.net:20600
-DB_NAME=intermaven
-JWT_SECRET=<generate-strong-secret>
-EMERGENT_LLM_KEY=sk-emergent-a3a79EeF44b2f09684
-PESAPAL_CONSUMER_KEY=<your-key>
-PESAPAL_CONSUMER_SECRET=<your-secret>
-PESAPAL_ENVIRONMENT=production
-TWILIO_ACCOUNT_SID=<your-sid>
-TWILIO_AUTH_TOKEN=<your-token>
-TWILIO_WHATSAPP_NUMBER=whatsapp:+<number>
-TWILIO_SMS_NUMBER=+<number>
-RESEND_API_KEY=<your-key>
-```
-
-**Frontend (.env):**
-```
-REACT_APP_BACKEND_URL=https://api.intermaven.io
-```
-
----
-
-# 8. Future Roadmap
-
-## 8.1 Phase Timeline
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│  PHASED GO-LIVE TIMELINE                                    │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  ✅ READY NOW                                               │
-│  • All 5 AI Tools (Brand Kit, Music Bio, Social,            │
-│    Sync Pitch, Pitch Deck)                                  │
-│  • User Authentication                                      │
-│  • Landing Pages                                            │
-│  • Production Database                                      │
-│                                                             │
-│  🎯 GO-LIVE 1: MVP Launch (1-2 weeks)                       │
-│  • Configure Pesapal credentials                            │
-│  • Deploy to production                                     │
-│  • Configure domain                                         │
-│                                                             │
-│  🎯 GO-LIVE 2: EPK Builder (3-6 weeks)                      │
-│  • EPK Builder UI                                           │
-│  • Public profiles: intermaven.io/artist/[username]         │
-│  • PDF export                                               │
-│                                                             │
-│  🎯 GO-LIVE 3: File Manager (7-8 weeks)                     │
-│  • Google Drive-style file management                       │
-│  • Storage tiers by plan                                    │
-│                                                             │
-│  🎯 GO-LIVE 4: CRM & Communication (10-14 weeks)            │
-│  • Full contact management with multi-platform data         │
-│  • Twilio WhatsApp & SMS (outbound + inbound)               │
-│  • Email campaigns (Resend/SendGrid)                        │
-│  • Campaign analytics dashboard                             │
-│                                                             │
-│  🎯 GO-LIVE 5: Admin & App Pages (16-20 weeks)              │
-│  • Full admin panel with user management                    │
-│  • Free credit granting (custom + presets)                  │
-│  • Individual app landing pages                             │
-│                                                             │
-│  🎯 GO-LIVE 6: Partner Program (21-26 weeks)                │
-│  • Partner/Corporate accounts                               │
-│  • Commission system for partner referrals                  │
-│  • Partner dashboard for user management                    │
-│  • Public Partners page with company listings               │
-│  • Partner sign-up and onboarding flow                      │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-```
-
-## 8.2 Feature Details
-
-### EPK Builder
-- **Hosted profiles:** `intermaven.io/artist/[username]`
-- **PDF Export:** Professional downloadable press kits
-- **Sections:** Header, Bio, Music embeds, Media, Events, Contact
-- **Analytics:** Views, clicks, geography tracking
-
-### CRM & Communication
-
-**Contact Management**
-- Import contacts via CSV or add manually
-- Tag and segment into lists
-- Full interaction history per contact
-- Source tracking
-
-**Multi-Platform Data Capture**
-| Data Source | Data Captured |
-|-------------|---------------|
-| Intermaven platform | AI runs, logins, payments |
-| WhatsApp (Twilio) | Messages sent/received |
-| SMS (Twilio) | Messages sent, delivery status |
-| Email (Resend) | Opens, clicks |
-
-**Twilio Integration**
-- Outbound: Send WhatsApp/SMS from CRM
-- Inbound: Receive replies via webhook
-- Message threads per contact
-- Delivery tracking
-
-### User Management (Admin)
-
-**Admin Roles**
-| Role | Permissions |
-|------|-------------|
-| super_admin | Full access |
-| admin | Edit users, grant credits, analytics |
-| support | View profiles, grant credits (capped) |
-| finance | View transactions only |
-
-**Features**
-- Full user editing (name, email, plan, credits, apps)
-- Free credit granting with presets
-- All changes logged for audit
-- User search and bulk actions
-
-### File Management
-- **Interface:** Google Drive-style folders
-- **Storage:** Free 1GB, Creator 5GB, Pro 25GB
-- **Features:** Upload, preview, share, version history
-
-### App Landing Pages
-- **Subdomains:** brandkit.intermaven.io, musicbio.intermaven.io, etc.
-- **Template:** Hero, How it works, Demo, Pricing, FAQ
-
-### Partner Program (Corporate Accounts)
-
-The Partner Program allows organizations (record labels, agencies, creative hubs) to onboard and manage multiple users under their account, earning commission on all platform activity from their referred users.
-
-**Partner Types**
-| Type | Description | Example |
-|------|-------------|---------|
-| Record Label | Music labels with signed artists | Mavin Records, Sema Records |
-| Creative Agency | Agencies managing multiple creatives | Brand agencies, PR firms |
-| Incubator/Hub | Creative hubs and accelerators | Nairobi Garage, CcHub |
-| Distributor | Music distributors with artist rosters | Africori, Platoon |
-
-**Commission System**
-
-Partners earn a percentage of all revenue generated by users they onboard:
-
-| Revenue Source | Commission Basis |
-|----------------|------------------|
-| Credit purchases | % of purchase amount |
-| Plan upgrades | % of upgrade amount |
-| Future premium features | % of feature revenue |
-
-**Commission Rates (Configurable via Admin)**
-| Tier | Base Rate | Volume Bonus | Notes |
-|------|-----------|--------------|-------|
-| Standard | 10% | - | Default for new partners |
-| Silver | 15% | 50+ active users | Auto-upgrade threshold |
-| Gold | 20% | 200+ active users | Auto-upgrade threshold |
-| Custom | Negotiable | Enterprise deals | Manual admin override |
-
-**Partner Dashboard Features**
-
-Partners get a dedicated dashboard to manage their roster:
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│  PARTNER DASHBOARD: Mavin Records                           │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  OVERVIEW                                                   │
-│  ─────────────────────────────────────────────────────────  │
-│  Total Users: 47        Active (30d): 38                    │
-│  Commission Rate: 15%   Tier: Silver                        │
-│  Earnings MTD: KES 12,450   Lifetime: KES 89,200            │
-│                                                             │
-│  [Invite User]  [View Earnings]  [Export Report]            │
-│                                                             │
-├─────────────────────────────────────────────────────────────┤
-│  MY USERS                                                   │
-│  ─────────────────────────────────────────────────────────  │
-│  □  Name           Email              Plan    AI Runs       │
-│  ─────────────────────────────────────────────────────────  │
-│  □  Ayra Starr     ayra@email.com     Pro     234          │
-│  □  Rema           rema@email.com     Creator 189          │
-│  □  Crayon         crayon@email.com   Pro     156          │
-│                                                             │
-├─────────────────────────────────────────────────────────────┤
-│  PENDING INVITES                                            │
-│  ─────────────────────────────────────────────────────────  │
-│  newartist@email.com - Sent Mar 25 - [Resend] [Cancel]      │
-│                                                             │
-├─────────────────────────────────────────────────────────────┤
-│  COMMISSION BREAKDOWN (Last 30 days)                        │
-│  ─────────────────────────────────────────────────────────  │
-│  Credit Purchases: KES 8,200 × 15% = KES 1,230              │
-│  Plan Upgrades:    KES 28,500 × 15% = KES 4,275             │
-│  ─────────────────────────────────────────────────────────  │
-│  Total Commission: KES 5,505                                │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-```
-
-**Partner User Onboarding Flow**
-
-1. Partner sends invite via email or generates unique referral link
-2. User signs up using invite link (auto-associates with partner)
-3. User gets standard free credits + any partner-specific bonus
-4. All user activity tracked for commission calculation
-5. Partner sees user in their dashboard immediately
-
-**Invite System (Requires CRM Integration)**
-
-The invite system leverages the CRM's email capabilities and contact management:
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│  INVITE METHODS                                             │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  1. SINGLE EMAIL INVITE                                     │
-│  ─────────────────────────────────────────────────────────  │
-│  Partner enters email → System sends branded invite email   │
-│  → Recipient clicks link → Signs up with partner code       │
-│  → Auto-associated with partner account                     │
-│                                                             │
-│  2. REFERRAL LINK                                           │
-│  ─────────────────────────────────────────────────────────  │
-│  Partner gets unique link: intermaven.io/join/MAVIN2026     │
-│  → Share via any channel (WhatsApp, social, etc.)           │
-│  → Anyone who signs up via link is associated               │
-│                                                             │
-│  3. BULK CSV UPLOAD                                         │
-│  ─────────────────────────────────────────────────────────  │
-│  Partner uploads CSV with contacts                          │
-│  → System validates and imports to CRM                      │
-│  → Bulk invite email sent to all contacts                   │
-│  → Track delivery, opens, signups per contact               │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-```
-
-**Bulk Upload CSV Format**
-
-Partners can upload contacts via CSV with the following columns:
-
-| Column | Required | Description | Example |
-|--------|----------|-------------|---------|
-| email | Yes | Contact email address | artist@email.com |
-| first_name | Yes | First name | Amara |
-| last_name | No | Last name | Diallo |
-| phone | No | Phone (WhatsApp/SMS) | +254712345678 |
-| tags | No | Comma-separated tags | artist,signed,priority |
-| notes | No | Internal notes | "Lead vocalist, signed Jan 2026" |
-
-**Sample CSV:**
-```csv
-email,first_name,last_name,phone,tags,notes
-ayra@email.com,Ayra,Starr,+2348012345678,"artist,priority","Lead artist"
-rema@email.com,Rema,,+2348023456789,artist,"New signing"
-crayon@email.com,Crayon,,+2348034567890,"artist,producer",""
-```
-
-**Bulk Upload Process Flow**
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│  BULK UPLOAD FLOW                                           │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  Step 1: Upload                                             │
-│  ─────────────────────────────────────────────────────────  │
-│  • Partner uploads CSV file                                 │
-│  • System validates format and required fields              │
-│  • Shows preview with validation errors (if any)            │
-│  • Partner confirms import                                  │
-│                                                             │
-│  Step 2: Import to CRM                                      │
-│  ─────────────────────────────────────────────────────────  │
-│  • Contacts added to partner's CRM contact list             │
-│  • Auto-tagged with 'invite_pending'                        │
-│  • Duplicates detected and flagged                          │
-│  • Import summary shown                                     │
-│                                                             │
-│  Step 3: Send Invites                                       │
-│  ─────────────────────────────────────────────────────────  │
-│  • Partner reviews imported contacts                        │
-│  • Selects all or specific contacts to invite               │
-│  • Customizes invite message (optional)                     │
-│  • Clicks "Send Invites"                                    │
-│                                                             │
-│  Step 4: Track & Follow-up                                  │
-│  ─────────────────────────────────────────────────────────  │
-│  • Real-time status updates (sent, delivered, opened)       │
-│  • Track signups from each invite                           │
-│  • Auto-reminder for unopened invites (optional)            │
-│  • CRM integration for follow-up campaigns                  │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-```
-
-**Invite Email Template**
-
-```
-Subject: {{partner_name}} invites you to Intermaven
-
-Hi {{first_name}},
-
-{{partner_name}} has invited you to join Intermaven — 
-AI-powered tools for African creatives.
-
-As part of {{partner_name}}'s network, you'll get:
-✓ 150 free credits to start
-✓ Access to all AI tools (Brand Kit, Music Bio, Social AI & more)
-✓ Priority support through {{partner_name}}
-
-[Accept Invitation →]
-{{invite_link}}
-
-This invitation expires in 14 days.
-
-Questions? Reply to this email or contact {{partner_name}} directly.
-
-— The Intermaven Team
-```
-
-**Invite Status Tracking**
-
-| Status | Description | Actions Available |
-|--------|-------------|-------------------|
-| pending | Invite created, not yet sent | Send, Edit, Delete |
-| sent | Email dispatched | Resend, Cancel |
-| delivered | Email confirmed delivered | Resend, Cancel |
-| opened | Recipient opened email | Resend, Cancel |
-| clicked | Recipient clicked invite link | - |
-| accepted | User completed signup | View User |
-| expired | 14 days passed, not accepted | Resend (new invite) |
-| bounced | Email delivery failed | Edit Email, Resend |
-| cancelled | Partner cancelled invite | Delete |
-
-**CRM Integration Points**
-
-The invite system deeply integrates with the CRM:
-
-1. **Contact Sync:** Invited contacts automatically become CRM contacts
-2. **Tag Automation:** Auto-tags applied based on invite status
-3. **Activity Tracking:** All invite events logged in contact history
-4. **Campaign Integration:** Follow-up campaigns can target by invite status
-5. **Analytics:** Invite conversion rates in CRM dashboard
-
-**Partner Invite Dashboard**
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│  INVITES                          [Upload CSV] [+ Invite]   │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  SUMMARY                                                    │
-│  Total Sent: 156   Accepted: 89 (57%)   Pending: 42        │
-│                                                             │
-├─────────────────────────────────────────────────────────────┤
-│  Filter: [All ▼]  [Status ▼]  [Date ▼]    Search: [____]   │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  □  Contact          Email              Status    Sent      │
-│  ─────────────────────────────────────────────────────────  │
-│  □  Ayra Starr       ayra@email.com     ✓ Accepted  Mar 20 │
-│  □  Rema             rema@email.com     ○ Opened    Mar 22 │
-│  □  Crayon           crayon@email.com   ● Sent      Mar 24 │
-│  □  New Artist       new@email.com      ◐ Pending   -      │
-│                                                             │
-│  [Resend Selected]  [Cancel Selected]                       │
-│                                                             │
-├─────────────────────────────────────────────────────────────┤
-│  RECENT ACTIVITY                                            │
-│  • Ayra Starr accepted invite and signed up (2 hours ago)   │
-│  • Rema opened invite email (5 hours ago)                   │
-│  • Bulk upload: 25 contacts imported (yesterday)            │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-```
-
-**Database Schema Additions for Invites**
-
-**Public Partners Page (`/partners`)**
-
-A public-facing page showcasing approved partners:
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│  OUR PARTNERS                                               │
-│  Trusted organizations building with Intermaven             │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
-│  │   [Logo]    │  │   [Logo]    │  │   [Logo]    │         │
-│  │             │  │             │  │             │         │
-│  │ Mavin       │  │ Sema        │  │ Africori    │         │
-│  │ Records     │  │ Records     │  │             │         │
-│  │             │  │             │  │             │         │
-│  │ Nigeria's   │  │ East        │  │ Africa's    │         │
-│  │ leading     │  │ Africa's    │  │ largest     │         │
-│  │ record...   │  │ premier...  │  │ music...    │         │
-│  │             │  │             │  │             │         │
-│  │ 🌐 🐦 📷    │  │ 🌐 🐦 📷    │  │ 🌐 🐦 📷    │         │
-│  └─────────────┘  └─────────────┘  └─────────────┘         │
-│                                                             │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
-│  │   [Logo]    │  │   [Logo]    │  │   [Logo]    │         │
-│  │   ...       │  │   ...       │  │   ...       │         │
-│  └─────────────┘  └─────────────┘  └─────────────┘         │
-│                                                             │
-├─────────────────────────────────────────────────────────────┤
-│  BECOME A PARTNER                                           │
-│  ─────────────────────────────────────────────────────────  │
-│  Are you a record label, agency, or creative hub?           │
-│  Join our partner program and earn commission on every      │
-│  creative you onboard.                                      │
-│                                                             │
-│  [Apply to become a partner →]                              │
-│                                                             │
-└─────────────────────────────────────────────────────────────┘
-```
-
-**Partner Sign-Up Form**
-
-Collects:
-- Company name
-- Company type (label, agency, hub, distributor, other)
-- Contact person name
-- Email
-- Phone
-- Website URL
-- Social links (Instagram, Twitter, LinkedIn)
-- Company bio (short description)
-- Logo upload
-- Estimated number of users to onboard
-- How did you hear about us?
-
-**Partner Approval Flow**
-1. Partner submits application
-2. Application enters "pending" status
-3. Admin reviews and approves/rejects
-4. On approval: Partner account created with base commission rate (10%)
-5. Partner receives welcome email with dashboard access
-6. Partner listed on public Partners page (optional, can be hidden)
-
-**Partner Database Schema**
-
-```javascript
-// partners collection
-{
-  _id: ObjectId,
-  
-  // Company info
-  company_name: String,
-  company_type: String,           // 'label', 'agency', 'hub', 'distributor', 'other'
-  bio: String,                    // Short description (max 200 chars)
-  logo_url: String,               // Uploaded logo
-  website: String,
-  
-  // Social links
-  social: {
-    instagram: String,
-    twitter: String,
-    linkedin: String,
-    facebook: String
-  },
-  
-  // Contact
-  contact_name: String,
-  contact_email: String,
-  contact_phone: String,
-  
-  // Account
-  user_id: ObjectId,              // Partner's own user account
-  status: String,                 // 'pending', 'approved', 'rejected', 'suspended'
-  
-  // Commission
-  commission_rate: Number,        // Percentage (e.g., 10, 15, 20)
-  commission_tier: String,        // 'standard', 'silver', 'gold', 'custom'
-  custom_rate_note: String,       // Admin note for custom rates
-  
-  // Referral
-  referral_code: String,          // Unique code (e.g., 'MAVIN2026')
-  referral_link: String,          // Full signup URL with code
-  
-  // Users
-  users: [ObjectId],              // User IDs under this partner
-  user_count: Number,             // Cached count for performance
-  active_user_count: Number,      // Active in last 30 days
-  
-  // Financials
-  total_earnings: Number,         // Lifetime commission earned (KES)
-  pending_payout: Number,         // Unpaid commission
-  last_payout_at: DateTime,
-  
-  // Display settings
-  show_on_partners_page: Boolean, // Public listing opt-in
-  featured: Boolean,              // Featured partner (admin-set)
-  
-  // Metadata
-  created_at: DateTime,
-  approved_at: DateTime,
-  approved_by: ObjectId,          // Admin who approved
-  updated_at: DateTime
-}
-
-// partner_commissions collection
-{
-  _id: ObjectId,
-  partner_id: ObjectId,
-  user_id: ObjectId,              // User who made the purchase
-  transaction_id: ObjectId,       // Reference to transactions collection
-  
-  // Commission details
-  transaction_amount: Number,     // Original transaction (KES)
-  commission_rate: Number,        // Rate at time of transaction
-  commission_amount: Number,      // Earned commission (KES)
-  
-  // Status
-  status: String,                 // 'pending', 'approved', 'paid', 'cancelled'
-  
-  // Payout
-  payout_id: ObjectId,            // Reference to payouts collection
-  paid_at: DateTime,
-  
-  created_at: DateTime
-}
-
-// partner_payouts collection
-{
-  _id: ObjectId,
-  partner_id: ObjectId,
-  
-  // Payout details
-  amount: Number,                 // Total payout (KES)
-  commission_ids: [ObjectId],     // Commissions included in this payout
-  
-  // Payment
-  payment_method: String,         // 'mpesa', 'bank_transfer', 'paypal'
-  payment_reference: String,      // M-Pesa code, bank ref, etc.
-  payment_details: Object,        // Method-specific details
-  
-  // Status
-  status: String,                 // 'pending', 'processing', 'completed', 'failed'
-  
-  // Admin
-  initiated_by: ObjectId,         // Admin who initiated
-  completed_at: DateTime,
-  
-  created_at: DateTime
-}
-
-// partner_invites collection
-{
-  _id: ObjectId,
-  partner_id: ObjectId,
-  
-  // Contact info (synced with CRM)
-  contact_id: ObjectId,           // Reference to crm_contacts
-  email: String,
-  first_name: String,
-  last_name: String,
-  phone: String,
-  
-  // Invite details
-  invite_code: String,            // Unique per invite
-  invite_link: String,            // Full URL
-  invite_type: String,            // 'single', 'bulk', 'referral_link'
-  bulk_upload_id: ObjectId,       // Reference to bulk upload batch (if bulk)
-  
-  // Custom message
-  custom_message: String,         // Partner's personalized message
-  
-  // Status tracking
-  status: String,                 // 'pending', 'sent', 'delivered', 'opened', 
-                                  // 'clicked', 'accepted', 'expired', 'bounced', 'cancelled'
-  
-  // Email tracking
-  email_provider_id: String,      // Resend/SendGrid message ID
-  delivered_at: DateTime,
-  opened_at: DateTime,
-  clicked_at: DateTime,
-  open_count: Number,
-  click_count: Number,
-  
-  // Result
-  user_id: ObjectId,              // Created user (if accepted)
-  accepted_at: DateTime,
-  
-  // Metadata
-  sent_at: DateTime,
-  expires_at: DateTime,           // Default: 14 days from sent
-  resent_count: Number,
-  last_resent_at: DateTime,
-  cancelled_at: DateTime,
-  cancelled_reason: String,
-  
-  created_at: DateTime,
-  updated_at: DateTime
-}
-
-// partner_bulk_uploads collection
-{
-  _id: ObjectId,
-  partner_id: ObjectId,
-  
-  // Upload details
-  filename: String,               // Original CSV filename
-  file_url: String,               // Stored file URL
-  
-  // Processing
-  status: String,                 // 'processing', 'completed', 'failed', 'partial'
-  total_rows: Number,
-  valid_rows: Number,
-  invalid_rows: Number,
-  duplicate_rows: Number,
-  
-  // Validation errors
-  errors: [{
-    row: Number,
-    column: String,
-    error: String,
-    value: String
-  }],
-  
-  // Invites created
-  invites_created: Number,
-  invites_sent: Number,
-  contacts_imported: Number,
-  
-  // Metadata
-  uploaded_at: DateTime,
-  processed_at: DateTime,
-  created_at: DateTime
-}
-```
-
-**Partner API Endpoints**
-
-```
-# Public
-GET    /api/partners                      # List approved partners for public page
-POST   /api/partners/apply                # Submit partner application
-GET    /api/partners/verify/:code         # Verify referral code
-GET    /api/join/:referral_code           # Referral signup page
-
-# Partner Dashboard (requires partner role)
-GET    /api/partner/dashboard             # Dashboard stats
-GET    /api/partner/users                 # List users under partner
-GET    /api/partner/commissions           # List commission history
-GET    /api/partner/payouts               # List payout history
-PUT    /api/partner/profile               # Update partner profile
-POST   /api/partner/payout/request        # Request payout
-
-# Partner Invites (requires partner role)
-GET    /api/partner/invites               # List all invites with status
-POST   /api/partner/invites               # Send single invite
-POST   /api/partner/invites/bulk          # Upload CSV and create invites
-GET    /api/partner/invites/bulk/:id      # Get bulk upload status/results
-POST   /api/partner/invites/bulk/:id/send # Send invites from bulk upload
-POST   /api/partner/invites/:id/resend    # Resend an invite
-DELETE /api/partner/invites/:id           # Cancel pending invite
-GET    /api/partner/invites/stats         # Invite conversion statistics
-GET    /api/partner/referral-link         # Get/regenerate referral link
-
-# Partner Contacts (CRM subset for partners)
-GET    /api/partner/contacts              # List partner's contacts
-POST   /api/partner/contacts              # Add single contact
-POST   /api/partner/contacts/import       # Import contacts from CSV (without invite)
-PUT    /api/partner/contacts/:id          # Update contact
-DELETE /api/partner/contacts/:id          # Remove contact
-
-# Admin
-GET    /api/admin/partners                # List all partners
-GET    /api/admin/partners/:id            # Get partner details
-PUT    /api/admin/partners/:id            # Update partner (status, rate, etc.)
-POST   /api/admin/partners/:id/approve    # Approve application
-POST   /api/admin/partners/:id/reject     # Reject application
-POST   /api/admin/partners/:id/payout     # Process payout
-GET    /api/admin/partners/applications   # List pending applications
-GET    /api/admin/partners/commissions    # All commissions report
-GET    /api/admin/partners/invites        # All invites across partners
-```
-
-**Frontend Components (Partner)**
-
-```
-/app/frontend/src/components/partner/
-├── PartnerDashboard.js       # Main partner dashboard
-├── PartnerUsers.js           # User management table
-├── PartnerEarnings.js        # Commission & payout history
-├── PartnerProfile.js         # Edit partner profile
-├── PartnerSignup.js          # Application form
-├── PartnersPage.js           # Public partners listing page
-│
-├── invites/
-│   ├── InviteDashboard.js    # Invite overview & stats
-│   ├── InviteList.js         # List all invites with filters
-│   ├── InviteSingle.js       # Single invite modal
-│   ├── InviteBulkUpload.js   # CSV upload wizard
-│   ├── InvitePreview.js      # Preview before sending
-│   ├── InviteStatus.js       # Status badge component
-│   └── InviteStats.js        # Conversion analytics
-│
-└── contacts/
-    ├── ContactList.js        # Partner's contact list
-    ├── ContactImport.js      # CSV import (no invite)
-    └── ContactDetail.js      # Single contact view
-```
-
-**Bulk Upload UI Flow**
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│  BULK INVITE WIZARD                              Step 1/4   │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  UPLOAD CSV FILE                                            │
-│  ─────────────────────────────────────────────────────────  │
-│                                                             │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │                                                     │   │
-│  │         Drag & drop your CSV file here             │   │
-│  │                    or                               │   │
-│  │              [Browse Files]                         │   │
-│  │                                                     │   │
-│  │         Supported: .csv (max 5MB, 1000 rows)       │   │
-│  │                                                     │   │
-│  └─────────────────────────────────────────────────────┘   │
-│                                                             │
-│  [Download Template CSV]                                    │
-│                                                             │
-│                                        [Cancel] [Next →]    │
-└─────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────┐
-│  BULK INVITE WIZARD                              Step 2/4   │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  REVIEW & MAP COLUMNS                                       │
-│  ─────────────────────────────────────────────────────────  │
-│                                                             │
-│  Your CSV has 47 rows. Map columns to fields:               │
-│                                                             │
-│  CSV Column        →    Intermaven Field                    │
-│  ─────────────────────────────────────────────────────────  │
-│  "Email"           →    [Email (required) ▼]                │
-│  "Name"            →    [First Name ▼]                      │
-│  "Surname"         →    [Last Name ▼]                       │
-│  "Mobile"          →    [Phone ▼]                           │
-│  "Category"        →    [Tags ▼]                            │
-│                                                             │
-│  Preview (first 5 rows):                                    │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │ ayra@email.com | Ayra | Starr | +234... | artist    │   │
-│  │ rema@email.com | Rema |       | +234... | artist    │   │
-│  │ ...                                                  │   │
-│  └─────────────────────────────────────────────────────┘   │
-│                                                             │
-│                                      [← Back] [Next →]      │
-└─────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────┐
-│  BULK INVITE WIZARD                              Step 3/4   │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  VALIDATION RESULTS                                         │
-│  ─────────────────────────────────────────────────────────  │
-│                                                             │
-│  ✓ 42 contacts valid and ready to import                   │
-│  ⚠ 3 duplicates (already in your contacts)                 │
-│  ✗ 2 invalid rows (missing email)                          │
-│                                                             │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │ ISSUES (5)                                   [Fix]  │   │
-│  │ ─────────────────────────────────────────────────── │   │
-│  │ Row 12: Duplicate - rema@email.com exists           │   │
-│  │ Row 23: Duplicate - artist@email.com exists         │   │
-│  │ Row 31: Duplicate - new@email.com exists            │   │
-│  │ Row 45: Missing email address                       │   │
-│  │ Row 46: Invalid email format "not-an-email"         │   │
-│  └─────────────────────────────────────────────────────┘   │
-│                                                             │
-│  [  ] Skip duplicates and import valid rows only           │
-│  [✓] Add to CRM contacts                                   │
-│  [✓] Send invite emails after import                       │
-│                                                             │
-│                                      [← Back] [Import →]    │
-└─────────────────────────────────────────────────────────────┘
-
-┌─────────────────────────────────────────────────────────────┐
-│  BULK INVITE WIZARD                              Step 4/4   │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│  CUSTOMIZE INVITE MESSAGE (Optional)                        │
-│  ─────────────────────────────────────────────────────────  │
-│                                                             │
-│  Add a personal message to the invite email:                │
-│                                                             │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │ We're excited to have you join the Mavin family on  │   │
-│  │ Intermaven! Use these AI tools to level up your     │   │
-│  │ brand and reach new audiences.                      │   │
-│  │                                                     │   │
-│  │ - The Mavin Team                                    │   │
-│  └─────────────────────────────────────────────────────┘   │
-│                                                             │
-│  Preview email: [View Preview]                              │
-│                                                             │
-│  ─────────────────────────────────────────────────────────  │
-│  SUMMARY                                                    │
-│  • 42 contacts will be imported                            │
-│  • 42 invite emails will be sent                           │
-│  • Estimated delivery: within 5 minutes                    │
-│                                                             │
-│                          [← Back] [Send 42 Invites →]       │
-└─────────────────────────────────────────────────────────────┘
-```
-
-**Implementation Dependencies**
-
-The invite system requires these features to be functional first:
-
-| Dependency | Required For | Status |
-|------------|--------------|--------|
-| CRM Contacts | Contact storage & sync | Future (Phase 4) |
-| Email Integration | Sending invites | Future (Phase 4) |
-| File Upload | CSV processing | Future (Phase 3) |
-| Partner Auth | Partner role verification | Future (Phase 6) |
-
-**Recommended Implementation Order:**
-
-1. CRM Contact Management (Phase 4)
-2. Email Integration - Resend/SendGrid (Phase 4)
-3. File Upload System (Phase 3)
-4. Partner Program Base (Phase 6)
-5. Invite System with Bulk Upload (Phase 6)
-
----
-
-# 9. Credentials & Environment Variables
-
-## 9.1 Current Configuration
+## 10.1 Current Configuration
 
 ### Database (Railway MongoDB) ✅ ACTIVE
 ```
@@ -1599,130 +1543,31 @@ EMERGENT_LLM_KEY=sk-emergent-a3a79EeF44b2f09684
 Model: Claude Sonnet 4.5
 ```
 
-### Authentication ✅ ACTIVE
-```
-JWT_SECRET=intermaven_jwt_secret_key_2025_secure
-JWT_ALGORITHM=HS256
-ACCESS_TOKEN_EXPIRE_MINUTES=1440
-```
-
 ### Payments (Pesapal) ⏳ PENDING
 ```
 PESAPAL_CONSUMER_KEY=<pending>
 PESAPAL_CONSUMER_SECRET=<pending>
-PESAPAL_ENVIRONMENT=sandbox
 ```
 
-### WhatsApp & SMS (Twilio) ⏳ PENDING
+### Social (Meta API) ⏳ PENDING
+```
+META_APP_ID=<pending>
+META_APP_SECRET=<pending>
+```
+
+### Messaging (Twilio) ⏳ PENDING
 ```
 TWILIO_ACCOUNT_SID=<pending>
 TWILIO_AUTH_TOKEN=<pending>
-TWILIO_WHATSAPP_NUMBER=whatsapp:+<number>
-TWILIO_SMS_NUMBER=+<number>
-Webhook URL: https://api.intermaven.io/api/crm/twilio/webhook
 ```
 
 ### Email (Resend) ⏳ PENDING
 ```
 RESEND_API_KEY=<pending>
-Get from: https://resend.com/api-keys
-```
-
-## 9.2 Preview Environment
-
-```
-Frontend URL: https://151c44ef-2fa8-40cf-a20d-7837dfcf2942.preview.emergentagent.com
-Backend URL:  https://151c44ef-2fa8-40cf-a20d-7837dfcf2942.preview.emergentagent.com/api
 ```
 
 ---
 
-# Appendix A: Testing Results
-
-## Test Reports
-
-| Iteration | Date | Focus | Result |
-|-----------|------|-------|--------|
-| 1 | Mar 24, 2026 | Initial MVP | 100% (20/20 backend tests) |
-| 2 | Mar 24, 2026 | Landing Pages | 100% (all pages render) |
-| 3 | Mar 24, 2026 | Auth Modal + AI Tools | 100% (modal, all 5 tools) |
-
-## Test User Credentials
-```
-Email: production_test_1774368430@example.com
-Password: testpass123
-```
-
----
-
-# Appendix B: Useful Commands
-
-## Development
-
-```bash
-# Start backend
-cd /app/backend && uvicorn server:app --reload --host 0.0.0.0 --port 8001
-
-# Start frontend
-cd /app/frontend && yarn start
-
-# Restart services
-sudo supervisorctl restart backend
-sudo supervisorctl restart frontend
-
-# View logs
-tail -f /var/log/supervisor/backend.err.log
-tail -f /var/log/supervisor/frontend.err.log
-```
-
-## Database
-
-```bash
-# Connect to MongoDB
-mongosh "mongodb://mongo:IzypDlPIOWEIyNZSoybbZmWzvPYAeuym@centerbeam.proxy.rlwy.net:20600/intermaven"
-
-# Quick Python connection test
-python3 -c "
-from pymongo import MongoClient
-client = MongoClient('mongodb://mongo:IzypDlPIOWEIyNZSoybbZmWzvPYAeuym@centerbeam.proxy.rlwy.net:20600')
-print('Connected:', client.intermaven.users.count_documents({}), 'users')
-"
-```
-
-## API Testing
-
-```bash
-# Register user
-curl -X POST "https://<url>/api/auth/register" \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"password123","first_name":"Test","last_name":"User","phone":"+254712345678","portal":"music"}'
-
-# Login
-curl -X POST "https://<url>/api/auth/login" \
-  -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","password":"password123"}'
-
-# AI Generate (with token)
-curl -X POST "https://<url>/api/ai/generate" \
-  -H "Authorization: Bearer <token>" \
-  -H "Content-Type: application/json" \
-  -d '{"tool":"brandkit","input":{"brand_name":"Test Brand","industry":"Music","target_audience":"Artists","brand_vibe":"Modern"}}'
-
-# Grant credits (admin) - Future
-curl -X POST "https://<url>/api/admin/users/<user_id>/grant-credits" \
-  -H "Authorization: Bearer <admin_token>" \
-  -H "Content-Type: application/json" \
-  -d '{"method":"preset","preset_label":"Standard Grant","credits":150,"note":"Onboarding bonus"}'
-
-# Send WhatsApp message via CRM - Future
-curl -X POST "https://<url>/api/crm/messages/send" \
-  -H "Authorization: Bearer <token>" \
-  -H "Content-Type: application/json" \
-  -d '{"contact_id":"<id>","channel":"whatsapp","body":"Hey! Your press kit is ready."}'
-```
-
----
-
-*Document Version: 1.3*  
+*Document Version: 2.0*  
 *Last Updated: March 29, 2026*  
-*Platform: Intermaven - AI Tools for African Creatives*
+*Platform: Intermaven - Africa's AI Marketplace*
