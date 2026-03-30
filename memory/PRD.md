@@ -36,6 +36,8 @@ Convert static HTML/CSS/JS Intermaven website into a fully functional full-stack
 - ✅ Privacy Policy page at /privacy
 - ✅ Help Center page at /help with categories and search
 - ✅ Terms acceptance checkbox on registration form
+- ✅ Community dropdown in navbar (Help Center + Forum links)
+- ✅ Confirm Password field on signup form with validation
 - ✅ Newsletter subscribe API: POST /api/newsletter/subscribe
 - ✅ Beta signup API: POST /api/beta/signup
 - ✅ Beta status API: GET /api/beta/status/{app_id}
@@ -114,7 +116,7 @@ Convert static HTML/CSS/JS Intermaven website into a fully functional full-stack
 ## Testing Status
 - Backend: 100% (All endpoints working)
 - Frontend: 100% (All pages and features working)
-- Last test: iteration_4.json - All Quick UI and Medium Complexity features passed
+- Last test: iteration_5.json - Community dropdown and Confirm Password tested
 
 ## Prioritized Backlog
 
