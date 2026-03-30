@@ -8,6 +8,9 @@ import AuthModal from './components/AuthModal';
 import Dashboard from './components/Dashboard';
 import Toast from './components/Toast';
 import { LandingLayout } from './components/landing';
+import TermsPage from './components/landing/TermsPage';
+import PrivacyPage from './components/landing/PrivacyPage';
+import HelpPage from './components/landing/HelpPage';
 
 // Context
 const AuthContext = createContext(null);
@@ -188,6 +191,11 @@ function App() {
               path="/about" 
               element={user ? <Navigate to="/dashboard" /> : <LandingWithAuth page="about" addToast={addToast} user={user} />} 
             />
+            
+            {/* Legal Pages */}
+            <Route path="/terms" element={<TermsPage />} />
+            <Route path="/privacy" element={<PrivacyPage />} />
+            <Route path="/help" element={<HelpPage addToast={addToast} />} />
           </Routes>
         </Router>
         <Toast toasts={toasts} />

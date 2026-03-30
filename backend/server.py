@@ -581,6 +581,89 @@ async def get_transactions(current_user: dict = Depends(get_current_user)):
 async def health_check():
     return {"status": "healthy", "service": "Intermaven API"}
 
+# ============== NEWSLETTER ==============
+
+class NewsletterSubscribe(BaseModel):
+    email: EmailStr
+
+@app.post("/api/newsletter/subscribe")
+async def subscribe_newsletter(data: NewsletterSubscribe):
+    # Check if already subscribed
+    existing = db.newsletter_subscribers.find_one({"email": data.email.lower()})
+    if existing:
+        return {"success": True, "message": "Already subscribed"}
+    
+    # Add subscriber
+    db.newsletter_subscribers.insert_one({
+        "email": data.email.lower(),
+        "subscribed_at": datetime.now(timezone.utc),
+        "status": "active"
+    })
+    
+    return {"success": True, "message": "Successfully subscribed"}
+
+# ============== BETA SIGNUPS ==============
+
+class BetaSignup(BaseModel):
+    app_id: str  # 'epk', 'lead_gen', 'pos'
+    email: Optional[EmailStr] = None
+    phone: Optional[str] = None
+    preferred_channel: str  # 'email', 'whatsapp', 'sms'
+    portal: Optional[str] = "music"
+
+@app.post("/api/beta/signup")
+async def signup_beta(data: BetaSignup):
+    if data.preferred_channel == 'email' and not data.email:
+        raise HTTPException(status_code=400, detail="Email required for email notifications")
+    if data.preferred_channel in ['whatsapp', 'sms'] and not data.phone:
+        raise HTTPException(status_code=400, detail="Phone required for WhatsApp/SMS notifications")
+    
+    # Check if already signed up
+    query = {"app_id": data.app_id}
+    if data.email:
+        query["email"] = data.email.lower()
+    elif data.phone:
+        query["phone"] = data.phone
+    
+    existing = db.beta_signups.find_one(query)
+    if existing:
+        return {"success": True, "message": "Already on waitlist"}
+    
+    # Add to waitlist
+    signup_data = {
+        "app_id": data.app_id,
+        "email": data.email.lower() if data.email else None,
+        "phone": data.phone,
+        "preferred_channel": data.preferred_channel,
+        "portal": data.portal,
+        "status": "waiting",
+        "created_at": datetime.now(timezone.utc)
+    }
+    
+    db.beta_signups.insert_one(signup_data)
+    
+    return {"success": True, "message": "Successfully joined waitlist"}
+
+@app.get("/api/beta/status/{app_id}")
+async def get_beta_status(app_id: str, email: Optional[str] = None, phone: Optional[str] = None):
+    query = {"app_id": app_id}
+    if email:
+        query["email"] = email.lower()
+    elif phone:
+        query["phone"] = phone
+    else:
+        raise HTTPException(status_code=400, detail="Email or phone required")
+    
+    signup = db.beta_signups.find_one(query)
+    if not signup:
+        return {"signed_up": False}
+    
+    return {
+        "signed_up": True,
+        "status": signup.get("status", "waiting"),
+        "created_at": signup.get("created_at").isoformat() if isinstance(signup.get("created_at"), datetime) else None
+    }
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ALL_APPS } from './AppInfoModal';
+import BetaSignupCard, { BETA_APPS } from './BetaSignupCard';
 
 const LIVE_APPS = ['brandkit', 'musicbio', 'syncpitch', 'social', 'bizpitch'];
 
@@ -173,76 +174,26 @@ function AppsPage({ portal = 'music', onOpenAppModal, onToast }) {
                   What's coming next
                 </div>
                 <p style={{ fontSize: '12px', color: 'var(--mu)', marginBottom: '14px' }}>
-                  We ship new apps regularly. Register your interest to get early access.
+                  We ship new apps regularly. Sign up below to get early access.
                 </p>
-                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                  <span style={{ 
-                    padding: '4px 10px', 
-                    borderRadius: 'var(--r)', 
-                    border: '1px solid var(--b2)', 
-                    fontSize: '10px', 
-                    color: 'var(--mu)' 
-                  }}>
-                    🛒 Intermaven POS
-                  </span>
-                  <span style={{ 
-                    padding: '4px 10px', 
-                    borderRadius: 'var(--r)', 
-                    border: '1px solid var(--b2)', 
-                    fontSize: '10px', 
-                    color: 'var(--mu)' 
-                  }}>
-                    📁 EPK Builder
-                  </span>
-                  <span style={{ 
-                    padding: '4px 10px', 
-                    borderRadius: 'var(--r)', 
-                    border: '1px solid var(--b2)', 
-                    fontSize: '10px', 
-                    color: 'var(--mu)' 
-                  }}>
-                    🌍 Distribution Tracker
-                  </span>
-                  <span style={{ 
-                    padding: '4px 10px', 
-                    borderRadius: 'var(--r)', 
-                    border: '1px solid var(--b2)', 
-                    fontSize: '10px', 
-                    color: 'var(--mu)' 
-                  }}>
-                    💳 Invoicing & Payments
-                  </span>
-                  <span style={{ 
-                    padding: '4px 10px', 
-                    borderRadius: 'var(--r)', 
-                    border: '1px solid var(--b2)', 
-                    fontSize: '10px', 
-                    color: 'var(--mu)' 
-                  }}>
-                    ⚖ Contract Templates
-                  </span>
-                </div>
               </div>
-              <button 
-                onClick={() => onToast('Added to early access list!', 'We will notify you when new apps launch.', '✓')}
-                style={{ 
-                  padding: '9px 16px', 
-                  borderRadius: 'var(--r)', 
-                  fontSize: '10px', 
-                  fontWeight: '700', 
-                  letterSpacing: '.5px', 
-                  textTransform: 'uppercase', 
-                  background: 'var(--btn)', 
-                  color: '#fff', 
-                  border: 'none', 
-                  cursor: 'pointer', 
-                  whiteSpace: 'nowrap', 
-                  alignSelf: 'center' 
-                }}
-              >
-                Get early access
-              </button>
             </div>
+          </div>
+
+          {/* Beta Signup Cards */}
+          <div className="apg" style={{ marginTop: '20px' }} data-testid="beta-cards">
+            {Object.keys(BETA_APPS).map(appId => {
+              const app = BETA_APPS[appId];
+              // Filter by portal
+              if (app.portal !== 'both' && app.portal !== portal) return null;
+              return (
+                <BetaSignupCard 
+                  key={appId} 
+                  appId={appId} 
+                  onToast={onToast}
+                />
+              );
+            })}
           </div>
         </div>
       </div>

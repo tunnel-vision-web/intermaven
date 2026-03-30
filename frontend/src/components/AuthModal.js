@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../App';
-import { Mail, Lock, User, Phone, X } from 'lucide-react';
+import { Mail, Lock, User, Phone, X, Eye, EyeOff } from 'lucide-react';
 
 function AuthModal({ onClose }) {
   const { login, register } = useAuth();
@@ -9,6 +9,8 @@ function AuthModal({ onClose }) {
   const location = useLocation();
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -182,10 +184,10 @@ function AuthModal({ onClose }) {
 
             <div className="form-group">
               <label className="form-label">Password</label>
-              <div className="form-input-icon">
+              <div className="form-input-icon password-field">
                 <Lock className="icon" size={16} />
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   name="password"
                   className="form-input"
                   placeholder={isLogin ? 'Your password' : 'Min 8 characters'}
@@ -195,6 +197,15 @@ function AuthModal({ onClose }) {
                   minLength={8}
                   data-testid="password-input"
                 />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                  data-testid="password-toggle"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
               </div>
             </div>
 
@@ -214,10 +225,29 @@ function AuthModal({ onClose }) {
               </div>
             )}
 
+            {!isLogin && (
+              <div className="form-group terms-group">
+                <label className="terms-label">
+                  <input
+                    type="checkbox"
+                    checked={acceptedTerms}
+                    onChange={(e) => setAcceptedTerms(e.target.checked)}
+                    data-testid="terms-checkbox"
+                  />
+                  <span>
+                    I have read and agree to the{' '}
+                    <a href="/terms" target="_blank" rel="noopener noreferrer">Terms of Service</a>
+                    {' '}and{' '}
+                    <a href="/privacy" target="_blank" rel="noopener noreferrer">Privacy Policy</a>
+                  </span>
+                </label>
+              </div>
+            )}
+
             <button 
               type="submit" 
               className="btn btn-primary" 
-              disabled={loading}
+              disabled={loading || (!isLogin && !acceptedTerms)}
               data-testid="submit-button"
             >
               {loading ? (

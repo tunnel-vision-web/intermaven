@@ -44,6 +44,7 @@ function Footer({ onShowLegal, onToast }) {
             <h4>Company</h4>
             <div className="footer-links">
               <Link to="/about" className="footer-link">About us</Link>
+              <Link to="/help" className="footer-link">Help Center</Link>
               <button 
                 className="footer-link" 
                 onClick={() => handleComingSoon('Blog', '✍')}
@@ -56,7 +57,6 @@ function Footer({ onShowLegal, onToast }) {
               >
                 Careers
               </button>
-              <Link to="/about" className="footer-link">Contact</Link>
             </div>
           </div>
           

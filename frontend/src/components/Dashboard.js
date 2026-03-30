@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth, useToast, api } from '../App';
 import { 
   Home, Bell, Plus, User, Settings, CreditCard, LogOut,
@@ -19,12 +20,19 @@ const PLAN_CREDITS = { free: 150, creator: 600, pro: 2500 };
 function Dashboard() {
   const { user, logout, updateUser } = useAuth();
   const { addToast } = useToast();
+  const navigate = useNavigate();
   const [activePanel, setActivePanel] = useState('overview');
   const [stats, setStats] = useState({ credits: 0, ai_runs_week: 0, active_apps: 0 });
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [activities, setActivities] = useState([]);
   const [settingsTab, setSettingsTab] = useState('profile');
+
+  const handleLogoClick = () => {
+    // Log out and navigate to landing page
+    logout();
+    navigate('/');
+  };
 
   useEffect(() => {
     fetchStats();
@@ -87,7 +95,12 @@ function Dashboard() {
       {/* Sidebar - 30% */}
       <aside className="sidebar" data-testid="sidebar">
         <div className="sidebar-header">
-          <div className="sidebar-logo">
+          <div 
+            className="sidebar-logo clickable" 
+            onClick={handleLogoClick}
+            title="Back to website"
+            data-testid="sidebar-logo"
+          >
             INTER<span>MAVEN</span>
             <span className="sidebar-badge">{user?.portal === 'music' ? 'Music' : 'Business'}</span>
           </div>

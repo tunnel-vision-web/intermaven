@@ -9,3 +9,7 @@ export { default as ToolsPage } from './ToolsPage';
 export { default as AppsPage } from './AppsPage';
 export { default as PricingPage } from './PricingPage';
 export { default as AboutPage } from './AboutPage';
+export { default as TermsPage } from './TermsPage';
+export { default as PrivacyPage } from './PrivacyPage';
+export { default as HelpPage } from './HelpPage';
+export { default as BetaSignupCard, BETA_APPS } from './BetaSignupCard';

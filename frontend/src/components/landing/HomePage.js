@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { Mail, Check } from 'lucide-react';
 
 // Portal configurations matching original data.js
 const PORTALS = {
@@ -133,11 +134,40 @@ function HomePage({ portal = 'music', onOpenAppModal, onOpenAuth, onToast }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [slideState, setSlideState] = useState('in');
   const [progress, setProgress] = useState(0);
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterLoading, setNewsletterLoading] = useState(false);
+  const [newsletterSuccess, setNewsletterSuccess] = useState(false);
   const progressRef = useRef(null);
   const timerRef = useRef(null);
 
   const portalData = PORTALS[portal];
   const slides = portalData.slides;
+
+  const handleNewsletterSubmit = async (e) => {
+    e.preventDefault();
+    if (!newsletterEmail) return;
+    
+    setNewsletterLoading(true);
+    try {
+      const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+      const response = await fetch(`${API_URL}/api/newsletter/subscribe`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: newsletterEmail })
+      });
+      
+      if (response.ok) {
+        setNewsletterSuccess(true);
+        setNewsletterEmail('');
+        onToast('Subscribed!', 'You\'ll receive our latest updates.', 'success');
+      } else {
+        onToast('Subscription failed', 'Please try again later.', 'error');
+      }
+    } catch (error) {
+      onToast('Subscription failed', 'Please try again later.', 'error');
+    }
+    setNewsletterLoading(false);
+  };
 
   useEffect(() => {
     // Reset on portal change
@@ -311,6 +341,57 @@ function HomePage({ portal = 'music', onOpenAppModal, onOpenAuth, onToast }) {
             >
               See all apps →
             </Link>
+          </div>
+          
+          {/* Newsletter Signup CTA */}
+          <div className="newsletter-cta" data-testid="newsletter-section">
+            <div className="newsletter-icon">
+              <Mail size={24} />
+            </div>
+            <h3>Stay in the loop</h3>
+            <p>Get the latest AI tools, tips, and updates for African creatives. No spam, ever.</p>
+            <form className="newsletter-form" onSubmit={handleNewsletterSubmit}>
+              <input
+                type="email"
+                placeholder="you@example.com"
+                value={newsletterEmail}
+                onChange={(e) => setNewsletterEmail(e.target.value)}
+                required
+                disabled={newsletterSuccess}
+                data-testid="newsletter-email"
+              />
+              <button 
+                type="submit" 
+                disabled={newsletterLoading || newsletterSuccess}
+                data-testid="newsletter-submit"
+              >
+                {newsletterLoading ? 'Subscribing...' : newsletterSuccess ? 'Subscribed!' : 'Subscribe →'}
+              </button>
+            </form>
+            {newsletterSuccess && (
+              <div className="newsletter-success">
+                <Check size={14} /> You're on the list!
+              </div>
+            )}
+            <div className="newsletter-count">
+              <Check size={12} /> Join 2,500+ creatives already subscribed
+            </div>
+          </div>
+
+          {/* Payment Methods */}
+          <div className="payment-methods" data-testid="payment-methods">
+            <p>Secure payments via</p>
+            <div className="payment-logos">
+              <div className="payment-logo mpesa" title="M-Pesa">
+                <span>M-PESA</span>
+              </div>
+              <div className="payment-logo visa" title="Visa">
+                <span>VISA</span>
+              </div>
+              <div className="payment-logo mastercard" title="Mastercard">
+                <span>Mastercard</span>
+              </div>
+            </div>
           </div>
           
           <div className="trust">
