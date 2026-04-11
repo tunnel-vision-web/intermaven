@@ -5,7 +5,7 @@ pythonVersion = "3.11"
 cmds = [
   "python -m venv /opt/venv",
   "/opt/venv/bin/pip install --upgrade pip",
-  "/opt/venv/bin/pip install -r requirements.txt",
+  "/opt/venv/bin/pip install --only-binary :all: -r requirements.txt",
 ]
 
 [start]
