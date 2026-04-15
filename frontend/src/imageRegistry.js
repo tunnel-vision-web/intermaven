@@ -49,6 +49,26 @@ export const HERO_FALLBACKS = {
     'radial-gradient(ellipse at 60% 45%, #003d1a 0%, #001a0d 50%, #08090d 100%)',
     'radial-gradient(ellipse at 35% 60%, #3d1a00 0%, #1a0d00 50%, #08090d 100%)',
   ],
+  djs: [
+    'radial-gradient(ellipse at 40% 55%, #1a003d 0%, #0d0022 50%, #08090d 100%)',
+    'radial-gradient(ellipse at 60% 45%, #003d1a 0%, #001a0d 50%, #08090d 100%)',
+    'radial-gradient(ellipse at 35% 60%, #3d1a00 0%, #1a0d00 50%, #08090d 100%)',
+  ],
+  labels: [
+    'radial-gradient(ellipse at 40% 55%, #1a003d 0%, #0d0022 50%, #08090d 100%)',
+    'radial-gradient(ellipse at 60% 45%, #003d1a 0%, #001a0d 50%, #08090d 100%)',
+    'radial-gradient(ellipse at 35% 60%, #3d1a00 0%, #1a0d00 50%, #08090d 100%)',
+  ],
+  producers: [
+    'radial-gradient(ellipse at 40% 55%, #1a003d 0%, #0d0022 50%, #08090d 100%)',
+    'radial-gradient(ellipse at 60% 45%, #003d1a 0%, #001a0d 50%, #08090d 100%)',
+    'radial-gradient(ellipse at 35% 60%, #3d1a00 0%, #1a0d00 50%, #08090d 100%)',
+  ],
+  mediahouses: [
+    'radial-gradient(ellipse at 40% 55%, #1a003d 0%, #0d0022 50%, #08090d 100%)',
+    'radial-gradient(ellipse at 60% 45%, #003d1a 0%, #001a0d 50%, #08090d 100%)',
+    'radial-gradient(ellipse at 35% 60%, #3d1a00 0%, #1a0d00 50%, #08090d 100%)',
+  ],
 };
 
 // ── Page header images ─────────────────────────────────────────────
@@ -126,6 +146,44 @@ export const APP_ICONS = {
   royalty:   `${BASE}/icons/apps/royalty.png`,
   calendar:  `${BASE}/icons/apps/calendar.png`,
   grant:     `${BASE}/icons/apps/grant.png`,
+};
+
+export const CAROUSEL_LOGOS = {
+  music: [
+    { src: `${BASE}/images/carousel/logos/logo-dj.svg`, alt: 'DJ stage', link: '/apps' },
+    { src: `${BASE}/images/carousel/logos/logo-label.svg`, alt: 'Label network', link: '/apps' },
+    { src: `${BASE}/images/carousel/logos/logo-producer.svg`, alt: 'Producer community', link: '/apps' },
+    { src: `${BASE}/images/carousel/logos/logo-artist.svg`, alt: 'Artist collective', link: '/apps' },
+    { src: `${BASE}/images/carousel/logos/logo-social.svg`, alt: 'Social creators', link: '/apps' },
+    { src: `${BASE}/images/carousel/logos/logo-brandkit.svg`, alt: 'Brand kit partners', link: '/apps' },
+  ],
+  business: [
+    { src: `${BASE}/images/carousel/logos/logo-brandkit.svg`, alt: 'Brand builders', link: '/apps' },
+    { src: `${BASE}/images/carousel/logos/logo-crm.svg`, alt: 'Smart CRM', link: '/apps' },
+    { src: `${BASE}/images/carousel/logos/logo-dj.svg`, alt: 'Creative events', link: '/apps' },
+    { src: `${BASE}/images/carousel/logos/logo-social.svg`, alt: 'Social storefronts', link: '/apps' },
+    { src: `${BASE}/images/carousel/logos/logo-artist.svg`, alt: 'Creative services', link: '/apps' },
+  ],
+  djs: [
+    { src: `${BASE}/images/carousel/logos/logo-dj.svg`, alt: 'DJ bookings', link: '/apps' },
+    { src: `${BASE}/images/carousel/logos/logo-social.svg`, alt: 'Audience content', link: '/apps' },
+    { src: `${BASE}/images/carousel/logos/logo-brandkit.svg`, alt: 'Brand identity', link: '/apps' },
+  ],
+  labels: [
+    { src: `${BASE}/images/carousel/logos/logo-label.svg`, alt: 'Label services', link: '/apps' },
+    { src: `${BASE}/images/carousel/logos/logo-producer.svg`, alt: 'Producer partnerships', link: '/apps' },
+    { src: `${BASE}/images/carousel/logos/logo-crm.svg`, alt: 'Label CRM', link: '/apps' },
+  ],
+  producers: [
+    { src: `${BASE}/images/carousel/logos/logo-producer.svg`, alt: 'Producer network', link: '/apps' },
+    { src: `${BASE}/images/carousel/logos/logo-social.svg`, alt: 'Portfolios & promo', link: '/apps' },
+    { src: `${BASE}/images/carousel/logos/logo-brandkit.svg`, alt: 'Music branding', link: '/apps' },
+  ],
+  mediahouses: [
+    { src: `${BASE}/images/carousel/logos/logo-mediahouse.svg`, alt: 'Media houses', link: '/apps' },
+    { src: `${BASE}/images/carousel/logos/logo-crm.svg`, alt: 'Content operations', link: '/apps' },
+    { src: `${BASE}/images/carousel/logos/logo-brandkit.svg`, alt: 'Campaign branding', link: '/apps' },
+  ],
 };
 
 // ── Helper: get hero image with fallback ─────────────────────────

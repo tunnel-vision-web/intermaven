@@ -301,6 +301,7 @@ function HomePage({ portal = 'music', subdomainPage = null, onOpenAppModal, onOp
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterLoading, setNewsletterLoading] = useState(false);
   const [newsletterSuccess, setNewsletterSuccess] = useState(false);
+  const [heroOverrides, setHeroOverrides] = useState({});
   const progressRef = useRef(null);
   const timerRef = useRef(null);
 
@@ -338,11 +339,28 @@ function HomePage({ portal = 'music', subdomainPage = null, onOpenAppModal, onOp
   };
 
   useEffect(() => {
-    // Reset on portal change
+    // Reset on portal or subdomain change
     setCurrentSlide(0);
     setProgress(0);
     setSlideState('in');
-  }, [portal]);
+  }, [portal, subdomainPage]);
+
+  useEffect(() => {
+    const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/settings`);
+        if (response.ok) {
+          const data = await response.json();
+          setHeroOverrides(data.hero_overrides || {});
+        }
+      } catch (error) {
+        // Keep default content if public settings are unavailable.
+      }
+    };
+
+    fetchSettings();
+  }, []);
 
   useEffect(() => {
     // Auto-advance slides
@@ -363,7 +381,7 @@ function HomePage({ portal = 'music', subdomainPage = null, onOpenAppModal, onOp
     timerRef.current = setTimeout(() => {
       setSlideState('out');
       setTimeout(() => {
-        setCurrentSlide((prev) => (prev + 1) % slides.length);
+        setCurrentSlide((prev) => (prev + 1) % slidesWithOverride.length);
         setProgress(0);
         setSlideState('in');
       }, 400);
@@ -373,7 +391,7 @@ function HomePage({ portal = 'music', subdomainPage = null, onOpenAppModal, onOp
       if (progressRef.current) cancelAnimationFrame(progressRef.current);
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [currentSlide, slides.length]);
+  }, [currentSlide, slidesWithOverride.length]);
 
   const goToSlide = (index) => {
     if (index === currentSlide) return;
@@ -396,14 +414,13 @@ function HomePage({ portal = 'music', subdomainPage = null, onOpenAppModal, onOp
     }
   };
 
-  const currentSlideData = slides[currentSlide];
-
-  // Hero images from registry — drop files in public/images/hero/intermaven/
-  // or public/images/hero/intermavenmusic/ depending on portal
-  // Falls back to CSS gradients automatically if files are missing
-  const heroKey = portal === 'music' ? 'intermavenmusic' : 'intermaven';
-  const heroImages = HERO_IMAGES[heroKey] || [];
-  const heroFallbacks = HERO_FALLBACKS[heroKey] || [];
+  const heroImageKey = subdomainPage || (portal === 'music' ? 'intermavenmusic' : 'intermaven');
+  const heroOverrideKey = subdomainPage || portal;
+  const heroOverride = heroOverrides[heroOverrideKey] || {};
+  const heroImages = heroOverride.heroImages || HERO_IMAGES[heroImageKey] || HERO_IMAGES[portal === 'music' ? 'intermavenmusic' : 'intermaven'] || [];
+  const heroFallbacks = heroOverride.heroFallbacks || HERO_FALLBACKS[heroImageKey] || HERO_FALLBACKS[portal === 'music' ? 'intermavenmusic' : 'intermaven'] || [];
+  const slidesWithOverride = heroOverride.slides || slides;
+  const currentSlideData = slidesWithOverride[currentSlide] || slides[currentSlide];
 
   return (
     <>

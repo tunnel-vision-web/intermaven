@@ -1371,6 +1371,7 @@ class SystemSettings(BaseModel):
     bizpitch_cost: Optional[int] = 18
     maintenance_mode: Optional[bool] = False
     registrations_open: Optional[bool] = True
+    hero_content_overrides: Optional[dict] = {}
 
 @app.get("/api/admin/settings")
 async def get_admin_settings(admin: dict = Depends(get_admin_user)):
@@ -1388,6 +1389,12 @@ async def update_admin_settings(data: SystemSettings, admin: dict = Depends(get_
     admin_name = f"{admin.get('first_name', '')} {admin.get('last_name', '')}".strip()
     log_audit(admin["_id"], admin_name, "settings_update", details=data.model_dump())
     return {"success": True}
+
+@app.get("/api/settings")
+async def get_public_settings():
+    settings = db.system_settings.find_one({"key": "global"}) or {}
+    hero_overrides = settings.get("hero_content_overrides", {})
+    return {"hero_content_overrides": hero_overrides}
 
 # ============== CRM — CONTACTS ==============
 
