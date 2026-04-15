@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { HERO_IMAGES, HERO_FALLBACKS } from '../../imageRegistry';
 import { Link } from 'react-router-dom';
 import { Mail, Check } from 'lucide-react';
 import { FlatIcon } from '../FlatIcon';
@@ -231,15 +232,28 @@ function HomePage({ portal = 'music', onOpenAppModal, onOpenAuth, onToast }) {
 
   const currentSlideData = slides[currentSlide];
 
+  // Hero images from registry — drop files in public/images/hero/intermaven/
+  // or public/images/hero/intermavenmusic/ depending on portal
+  // Falls back to CSS gradients automatically if files are missing
+  const heroImages = HERO_IMAGES['intermaven'] || [];
+  const heroFallbacks = HERO_FALLBACKS['intermaven'] || [];
+
   return (
     <>
       {/* Hero Section */}
       <div className="hw" data-testid="hero-section">
         <div className="bgs">
-          <div className={`bg bg1 ${currentSlide === 0 ? 'on' : ''}`} />
-          <div className={`bg bg2 ${currentSlide === 1 ? 'on' : ''}`} />
-          <div className={`bg bg3 ${currentSlide === 2 ? 'on' : ''}`} />
-          <div className={`bg bg4 ${currentSlide === 3 ? 'on' : ''}`} />
+          {heroImages.map((img, i) => (
+            <div
+              key={i}
+              className={`bg ${currentSlide === i ? 'on' : ''}`}
+              style={{
+                backgroundImage: `url(${img}), ${heroFallbacks[i] || heroFallbacks[0]}`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
+            />
+          ))}
           <div className="bgo" />
         </div>
         

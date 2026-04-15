@@ -1,3 +1,4 @@
+import PageHeader from './PageHeader';
 import React, { useState } from 'react';
 import { ALL_APPS } from './AppInfoModal';
 import BetaSignupCard, { BETA_APPS } from './BetaSignupCard';
@@ -31,15 +32,7 @@ function AppsPage({ portal = 'music', onOpenAppModal, onToast }) {
   return (
     <>
       {/* Page Header */}
-      <div className="ph" data-testid="apps-header">
-        <div className="phi" style={{ background: 'radial-gradient(ellipse at 60% 40%,#003d4d,#08090d)' }} />
-        <div className="pho" />
-        <div className="phc">
-          <div className="bc">Intermaven › Apps</div>
-          <div className="pht">App Marketplace</div>
-          <div className="phs">Every tool your creative business needs</div>
-        </div>
-      </div>
+      <PageHeader pageKey="apps" breadcrumb="Intermaven › Apps" title="App Marketplace" subtitle="Every tool your creative business needs" />
 
       {/* Apps Content */}
       <div style={{ padding: '28px 0 60px' }}>

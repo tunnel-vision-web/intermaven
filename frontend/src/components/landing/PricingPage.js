@@ -1,3 +1,4 @@
+import PageHeader from './PageHeader';
 import React from 'react';
 import { FlatIcon } from '../FlatIcon';
 
@@ -24,15 +25,7 @@ function PricingPage({ onOpenAuth, onToast }) {
   return (
     <>
       {/* Page Header */}
-      <div className="ph" data-testid="pricing-header">
-        <div className="phi" style={{ background: 'radial-gradient(ellipse at 50% 50%,#2d0045,#08090d)' }} />
-        <div className="pho" />
-        <div className="phc">
-          <div className="bc">Intermaven › Pricing</div>
-          <div className="pht">Simple, honest pricing</div>
-          <div className="phs">Pay once. Credits never expire. No subscriptions, ever.</div>
-        </div>
-      </div>
+      <PageHeader pageKey="pricing" breadcrumb="Intermaven › Pricing" title="Simple, honest pricing" subtitle="Pay once. Credits never expire. No subscriptions, ever." />
 
       {/* Pricing Content */}
       <div style={{ padding: '40px 0 60px' }}>
