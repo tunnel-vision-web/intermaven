@@ -2635,6 +2635,91 @@
 .app-footer-links a { color: var(--mu); text-decoration: none; }
 .app-footer-links a:hover { color: var(--tx); }
 
+.home-flagship {
+  padding: 48px 24px 0;
+  background: var(--bg2);
+}
+.home-flagship-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 22px;
+}
+.home-flagship-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 22px;
+  border-radius: var(--r);
+  background: var(--bg);
+  border: 1px solid var(--b1);
+  text-decoration: none;
+  color: var(--tx);
+  transition: transform 0.18s ease, border-color 0.18s ease, background 0.18s ease;
+}
+.home-flagship-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--btn);
+  background: var(--bg3);
+}
+.home-flagship-card-title {
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+.home-flagship-card-desc {
+  flex: 1;
+  color: var(--mu);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.home-flagship-card-cta {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--btn);
+}
+
+.logo-carousel {
+  overflow: hidden;
+  margin-top: 18px;
+}
+.logo-carousel-track {
+  display: flex;
+  gap: 20px;
+  animation: logo-scroll 18s linear infinite;
+}
+.logo-carousel-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 160px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.05);
+  transition: transform 0.2s ease;
+}
+.logo-carousel-item:hover {
+  transform: translateY(-2px);
+}
+.logo-carousel-item img {
+  max-height: 34px;
+  max-width: 100%;
+  object-fit: contain;
+}
+.logo-carousel-placeholder {
+  color: var(--mu);
+  font-size: 13px;
+}
+@keyframes logo-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@media (max-width: 900px) {
+  .home-flagship-grid { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 640px) {
   .app-steps { grid-template-columns: 1fr; }
   .app-pricing-plans { grid-template-columns: 1fr; }

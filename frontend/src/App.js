@@ -187,6 +187,13 @@ function EPKPublicPage() {
   );
 }
 
+function AppLandingRoute({ appId }) {
+  const navigate = useNavigate();
+  const handleOpenAuth = () => navigate('/auth');
+
+  return <AppLandingPage appId={appId} onOpenAuth={handleOpenAuth} />;
+}
+
 function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -310,14 +317,14 @@ function App() {
             <Route path="/forum" element={<ForumPage addToast={addToast} />} />
             
             {/* App Landing Pages */}
-            {['brandkit', 'musicbio', 'social', 'syncpitch', 'bizpitch'].map(appId => (
+            {['brandkit', 'musicbio', 'social', 'syncpitch', 'bizpitch', 'smartcrm'].map(appId => (
               <Route
                 key={appId}
                 path={`/${appId}`}
                 element={
                   user
                     ? <Navigate to="/dashboard" />
-                    : <AppLandingPage appId={appId} onOpenAuth={() => {}} />
+                    : <AppLandingRoute appId={appId} />
                 }
               />
             ))}

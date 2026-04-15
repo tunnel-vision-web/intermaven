@@ -155,6 +155,36 @@ const APP_CONFIGS = {
       { q: 'Can I use it for grant applications?', a: 'Yes — select "Government grant" as your audience for grant-specific language.' },
     ],
   },
+  smartcrm: {
+    name: 'Smart CRM',
+    tagline: 'Turn contacts into bookings, fans, and revenue',
+    description: 'A music-first CRM for artists, managers, and creative teams — manage relationships, live shows, sponsorships, and follow-up in one dashboard.',
+    color: '#14b8a6',
+    cost: 12,
+    icon: '📇',
+    features: [
+      { label: 'Contact management', desc: 'Organise artists, promoters, brands, and media contacts in one place' },
+      { label: 'Booking workflow', desc: 'Track inquiries, proposals, confirmations, and payments' },
+      { label: 'Fan and partner tags', desc: 'Segment audiences by genre, location, and engagement' },
+      { label: 'Automated follow-ups', desc: 'Save templated messages for outreach and event reminders' },
+      { label: 'Deal tracking', desc: 'Monitor sponsorships, sync opportunities, and label discussions' },
+      { label: 'Insights dashboard', desc: 'See pipeline health, revenue outlook, and relationship momentum' },
+    ],
+    steps: [
+      { title: 'Add your contacts', desc: 'Enter artists, partners, venues, or media contacts' },
+      { title: 'Track interactions', desc: 'Record calls, emails, shows, and tasks in one place' },
+      { title: 'Close more opportunities', desc: 'Follow every lead with reminders and smart next steps' },
+    ],
+    testimonials: [
+      { quote: "Smart CRM helped me keep track of every booking conversation without drowning in email.", name: 'Nia K.', role: 'Tour manager, Accra' },
+      { quote: "We closed 4 new sponsor meetings in one month after using the pipeline dashboard.", name: 'Isaac M.', role: 'Music label operations lead, Lagos' },
+    ],
+    faqs: [
+      { q: 'Can I use Smart CRM for both artists and events?', a: 'Yes — it is designed to manage people, partners, and show schedules together.' },
+      { q: 'Is it only for music teams?', a: 'It works for brands, studios, and creative businesses that need relationship workflows.' },
+      { q: 'How many contacts can I store?', a: 'The Free plan supports up to 1,500 contacts. Higher plans increase capacity.' },
+    ],
+  },
 };
 
 // ── FAQ Item ───────────────────────────────────────────────────────
