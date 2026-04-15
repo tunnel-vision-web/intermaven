@@ -352,7 +352,7 @@ function HomePage({ portal = 'music', subdomainPage = null, onOpenAppModal, onOp
         const response = await fetch(`${API_URL}/api/settings`);
         if (response.ok) {
           const data = await response.json();
-          setHeroOverrides(data.hero_overrides || {});
+          setHeroOverrides(data.hero_content_overrides || {});
         }
       } catch (error) {
         // Keep default content if public settings are unavailable.
@@ -419,7 +419,7 @@ function HomePage({ portal = 'music', subdomainPage = null, onOpenAppModal, onOp
   const heroOverride = heroOverrides[heroOverrideKey] || {};
   const heroImages = heroOverride.heroImages || HERO_IMAGES[heroImageKey] || HERO_IMAGES[portal === 'music' ? 'intermavenmusic' : 'intermaven'] || [];
   const heroFallbacks = heroOverride.heroFallbacks || HERO_FALLBACKS[heroImageKey] || HERO_FALLBACKS[portal === 'music' ? 'intermavenmusic' : 'intermaven'] || [];
-  const slidesWithOverride = heroOverride.slides || slides;
+  const slidesWithOverride = Array.isArray(heroOverride.slides) && heroOverride.slides.length > 0 ? heroOverride.slides : slides;
   const currentSlideData = slidesWithOverride[currentSlide] || slides[currentSlide];
 
   return (

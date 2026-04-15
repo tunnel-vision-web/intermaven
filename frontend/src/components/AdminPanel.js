@@ -864,10 +864,17 @@ function AuditPanel({ addToast }) {
 // ── Settings Panel ────────────────────────────────────────────────
 function AdminSettingsPanel({ addToast }) {
   const [settings, setSettings] = useState(null);
+  const [heroOverrideJson, setHeroOverrideJson] = useState('');
+  const [heroJsonError, setHeroJsonError] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => { fetchSettings(); }, []);
+
+  useEffect(() => {
+    if (!settings) return;
+    setHeroOverrideJson(JSON.stringify(settings.hero_content_overrides || {}, null, 2));
+  }, [settings]);
 
   const fetchSettings = async () => {
     try {
@@ -884,6 +891,17 @@ function AdminSettingsPanel({ addToast }) {
       addToast('Settings saved', '', 'success');
     } catch { addToast('Failed to save', '', 'error'); }
     setSaving(false);
+  };
+
+  const updateHeroOverrides = (value) => {
+    setHeroOverrideJson(value);
+    try {
+      const parsed = JSON.parse(value);
+      setHeroJsonError('');
+      setSettings(s => ({ ...s, hero_content_overrides: parsed }));
+    } catch (err) {
+      setHeroJsonError('Invalid JSON: ' + err.message);
+    }
   };
 
   if (loading) return <div className="admin-loading"><span className="spinner" /></div>;
@@ -931,6 +949,26 @@ function AdminSettingsPanel({ addToast }) {
               <input type="number" className="form-input" value={settings[key] || 0} onChange={e => update(key, parseInt(e.target.value))} min={0} />
             </div>
           ))}
+        </div>
+      </div>
+
+      <div className="admin-settings-section">
+        <div className="admin-settings-title">Hero Content Overrides</div>
+        <div className="admin-form-grid">
+          <div className="form-group full-width">
+            <label className="form-label">Hero override JSON</label>
+            <textarea
+              className="form-textarea"
+              rows={12}
+              value={heroOverrideJson}
+              onChange={(e) => updateHeroOverrides(e.target.value)}
+            />
+            <div className="admin-muted" style={{ fontSize: 12, marginTop: 8 }}>
+              Define per-portal/subdomain hero overrides as JSON. Example keys: <code>music</code>, <code>djs</code>, <code>labels</code>, <code>producers</code>, <code>mediahouses</code>.
+              Use <code>slides</code>, <code>heroImages</code>, and <code>heroFallbacks</code> inside each override object.
+            </div>
+            {heroJsonError && <div className="admin-error" style={{ marginTop: 8 }}>{heroJsonError}</div>}
+          </div>
         </div>
       </div>
 
