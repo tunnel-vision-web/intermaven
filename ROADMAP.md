@@ -44,7 +44,11 @@ Transform Intermaven from an AI tools platform into a complete creative business
 - CRM with multi-channel communication
 - Admin dashboard with user management
 - Google Drive-style file storage
-- Individual app marketing pages
+- Individual app marketing pages with hero sections, FAQs, and targeted content
+- Vertical subdomain landing pages for music audiences (e.g. djs.intermavenmusic.com)
+- Flagship app landing pages for Social AI, Brand Kit AI, and Smart CRM
+- Back-end admin control for hero and carousel content managed through the CMS
+- Future release: user-built mini-sites powered by Intermaven systems
 
 ---
 

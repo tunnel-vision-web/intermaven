@@ -92,7 +92,7 @@ Both portals share a single authentication layer, credit system, database, and A
 - EPK Builder — 7-tab builder, AI bio generation, publish/unpublish, analytics, multi-hosting
 - File Manager — grid/list view, drag-drop upload, folders, preview, sharing
 - App Sorting Grid — multi-select, category filter, search, wizard for multiple apps
-- App Landing Pages — dynamic template for all 5 tools with pricing and FAQs
+- App Landing Pages — dynamic tool landing pages with pricing, FAQs, hero sections, and subdomain-ready templates
 - EPK Public Page — /artist/:username public-facing route
 - Hero slideshow with image registry and CSS fallbacks
 - Page headers with image registry and CSS fallbacks
@@ -184,6 +184,19 @@ Files:       /api/files | /api/files/upload | /api/files/:id/download
              /api/files/:id/share | /api/folders
 Health:      /api/health
 ```
+
+## 3.4 Landing Page & Subdomain Architecture
+
+- `intermaven.io` is the primary business portal and should default to business apps, with music portal content reachable through a top navigation tab.
+- `intermavenmusic.com` is the music ecosystem portal. Vertical audience pages should use branded subdomains such as `djs.intermavenmusic.com`, `labels.intermavenmusic.com`, `producers.intermavenmusic.com`, and `mediahouses.intermavenmusic.com`.
+- Each subdomain landing page should include:
+  - a hero section with three targeted key messages tailored to the visitor segment
+  - app cards, FAQs, and bottom content that are specific to the vertical or audience
+  - a logo carousel directly below the hero section on `intermavenmusic.com`
+- Main Intermaven app landing pages should follow the same pattern: hero section plus a related carousel below it, with the first wave focused on flagship offerings (Social AI, Brand Kit AI, Smart CRM).
+- Not all apps need landing pages immediately. Build flagship pages first and extend to additional apps after reviewing user behavior.
+- Admin-managed hero content should be supported by the backend CMS over time. This can be added in tandem with the existing CMS system and scheduled later in the release pipeline.
+- Future development should enable users to build their own sites leveraging Intermaven systems and connected apps as a post-launch release.
 
 ---
 
@@ -497,6 +510,15 @@ public/
 │   │       ├── hero-1.jpg    Slide 1 — "Africa's music ecosystem, finally connected."
 │   │       ├── hero-2.jpg    Slide 2 — "Your music. Your terms. Your money."
 │   │       └── hero-3.jpg    Slide 3 — "The right track for every scene."
+│   ├── carousel/
+│   │   └── logos/
+│   │       ├── logo-dj.svg
+│   │       ├── logo-label.svg
+│   │       ├── logo-producer.svg
+│   │       ├── logo-artist.svg
+│   │       ├── logo-social.svg
+│   │       ├── logo-brandkit.svg
+│   │       └── logo-crm.svg
 │   └── headers/
 │       ├── intermaven/
 │       │   ├── header-tools.jpg
@@ -546,6 +568,17 @@ public/
 **Page headers:** 1920x350px, JPG or WebP, under 200KB, relevant to page topic.
 
 **App icons:** 64x64px or 128x128px square, PNG with transparent background, flat icon style.
+
+**Logo carousel SVGs:** 220x100px artboard with a 200x80px safe area. Use simple brand mark placeholders and ensure logos are legible on light and dark backgrounds.
+
+## 7.5 Logo Carousel
+
+- The logo carousel appears directly below the hero section on `intermavenmusic.com` and on relevant app landing pages.
+- It should move slowly by default and pause on hover.
+- Each logo is clickable and navigates to its related landing page.
+- Use SVG placeholders stored in `public/images/carousel/logos/`.
+- Recommended logo size: 220x100px artboard, 200x80px safe area, with at least 16px spacing between items.
+- If a carousel item is missing, render a plain SVG placeholder with a simple border and label.
 
 ## 7.3 How imageRegistry.js Works
 
