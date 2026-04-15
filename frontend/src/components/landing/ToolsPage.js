@@ -2,6 +2,39 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FlatIcon } from '../FlatIcon';
 
+const TOOL_PAGE_COPY = {
+  default: {
+    header: 'AI Creative Studio',
+    subtitle: 'Generate brand and music assets powered by AI',
+    cta: 'Start free →',
+    ctaDesc: 'Create a free account to access all AI tools with 150 free credits. No credit card required.'
+  },
+  djs: {
+    header: 'Tools for DJs and promoters',
+    subtitle: 'Create show promos, lineups, and bookings with AI-ready branding.',
+    cta: 'Join the movement →',
+    ctaDesc: 'Sign up and turn every set into a branded experience for promoters, venues, and fans.'
+  },
+  labels: {
+    header: 'Tools for labels and A&R teams',
+    subtitle: 'Write artist bios, release plans, and pitch decks that help you sign and promote talent.',
+    cta: 'Start label tools →',
+    ctaDesc: 'Create an account and get label-ready assets for press, sync, and promotion.'
+  },
+  producers: {
+    header: 'Tools for producers and studios',
+    subtitle: 'Build your portfolio, pitch beats, and promote sessions with professional content.',
+    cta: 'Create your demo pack →',
+    ctaDesc: 'Sign up to generate polished producer profiles, sync pitches, and social assets.'
+  },
+  mediahouses: {
+    header: 'Tools for media houses and brand teams',
+    subtitle: 'Build music campaigns, licensing briefs, and curated playlists with ease.',
+    cta: 'Explore media tools →',
+    ctaDesc: 'Sign up to access tools built for licensing, campaigns, and creative operations.'
+  }
+};
+
 // Tool definitions for landing page
 const TOOL_CARDS = [
   { icon: 'brandkit', color: '#c084fc', n: 'Brand Kit AI', d: 'Name, taglines, tone of voice, colour direction', cost: '10 CREDITS', costColor: 'var(--a2)' },
@@ -11,8 +44,9 @@ const TOOL_CARDS = [
   { icon: 'pitchdeck', color: '#8b5cf6', n: 'Pitch Deck AI', d: 'Investor & grant pitch decks for East African markets', cost: '18 CREDITS', costColor: 'var(--a2)' }
 ];
 
-function ToolsPage({ portal = 'music', onOpenAuth, onToast }) {
+function ToolsPage({ portal = 'music', subdomainPage = null, onOpenAuth, onToast }) {
   const [credits] = useState(150);
+  const pageCopy = TOOL_PAGE_COPY[subdomainPage] || TOOL_PAGE_COPY.default;
 
   return (
     <>
@@ -22,8 +56,8 @@ function ToolsPage({ portal = 'music', onOpenAuth, onToast }) {
         <div className="pho" />
         <div className="phc">
           <div className="bc">Intermaven › AI Tools</div>
-          <div className="pht">AI Creative Studio</div>
-          <div className="phs">Generate brand and music assets powered by AI</div>
+          <div className="pht">{pageCopy.header}</div>
+          <div className="phs">{pageCopy.subtitle}</div>
         </div>
       </div>
 
@@ -151,9 +185,12 @@ function ToolsPage({ portal = 'music', onOpenAuth, onToast }) {
               style={{ display: 'inline-block' }}
               data-testid="tools-get-started"
             >
-            Start free →
+              {pageCopy.cta}
             </button>
           </div>
+          <p style={{ fontSize: '13px', color: 'var(--mu)', marginBottom: '16px', maxWidth: '400px', margin: '0 auto 16px' }}>
+            {pageCopy.ctaDesc}
+          </p>
 
           {/* CTA */}
           <div style={{ 

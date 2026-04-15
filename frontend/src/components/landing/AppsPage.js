@@ -6,8 +6,37 @@ import { FlatIcon } from '../FlatIcon';
 
 const LIVE_APPS = ['brandkit', 'musicbio', 'syncpitch', 'social', 'bizpitch'];
 
-function AppsPage({ portal = 'music', onOpenAppModal, onToast }) {
+const APP_PAGE_COPY = {
+  default: {
+    breadcrumb: 'Intermaven › Apps',
+    title: 'App Marketplace',
+    subtitle: 'Every tool your creative business needs',
+  },
+  djs: {
+    breadcrumb: 'Intermaven › DJs',
+    title: 'Tools for DJs & promoters',
+    subtitle: 'Apps to help DJs book shows, build brands, and grow audiences.',
+  },
+  labels: {
+    breadcrumb: 'Intermaven › Labels',
+    title: 'Tools for labels & managers',
+    subtitle: 'Apps to help labels sign artists, pitch releases, and run campaigns.',
+  },
+  producers: {
+    breadcrumb: 'Intermaven › Producers',
+    title: 'Tools for producers & studios',
+    subtitle: 'Apps to promote beats, manage sessions, and grow your production business.',
+  },
+  mediahouses: {
+    breadcrumb: 'Intermaven › Media Houses',
+    title: 'Tools for media houses',
+    subtitle: 'Apps for music curation, licensing, and brand campaigns.',
+  }
+};
+
+function AppsPage({ portal = 'music', subdomainPage = null, onOpenAppModal, onToast }) {
   const [activeFilter, setActiveFilter] = useState('all');
+  const pageCopy = APP_PAGE_COPY[subdomainPage] || APP_PAGE_COPY.default;
 
   // Filter apps based on portal
   const portalApps = ALL_APPS.filter(app => 
@@ -32,7 +61,7 @@ function AppsPage({ portal = 'music', onOpenAppModal, onToast }) {
   return (
     <>
       {/* Page Header */}
-      <PageHeader pageKey="apps" breadcrumb="Intermaven › Apps" title="App Marketplace" subtitle="Every tool your creative business needs" />
+      <PageHeader pageKey="apps" breadcrumb={pageCopy.breadcrumb} title={pageCopy.title} subtitle={pageCopy.subtitle} />
 
       {/* Apps Content */}
       <div style={{ padding: '28px 0 60px' }}>
