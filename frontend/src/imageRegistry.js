@@ -11,13 +11,13 @@
 //   public/images/hero/intermavenmusic/   hero-1.jpg, hero-2.jpg, hero-3.jpg
 //   public/images/headers/intermaven/     header-{page}.jpg
 //   public/images/headers/intermavenmusic/header-{page}.jpg
-//   public/icons/apps/                    {appid}.png
+//   public/icons/                    {appid}.png
 //
 // FORMAT SUPPORT: .jpg, .jpeg, .webp, .png
 // If a file is missing, a CSS gradient fallback is used automatically.
 // ─────────────────────────────────────────────────────────────────
 
-const BASE = process.env.PUBLIC_URL || '';
+const BASE = process.env.PUBLIC_URL || (typeof window !== 'undefined' ? window.location.origin : '');
 
 // ── Hero slide images ─────────────────────────────────────────────
 // Used in HomePage slideshow. 1920×900px recommended.
@@ -126,27 +126,29 @@ export const HEADER_FALLBACKS = {
 };
 
 // ── App icons ─────────────────────────────────────────────────────
-// Custom PNG icons — drop files in public/icons/apps/
+// Custom PNG icons — drop files in public/icons/
 // If the file doesn't exist, FlatIcon SVG fallback is used.
 
 export const APP_ICONS = {
-  brandkit:  `${BASE}/icons/apps/brandkit.png`,
-  musicbio:  `${BASE}/icons/apps/musicbio.png`,
-  social:    `${BASE}/icons/apps/social.png`,
-  syncpitch: `${BASE}/icons/apps/syncpitch.png`,
-  bizpitch:  `${BASE}/icons/apps/bizpitch.png`,
-  epk:       `${BASE}/icons/apps/epk.png`,
-  crm:       `${BASE}/icons/apps/crm.png`,
-  files:     `${BASE}/icons/apps/files.png`,
-  distro:    `${BASE}/icons/apps/distro.png`,
-  pos:       `${BASE}/icons/apps/pos.png`,
-  contract:  `${BASE}/icons/apps/contract.png`,
-  pressrel:  `${BASE}/icons/apps/pressrel.png`,
-  lyric:     `${BASE}/icons/apps/lyric.png`,
-  royalty:   `${BASE}/icons/apps/royalty.png`,
-  calendar:  `${BASE}/icons/apps/calendar.png`,
-  grant:     `${BASE}/icons/apps/grant.png`,
+  brandkit:  `${BASE}/icons/brandkit.png`,
+  musicbio:  `${BASE}/icons/musicbio.png`,
+  social:    `${BASE}/icons/social.png`,
+  syncpitch: `${BASE}/icons/syncpitch.png`,
+  bizpitch:  `${BASE}/icons/bizpitch.png`,
+  epk:       `${BASE}/icons/epk.png`,
+  crm:       `${BASE}/icons/crm.png`,
+  files:     `${BASE}/icons/files.png`,
+  distro:    `${BASE}/icons/distro.png`,
+  pos:       `${BASE}/icons/pos.png`,
+  contract:  `${BASE}/icons/contract.png`,
+  pressrel:  `${BASE}/icons/pressrel.png`,
+  lyric:     `${BASE}/icons/lyric.png`,
+  royalty:   `${BASE}/icons/royalty.png`,
+  calendar:  `${BASE}/icons/calendar.png`,
+  grant:     `${BASE}/icons/grant.png`,
 };
+
+export const INTERMAVEN_LOGO = `${BASE}/images/logos/intermaven/intermaven-logo-web.png`;
 
 export const CAROUSEL_LOGOS = {
   music: [

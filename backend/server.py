@@ -1,5 +1,6 @@
-from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional, List
@@ -11,6 +12,10 @@ from bson import ObjectId
 import os
 from dotenv import load_dotenv
 import httpx
+
+from .config import db, PLAN_CREDITS, logger
+from .utils import get_current_user, serialize_user, verify_password, get_password_hash, create_access_token
+from .routes import auth_router, user_router, files_router, folders_router
 
 load_dotenv()
 
@@ -24,23 +29,31 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# MongoDB connection
-MONGO_URL = os.environ.get("MONGO_URL")
-DB_NAME = os.environ.get("DB_NAME", "intermaven")
-client = MongoClient(MONGO_URL)
-db = client[DB_NAME]
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Referrer-Policy"] = "no-referrer-when-downgrade"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+    response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
+    if request.url.scheme == "https":
+        response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains; preload"
+    return response
 
-# JWT Configuration
-JWT_SECRET = os.environ.get("JWT_SECRET", "intermaven_secret_key")
-JWT_ALGORITHM = os.environ.get("JWT_ALGORITHM", "HS256")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES", 1440))
+@app.exception_handler(Exception)
+async def log_exceptions(request: Request, exc: Exception):
+    logger.exception("Unhandled exception on %s %s", request.method, request.url)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error"}
+    )
 
-# Password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-security = HTTPBearer()
-
-# Credit allocations by plan
-PLAN_CREDITS = {"free": 150, "creator": 600, "pro": 2500}
+app.include_router(auth_router)
+app.include_router(user_router)
+app.include_router(files_router)
+app.include_router(folders_router)
 
 # ============== MODELS ==============
 
@@ -97,153 +110,6 @@ class AIGenerateRequest(BaseModel):
 class PlanUpgrade(BaseModel):
     plan: str
     payment_method: str
-
-# ============== HELPER FUNCTIONS ==============
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
-
-def get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
-
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
-    to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
-
-def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
-    token = credentials.credentials
-    try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        user_id = payload.get("sub")
-        if user_id is None:
-            raise HTTPException(status_code=401, detail="Invalid token")
-        user = db.users.find_one({"_id": ObjectId(user_id)})
-        if user is None:
-            raise HTTPException(status_code=401, detail="User not found")
-        return user
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-def serialize_user(user: dict) -> dict:
-    return {
-        "id": str(user["_id"]),
-        "email": user.get("email", ""),
-        "first_name": user.get("first_name", ""),
-        "last_name": user.get("last_name", ""),
-        "phone": user.get("phone", ""),
-        "plan": user.get("plan", "free"),
-        "credits": user.get("credits", 150),
-        "apps": user.get("apps", []),
-        "portal": user.get("portal", "music"),
-        "brand_name": user.get("brand_name", ""),
-        "bio": user.get("bio", ""),
-        "created_at": user.get("created_at", datetime.now(timezone.utc)).isoformat() if isinstance(user.get("created_at"), datetime) else str(user.get("created_at", ""))
-    }
-
-# ============== AUTH ROUTES ==============
-
-@app.post("/api/auth/register", response_model=TokenResponse)
-async def register(user_data: UserCreate):
-    existing_user = db.users.find_one({"email": user_data.email.lower()})
-    if existing_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    
-    hashed_password = get_password_hash(user_data.password)
-    new_user = {
-        "email": user_data.email.lower(),
-        "password": hashed_password,
-        "first_name": user_data.first_name,
-        "last_name": user_data.last_name,
-        "phone": user_data.phone,
-        "plan": "free",
-        "credits": PLAN_CREDITS["free"],
-        "apps": ["brandkit", "musicbio", "social", "syncpitch", "bizpitch"],
-        "portal": user_data.portal,
-        "brand_name": "",
-        "bio": "",
-        "channels": {"email": True, "whatsapp": True, "sms": False, "push": False},
-        "ai_runs": 0,
-        "created_at": datetime.now(timezone.utc)
-    }
-    
-    result = db.users.insert_one(new_user)
-    new_user["_id"] = result.inserted_id
-    
-    access_token = create_access_token(data={"sub": str(result.inserted_id)})
-    
-    # Create welcome notification
-    db.notifications.insert_one({
-        "user_id": result.inserted_id,
-        "icon": "🎉",
-        "title": "Welcome to Intermaven!",
-        "text": "Your account is set up. Start exploring your tools.",
-        "read": False,
-        "created_at": datetime.now(timezone.utc)
-    })
-    
-    return TokenResponse(
-        access_token=access_token,
-        user=UserResponse(**serialize_user(new_user))
-    )
-
-@app.post("/api/auth/login", response_model=TokenResponse)
-async def login(user_data: UserLogin):
-    user = db.users.find_one({"email": user_data.email.lower()})
-    if not user or not verify_password(user_data.password, user["password"]):
-        raise HTTPException(status_code=401, detail="Invalid email or password")
-    
-    access_token = create_access_token(data={"sub": str(user["_id"])})
-    
-    return TokenResponse(
-        access_token=access_token,
-        user=UserResponse(**serialize_user(user))
-    )
-
-@app.get("/api/auth/me", response_model=UserResponse)
-async def get_me(current_user: dict = Depends(get_current_user)):
-    return UserResponse(**serialize_user(current_user))
-
-# ============== USER ROUTES ==============
-
-@app.put("/api/user/profile", response_model=UserResponse)
-async def update_profile(update_data: UserUpdate, current_user: dict = Depends(get_current_user)):
-    update_dict = {k: v for k, v in update_data.model_dump().items() if v is not None}
-    if update_dict:
-        db.users.update_one({"_id": current_user["_id"]}, {"$set": update_dict})
-    
-    updated_user = db.users.find_one({"_id": current_user["_id"]})
-    return UserResponse(**serialize_user(updated_user))
-
-@app.post("/api/user/apps/toggle", response_model=UserResponse)
-async def toggle_app(app_data: AppToggle, current_user: dict = Depends(get_current_user)):
-    apps = current_user.get("apps", [])
-    if app_data.app_id in apps:
-        apps.remove(app_data.app_id)
-    else:
-        apps.append(app_data.app_id)
-    
-    db.users.update_one({"_id": current_user["_id"]}, {"$set": {"apps": apps}})
-    updated_user = db.users.find_one({"_id": current_user["_id"]})
-    return UserResponse(**serialize_user(updated_user))
-
-@app.get("/api/user/stats")
-async def get_user_stats(current_user: dict = Depends(get_current_user)):
-    # Get AI runs this week
-    week_ago = datetime.now(timezone.utc) - timedelta(days=7)
-    ai_runs = db.ai_runs.count_documents({
-        "user_id": current_user["_id"],
-        "created_at": {"$gte": week_ago}
-    })
-    
-    return {
-        "credits": current_user.get("credits", 0),
-        "plan": current_user.get("plan", "free"),
-        "ai_runs_week": ai_runs,
-        "active_apps": len(current_user.get("apps", [])),
-        "scheduled_posts": 0
-    }
 
 # ============== NOTIFICATIONS ==============
 
@@ -1817,148 +1683,3 @@ async def get_epk_analytics(epk_id: str, current_user: dict = Depends(get_curren
         "top_referrers": top_referrers,
     }
 
-# ============== FILE MANAGEMENT ROUTES ==============
-
-@app.get("/api/files")
-async def list_files(
-    folder_id: Optional[str] = None,
-    search: Optional[str] = None,
-    favorites: Optional[bool] = None,
-    recent: Optional[bool] = None,
-    trash: Optional[bool] = None,
-    current_user: dict = Depends(get_current_user)
-):
-    query = {"user_id": current_user["_id"]}
-    if trash:
-        query["deleted_at"] = {"$ne": None}
-    else:
-        query["deleted_at"] = None
-        if folder_id:
-            query["folder_id"] = ObjectId(folder_id)
-        elif not search and not favorites and not recent:
-            query["folder_id"] = None
-    
-    if search:
-        query["filename"] = {"$regex": search, "$options": "i"}
-    if favorites:
-        query["is_favorite"] = True
-    
-    sort = [("created_at", -1)] if recent else [("filename", 1)]
-    limit = 20 if recent else 200
-    
-    files = list(db.files.find(query).sort(sort).limit(limit))
-    result = []
-    for f in files:
-        f["id"] = str(f.pop("_id"))
-        f.pop("user_id", None)
-        if f.get("folder_id"): f["folder_id"] = str(f["folder_id"])
-        if isinstance(f.get("created_at"), datetime): f["created_at"] = f["created_at"].isoformat()
-        if isinstance(f.get("updated_at"), datetime): f["updated_at"] = f["updated_at"].isoformat()
-        result.append(f)
-    return {"files": result}
-
-@app.get("/api/files/storage")
-async def get_storage_info(current_user: dict = Depends(get_current_user)):
-    result = list(db.files.aggregate([
-        {"$match": {"user_id": current_user["_id"], "deleted_at": None}},
-        {"$group": {"_id": None, "total": {"$sum": "$size"}}}
-    ]))
-    used = result[0]["total"] if result else 0
-    return {"used": used}
-
-@app.post("/api/files/upload")
-async def upload_file(
-    file: bytes = None,
-    folder_id: Optional[str] = None,
-    current_user: dict = Depends(get_current_user)
-):
-    from fastapi import UploadFile, File as FastAPIFile
-    return {"success": True, "message": "Upload endpoint ready — connect to cloud storage (S3/GCS/R2)"}
-
-@app.get("/api/files/{file_id}/download")
-async def get_download_url(file_id: str, current_user: dict = Depends(get_current_user)):
-    f = db.files.find_one({"_id": ObjectId(file_id), "user_id": current_user["_id"]})
-    if not f:
-        raise HTTPException(404, "File not found")
-    return {"url": f.get("storage_url", "#")}
-
-@app.post("/api/files/{file_id}/share")
-async def share_file(file_id: str, current_user: dict = Depends(get_current_user)):
-    import secrets
-    f = db.files.find_one({"_id": ObjectId(file_id), "user_id": current_user["_id"]})
-    if not f:
-        raise HTTPException(404, "File not found")
-    token = f.get("share_token") or secrets.token_urlsafe(16)
-    db.files.update_one({"_id": ObjectId(file_id)}, {"$set": {"is_public": True, "share_token": token}})
-    return {"share_url": f"https://intermaven.io/files/shared/{token}"}
-
-@app.delete("/api/files/{file_id}")
-async def delete_file(file_id: str, current_user: dict = Depends(get_current_user)):
-    db.files.update_one(
-        {"_id": ObjectId(file_id), "user_id": current_user["_id"]},
-        {"$set": {"deleted_at": datetime.now(timezone.utc)}}
-    )
-    return {"success": True}
-
-@app.get("/api/folders")
-async def list_folders(
-    parent_id: Optional[str] = None,
-    root: Optional[bool] = None,
-    current_user: dict = Depends(get_current_user)
-):
-    query = {"user_id": current_user["_id"]}
-    if root or parent_id is None:
-        query["parent_id"] = None
-    elif parent_id:
-        query["parent_id"] = ObjectId(parent_id)
-    
-    folders = list(db.folders.find(query).sort("name", 1))
-    result = []
-    for f in folders:
-        f["id"] = str(f.pop("_id"))
-        f.pop("user_id", None)
-        if f.get("parent_id"): f["parent_id"] = str(f["parent_id"])
-        if isinstance(f.get("created_at"), datetime): f["created_at"] = f["created_at"].isoformat()
-        result.append(f)
-    return {"folders": result}
-
-@app.get("/api/folders/{folder_id}")
-async def get_folder(folder_id: str, current_user: dict = Depends(get_current_user)):
-    f = db.folders.find_one({"_id": ObjectId(folder_id), "user_id": current_user["_id"]})
-    if not f:
-        raise HTTPException(404, "Folder not found")
-    return {"id": str(f["_id"]), "name": f["name"], "parent_id": str(f.get("parent_id", "")) or None}
-
-class FolderCreate(BaseModel):
-    name: str
-    parent_id: Optional[str] = None
-    color: Optional[str] = None
-
-@app.post("/api/folders")
-async def create_folder(data: FolderCreate, current_user: dict = Depends(get_current_user)):
-    folder = {
-        "user_id": current_user["_id"],
-        "name": data.name,
-        "parent_id": ObjectId(data.parent_id) if data.parent_id else None,
-        "color": data.color,
-        "created_at": datetime.now(timezone.utc),
-    }
-    result = db.folders.insert_one(folder)
-    return {"id": str(result.inserted_id), "name": data.name}
-
-@app.put("/api/folders/{folder_id}")
-async def update_folder(folder_id: str, data: FolderCreate, current_user: dict = Depends(get_current_user)):
-    db.folders.update_one(
-        {"_id": ObjectId(folder_id), "user_id": current_user["_id"]},
-        {"$set": {"name": data.name}}
-    )
-    return {"success": True}
-
-@app.delete("/api/folders/{folder_id}")
-async def delete_folder(folder_id: str, current_user: dict = Depends(get_current_user)):
-    db.folders.delete_one({"_id": ObjectId(folder_id), "user_id": current_user["_id"]})
-    db.files.update_many(
-        {"folder_id": ObjectId(folder_id), "user_id": current_user["_id"]},
-        {"$set": {"deleted_at": datetime.now(timezone.utc)}}
-    )
-    return {"success": True}

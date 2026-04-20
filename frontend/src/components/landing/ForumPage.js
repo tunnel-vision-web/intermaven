@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Search, Clock, User, ChevronRight, MessageSquare, ThumbsUp, Eye, Bookmark, TrendingUp } from 'lucide-react';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import { getHeaderBackground } from '../../imageRegistry';
 import '../../styles/landing.css';
 
 // Forum categories with flat icons
@@ -193,7 +194,7 @@ function ForumPage({ addToast }) {
       <Navbar currentPage="forum" onToast={addToast} />
       
       <div className="ph" style={{ marginTop: 'calc(var(--bh) + var(--nh))' }}>
-        <div className="phi" style={{ background: 'linear-gradient(135deg, rgba(107, 91, 149, 0.15) 0%, rgba(91, 119, 149, 0.1) 100%)' }} />
+        <div className="phi" style={{ background: getHeaderBackground('forum') }} />
         <div className="pho" />
         <div className="phc">
           <div className="bc">Community</div>

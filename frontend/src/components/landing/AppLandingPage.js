@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Zap, Check, ChevronDown, ChevronUp, ArrowRight, Star } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Zap, ChevronDown, ChevronUp, ArrowRight, Star } from 'lucide-react';
+import { INTERMAVEN_LOGO } from '../../imageRegistry';
 
 // ── App configs ────────────────────────────────────────────────────
 const APP_CONFIGS = {
@@ -11,6 +12,21 @@ const APP_CONFIGS = {
     color: '#7c6ff7',
     cost: 10,
     icon: '🎨',
+    slides: [
+      { dot: '#7c6ff7', badge: 'AI Brand Kit', h: 'Build your brand identity in 30 seconds', s: "AI-powered brand names, taglines, tone of voice, and colour direction — designed for African creatives and entrepreneurs.", b1: 'Try free', b1link: '#', b2: 'See features', b2link: '#features' },
+      { dot: '#7c6ff7', badge: 'Smart Analysis', h: 'AI evaluates your name across 6 strategic dimensions', s: "Get professional brand analysis that would cost thousands from consultants.", b1: 'Start analysis', b1link: '#', b2: 'View examples', b2link: '#examples' },
+      { dot: '#7c6ff7', badge: 'Complete Kit', h: 'From name to positioning in one click', s: "Taglines, tone, colors, personality — everything you need to launch your brand.", b1: 'Generate kit', b1link: '#', b2: 'Pricing', b2link: '#pricing' }
+    ],
+    backgrounds: [
+      'linear-gradient(180deg, #7c6ff722 0%, #7c6ff744 50%, #08090d 100%)',
+      'linear-gradient(180deg, #7c6ff733 0%, #7c6ff755 50%, #08090d 100%)',
+      'linear-gradient(180deg, #7c6ff744 0%, #7c6ff766 50%, #08090d 100%)'
+    ],
+    social: {
+      twitter: 'https://twitter.com/intermaven_brand',
+      instagram: 'https://instagram.com/intermaven_brand',
+      linkedin: 'https://linkedin.com/company/intermaven-brand'
+    },
     features: [
       { label: 'Brand Name Analysis', desc: 'AI evaluates your name across 6 strategic dimensions' },
       { label: '3+ Tagline Options', desc: 'Each with rationale tailored to your market' },
@@ -42,6 +58,21 @@ const APP_CONFIGS = {
     color: '#22d3ee',
     cost: 15,
     icon: '🎵',
+    slides: [
+      { dot: '#22d3ee', badge: 'Music Bio AI', h: 'Your artist story, told professionally', s: "AI-written artist bios, press narratives, and media pitches built for African musicians.", b1: 'Try free', b1link: '#', b2: 'See features', b2link: '#features' },
+      { dot: '#22d3ee', badge: 'Press Narrative', h: '3-paragraph story arc for music journalists', s: "Professional press narratives that capture your unique journey and sound.", b1: 'Generate narrative', b1link: '#', b2: 'View examples', b2link: '#examples' },
+      { dot: '#22d3ee', badge: 'Media Pitch', h: 'Ready-to-send pitches for blogs and playlists', s: "Targeted pitches for music supervisors, bloggers, and playlist curators.", b1: 'Create pitch', b1link: '#', b2: 'Pricing', b2link: '#pricing' }
+    ],
+    backgrounds: [
+      'linear-gradient(180deg, #22d3ee22 0%, #22d3ee44 50%, #08090d 100%)',
+      'linear-gradient(180deg, #22d3ee33 0%, #22d3ee55 50%, #08090d 100%)',
+      'linear-gradient(180deg, #22d3ee44 0%, #22d3ee66 50%, #08090d 100%)'
+    ],
+    social: {
+      twitter: 'https://twitter.com/intermaven_music',
+      instagram: 'https://instagram.com/intermaven_music',
+      linkedin: 'https://linkedin.com/company/intermaven-music'
+    },
     features: [
       { label: 'Short Bio (100 words)', desc: 'Perfect for streaming profiles and social media' },
       { label: 'Full Bio (250 words)', desc: 'For press kits, websites, and media packages' },
@@ -72,6 +103,21 @@ const APP_CONFIGS = {
     color: '#f43f5e',
     cost: 0,
     icon: '📱',
+    slides: [
+      { dot: '#f43f5e', badge: 'Social AI', h: 'Full-stack social content for every platform', s: "Meta-maximized content engine covering Instagram, Facebook, TikTok, X, LinkedIn, YouTube, and Threads.", b1: 'Try free', b1link: '#', b2: 'See features', b2link: '#features' },
+      { dot: '#f43f5e', badge: 'Hashtag Strategy', h: 'Tiered hashtags for maximum reach', s: "High-volume, mid-range, niche, and branded tags optimized for each platform.", b1: 'Generate hashtags', b1link: '#', b2: 'View examples', b2link: '#examples' },
+      { dot: '#f43f5e', badge: 'Posting Times', h: 'Optimal timing for African audiences', s: "Platform-specific posting times based on Nairobi and East African engagement data.", b1: 'Get schedule', b1link: '#', b2: 'Pricing', b2link: '#pricing' }
+    ],
+    backgrounds: [
+      'linear-gradient(180deg, #f43f5e22 0%, #f43f5e44 50%, #08090d 100%)',
+      'linear-gradient(180deg, #f43f5e33 0%, #f43f5e55 50%, #08090d 100%)',
+      'linear-gradient(180deg, #f43f5e44 0%, #f43f5e66 50%, #08090d 100%)'
+    ],
+    social: {
+      twitter: 'https://twitter.com/intermaven_social',
+      instagram: 'https://instagram.com/intermaven_social',
+      linkedin: 'https://linkedin.com/company/intermaven-social'
+    },
     features: [
       { label: '7 Platforms, 23 Formats', desc: 'Reels, carousels, stories, threads, events, ads, and more' },
       { label: 'Meta-Maximized Output', desc: 'Collab posts, Add Yours stickers, Remix prompts, ad targeting' },
@@ -102,6 +148,11 @@ const APP_CONFIGS = {
     color: '#f59e0b',
     cost: 20,
     icon: '🎬',
+    social: {
+      twitter: 'https://twitter.com/intermaven_sync',
+      instagram: 'https://instagram.com/intermaven_sync',
+      linkedin: 'https://linkedin.com/company/intermaven-sync'
+    },
     features: [
       { label: '3 Subject Line Options', desc: 'Email subject lines optimised for open rates' },
       { label: 'Pitch Email (200–250 words)', desc: 'Tailored to the specific target — film, TV, or brand' },
@@ -132,6 +183,11 @@ const APP_CONFIGS = {
     color: '#8b5cf6',
     cost: 18,
     icon: '📊',
+    social: {
+      twitter: 'https://twitter.com/intermaven_pitch',
+      instagram: 'https://instagram.com/intermaven_pitch',
+      linkedin: 'https://linkedin.com/company/intermaven-pitch'
+    },
     features: [
       { label: 'Problem Statement', desc: 'Investor-grade framing of the problem you solve' },
       { label: 'Solution Slide Copy', desc: 'Clear, compelling description of your solution' },
@@ -162,6 +218,21 @@ const APP_CONFIGS = {
     color: '#14b8a6',
     cost: 12,
     icon: '📇',
+    slides: [
+      { dot: '#14b8a6', badge: 'Smart CRM', h: 'Turn contacts into bookings, fans, and revenue', s: "A music-first CRM for artists, managers, and creative teams — manage relationships in one dashboard.", b1: 'Try free', b1link: '#', b2: 'See features', b2link: '#features' },
+      { dot: '#14b8a6', badge: 'Booking Workflow', h: 'Track inquiries, proposals, and payments', s: "Streamline your booking process from initial contact to confirmed shows.", b1: 'Start tracking', b1link: '#', b2: 'View examples', b2link: '#examples' },
+      { dot: '#14b8a6', badge: 'Insights Dashboard', h: 'See pipeline health and revenue outlook', s: "Monitor sponsorships, sync opportunities, and relationship momentum.", b1: 'View dashboard', b1link: '#', b2: 'Pricing', b2link: '#pricing' }
+    ],
+    backgrounds: [
+      'linear-gradient(180deg, #14b8a622 0%, #14b8a644 50%, #08090d 100%)',
+      'linear-gradient(180deg, #14b8a633 0%, #14b8a655 50%, #08090d 100%)',
+      'linear-gradient(180deg, #14b8a644 0%, #14b8a666 50%, #08090d 100%)'
+    ],
+    social: {
+      twitter: 'https://twitter.com/intermaven_crm',
+      instagram: 'https://instagram.com/intermaven_crm',
+      linkedin: 'https://linkedin.com/company/intermaven-crm'
+    },
     features: [
       { label: 'Contact management', desc: 'Organise artists, promoters, brands, and media contacts in one place' },
       { label: 'Booking workflow', desc: 'Track inquiries, proposals, confirmations, and payments' },
@@ -205,40 +276,185 @@ function FAQItem({ q, a }) {
 function AppLandingPage({ appId, onOpenAuth }) {
   const config = APP_CONFIGS[appId];
   const navigate = useNavigate();
+  const [logoLoaded, setLogoLoaded] = useState(true);
+  const [slideState, setSlideState] = useState('in');
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
+  const progressRef = useRef(null);
+  const timerRef = useRef(null);
+
+  const slides = config ? config.slides || [] : [];
+  const backgrounds = config ? config.backgrounds || [] : [];
+  const SLIDE_DURATION = 5000;
+  const slideCount = slides.length;
+  const currentSlideData = slides[currentSlide];
+  const currentBgIndex = backgrounds.length ? currentSlide % backgrounds.length : 0;
+
+  useEffect(() => {
+    if (!config) return;
+    const startTime = Date.now();
+    
+    const updateProgress = () => {
+      const elapsed = Date.now() - startTime;
+      const newProgress = Math.min((elapsed / SLIDE_DURATION) * 100, 100);
+      setProgress(newProgress);
+      
+      if (newProgress < 100) {
+        progressRef.current = requestAnimationFrame(updateProgress);
+      }
+    };
+
+    progressRef.current = requestAnimationFrame(updateProgress);
+    
+    timerRef.current = setTimeout(() => {
+      setSlideState('out');
+      setTimeout(() => {
+        setCurrentSlide((prev) => (prev + 1) % slideCount);
+        setProgress(0);
+        setSlideState('in');
+      }, 400);
+    }, SLIDE_DURATION);
+
+    return () => {
+      if (progressRef.current) cancelAnimationFrame(progressRef.current);
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [currentSlide, slideCount, config]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 0);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const goToSlide = (index) => {
+    if (index === currentSlide) return;
+    if (progressRef.current) cancelAnimationFrame(progressRef.current);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    
+    setSlideState('out');
+    setTimeout(() => {
+      setCurrentSlide(index);
+      setProgress(0);
+      setSlideState('in');
+    }, 400);
+  };
+
+  const goToPrevSlide = () => {
+    goToSlide((currentSlide - 1 + slideCount) % slideCount);
+  };
+
+  const goToNextSlide = () => {
+    goToSlide((currentSlide + 1) % slideCount);
+  };
 
   if (!config) return <div style={{ padding: 40, color: 'var(--tx)' }}>App not found</div>;
 
-  const { name, tagline, description, color, cost, icon, features, steps, testimonials, faqs } = config;
+  const { name, color, cost, features, steps, testimonials, faqs, social } = config;
 
   return (
     <div className="app-landing">
       {/* Nav */}
-      <nav className="app-landing-nav">
-        <div className="app-landing-logo" onClick={() => navigate('/')}>INTER<span>MAVEN</span></div>
-        <div className="app-landing-nav-actions">
-          <button className="app-nav-btn" onClick={() => onOpenAuth()}>Sign in</button>
-          <button className="app-nav-btn primary" onClick={() => onOpenAuth()}>Get free →</button>
+      <nav className={`app-landing-nav ${scrolled ? 'scrolled' : ''}`}>
+        <div className="app-landing-nav-inner">
+          <div className={`app-landing-logo ${logoLoaded ? 'has-image' : ''}`} onClick={() => navigate('/')}>
+            {logoLoaded ? (
+              <img
+                src={INTERMAVEN_LOGO}
+                alt="Intermaven"
+                className="logo-image"
+                onError={() => setLogoLoaded(false)}
+              />
+            ) : null}
+            <span className="logo-text">INTER<span>MAVEN</span></span>
+          </div>
+          <div className="app-nav-menu">
+            <Link to="/tools" className="app-nav-link">AI Tools</Link>
+            <Link to="/forum" className="app-nav-link">Community</Link>
+            <Link to="/help" className="app-nav-link">Help</Link>
+          </div>
+          <div className="app-landing-nav-actions">
+            <button className="app-nav-btn" onClick={() => onOpenAuth()}>Sign in</button>
+            <button className="app-nav-btn primary" onClick={() => onOpenAuth()}>Get free →</button>
+          </div>
         </div>
       </nav>
 
       {/* Hero */}
-      <section className="app-hero">
-        <div className="app-hero-badge" style={{ background: `${color}22`, color, border: `1px solid ${color}44` }}>
-          {icon} {name}
+      <div className="hw" data-testid="hero-section">
+        <div className="bgs">
+          {backgrounds.map((bg, i) => (
+            <div
+              key={i}
+              className={`bg ${currentBgIndex === i ? 'on' : ''}`}
+              style={{
+                background: bg,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
+            />
+          ))}
+          <div className="bgo" />
         </div>
-        <h1 className="app-hero-title">{tagline}</h1>
-        <p className="app-hero-desc">{description}</p>
-        <div className="app-hero-actions">
-          <button className="app-cta-primary" style={{ background: color }} onClick={() => onOpenAuth()}>
-            Try free — {cost > 0 ? `${cost} credits` : 'free'} <ArrowRight size={16} />
-          </button>
+        
+        <div className="hs">
+          <div className="hcont">
+            <div className={`he hbadge ${slideState}`}>
+              <span 
+                className="bdot" 
+                style={{ 
+                  background: currentSlideData.dot,
+                  animation: 'pulse 2s infinite'
+                }} 
+              />
+              <span>{currentSlideData.badge}</span>
+            </div>
+            <div 
+              className={`ht htitle ${slideState}`}
+              dangerouslySetInnerHTML={{ __html: currentSlideData.h }}
+            />
+            <p className={`hp hsub ${slideState}`}>
+              {currentSlideData.s}
+            </p>
+            <div className={`hb hbtns ${slideState}`}>
+              <button className="hbp" onClick={() => onOpenAuth()}>
+                {currentSlideData.b1}
+              </button>
+              <a href={currentSlideData.b2link} className="hbg">
+                {currentSlideData.b2}
+              </a>
+            </div>
+          </div>
         </div>
-        <div className="app-hero-trust">
-          <span><Check size={13} color="#10b981" /> No credit card required</span>
-          <span><Check size={13} color="#10b981" /> 150 free credits on signup</span>
-          <span><Check size={13} color="#10b981" /> Built for African creatives</span>
+        
+        <div className={`sui-arrows ${slideState}`}>
+          <button type="button" className="slide-nav prev" onClick={goToPrevSlide} aria-label="Previous slide">‹</button>
+          <button type="button" className="slide-nav next" onClick={goToNextSlide} aria-label="Next slide">›</button>
         </div>
-      </section>
+        
+        <div className={`sui-bottom ${slideState}`}>
+          <div className="spr">
+            <div 
+              className="spb" 
+              style={{ width: `${progress}%` }}
+            />
+          </div>
+          <div className="sdots">
+            {slides.map((_, index) => (
+              <button
+                key={index}
+                type="button"
+                className={`sd ${index === currentSlide ? 'on' : ''}`}
+                onClick={() => goToSlide(index)}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
 
       {/* How it works */}
       <section className="app-section">
@@ -333,12 +549,92 @@ function AppLandingPage({ appId, onOpenAuth }) {
       </section>
 
       {/* Footer */}
-      <footer className="app-landing-footer">
-        <div>© {new Date().getFullYear()} Intermaven — Built for African creatives</div>
-        <div className="app-footer-links">
-          {Object.entries(APP_CONFIGS).filter(([k]) => k !== appId).map(([k, v]) => (
-            <a key={k} href={`/${k}`}>{v.name}</a>
-          ))}
+      <footer className="landing-footer">
+        <div className="cn">
+          <div className="footer-grid">
+            <div className="footer-brand">
+              <div className="footer-logo">
+                INTER<span>MAVEN</span>
+              </div>
+              <div className="footer-desc">
+                AI-powered creative and business tools built for Africa's entrepreneurs and artists.
+              </div>
+              <div className="footer-badges">
+                <span className="fbadge">music.intermaven.io</span>
+                <span className="fbadge">intermaven.io</span>
+              </div>
+            </div>
+            
+            <div className="footer-col">
+              <h4>Product</h4>
+              <div className="footer-links">
+                <a href="/tools" className="footer-link">AI Tools</a>
+                <a href="/apps" className="footer-link">App Marketplace</a>
+                <a href="/pricing" className="footer-link">Pricing</a>
+                <span className="footer-link">API & Developers</span>
+              </div>
+            </div>
+            
+            <div className="footer-col">
+              <h4>Company</h4>
+              <div className="footer-links">
+                <a href="/about" className="footer-link">About us</a>
+                <a href="/help" className="footer-link">Help Center</a>
+                <span className="footer-link">Blog</span>
+                <span className="footer-link">Careers</span>
+              </div>
+            </div>
+            
+            <div className="footer-col">
+              <h4>Follow us</h4>
+              <div className="footer-social">
+                <a 
+                  href={config.social.instagram} 
+                  className="sico" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                >
+                  📷
+                </a>
+                <a 
+                  href={config.social.twitter} 
+                  className="sico" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  aria-label="X (Twitter)"
+                >
+                  𝕏
+                </a>
+                <a 
+                  href={config.social.linkedin} 
+                  className="sico" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  aria-label="LinkedIn"
+                >
+                  in
+                </a>
+                <span className="sico">▶</span>
+              </div>
+              <div className="footer-copy">
+                © {new Date().getFullYear()} Intermaven Ltd.<br />
+                Nairobi, Kenya
+              </div>
+            </div>
+          </div>
+          
+          <div className="footer-bottom">
+            <div className="footer-bottom-links">
+              <span className="fbl">Privacy Policy</span>
+              <span className="fbl">Terms of Service</span>
+              <span className="fbl">Cookie Policy</span>
+              <span className="fbl">Refund Policy</span>
+            </div>
+            <div style={{ fontSize: '11px', color: 'var(--mu2)' }}>
+              Made with ❤ in Nairobi
+            </div>
+          </div>
         </div>
       </footer>
     </div>

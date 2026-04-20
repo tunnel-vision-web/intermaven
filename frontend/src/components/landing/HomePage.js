@@ -287,12 +287,12 @@ const SUBDOMAIN_PAGES = {
 };
 
 const FLAGSHIP_APPS = [
-  { title: 'Social AI', desc: 'Full-stack social content for every platform.', link: '/social' },
-  { title: 'Brand Kit AI', desc: 'Build your brand identity, voice, and visuals fast.', link: '/brandkit' },
-  { title: 'Smart CRM', desc: 'Manage bookings, contacts, and revenue in one dashboard.', link: '/smartcrm' },
+  { title: 'Social AI', desc: 'Full-stack social content for every platform.', link: '/social', icon: 'social', iconColor: '#f43f5e', iconBg: 'rgba(244,63,94,0.12)' },
+  { title: 'Brand Kit AI', desc: 'Build your brand identity, voice, and visuals fast.', link: '/brandkit', icon: 'brandkit', iconColor: '#7c6ff7', iconBg: 'rgba(124,111,247,0.12)' },
+  { title: 'Smart CRM', desc: 'Manage bookings, contacts, and revenue in one dashboard.', link: '/smartcrm', icon: 'crm', iconColor: '#10b981', iconBg: 'rgba(16,185,129,0.12)' },
 ];
 
-const SLIDE_DURATION = 8000;
+const SLIDE_DURATION = 12000;
 
 function HomePage({ portal = 'music', subdomainPage = null, onOpenAppModal, onOpenAuth, onToast }) {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -311,6 +311,26 @@ function HomePage({ portal = 'music', subdomainPage = null, onOpenAppModal, onOp
     : portalData;
   const slides = pageData.slides || portalData.slides;
   const carouselItems = pageData.carousel || CAROUSEL_LOGOS[subdomainPage] || CAROUSEL_LOGOS[portal] || [];
+
+  // Declare hero and slide variables BEFORE any useEffect or function that uses them
+  const heroImageKey = portal === 'music' ? 'intermavenmusic' : 'intermaven';
+  const heroOverrideKey = subdomainPage || portal;
+  const heroOverride = heroOverrides[heroOverrideKey] || {};
+  const heroImages = HERO_IMAGES[heroImageKey] || [];
+  const heroFallbacks = Array.isArray(heroOverride.heroFallbacks) && heroOverride.heroFallbacks.length > 0
+    ? heroOverride.heroFallbacks
+    : HERO_FALLBACKS[heroImageKey] || [];
+  const heroBackgrounds = Array.from({ length: 3 }, (_, index) => {
+    const imageIndex = heroImages.length ? index % heroImages.length : -1;
+    const heroImage = imageIndex >= 0 ? heroImages[imageIndex] : '';
+    const fallback = heroFallbacks[index] || heroFallbacks[0] || '';
+    return heroImage ? `url(${heroImage}), ${fallback}` : fallback;
+  });
+  const currentHeroImageIndex = heroBackgrounds.length ? currentSlide % heroBackgrounds.length : 0;
+  const slidesWithOverride = Array.isArray(heroOverride.slides) && heroOverride.slides.length > 0 ? heroOverride.slides : slides;
+  const heroSlides = slidesWithOverride.slice(0, 3);
+  const slideCount = heroSlides.length || 1;
+  const currentSlideData = heroSlides[currentSlide] || heroSlides[0];
 
   const handleNewsletterSubmit = async (e) => {
     e.preventDefault();
@@ -381,7 +401,7 @@ function HomePage({ portal = 'music', subdomainPage = null, onOpenAppModal, onOp
     timerRef.current = setTimeout(() => {
       setSlideState('out');
       setTimeout(() => {
-        setCurrentSlide((prev) => (prev + 1) % slidesWithOverride.length);
+        setCurrentSlide((prev) => (prev + 1) % slideCount);
         setProgress(0);
         setSlideState('in');
       }, 400);
@@ -391,7 +411,7 @@ function HomePage({ portal = 'music', subdomainPage = null, onOpenAppModal, onOp
       if (progressRef.current) cancelAnimationFrame(progressRef.current);
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [currentSlide, slidesWithOverride.length]);
+  }, [currentSlide, slideCount]);
 
   const goToSlide = (index) => {
     if (index === currentSlide) return;
@@ -406,6 +426,14 @@ function HomePage({ portal = 'music', subdomainPage = null, onOpenAppModal, onOp
     }, 400);
   };
 
+  const goToPrevSlide = () => {
+    goToSlide((currentSlide - 1 + slideCount) % slideCount);
+  };
+
+  const goToNextSlide = () => {
+    goToSlide((currentSlide + 1) % slideCount);
+  };
+
   const handleFeatureClick = (feat) => {
     if (feat.appId) {
       onOpenAppModal(feat.appId);
@@ -414,25 +442,17 @@ function HomePage({ portal = 'music', subdomainPage = null, onOpenAppModal, onOp
     }
   };
 
-  const heroImageKey = subdomainPage || (portal === 'music' ? 'intermavenmusic' : 'intermaven');
-  const heroOverrideKey = subdomainPage || portal;
-  const heroOverride = heroOverrides[heroOverrideKey] || {};
-  const heroImages = heroOverride.heroImages || HERO_IMAGES[heroImageKey] || HERO_IMAGES[portal === 'music' ? 'intermavenmusic' : 'intermaven'] || [];
-  const heroFallbacks = heroOverride.heroFallbacks || HERO_FALLBACKS[heroImageKey] || HERO_FALLBACKS[portal === 'music' ? 'intermavenmusic' : 'intermaven'] || [];
-  const slidesWithOverride = Array.isArray(heroOverride.slides) && heroOverride.slides.length > 0 ? heroOverride.slides : slides;
-  const currentSlideData = slidesWithOverride[currentSlide] || slides[currentSlide];
-
   return (
     <>
       {/* Hero Section */}
       <div className="hw" data-testid="hero-section">
         <div className="bgs">
-          {heroImages.map((img, i) => (
+          {heroBackgrounds.map((img, i) => (
             <div
               key={i}
-              className={`bg ${currentSlide === i ? 'on' : ''}`}
+              className={`bg ${currentHeroImageIndex === i ? 'on' : ''}`}
               style={{
-                backgroundImage: `url(${img}), ${heroFallbacks[i] || heroFallbacks[0]}`,
+                backgroundImage: img,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
               }}
@@ -471,7 +491,12 @@ function HomePage({ portal = 'music', subdomainPage = null, onOpenAppModal, onOp
           </div>
         </div>
         
-        <div className="sui">
+        <div className={`sui-arrows ${slideState}`}>
+          <button type="button" className="slide-nav prev" onClick={goToPrevSlide} aria-label="Previous slide">‹</button>
+          <button type="button" className="slide-nav next" onClick={goToNextSlide} aria-label="Next slide">›</button>
+        </div>
+        
+        <div className={`sui-bottom ${slideState}`}>
           <div className="spr">
             <div 
               className="spb" 
@@ -479,9 +504,10 @@ function HomePage({ portal = 'music', subdomainPage = null, onOpenAppModal, onOp
             />
           </div>
           <div className="sdots">
-            {slides.map((_, index) => (
+            {heroSlides.map((_, index) => (
               <button
                 key={index}
+                type="button"
                 className={`sd ${index === currentSlide ? 'on' : ''}`}
                 onClick={() => goToSlide(index)}
                 aria-label={`Go to slide ${index + 1}`}
@@ -506,6 +532,9 @@ function HomePage({ portal = 'music', subdomainPage = null, onOpenAppModal, onOp
           <div className="home-flagship-grid">
             {FLAGSHIP_APPS.map((app, idx) => (
               <Link key={idx} to={app.link} className="home-flagship-card">
+                <div className="home-flagship-card-icon">
+                  <FlatIcon name={app.icon} size={22} color={app.iconColor} />
+                </div>
                 <div className="home-flagship-card-title">{app.title}</div>
                 <div className="home-flagship-card-desc">{app.desc}</div>
                 <div className="home-flagship-card-cta">Explore →</div>
@@ -545,7 +574,7 @@ function HomePage({ portal = 'music', subdomainPage = null, onOpenAppModal, onOp
           </div>
           
           <div className="mban">
-            <div style={{ fontSize: '24px' }}>
+            <div className="mban-icon">
               <FlatIcon name="rocket" size={24} color="var(--gr)" />
             </div>
             <div style={{ flex: 1 }}>

@@ -21,6 +21,8 @@ const CREDIT_PRESETS = [
   { label: 'Pro Grant', credits: 1000, desc: 'Enterprise trial, major issue resolution' },
 ];
 
+const HERO_OVERRIDE_KEYS = ['music', 'business', 'djs', 'labels', 'producers', 'mediahouses'];
+
 const ADMIN_ROLES = {
   super_admin: { label: 'Super Admin', color: '#f59e0b', perms: ['all'] },
   admin: { label: 'Admin', color: '#7c6ff7', perms: ['users', 'credits', 'analytics'] },
@@ -864,6 +866,8 @@ function AuditPanel({ addToast }) {
 // ── Settings Panel ────────────────────────────────────────────────
 function AdminSettingsPanel({ addToast }) {
   const [settings, setSettings] = useState(null);
+  const [selectedHeroScope, setSelectedHeroScope] = useState('music');
+  const [showRawHeroJson, setShowRawHeroJson] = useState(false);
   const [heroOverrideJson, setHeroOverrideJson] = useState('');
   const [heroJsonError, setHeroJsonError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -875,6 +879,97 @@ function AdminSettingsPanel({ addToast }) {
     if (!settings) return;
     setHeroOverrideJson(JSON.stringify(settings.hero_content_overrides || {}, null, 2));
   }, [settings]);
+
+  const getHeroOverrides = () => settings?.hero_content_overrides || {};
+
+  const getHeroScopeData = () => {
+    const overrides = getHeroOverrides();
+    return overrides[selectedHeroScope] || { slides: [], heroImages: [], heroFallbacks: [] };
+  };
+
+  const sanitizeHeroScopeData = (scopeData) => {
+    const sanitized = {};
+
+    if (Array.isArray(scopeData.slides) && scopeData.slides.length > 0) {
+      sanitized.slides = scopeData.slides;
+    }
+
+    if (Array.isArray(scopeData.heroImages)) {
+      const images = scopeData.heroImages.map(img => typeof img === 'string' ? img.trim() : '').filter(Boolean);
+      if (images.length > 0) sanitized.heroImages = images;
+    }
+
+    if (Array.isArray(scopeData.heroFallbacks)) {
+      const fallbacks = scopeData.heroFallbacks.map(img => typeof img === 'string' ? img.trim() : '').filter(Boolean);
+      if (fallbacks.length > 0) sanitized.heroFallbacks = fallbacks;
+    }
+
+    return sanitized;
+  };
+
+  const setHeroScopeData = (scopeData) => {
+    setSettings(prev => {
+      const overrides = prev?.hero_content_overrides ? { ...prev.hero_content_overrides } : {};
+      const sanitized = sanitizeHeroScopeData(scopeData);
+
+      if (Object.keys(sanitized).length > 0) {
+        overrides[selectedHeroScope] = sanitized;
+      } else {
+        delete overrides[selectedHeroScope];
+      }
+
+      return { ...prev, hero_content_overrides: overrides };
+    });
+  };
+
+  const updateHeroOverrideSlide = (index, field, value) => {
+    const current = getHeroScopeData();
+    const slides = [...(current.slides || [])];
+    slides[index] = { ...slides[index], [field]: value };
+    setHeroScopeData({ ...current, slides });
+  };
+
+  const removeHeroOverrideSlide = (index) => {
+    const current = getHeroScopeData();
+    const slides = [...(current.slides || [])];
+    slides.splice(index, 1);
+    setHeroScopeData({ ...current, slides });
+  };
+
+  const addHeroOverrideSlide = () => {
+    const current = getHeroScopeData();
+    setHeroScopeData({
+      ...current,
+      slides: [
+        ...(current.slides || []),
+        { dot: '', badge: '', h: '', s: '', b1: '', b1link: '', b2: '', b2link: '' }
+      ]
+    });
+  };
+
+  const updateHeroOverrideArrayItem = (arrayKey, index, value) => {
+    const current = getHeroScopeData();
+    const array = [...(current[arrayKey] || [])];
+    array[index] = value;
+    setHeroScopeData({ ...current, [arrayKey]: array });
+  };
+
+  const addHeroOverrideArrayItem = (arrayKey) => {
+    const current = getHeroScopeData();
+    const array = [...(current[arrayKey] || []), ''];
+    setHeroScopeData({ ...current, [arrayKey]: array });
+  };
+
+  const removeHeroOverrideArrayItem = (arrayKey, index) => {
+    const current = getHeroScopeData();
+    const array = [...(current[arrayKey] || [])];
+    array.splice(index, 1);
+    setHeroScopeData({ ...current, [arrayKey]: array });
+  };
+
+  const clearHeroOverrideScope = () => {
+    setHeroScopeData({ slides: [], heroImages: [], heroFallbacks: [] });
+  };
 
   const fetchSettings = async () => {
     try {
@@ -955,21 +1050,214 @@ function AdminSettingsPanel({ addToast }) {
       <div className="admin-settings-section">
         <div className="admin-settings-title">Hero Content Overrides</div>
         <div className="admin-form-grid">
-          <div className="form-group full-width">
-            <label className="form-label">Hero override JSON</label>
-            <textarea
-              className="form-textarea"
-              rows={12}
-              value={heroOverrideJson}
-              onChange={(e) => updateHeroOverrides(e.target.value)}
-            />
-            <div className="admin-muted" style={{ fontSize: 12, marginTop: 8 }}>
-              Define per-portal/subdomain hero overrides as JSON. Example keys: <code>music</code>, <code>djs</code>, <code>labels</code>, <code>producers</code>, <code>mediahouses</code>.
-              Use <code>slides</code>, <code>heroImages</code>, and <code>heroFallbacks</code> inside each override object.
-            </div>
-            {heroJsonError && <div className="admin-error" style={{ marginTop: 8 }}>{heroJsonError}</div>}
+          <div className="form-group" style={{ minWidth: 240 }}>
+            <label className="form-label">Override scope</label>
+            <select
+              className="admin-select"
+              value={selectedHeroScope}
+              onChange={(e) => setSelectedHeroScope(e.target.value)}
+            >
+              {HERO_OVERRIDE_KEYS.map((key) => (
+                <option key={key} value={key}>{key}</option>
+              ))}
+            </select>
+          </div>
+          <div className="form-group" style={{ display: 'flex', alignItems: 'flex-end' }}>
+            <button
+              type="button"
+              className="admin-btn-secondary"
+              onClick={clearHeroOverrideScope}
+              disabled={!getHeroOverrides()[selectedHeroScope]}
+            >
+              Clear override
+            </button>
           </div>
         </div>
+
+        <div className="admin-settings-subsection" style={{ marginTop: 16 }}>
+          <div className="admin-settings-subtitle">Scope preview</div>
+          <div className="admin-card" style={{ padding: 14, marginBottom: 16, display: 'grid', gap: 10, gridTemplateColumns: 'repeat(3, minmax(0, 1fr))' }}>
+            <div>
+              <div className="admin-settings-label">Slides</div>
+              <div>{getHeroScopeData().slides.length}</div>
+            </div>
+            <div>
+              <div className="admin-settings-label">Hero images</div>
+              <div>{getHeroScopeData().heroImages.length}</div>
+            </div>
+            <div>
+              <div className="admin-settings-label">Fallbacks</div>
+              <div>{getHeroScopeData().heroFallbacks.length}</div>
+            </div>
+          </div>
+
+          <div className="admin-settings-subtitle">Slides</div>
+          {getHeroScopeData().slides.length === 0 ? (
+            <div className="admin-muted" style={{ marginBottom: 12 }}>
+              No slides configured for this scope yet. Add slides to override the default landing content.
+            </div>
+          ) : null}
+          {getHeroScopeData().slides.map((slide, index) => (
+            <div key={index} className="admin-card" style={{ padding: 16, marginBottom: 12 }}>
+              <div style={{ display: 'grid', gap: 12, gridTemplateColumns: '1fr 1fr' }}>
+                <div className="form-group">
+                  <label className="form-label">Badge</label>
+                  <input
+                    className="form-input"
+                    value={slide.badge || ''}
+                    onChange={(e) => updateHeroOverrideSlide(index, 'badge', e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Dot color</label>
+                  <input
+                    className="form-input"
+                    value={slide.dot || ''}
+                    onChange={(e) => updateHeroOverrideSlide(index, 'dot', e.target.value)}
+                    placeholder="#22d3ee"
+                  />
+                </div>
+                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                  <label className="form-label">Headline</label>
+                  <input
+                    className="form-input"
+                    value={slide.h || ''}
+                    onChange={(e) => updateHeroOverrideSlide(index, 'h', e.target.value)}
+                  />
+                </div>
+                <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+                  <label className="form-label">Subheadline</label>
+                  <input
+                    className="form-input"
+                    value={slide.s || ''}
+                    onChange={(e) => updateHeroOverrideSlide(index, 's', e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Primary CTA text</label>
+                  <input
+                    className="form-input"
+                    value={slide.b1 || ''}
+                    onChange={(e) => updateHeroOverrideSlide(index, 'b1', e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Primary CTA link</label>
+                  <input
+                    className="form-input"
+                    value={slide.b1link || ''}
+                    onChange={(e) => updateHeroOverrideSlide(index, 'b1link', e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Secondary CTA text</label>
+                  <input
+                    className="form-input"
+                    value={slide.b2 || ''}
+                    onChange={(e) => updateHeroOverrideSlide(index, 'b2', e.target.value)}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Secondary CTA link</label>
+                  <input
+                    className="form-input"
+                    value={slide.b2link || ''}
+                    onChange={(e) => updateHeroOverrideSlide(index, 'b2link', e.target.value)}
+                  />
+                </div>
+              </div>
+              <button
+                type="button"
+                className="admin-btn-secondary"
+                style={{ marginTop: 12 }}
+                onClick={() => removeHeroOverrideSlide(index)}
+              >
+                Remove slide
+              </button>
+            </div>
+          ))}
+          <button type="button" className="admin-btn-secondary" onClick={addHeroOverrideSlide}>
+            Add slide
+          </button>
+        </div>
+
+        <div className="admin-form-grid" style={{ marginTop: 24 }}>
+          <div className="form-group full-width">
+            <label className="form-label">Hero images</label>
+            {getHeroScopeData().heroImages.map((img, index) => (
+              <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
+                <input
+                  className="form-input"
+                  value={img}
+                  onChange={(e) => updateHeroOverrideArrayItem('heroImages', index, e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="admin-btn-link"
+                  style={{ marginLeft: 8 }}
+                  onClick={() => removeHeroOverrideArrayItem('heroImages', index)}
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+            <button type="button" className="admin-btn-secondary" onClick={() => addHeroOverrideArrayItem('heroImages')}>
+              Add image URL
+            </button>
+          </div>
+          <div className="form-group full-width">
+            <label className="form-label">Hero fallbacks</label>
+            {getHeroScopeData().heroFallbacks.map((img, index) => (
+              <div key={index} style={{ display: 'flex', alignItems: 'center', marginBottom: 8 }}>
+                <input
+                  className="form-input"
+                  value={img}
+                  onChange={(e) => updateHeroOverrideArrayItem('heroFallbacks', index, e.target.value)}
+                />
+                <button
+                  type="button"
+                  className="admin-btn-link"
+                  style={{ marginLeft: 8 }}
+                  onClick={() => removeHeroOverrideArrayItem('heroFallbacks', index)}
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+            <button type="button" className="admin-btn-secondary" onClick={() => addHeroOverrideArrayItem('heroFallbacks')}>
+              Add fallback URL
+            </button>
+          </div>
+        </div>
+
+        <div style={{ marginTop: 18 }}>
+          <button
+            type="button"
+            className="admin-btn-link"
+            onClick={() => setShowRawHeroJson(!showRawHeroJson)}
+          >
+            {showRawHeroJson ? 'Hide advanced JSON editor' : 'Show advanced JSON editor'}
+          </button>
+        </div>
+
+        {showRawHeroJson && (
+          <div className="admin-form-grid" style={{ marginTop: 16 }}>
+            <div className="form-group full-width">
+              <label className="form-label">Hero override JSON</label>
+              <textarea
+                className="form-textarea"
+                rows={12}
+                value={heroOverrideJson}
+                onChange={(e) => updateHeroOverrides(e.target.value)}
+              />
+              <div className="admin-muted" style={{ fontSize: 12, marginTop: 8 }}>
+                Define per-portal/subdomain hero overrides as JSON. Example keys: <code>music</code>, <code>djs</code>, <code>labels</code>, <code>producers</code>, <code>mediahouses</code>.
+                Use <code>slides</code>, <code>heroImages</code>, and <code>heroFallbacks</code> inside each override object.
+              </div>
+              {heroJsonError && <div className="admin-error" style={{ marginTop: 8 }}>{heroJsonError}</div>}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="admin-settings-section">

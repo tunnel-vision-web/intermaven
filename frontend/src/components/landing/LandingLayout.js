@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Netbar from './Netbar';
 import Navbar from './Navbar';
@@ -36,6 +36,7 @@ function LandingLayout({ page = 'home', onOpenAuth, onOpenSignIn, addToast }) {
   const [subdomainPage] = useState(() => getSubdomainPage(hostname));
   const [legalModal, setLegalModal] = useState({ open: false, type: null });
   const [appModal, setAppModal] = useState({ open: false, appId: null });
+  const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
 
   const handlePortalChange = (newPortal) => {
@@ -89,6 +90,13 @@ function LandingLayout({ page = 'home', onOpenAuth, onOpenSignIn, addToast }) {
     }
   };
 
+  useEffect(() => {
+    const updateScroll = () => setIsScrolled(window.scrollY > 24);
+    updateScroll();
+    window.addEventListener('scroll', updateScroll);
+    return () => window.removeEventListener('scroll', updateScroll);
+  }, []);
+
   const renderPage = () => {
     switch (page) {
       case 'tools':
@@ -141,7 +149,7 @@ function LandingLayout({ page = 'home', onOpenAuth, onOpenSignIn, addToast }) {
   };
 
   return (
-    <div className="landing-wrapper" data-testid="landing-wrapper">
+    <div className={`landing-wrapper${isScrolled ? ' scrolled' : ''}`} data-testid="landing-wrapper">
       <Netbar portal={portal} onPortalChange={handlePortalChange} />
       <Navbar 
         portal={portal} 

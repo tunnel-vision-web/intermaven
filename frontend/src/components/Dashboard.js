@@ -311,6 +311,10 @@ function Dashboard() {
               activities={activities}
               setActivePanel={setActivePanel}
               creditPercent={creditPercent}
+              availableApps={availableApps}
+              showAddAppModal={showAddAppModal}
+              setShowAddAppModal={setShowAddAppModal}
+              addApp={addApp}
             />
           )}
 
@@ -388,7 +392,7 @@ function Dashboard() {
 }
 
 // Overview Panel Component
-function OverviewPanel({ user, stats, activities, setActivePanel, creditPercent }) {
+function OverviewPanel({ user, stats, activities, setActivePanel, creditPercent, availableApps, showAddAppModal, setShowAddAppModal, addApp }) {
   return (
     <div className="panel active" data-testid="overview-panel">
       {user?.plan === 'free' && (
@@ -483,10 +487,10 @@ function OverviewPanel({ user, stats, activities, setActivePanel, creditPercent 
         </div>
       </div>
 
-      {/* Add App Modal */}
+      {/* Add App Modal (scoped correctly) */}
       {showAddAppModal && (
         <div className="modal-overlay" onClick={() => setShowAddAppModal(false)}>
-          <div className="add-app-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="add-app-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <h3>Add App to Dashboard</h3>
               <button className="modal-close" onClick={() => setShowAddAppModal(false)}>×</button>

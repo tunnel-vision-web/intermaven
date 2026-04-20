@@ -405,10 +405,9 @@ function ImportModal({ onClose, addToast, onRefresh }) {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState(null);
+  const [dragging, setDragging] = useState(false);
 
-  const handleFile = (e) => {
-    const f = e.target.files[0];
-    if (!f) return;
+  const setFileAndPreview = (f) => {
     setFile(f);
     const reader = new FileReader();
     reader.onload = (ev) => {
@@ -416,6 +415,29 @@ function ImportModal({ onClose, addToast, onRefresh }) {
       setPreview(lines);
     };
     reader.readAsText(f);
+  };
+
+  const handleFile = (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    setFileAndPreview(f);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    setDragging(false);
+    const f = e.dataTransfer.files[0];
+    if (!f) return;
+    setFileAndPreview(f);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    setDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setDragging(false);
   };
 
   const handleUpload = async () => {
@@ -442,12 +464,18 @@ function ImportModal({ onClose, addToast, onRefresh }) {
             <Download size={12} /> Download sample template
           </a>
         </div>
-        <label className="admin-file-drop">
+        <label
+          className={`admin-file-drop ${dragging ? 'dragging' : ''}`}
+          onDragOver={handleDragOver}
+          onDragEnter={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        >
           <input type="file" accept=".csv" onChange={handleFile} style={{ display: 'none' }} />
           {file ? (
             <div><CheckCircle size={20} color="#10b981" /><div style={{ fontSize: 13, marginTop: 8 }}>{file.name}</div></div>
           ) : (
-            <div><Upload size={24} color="var(--mu)" /><div style={{ fontSize: 13, color: 'var(--mu)', marginTop: 8 }}>Click to select CSV file</div></div>
+            <div><Upload size={24} color="var(--mu)" /><div style={{ fontSize: 13, color: 'var(--mu)', marginTop: 8 }}>{dragging ? 'Drop CSV file here' : 'Click to select CSV file'}</div></div>
           )}
         </label>
         {preview && (
