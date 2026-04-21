@@ -3,9 +3,9 @@ from typing import Optional
 from datetime import datetime, timezone
 from bson import ObjectId
 
-from ..config import db
-from ..schemas import FolderCreate
-from ..utils import get_current_user
+from config import db
+from schemas import FolderCreate
+from utils import get_current_user
 
 router = APIRouter(prefix="/api/folders")
 
