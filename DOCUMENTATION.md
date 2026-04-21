@@ -2,7 +2,7 @@
 ## Complete Technical Reference
 
 **Last Updated:** April 12, 2026
-**Version:** 3.0
+**Version:** 4.0
 **Status:** Active Development — Backend Live on Railway
 
 ---
@@ -14,8 +14,13 @@
 3. [Technical Architecture](#3-technical-architecture)
 4. [Database Schema](#4-database-schema)
 5. [API Reference](#5-api-reference)
-6. [Frontend Structure](#6-frontend-structure)
-7. [Image & Asset System](#7-image--asset-system)
+6. Frontend Structure
+6.1 Component Map
+6.2 Dashboard Panels
+6.3 App Sorting Grid
+6.4 Landing Page Header
+6.5 Hero Section
+7. Image & Asset System(#7-image--asset-system)
 8. [Deployment Configuration](#8-deployment-configuration)
 9. [intermavenmusic.com — Technical Spec](#9-intermavenmusic.com--technical-spec)
 10. [Roadmap — Remaining Build Items](#10-roadmap--remaining-build-items)
@@ -493,7 +498,127 @@ Behaviour:
 - Search: live filter on name and description
 
 ---
+## 6.4 Landing Page Header — Layout & Logo
 
+### Header Structure
+All landing pages (main, app-specific, and portals) share a consistent header layout:
+
+
+### Logo Specifications
+
+| Property | Value |
+|----------|-------|
+| **Image Height** | 42px (40% increase from baseline 30px) |
+| **Width** | Auto-maintained aspect ratio |
+| **Font Size (fallback text)** | 18px weight 800 |
+| **Gap between logo & menu** | 8px |
+| **Transition** | 0.25s ease |
+| **Scroll behavior** | Logo stays at 42px; background darkens with backdrop-filter blur(10px) |
+
+### CSS Classes
+- `.logo` — main landing page logo (Navbar component)
+- `.app-landing-logo` — app-specific landing pages (AppLandingPage)
+- `.logo-image` — image element (height: 42px)
+- `.logo-text` — fallback text (hidden when image loads via `.has-image` state)
+- `.logo span` — "MAVEN" highlight color (var(--a2) = purple/primary color)
+
+### Header Scroll Behavior
+**Normal State (at top):**
+- Background: transparent
+- Logo size: full 42px
+- Border: none
+
+**Scrolled State (user scrolls down):**
+- Background: rgba(0, 0, 0, 0.8) with backdrop-filter blur(10px)
+- Border-bottom: 1px solid var(--b1)
+- Logo: remains 42px (no shrinking on app landing pages)
+- Main landing page logo: scales to 0.8 (34px) via `.landing-wrapper.scrolled .logo`
+
+### Navigation Links
+Located to the right of logo:
+- "AI Tools" → /tools
+- "Community" → /forum
+- "Help" → /help
+- "Sign in" button (secondary style)
+- "Get free →" button (primary style, calls onOpenAuth)
+
+---
+
+## 6.5 Hero Section — Layout & Functionality
+
+### Hero Section Structure (All Landing Pages)
+
+Every landing page includes a hero section with:
+1. **Slide carousel** (3 slides minimum)
+2. **Hero image background** (from imageRegistry)
+3. **Content overlay with call-to-action buttons**
+4. **Automatic slide rotation** with manual navigation
+
+### Hero Slide Configuration
+
+Each slide is defined in `APP_CONFIGS` with:
+
+```javascript
+slides: [
+  {
+    dot: '#7c6ff7',                    // Dot indicator color
+    badge: 'AI Brand Kit',              // Badge text
+    h: 'Build your brand identity...',  // Heading
+    s: "AI-powered brand names...",     // Subheading
+    b1: 'Try free',                     // Button 1 text
+    b1link: '#',                        // Button 1 link
+    b2: 'See features',                 // Button 2 text
+    b2link: '#features'                 // Button 2 link
+  },
+  // Slide 2, 3...
+]
+
+backgrounds: [
+  'linear-gradient(180deg, #7c6ff722 0%, #7c6ff744 50%, #08090d 100%)',
+  'linear-gradient(180deg, #7c6ff733 0%, #7c6ff755 50%, #08090d 100%)',
+  'linear-gradient(180deg, #7c6ff744 0%, #7c6ff766 50%, #08090d 100%)'
+]
+
+┌──────────────────────────────────────────────────┐
+│                 [Image Background]                │
+│        [Gradient Overlay — app color]            │
+│                                                  │
+│              📍 Badge — top-left                  │
+│                                                  │
+│              🎯 Heading (h2)                     │
+│              📝 Subheading (p)                   │
+│                                                  │
+│    [Button 1]              [Button 2]             │
+│                                                  │
+│         ● ● ●   [Progress bar]   ›              │
+└──────────────────────────────────────────────────┘
+
+const [currentSlide, setCurrentSlide] = useState(0);
+const [progress, setProgress] = useState(0);
+const [slideState, setSlideState] = useState('in');
+
+brandkit: {
+  name: 'Brand Kit AI',
+  color: '#7c6ff7',
+  slides: [
+    {
+      dot: '#7c6ff7',
+      badge: 'AI Brand Kit',
+      h: 'Build your brand identity in 30 seconds',
+      s: "AI-powered brand names, taglines, tone of voice, and colour direction...",
+      b1: 'Try free',
+      b1link: '#',
+      b2: 'See features',
+      b2link: '#features'
+    },
+    // Slide 2, 3 follow same structure
+  ],
+  backgrounds: [
+    'linear-gradient(180deg, #7c6ff722 0%, #7c6ff744 50%, #08090d 100%)',
+    'linear-gradient(180deg, #7c6ff733 0%, #7c6ff755 50%, #08090d 100%)',
+    'linear-gradient(180deg, #7c6ff744 0%, #7c6ff766 50%, #08090d 100%)'
+  ]
+}
 # 7. Image & Asset System
 
 ## 7.1 Folder Structure

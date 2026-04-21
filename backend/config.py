@@ -2,6 +2,7 @@ import logging
 import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
+from pymongo.errors import ServerSelectionTimeoutError, ConnectionFailure
 
 load_dotenv()
 
@@ -9,8 +10,27 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name
 logger = logging.getLogger("intermaven")
 
 MONGO_URL = os.environ.get("MONGO_URL")
+
+# Validate MongoDB URL
+if not MONGO_URL:
+    logger.error("MONGO_URL environment variable is not set!")
+    logger.warning("MongoDB connection will fail. Please set MONGO_URL in environment variables.")
+    MONGO_URL = "mongodb://localhost:27017"
+
 DB_NAME = os.environ.get("DB_NAME", "intermaven")
-client = MongoClient(MONGO_URL)
+
+# Create MongoDB client with error handling
+try:
+    client = MongoClient(MONGO_URL, serverSelectionTimeoutMS=5000, connectTimeoutMS=10000, retryWrites=True)
+    # Verify connection
+    client.admin.command('ping')
+    logger.info(f"✓ Successfully connected to MongoDB: {DB_NAME}")
+except (ServerSelectionTimeoutError, ConnectionFailure) as e:
+    logger.error(f"✗ Failed to connect to MongoDB: {e}")
+    logger.error(f"MONGO_URL used: {MONGO_URL}")
+    # Continue anyway - connection may be established later
+    client = MongoClient(MONGO_URL, serverSelectionTimeoutMS=5000, connectTimeoutMS=10000, retryWrites=True)
+
 db = client[DB_NAME]
 
 JWT_SECRET = os.environ.get("JWT_SECRET", "intermaven_secret_key")
