@@ -3,8 +3,8 @@ from typing import Optional
 from datetime import datetime
 from bson import ObjectId
 
-from ..config import db, STORAGE_BUCKET
-from ..utils import build_storage_url, get_current_user, get_s3_client
+from config import db, STORAGE_BUCKET
+from utils import build_storage_url, get_current_user, get_s3_client
 
 router = APIRouter(prefix="/api/files")
 
