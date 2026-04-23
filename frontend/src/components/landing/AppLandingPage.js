@@ -9,18 +9,18 @@ const APP_CONFIGS = {
     name: 'Brand Kit AI',
     tagline: 'Build your brand identity in 30 seconds',
     description: 'AI-powered brand names, taglines, tone of voice, and colour direction — designed for African creatives and entrepreneurs.',
-    color: '#7c6ff7',
+    color: '#10b981',
     cost: 10,
     icon: '🎨',
     slides: [
-      { dot: '#7c6ff7', badge: 'AI Brand Kit', h: 'Build your brand identity in 30 seconds', s: "AI-powered brand names, taglines, tone of voice, and colour direction — designed for African creatives and entrepreneurs.", b1: 'Try free', b1link: '#', b2: 'See features', b2link: '#features' },
-      { dot: '#7c6ff7', badge: 'Smart Analysis', h: 'AI evaluates your name across 6 strategic dimensions', s: "Get professional brand analysis that would cost thousands from consultants.", b1: 'Start analysis', b1link: '#', b2: 'View examples', b2link: '#examples' },
-      { dot: '#7c6ff7', badge: 'Complete Kit', h: 'From name to positioning in one click', s: "Taglines, tone, colors, personality — everything you need to launch your brand.", b1: 'Generate kit', b1link: '#', b2: 'Pricing', b2link: '#pricing' }
+      { dot: '#10b981', badge: 'AI Brand Kit', h: 'Build your brand identity in 30 seconds', s: "AI-powered brand names, taglines, tone of voice, and colour direction — designed for African creatives and entrepreneurs.", b1: 'Try free', b1link: '#', b2: 'See features', b2link: '#features' },
+      { dot: '#10b981', badge: 'Smart Analysis', h: 'AI evaluates your name across 6 strategic dimensions', s: "Get professional brand analysis that would cost thousands from consultants.", b1: 'Start analysis', b1link: '#', b2: 'View examples', b2link: '#examples' },
+      { dot: '#10b981', badge: 'Complete Kit', h: 'From name to positioning in one click', s: "Taglines, tone, colors, personality — everything you need to launch your brand.", b1: 'Generate kit', b1link: '#', b2: 'Pricing', b2link: '#pricing' }
     ],
     backgrounds: [
-      'linear-gradient(180deg, #7c6ff722 0%, #7c6ff744 50%, #08090d 100%)',
-      'linear-gradient(180deg, #7c6ff733 0%, #7c6ff755 50%, #08090d 100%)',
-      'linear-gradient(180deg, #7c6ff744 0%, #7c6ff766 50%, #08090d 100%)'
+      'linear-gradient(180deg, #10b98122 0%, #10b98144 50%, #08090d 100%)',
+      'linear-gradient(180deg, #10b98133 0%, #10b98155 50%, #08090d 100%)',
+      'linear-gradient(180deg, #10b98144 0%, #10b98166 50%, #08090d 100%)'
     ],
     social: {
       twitter: 'https://twitter.com/intermaven_brand',

@@ -92,7 +92,7 @@ function EPKBuilder({ user, addToast, updateUser }) {
     press_quotes: [],
     press_links: [],
     events_upcoming: [],
-    design: { template: 'bold', primary_color: '#7c6ff7', secondary_color: '#c084fc' },
+    design: { template: 'bold', primary_color: '#10b981', secondary_color: '#c084fc' },
     is_published: false,
     hosting: { intermaven: true, intermavenmusic: false, custom_domain: '' },
   });
@@ -495,8 +495,8 @@ function EPKBuilder({ user, addToast, updateUser }) {
               <div className="form-group">
                 <label className="form-label">Primary Colour</label>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                  <input type="color" value={form.design?.primary_color || '#7c6ff7'} onChange={e => handleChange('design.primary_color', e.target.value)} style={{ width: 40, height: 36, padding: 2, background: 'var(--bg3)', border: '1px solid var(--b1)', borderRadius: 4, cursor: 'pointer' }} />
-                  <input className="form-input" value={form.design?.primary_color || '#7c6ff7'} onChange={e => handleChange('design.primary_color', e.target.value)} style={{ width: 100 }} />
+                  <input type="color" value={form.design?.primary_color || '#10b981'} onChange={e => handleChange('design.primary_color', e.target.value)} style={{ width: 40, height: 36, padding: 2, background: 'var(--bg3)', border: '1px solid var(--b1)', borderRadius: 4, cursor: 'pointer' }} />
+                  <input className="form-input" value={form.design?.primary_color || '#10b981'} onChange={e => handleChange('design.primary_color', e.target.value)} style={{ width: 100 }} />
                 </div>
               </div>
               <div className="form-group">
@@ -584,7 +584,7 @@ function EPKBuilder({ user, addToast, updateUser }) {
                   {analytics.top_referrers.map((r, i) => (
                     <div key={i} className="admin-bar-row">
                       <span className="admin-bar-label">{r.source}</span>
-                      <div className="admin-bar-track"><div className="admin-bar-fill" style={{ width: `${r.pct}%`, background: '#7c6ff7' }} /></div>
+                      <div className="admin-bar-track"><div className="admin-bar-fill" style={{ width: `${r.pct}%`, background: '#10b981' }} /></div>
                       <span className="admin-bar-value">{r.count} ({r.pct}%)</span>
                     </div>
                   ))}

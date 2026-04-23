@@ -102,7 +102,7 @@ const APP_INFO = {
 };
 
 const ALL_APPS = [
-  { id: 'brandkit', n: 'Brand Kit AI', icon: 'brandkit', col: '#7c6ff7', d: 'Brand names, taglines, tone of voice', p: 'both' },
+  { id: 'brandkit', n: 'Brand Kit AI', icon: 'brandkit', col: '#10b981', d: 'Brand names, taglines, tone of voice', p: 'both' },
   { id: 'musicbio', n: 'Music Bio & Press Kit', icon: 'musicbio', col: '#22d3ee', d: 'Artist bios and press materials', p: 'music' },
   { id: 'syncpitch', n: 'Sync Pitch AI', icon: 'syncpitch', col: '#f59e0b', d: 'Film, TV and advertising pitches', p: 'music' },
   { id: 'social', n: 'Social AI', icon: 'social', col: '#f43f5e', d: 'Multi-platform social management', p: 'both' },

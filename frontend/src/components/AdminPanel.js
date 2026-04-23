@@ -25,7 +25,7 @@ const HERO_OVERRIDE_KEYS = ['music', 'business', 'djs', 'labels', 'producers', '
 
 const ADMIN_ROLES = {
   super_admin: { label: 'Super Admin', color: '#f59e0b', perms: ['all'] },
-  admin: { label: 'Admin', color: '#7c6ff7', perms: ['users', 'credits', 'analytics'] },
+  admin: { label: 'Admin', color: '#10b981', perms: ['users', 'credits', 'analytics'] },
   support: { label: 'Support', color: '#22d3ee', perms: ['users.read', 'credits.limited'] },
   finance: { label: 'Finance', color: '#10b981', perms: ['payments', 'analytics.revenue'] },
 };
@@ -33,10 +33,10 @@ const ADMIN_ROLES = {
 // ── Helpers ───────────────────────────────────────────────────────
 function Badge({ color, children }) {
   const colors = {
-    free: '#9096b8', creator: '#7c6ff7', pro: '#f59e0b',
+    free: '#9096b8', creator: '#10b981', pro: '#f59e0b',
     music: '#22d3ee', business: '#10b981',
     active: '#10b981', inactive: '#ef4444', suspended: '#f59e0b',
-    super_admin: '#f59e0b', admin: '#7c6ff7', support: '#22d3ee', finance: '#10b981',
+    super_admin: '#f59e0b', admin: '#10b981', support: '#22d3ee', finance: '#10b981',
     open: '#f59e0b', in_progress: '#22d3ee', resolved: '#10b981', closed: '#9096b8',
   };
   const c = colors[color] || color || '#9096b8';
@@ -714,7 +714,7 @@ function AnalyticsPanel({ addToast }) {
       </div>
 
       <div className="admin-stats-grid">
-        <StatCard label="Total Users" value={(stats.total_users || 0).toLocaleString()} icon={Users} color="#7c6ff7" trend={stats.user_growth} />
+        <StatCard label="Total Users" value={(stats.total_users || 0).toLocaleString()} icon={Users} color="#10b981" trend={stats.user_growth} />
         <StatCard label="Active (30d)" value={(stats.active_users || 0).toLocaleString()} icon={Activity} color="#22d3ee" />
         <StatCard label="New This Period" value={(stats.new_users || 0).toLocaleString()} icon={TrendingUp} color="#10b981" trend={stats.new_user_trend} />
         <StatCard label="AI Runs" value={(stats.total_ai_runs || 0).toLocaleString()} icon={Zap} color="#f59e0b" />
@@ -727,7 +727,7 @@ function AnalyticsPanel({ addToast }) {
           <div className="admin-analytics-card-title">Users by Plan</div>
           {[
             { label: 'Free', count: stats.by_plan?.free || 0, color: '#9096b8' },
-            { label: 'Creator', count: stats.by_plan?.creator || 0, color: '#7c6ff7' },
+            { label: 'Creator', count: stats.by_plan?.creator || 0, color: '#10b981' },
             { label: 'Pro', count: stats.by_plan?.pro || 0, color: '#f59e0b' },
           ].map(({ label, count, color }) => {
             const pct = stats.total_users ? Math.round((count / stats.total_users) * 100) : 0;
@@ -767,7 +767,7 @@ function AnalyticsPanel({ addToast }) {
           {(stats.top_tools || []).map(({ tool_id, count }, i) => {
             const max = stats.top_tools?.[0]?.count || 1;
             const pct = Math.round((count / max) * 100);
-            const colors = ['#7c6ff7', '#22d3ee', '#f59e0b', '#ec4899', '#10b981'];
+            const colors = ['#10b981', '#22d3ee', '#f59e0b', '#ec4899', '#10b981'];
             return (
               <div key={tool_id} className="admin-bar-row">
                 <span className="admin-bar-label">{tool_id}</span>
@@ -822,7 +822,7 @@ function AuditPanel({ addToast }) {
   };
 
   const ACTION_COLORS = {
-    user_edit: '#7c6ff7', credit_grant: '#10b981', plan_change: '#f59e0b',
+    user_edit: '#10b981', credit_grant: '#10b981', plan_change: '#f59e0b',
     suspend: '#ef4444', delete: '#ef4444', note_add: '#22d3ee',
   };
 

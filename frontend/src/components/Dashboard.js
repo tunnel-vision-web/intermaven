@@ -15,7 +15,7 @@ import FileManager from './FileManager';
 
 // App definitions
 const APPS = {
-  brandkit: { id: 'brandkit', name: 'Brand Kit AI', icon: 'brandkit', color: '#7c6ff7', desc: 'Brand names, taglines, tone of voice', cost: 10 },
+  brandkit: { id: 'brandkit', name: 'Brand Kit AI', icon: 'brandkit', color: '#10b981', desc: 'Brand names, taglines, tone of voice', cost: 10 },
   musicbio: { id: 'musicbio', name: 'Music Bio & Press Kit', icon: 'musicbio', color: '#22d3ee', desc: 'Artist bios and press materials', cost: 15 },
   social: { id: 'social', name: 'Social AI', icon: 'social', color: '#f43f5e', desc: 'Multi-platform social management', cost: 0 },
   syncpitch: { id: 'syncpitch', name: 'Sync Pitch AI', icon: 'syncpitch', color: '#f59e0b', desc: 'Film, TV and advertising pitches', cost: 20 },

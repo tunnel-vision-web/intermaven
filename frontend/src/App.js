@@ -47,15 +47,20 @@ function LandingWithAuth({ page, addToast, user }) {
   const location = useLocation();
   const showAuth = location.pathname === '/auth';
   
+  console.log('[LandingWithAuth] Rendered - pathname:', location.pathname, 'showAuth:', showAuth, 'user:', user);
+  
   const handleOpenAuth = (appId) => {
+    console.log('[LandingWithAuth] handleOpenAuth called with appId:', appId);
     navigate('/auth', { state: { preselectedApp: appId, backgroundPage: page } });
   };
   
   const handleOpenSignIn = () => {
+    console.log('[LandingWithAuth] handleOpenSignIn called');
     navigate('/auth', { state: { mode: 'signin', backgroundPage: page } });
   };
 
   const handleCloseAuth = () => {
+    console.log('[LandingWithAuth] handleCloseAuth called');
     // Go back to the previous page or home
     const bgPage = location.state?.backgroundPage || 'home';
     const pageMap = {
@@ -97,7 +102,7 @@ function EPKPublicPage() {
   if (loading) return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#08090d', color: '#9096b8', fontSize: 14 }}>Loading...</div>;
   if (notFound || !epk) return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#08090d', color: '#9096b8', fontSize: 14 }}>EPK not found</div>;
 
-  const color = epk.design?.primary_color || '#7c6ff7';
+  const color = epk.design?.primary_color || '#10b981';
 
   return (
     <div style={{ background: '#08090d', minHeight: '100vh', color: '#f0f0f5', fontFamily: 'Inter, system-ui, sans-serif' }}>
@@ -223,13 +228,16 @@ function App() {
 
   const register = async (userData) => {
     try {
+      console.log('[App] register called with:', { email: userData.email, first_name: userData.first_name });
       const response = await api.post('/api/auth/register', userData);
+      console.log('[App] register successful, user:', response.data.user);
       localStorage.setItem('token', response.data.access_token);
       setUser(response.data.user);
       addToast('Account Created!', `Welcome to Intermaven, ${response.data.user.first_name}!`, 'success');
       return { success: true };
     } catch (error) {
       const message = error.response?.data?.detail || 'Registration failed';
+      console.error('[App] register failed:', message, error);
       addToast('Registration Failed', message, 'error');
       return { success: false, error: message };
     }

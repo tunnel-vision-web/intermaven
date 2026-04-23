@@ -219,7 +219,7 @@ export const FlatIcon = ({ name, size = 24, color = 'currentColor', className = 
 
 // Color constants for icon categories
 export const ICON_COLORS = {
-  brandkit: '#7c6ff7',
+  brandkit: '#10b981',
   musicbio: '#22d3ee',
   social: '#f43f5e',
   syncpitch: '#f59e0b',

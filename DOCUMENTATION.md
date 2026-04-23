@@ -561,7 +561,7 @@ Each slide is defined in `APP_CONFIGS` with:
 ```javascript
 slides: [
   {
-    dot: '#7c6ff7',                    // Dot indicator color
+    dot: '#10b981',                    // Dot indicator color
     badge: 'AI Brand Kit',              // Badge text
     h: 'Build your brand identity...',  // Heading
     s: "AI-powered brand names...",     // Subheading
@@ -574,9 +574,9 @@ slides: [
 ]
 
 backgrounds: [
-  'linear-gradient(180deg, #7c6ff722 0%, #7c6ff744 50%, #08090d 100%)',
-  'linear-gradient(180deg, #7c6ff733 0%, #7c6ff755 50%, #08090d 100%)',
-  'linear-gradient(180deg, #7c6ff744 0%, #7c6ff766 50%, #08090d 100%)'
+  'linear-gradient(180deg, #10b98122 0%, #10b98144 50%, #08090d 100%)',
+  'linear-gradient(180deg, #10b98133 0%, #10b98155 50%, #08090d 100%)',
+  'linear-gradient(180deg, #10b98144 0%, #10b98166 50%, #08090d 100%)'
 ]
 
 ┌──────────────────────────────────────────────────┐
@@ -599,10 +599,10 @@ const [slideState, setSlideState] = useState('in');
 
 brandkit: {
   name: 'Brand Kit AI',
-  color: '#7c6ff7',
+  color: '#10b981',
   slides: [
     {
-      dot: '#7c6ff7',
+      dot: '#10b981',
       badge: 'AI Brand Kit',
       h: 'Build your brand identity in 30 seconds',
       s: "AI-powered brand names, taglines, tone of voice, and colour direction...",
@@ -614,9 +614,9 @@ brandkit: {
     // Slide 2, 3 follow same structure
   ],
   backgrounds: [
-    'linear-gradient(180deg, #7c6ff722 0%, #7c6ff744 50%, #08090d 100%)',
-    'linear-gradient(180deg, #7c6ff733 0%, #7c6ff755 50%, #08090d 100%)',
-    'linear-gradient(180deg, #7c6ff744 0%, #7c6ff766 50%, #08090d 100%)'
+    'linear-gradient(180deg, #10b98122 0%, #10b98144 50%, #08090d 100%)',
+    'linear-gradient(180deg, #10b98133 0%, #10b98155 50%, #08090d 100%)',
+    'linear-gradient(180deg, #10b98144 0%, #10b98166 50%, #08090d 100%)'
   ]
 }
 # 7. Image & Asset System

@@ -15,7 +15,7 @@ const FILE_ICONS = {
   image: { icon: Image, color: '#22d3ee' },
   audio: { icon: Music, color: '#ec4899' },
   video: { icon: Video, color: '#f59e0b' },
-  document: { icon: FileText, color: '#7c6ff7' },
+  document: { icon: FileText, color: '#10b981' },
   archive: { icon: Archive, color: '#10b981' },
   default: { icon: FileText, color: '#9096b8' },
 };
@@ -39,7 +39,7 @@ const formatSize = (bytes) => {
 
 const formatStorageBar = (used, total) => {
   const pct = Math.min(Math.round((used / total) * 100), 100);
-  return { pct, color: pct > 90 ? '#ef4444' : pct > 70 ? '#f59e0b' : '#7c6ff7' };
+  return { pct, color: pct > 90 ? '#ef4444' : pct > 70 ? '#f59e0b' : '#10b981' };
 };
 
 // ── File Icon Component ───────────────────────────────────────────
@@ -212,7 +212,7 @@ function UploadZone({ folderId, onComplete, addToast, storageUsed, storagePlan }
         onDrop={e => { e.preventDefault(); setDragging(false); handleFiles(e.dataTransfer.files); }}
         onClick={() => inputRef.current?.click()}
       >
-        <Upload size={20} color={dragging ? '#7c6ff7' : 'var(--mu)'} />
+        <Upload size={20} color={dragging ? '#10b981' : 'var(--mu)'} />
         <span>{dragging ? 'Drop to upload' : 'Click or drag files here'}</span>
         <input ref={inputRef} type="file" multiple style={{ display: 'none' }} onChange={e => handleFiles(e.target.files)} />
       </div>
@@ -222,7 +222,7 @@ function UploadZone({ folderId, onComplete, addToast, storageUsed, storagePlan }
             <div key={u.id} className="fm-upload-item">
               <div className="fm-upload-name">{u.name}</div>
               <div className="fm-upload-bar">
-                <div style={{ width: `${u.progress}%`, background: u.status === 'error' ? '#ef4444' : u.status === 'done' ? '#10b981' : '#7c6ff7' }} />
+                <div style={{ width: `${u.progress}%`, background: u.status === 'error' ? '#ef4444' : u.status === 'done' ? '#10b981' : '#10b981' }} />
               </div>
               <div className="fm-upload-status">
                 {u.status === 'done' && <Check size={12} color="#10b981" />}

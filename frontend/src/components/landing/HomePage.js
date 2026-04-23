@@ -31,7 +31,7 @@ const PORTALS = {
         b2link: '/apps'
       },
       { 
-        dot: '#7c6ff7', 
+        dot: '#10b981', 
         badge: 'For creative brands',
         h: 'Brand it right.<br/><em style="color:#f59e0b">From day one.</em>',
         s: "Whether you're an artist, studio, or label — generate your full brand kit in seconds.",
@@ -155,7 +155,7 @@ const SUBDOMAIN_PAGES = {
         b2link: '/tools'
       },
       {
-        dot: '#7c6ff7',
+        dot: '#10b981',
         badge: 'Stay ahead',
         h: 'One platform for<br/><em style="color:#10b981">DJs, promoters, and brands.</em>',
         s: 'Use AI tools, CRM, and content automation to make your DJ business more professional and more profitable.',
@@ -185,7 +185,7 @@ const SUBDOMAIN_PAGES = {
       {
         dot: '#22d3ee',
         badge: 'Manage releases',
-        h: 'Release strategy.<br/><em style="color:#7c6ff7">Driven by data.</em>',
+        h: 'Release strategy.<br/><em style="color:#10b981">Driven by data.</em>',
         s: 'Create media pitches, social campaigns, and brand assets that put your artists in the right spotlight.',
         b1: 'Generate press kits',
         b1link: '/tools',
@@ -221,7 +221,7 @@ const SUBDOMAIN_PAGES = {
         b2link: '/apps'
       },
       {
-        dot: '#7c6ff7',
+        dot: '#10b981',
         badge: 'Build your catalog',
         h: 'From studio to stage,<br/><em style="color:#f59e0b">connect with artists.</em>',
         s: 'Create compelling portfolio content, brands, and pitches that help producers get noticed.',
@@ -249,7 +249,7 @@ const SUBDOMAIN_PAGES = {
   mediahouses: {
     slides: [
       {
-        dot: '#7c6ff7',
+        dot: '#10b981',
         badge: 'For media houses',
         h: 'Program music.<br/><em style="color:#10b981">Launch campaigns.</em>',
         s: 'Media-friendly tools for music curation, licensing, and campaign creation across audio and visual channels.',
@@ -288,7 +288,7 @@ const SUBDOMAIN_PAGES = {
 
 const FLAGSHIP_APPS = [
   { title: 'Social AI', desc: 'Full-stack social content for every platform.', link: '/social', icon: 'social', iconColor: '#f43f5e', iconBg: 'rgba(244,63,94,0.12)' },
-  { title: 'Brand Kit AI', desc: 'Build your brand identity, voice, and visuals fast.', link: '/brandkit', icon: 'brandkit', iconColor: '#7c6ff7', iconBg: 'rgba(124,111,247,0.12)' },
+  { title: 'Brand Kit AI', desc: 'Build your brand identity, voice, and visuals fast.', link: '/brandkit', icon: 'brandkit', iconColor: '#10b981', iconBg: 'rgba(124,111,247,0.12)' },
   { title: 'Smart CRM', desc: 'Manage bookings, contacts, and revenue in one dashboard.', link: '/smartcrm', icon: 'crm', iconColor: '#10b981', iconBg: 'rgba(16,185,129,0.12)' },
 ];
 

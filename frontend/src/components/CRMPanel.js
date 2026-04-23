@@ -11,7 +11,7 @@ import {
 
 // ── Constants ─────────────────────────────────────────────────────
 const CHANNELS = [
-  { id: 'email', label: 'Email', icon: Mail, color: '#7c6ff7' },
+  { id: 'email', label: 'Email', icon: Mail, color: '#10b981' },
   { id: 'whatsapp', label: 'WhatsApp', icon: MessageCircle, color: '#25D366' },
   { id: 'sms', label: 'SMS', icon: Phone, color: '#f59e0b' },
 ];
@@ -29,7 +29,7 @@ const CAMPAIGN_TYPES = [
 
 // ── Helpers ───────────────────────────────────────────────────────
 function Badge({ color, children }) {
-  const map = { email: '#7c6ff7', whatsapp: '#25D366', sms: '#f59e0b', active: '#10b981', sent: '#10b981', draft: '#9096b8', scheduled: '#22d3ee', failed: '#ef4444' };
+  const map = { email: '#10b981', whatsapp: '#25D366', sms: '#f59e0b', active: '#10b981', sent: '#10b981', draft: '#9096b8', scheduled: '#22d3ee', failed: '#ef4444' };
   const c = map[color] || color || '#9096b8';
   return (
     <span style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 20, fontSize: 11, fontWeight: 600, background: `${c}22`, color: c, border: `1px solid ${c}44` }}>
