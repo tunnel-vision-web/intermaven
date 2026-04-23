@@ -13,9 +13,9 @@ import os
 from dotenv import load_dotenv
 import httpx
 
-from .config import db, PLAN_CREDITS, logger
-from .utils import get_current_user, serialize_user, verify_password, get_password_hash, create_access_token
-from .routes import auth_router, user_router, files_router, folders_router
+from config import db, PLAN_CREDITS, logger
+from utils import get_current_user, serialize_user, verify_password, get_password_hash, create_access_token
+from routes import auth_router, user_router, files_router, folders_router
 
 load_dotenv()
 
