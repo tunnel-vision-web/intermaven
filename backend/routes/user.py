@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from datetime import datetime, timedelta, timezone
 
-from config import db
-from schemas import UserUpdate, UserResponse, AppToggle
-from utils import get_current_user, serialize_user
+from ..config import db
+from ..schemas import UserUpdate, UserResponse, AppToggle
+from ..utils import get_current_user, serialize_user
 
 router = APIRouter(prefix="/api/user")
 

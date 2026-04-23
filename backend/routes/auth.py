@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from datetime import datetime, timezone
 
-from config import db, PLAN_CREDITS
-from schemas import UserCreate, UserLogin, UserResponse, TokenResponse
-from utils import create_access_token, get_current_user, serialize_user, get_password_hash, verify_password
+from ..config import db, PLAN_CREDITS
+from ..schemas import UserCreate, UserLogin, UserResponse, TokenResponse
+from ..utils import create_access_token, get_current_user, serialize_user, get_password_hash, verify_password
 
 router = APIRouter(prefix="/api/auth")
 
