@@ -3,13 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth, useToast, api } from '../App';
 import { 
   Home, Bell, Plus, User, Settings, CreditCard, LogOut,
-  Zap, Copy, Download
+  Zap, Copy, Download, Users, MessageSquare, Shield,
+  FileText, HardDrive
 } from 'lucide-react';
 import { FlatIcon } from './FlatIcon';
+import SocialAI from './SocialAI';
+import AdminPanel from './AdminPanel';
+import CRMPanel from './CRMPanel';
+import EPKBuilder from './EPKBuilder';
+import FileManager from './FileManager';
 
 // App definitions
 const APPS = {
-  brandkit: { id: 'brandkit', name: 'Brand Kit AI', icon: 'brandkit', color: '#7c6ff7', desc: 'Brand names, taglines, tone of voice', cost: 10 },
+  brandkit: { id: 'brandkit', name: 'Brand Kit AI', icon: 'brandkit', color: '#10b981', desc: 'Brand names, taglines, tone of voice', cost: 10 },
   musicbio: { id: 'musicbio', name: 'Music Bio & Press Kit', icon: 'musicbio', color: '#22d3ee', desc: 'Artist bios and press materials', cost: 15 },
   social: { id: 'social', name: 'Social AI', icon: 'social', color: '#f43f5e', desc: 'Multi-platform social management', cost: 0 },
   syncpitch: { id: 'syncpitch', name: 'Sync Pitch AI', icon: 'syncpitch', color: '#f59e0b', desc: 'Film, TV and advertising pitches', cost: 20 },
@@ -201,6 +207,31 @@ function Dashboard() {
           </button>
 
           <div className="sidebar-section">
+            <div className="sidebar-section-title">Tools</div>
+          </div>
+          <button
+            className={`sidebar-nav-item ${activePanel === 'epk' ? 'active' : ''}`}
+            onClick={() => setActivePanel('epk')}
+          >
+            <FileText className="icon" size={18} />
+            EPK Builder
+          </button>
+          <button
+            className={`sidebar-nav-item ${activePanel === 'files' ? 'active' : ''}`}
+            onClick={() => setActivePanel('files')}
+          >
+            <HardDrive className="icon" size={18} />
+            File Manager
+          </button>
+          <button
+            className={`sidebar-nav-item ${activePanel === 'crm' ? 'active' : ''}`}
+            onClick={() => setActivePanel('crm')}
+          >
+            <MessageSquare className="icon" size={18} />
+            CRM & Comms
+          </button>
+
+          <div className="sidebar-section">
             <div className="sidebar-section-title">Account</div>
           </div>
           <button 
@@ -229,6 +260,12 @@ function Dashboard() {
         </nav>
 
         <div className="sidebar-footer">
+          {user?.admin_role && (
+            <button className="sidebar-nav-item admin-link" onClick={() => setActivePanel('admin')}>
+              <Shield size={18} />
+              Admin Console
+            </button>
+          )}
           <button className="sidebar-signout" onClick={logout} data-testid="signout-button">
             <LogOut size={18} />
             Sign out
@@ -274,9 +311,9 @@ function Dashboard() {
               activities={activities}
               setActivePanel={setActivePanel}
               creditPercent={creditPercent}
+              availableApps={availableApps}
               showAddAppModal={showAddAppModal}
               setShowAddAppModal={setShowAddAppModal}
-              availableApps={availableApps}
               addApp={addApp}
             />
           )}
@@ -302,17 +339,52 @@ function Dashboard() {
             <BillingPanel user={user} creditPercent={creditPercent} addToast={addToast} />
           )}
 
-          {/* App Panels */}
-          {activePanel.startsWith('app-') && (
-            <ToolPanel 
-              appId={activePanel.replace('app-', '')}
-              user={user}
-              updateUser={updateUser}
-              addToast={addToast}
-              fetchStats={fetchStats}
-              fetchActivities={fetchActivities}
-            />
+          {/* EPK Builder */}
+          {activePanel === 'epk' && (
+            <EPKBuilder user={user} addToast={addToast} updateUser={updateUser} />
           )}
+
+          {/* File Manager */}
+          {activePanel === 'files' && (
+            <FileManager user={user} addToast={addToast} />
+          )}
+
+          {/* CRM Panel */}
+          {activePanel === 'crm' && (
+            <CRMPanel addToast={addToast} />
+          )}
+
+          {/* Admin Panel — full-screen takeover */}
+          {activePanel === 'admin' && user?.admin_role && (
+            <AdminPanel user={user} onBack={() => setActivePanel('overview')} addToast={addToast} />
+          )}
+
+          {/* App Panels */}
+          {activePanel.startsWith('app-') && (() => {
+            const appId = activePanel.replace('app-', '');
+            if (appId === 'social') {
+              return (
+                <SocialAI
+                  user={user}
+                  updateUser={updateUser}
+                  addToast={addToast}
+                  fetchStats={fetchStats}
+                  fetchActivities={fetchActivities}
+                />
+              );
+            }
+            return (
+              <ToolPanel
+                appId={appId}
+                user={user}
+                updateUser={updateUser}
+                addToast={addToast}
+                fetchStats={fetchStats}
+                fetchActivities={fetchActivities}
+              />
+            );
+          })()}
+
         </div>
       </main>
     </div>
@@ -320,7 +392,7 @@ function Dashboard() {
 }
 
 // Overview Panel Component
-function OverviewPanel({ user, stats, activities, setActivePanel, creditPercent, showAddAppModal, setShowAddAppModal, availableApps, addApp }) {
+function OverviewPanel({ user, stats, activities, setActivePanel, creditPercent, availableApps, showAddAppModal, setShowAddAppModal, addApp }) {
   return (
     <div className="panel active" data-testid="overview-panel">
       {user?.plan === 'free' && (
@@ -415,10 +487,10 @@ function OverviewPanel({ user, stats, activities, setActivePanel, creditPercent,
         </div>
       </div>
 
-      {/* Add App Modal */}
+      {/* Add App Modal (scoped correctly) */}
       {showAddAppModal && (
         <div className="modal-overlay" onClick={() => setShowAddAppModal(false)}>
-          <div className="add-app-modal" onClick={(e) => e.stopPropagation()}>
+          <div className="add-app-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <h3>Add App to Dashboard</h3>
               <button className="modal-close" onClick={() => setShowAddAppModal(false)}>×</button>

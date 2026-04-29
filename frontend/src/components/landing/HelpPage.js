@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Search, FileText, ChevronRight, CreditCard, Palette, Music, Share2, HelpCircle, ArrowLeft } from 'lucide-react';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import { getHeaderBackground } from '../../imageRegistry';
 import '../../styles/landing.css';
 
 // All help articles with categories
@@ -77,7 +78,7 @@ function HelpPage({ addToast }) {
       <Navbar currentPage="help" />
       
       <div className="ph" style={{ marginTop: 'calc(var(--bh) + var(--nh))' }}>
-        <div className="phi" style={{ background: 'var(--bg2)' }} />
+        <div className="phi" style={{ background: getHeaderBackground('help') }} />
         <div className="pho" />
         <div className="phc">
           <div className="bc">Support</div>

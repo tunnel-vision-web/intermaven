@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ChevronDown } from 'lucide-react';
+import { INTERMAVEN_LOGO } from '../../imageRegistry';
 
 function Navbar({ onOpenAuth, onOpenSignIn, portal = 'music', onToast }) {
   const location = useLocation();
   const currentPath = location.pathname;
   const [communityOpen, setCommunityOpen] = useState(false);
+  const [logoLoaded, setLogoLoaded] = useState(true);
 
   const isActive = (path) => {
     if (path === '/') return currentPath === '/';
@@ -19,8 +21,16 @@ function Navbar({ onOpenAuth, onOpenSignIn, portal = 'music', onToast }) {
   return (
     <nav className="landing-nav" data-testid="landing-nav">
       <div className="nav-inner">
-        <Link to="/" className="logo" data-testid="logo">
-          INTER<span>MAVEN</span>
+        <Link to="/" className={`logo${logoLoaded ? ' has-image' : ''}`} data-testid="logo">
+          {logoLoaded ? (
+            <img
+              src={INTERMAVEN_LOGO}
+              alt="Intermaven"
+              className="logo-image"
+              onError={() => setLogoLoaded(false)}
+            />
+          ) : null}
+          <span className="logo-text">INTER<span>MAVEN</span></span>
           <span className="lbdg">{portal === 'music' ? 'Music' : 'Business'}</span>
         </Link>
         <div className="navl">

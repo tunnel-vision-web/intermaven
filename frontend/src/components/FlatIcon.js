@@ -1,10 +1,30 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { getAppIconSrc } from '../imageRegistry';
 
 // Centralized flat icon system for Intermaven
-// All icons are single-color, flat SVG designs
-// Use consistent icons across all pages
+// Checks for custom PNG icon first (from public/icons/apps/)
+// Falls back to SVG if PNG not found or fails to load
 
 export const FlatIcon = ({ name, size = 24, color = 'currentColor', className = '' }) => {
+  const [pngFailed, setPngFailed] = useState(false);
+
+  // Check for custom PNG icon
+  const pngSrc = getAppIconSrc(name);
+  if (pngSrc && !pngFailed) {
+    return (
+      <img
+        src={pngSrc}
+        alt={name}
+        width={size}
+        height={size}
+        className={className}
+        style={{ objectFit: 'contain', display: 'block' }}
+        onError={() => setPngFailed(true)}
+      />
+    );
+  }
+
+  // SVG fallback icons
   const icons = {
     // AI Tools
     brandkit: (
@@ -199,7 +219,7 @@ export const FlatIcon = ({ name, size = 24, color = 'currentColor', className = 
 
 // Color constants for icon categories
 export const ICON_COLORS = {
-  brandkit: '#7c6ff7',
+  brandkit: '#10b981',
   musicbio: '#22d3ee',
   social: '#f43f5e',
   syncpitch: '#f59e0b',

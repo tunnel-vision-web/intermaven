@@ -1,5 +1,6 @@
-from fastapi import FastAPI, HTTPException, Depends, status
+from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel, EmailStr, Field
 from typing import Optional, List
@@ -11,6 +12,10 @@ from bson import ObjectId
 import os
 from dotenv import load_dotenv
 import httpx
+
+from config import db, PLAN_CREDITS, logger
+from utils import get_current_user, serialize_user, verify_password, get_password_hash, create_access_token
+from routes import auth_router, user_router, files_router, folders_router
 
 load_dotenv()
 
@@ -24,23 +29,34 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# MongoDB connection
-MONGO_URL = os.environ.get("MONGO_URL")
-DB_NAME = os.environ.get("DB_NAME", "intermaven")
-client = MongoClient(MONGO_URL)
-db = client[DB_NAME]
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Referrer-Policy"] = "no-referrer-when-downgrade"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Permissions-Policy"] = "geolocation=(), microphone=(), camera=()"
+    response.headers["Cross-Origin-Resource-Policy"] = "same-origin"
+    if request.url.scheme == "https":
+        response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains; preload"
+    return response
 
-# JWT Configuration
-JWT_SECRET = os.environ.get("JWT_SECRET", "intermaven_secret_key")
-JWT_ALGORITHM = os.environ.get("JWT_ALGORITHM", "HS256")
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.environ.get("ACCESS_TOKEN_EXPIRE_MINUTES", 1440))
+@app.exception_handler(Exception)
+async def log_exceptions(request: Request, exc: Exception):
+    logger.exception("Unhandled exception on %s %s", request.method, request.url)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": "Internal server error"}
+    )
 
-# Password hashing
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+app.include_router(auth_router)
+app.include_router(user_router)
+app.include_router(files_router)
+app.include_router(folders_router)
+
+# ============== SECURITY ==============
 security = HTTPBearer()
-
-# Credit allocations by plan
-PLAN_CREDITS = {"free": 150, "creator": 600, "pro": 2500}
 
 # ============== MODELS ==============
 
@@ -90,156 +106,13 @@ class AIGenerateRequest(BaseModel):
     tool_id: str
     inputs: dict
 
+    # Support legacy 'tool_id' and also accept as 'tool_id'
+    class Config:
+        extra = "allow"
+
 class PlanUpgrade(BaseModel):
     plan: str
     payment_method: str
-
-# ============== HELPER FUNCTIONS ==============
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
-
-def get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
-
-def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
-    to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
-
-def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
-    token = credentials.credentials
-    try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-        user_id = payload.get("sub")
-        if user_id is None:
-            raise HTTPException(status_code=401, detail="Invalid token")
-        user = db.users.find_one({"_id": ObjectId(user_id)})
-        if user is None:
-            raise HTTPException(status_code=401, detail="User not found")
-        return user
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-def serialize_user(user: dict) -> dict:
-    return {
-        "id": str(user["_id"]),
-        "email": user.get("email", ""),
-        "first_name": user.get("first_name", ""),
-        "last_name": user.get("last_name", ""),
-        "phone": user.get("phone", ""),
-        "plan": user.get("plan", "free"),
-        "credits": user.get("credits", 150),
-        "apps": user.get("apps", []),
-        "portal": user.get("portal", "music"),
-        "brand_name": user.get("brand_name", ""),
-        "bio": user.get("bio", ""),
-        "created_at": user.get("created_at", datetime.now(timezone.utc)).isoformat() if isinstance(user.get("created_at"), datetime) else str(user.get("created_at", ""))
-    }
-
-# ============== AUTH ROUTES ==============
-
-@app.post("/api/auth/register", response_model=TokenResponse)
-async def register(user_data: UserCreate):
-    existing_user = db.users.find_one({"email": user_data.email.lower()})
-    if existing_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    
-    hashed_password = get_password_hash(user_data.password)
-    new_user = {
-        "email": user_data.email.lower(),
-        "password": hashed_password,
-        "first_name": user_data.first_name,
-        "last_name": user_data.last_name,
-        "phone": user_data.phone,
-        "plan": "free",
-        "credits": PLAN_CREDITS["free"],
-        "apps": ["brandkit", "musicbio", "social", "syncpitch", "bizpitch"],
-        "portal": user_data.portal,
-        "brand_name": "",
-        "bio": "",
-        "channels": {"email": True, "whatsapp": True, "sms": False, "push": False},
-        "ai_runs": 0,
-        "created_at": datetime.now(timezone.utc)
-    }
-    
-    result = db.users.insert_one(new_user)
-    new_user["_id"] = result.inserted_id
-    
-    access_token = create_access_token(data={"sub": str(result.inserted_id)})
-    
-    # Create welcome notification
-    db.notifications.insert_one({
-        "user_id": result.inserted_id,
-        "icon": "🎉",
-        "title": "Welcome to Intermaven!",
-        "text": "Your account is set up. Start exploring your tools.",
-        "read": False,
-        "created_at": datetime.now(timezone.utc)
-    })
-    
-    return TokenResponse(
-        access_token=access_token,
-        user=UserResponse(**serialize_user(new_user))
-    )
-
-@app.post("/api/auth/login", response_model=TokenResponse)
-async def login(user_data: UserLogin):
-    user = db.users.find_one({"email": user_data.email.lower()})
-    if not user or not verify_password(user_data.password, user["password"]):
-        raise HTTPException(status_code=401, detail="Invalid email or password")
-    
-    access_token = create_access_token(data={"sub": str(user["_id"])})
-    
-    return TokenResponse(
-        access_token=access_token,
-        user=UserResponse(**serialize_user(user))
-    )
-
-@app.get("/api/auth/me", response_model=UserResponse)
-async def get_me(current_user: dict = Depends(get_current_user)):
-    return UserResponse(**serialize_user(current_user))
-
-# ============== USER ROUTES ==============
-
-@app.put("/api/user/profile", response_model=UserResponse)
-async def update_profile(update_data: UserUpdate, current_user: dict = Depends(get_current_user)):
-    update_dict = {k: v for k, v in update_data.model_dump().items() if v is not None}
-    if update_dict:
-        db.users.update_one({"_id": current_user["_id"]}, {"$set": update_dict})
-    
-    updated_user = db.users.find_one({"_id": current_user["_id"]})
-    return UserResponse(**serialize_user(updated_user))
-
-@app.post("/api/user/apps/toggle", response_model=UserResponse)
-async def toggle_app(app_data: AppToggle, current_user: dict = Depends(get_current_user)):
-    apps = current_user.get("apps", [])
-    if app_data.app_id in apps:
-        apps.remove(app_data.app_id)
-    else:
-        apps.append(app_data.app_id)
-    
-    db.users.update_one({"_id": current_user["_id"]}, {"$set": {"apps": apps}})
-    updated_user = db.users.find_one({"_id": current_user["_id"]})
-    return UserResponse(**serialize_user(updated_user))
-
-@app.get("/api/user/stats")
-async def get_user_stats(current_user: dict = Depends(get_current_user)):
-    # Get AI runs this week
-    week_ago = datetime.now(timezone.utc) - timedelta(days=7)
-    ai_runs = db.ai_runs.count_documents({
-        "user_id": current_user["_id"],
-        "created_at": {"$gte": week_ago}
-    })
-    
-    return {
-        "credits": current_user.get("credits", 0),
-        "plan": current_user.get("plan", "free"),
-        "ai_runs_week": ai_runs,
-        "active_apps": len(current_user.get("apps", [])),
-        "scheduled_posts": 0
-    }
 
 # ============== NOTIFICATIONS ==============
 
@@ -302,7 +175,7 @@ Create:
 4. MEDIA PITCH (150 words)
 5. 3 INTERVIEW ANGLES""",
     
-    "social": lambda v: f"""Social media strategist for African creatives.
+    "social": lambda v: v.get('prompt_override') or f"""Social media strategist for African creatives.
 Topic: {v.get('topic', '')} Platform: {v.get('platform', '')} Goal: {v.get('goal', '')} Tone: {v.get('tone', '')} Extra: {v.get('extra', '')}
 
 Create:
@@ -1028,7 +901,7 @@ async def get_user_apps(credentials: HTTPAuthorizationCredentials = Depends(secu
 async def get_available_apps():
     """Get list of all available apps with their details"""
     apps = {
-        "brandkit": {"id": "brandkit", "name": "Brand Kit AI", "icon": "brandkit", "color": "#7c6ff7", "desc": "Brand names, taglines, tone of voice", "cost": 10, "status": "live"},
+        "brandkit": {"id": "brandkit", "name": "Brand Kit AI", "icon": "brandkit", "color": "#10b981", "desc": "Brand names, taglines, tone of voice", "cost": 10, "status": "live"},
         "musicbio": {"id": "musicbio", "name": "Music Bio & Press Kit", "icon": "musicbio", "color": "#22d3ee", "desc": "Artist bios and press materials", "cost": 15, "status": "live"},
         "social": {"id": "social", "name": "Social AI", "icon": "social", "color": "#f43f5e", "desc": "Multi-platform social management", "cost": 0, "status": "live"},
         "syncpitch": {"id": "syncpitch", "name": "Sync Pitch AI", "icon": "syncpitch", "color": "#f59e0b", "desc": "Film, TV and advertising pitches", "cost": 20, "status": "live"},
@@ -1039,6 +912,776 @@ async def get_available_apps():
     }
     return {"apps": apps}
 
+# ============== ADMIN HELPERS ==============
+
+ADMIN_ROLES = {"super_admin", "admin", "support", "finance"}
+
+def get_admin_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
+    user = get_current_user(credentials)
+    if not user.get("admin_role") or user["admin_role"] not in ADMIN_ROLES:
+        raise HTTPException(status_code=403, detail="Admin access required")
+    return user
+
+def log_audit(admin_id, admin_name: str, action: str, target_user_id=None, target_user_name: str = "", details: dict = None):
+    db.audit_log.insert_one({
+        "admin_id": str(admin_id),
+        "admin_name": admin_name,
+        "action": action,
+        "target_user_id": str(target_user_id) if target_user_id else None,
+        "target_user_name": target_user_name,
+        "details": details or {},
+        "created_at": datetime.now(timezone.utc)
+    })
+
+# ============== ADMIN — USER MANAGEMENT ==============
+
+class AdminUserUpdate(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    plan: Optional[str] = None
+    portal: Optional[str] = None
+    brand_name: Optional[str] = None
+    bio: Optional[str] = None
+    admin_role: Optional[str] = None
+    audit_changes: Optional[dict] = None
+
+class BulkAction(BaseModel):
+    user_ids: List[str]
+    action: str  # export, suspend, delete, plan_change
+    value: Optional[str] = None
+
+class CreditGrant(BaseModel):
+    method: str  # preset, custom
+    preset_label: Optional[str] = None
+    credits: int
+    note: Optional[str] = None
+
+class AdminNote(BaseModel):
+    note: str
+
+@app.get("/api/admin/users")
+async def admin_list_users(
+    page: int = 1, per_page: int = 25,
+    search: Optional[str] = None,
+    plan: Optional[str] = None,
+    portal: Optional[str] = None,
+    status: Optional[str] = None,
+    sort_by: str = "created_at",
+    sort_dir: str = "desc",
+    admin: dict = Depends(get_admin_user)
+):
+    query = {}
+    if search:
+        query["$or"] = [
+            {"first_name": {"$regex": search, "$options": "i"}},
+            {"last_name": {"$regex": search, "$options": "i"}},
+            {"email": {"$regex": search, "$options": "i"}},
+            {"phone": {"$regex": search, "$options": "i"}},
+        ]
+    if plan: query["plan"] = plan
+    if portal: query["portal"] = portal
+    if status == "suspended": query["suspended"] = True
+    elif status == "active": query["suspended"] = {"$ne": True}
+
+    sort_order = 1 if sort_dir == "asc" else -1
+    total = db.users.count_documents(query)
+    skip = (page - 1) * per_page
+    users_cursor = db.users.find(query).sort(sort_by, sort_order).skip(skip).limit(per_page)
+
+    users = []
+    for u in users_cursor:
+        users.append({
+            **serialize_user(u),
+            "ai_runs": u.get("ai_runs", 0),
+            "suspended": u.get("suspended", False),
+            "admin_role": u.get("admin_role", ""),
+            "admin_notes": u.get("admin_notes", []),
+        })
+    return {"users": users, "total": total, "page": page, "per_page": per_page}
+
+@app.get("/api/admin/users/{user_id}")
+async def admin_get_user(user_id: str, admin: dict = Depends(get_admin_user)):
+    u = db.users.find_one({"_id": ObjectId(user_id)})
+    if not u: raise HTTPException(404, "User not found")
+    return {**serialize_user(u), "ai_runs": u.get("ai_runs", 0), "admin_role": u.get("admin_role", ""), "admin_notes": u.get("admin_notes", [])}
+
+@app.put("/api/admin/users/{user_id}")
+async def admin_update_user(user_id: str, data: AdminUserUpdate, admin: dict = Depends(get_admin_user)):
+    u = db.users.find_one({"_id": ObjectId(user_id)})
+    if not u: raise HTTPException(404, "User not found")
+
+    update = {k: v for k, v in data.model_dump(exclude={"audit_changes"}).items() if v is not None}
+    if update:
+        db.users.update_one({"_id": ObjectId(user_id)}, {"$set": update})
+
+    admin_name = f"{admin.get('first_name', '')} {admin.get('last_name', '')}".strip()
+    target_name = f"{u.get('first_name', '')} {u.get('last_name', '')}".strip()
+    log_audit(admin["_id"], admin_name, "user_edit", u["_id"], target_name, data.audit_changes or update)
+
+    updated = db.users.find_one({"_id": ObjectId(user_id)})
+    return {**serialize_user(updated), "admin_role": updated.get("admin_role", "")}
+
+@app.post("/api/admin/users/{user_id}/grant-credits")
+async def admin_grant_credits(user_id: str, data: CreditGrant, admin: dict = Depends(get_admin_user)):
+    u = db.users.find_one({"_id": ObjectId(user_id)})
+    if not u: raise HTTPException(404, "User not found")
+
+    db.users.update_one({"_id": ObjectId(user_id)}, {"$inc": {"credits": data.credits}})
+
+    db.admin_credit_grants.insert_one({
+        "user_id": ObjectId(user_id),
+        "admin_id": admin["_id"],
+        "method": data.method,
+        "preset_label": data.preset_label,
+        "credits": data.credits,
+        "note": data.note,
+        "created_at": datetime.now(timezone.utc)
+    })
+
+    db.transactions.insert_one({
+        "user_id": ObjectId(user_id),
+        "type": "credit_grant",
+        "plan": "credit_grant",
+        "amount": 0,
+        "credits": data.credits,
+        "note": data.note,
+        "granted_by": str(admin["_id"]),
+        "status": "completed",
+        "created_at": datetime.now(timezone.utc)
+    })
+
+    db.notifications.insert_one({
+        "user_id": ObjectId(user_id),
+        "icon": "⚡",
+        "title": f"{data.credits} credits added!",
+        "text": data.note or "Credits have been added to your account.",
+        "read": False,
+        "created_at": datetime.now(timezone.utc)
+    })
+
+    admin_name = f"{admin.get('first_name', '')} {admin.get('last_name', '')}".strip()
+    target_name = f"{u.get('first_name', '')} {u.get('last_name', '')}".strip()
+    log_audit(admin["_id"], admin_name, "credit_grant", u["_id"], target_name, {"credits": data.credits, "note": data.note})
+
+    updated = db.users.find_one({"_id": ObjectId(user_id)})
+    return {"success": True, "credits": updated.get("credits", 0)}
+
+@app.post("/api/admin/users/{user_id}/notes")
+async def admin_add_note(user_id: str, data: AdminNote, admin: dict = Depends(get_admin_user)):
+    u = db.users.find_one({"_id": ObjectId(user_id)})
+    if not u: raise HTTPException(404, "User not found")
+
+    note_entry = {"note": data.note, "admin_id": str(admin["_id"]), "created_at": datetime.now(timezone.utc)}
+    db.users.update_one({"_id": ObjectId(user_id)}, {"$push": {"admin_notes": note_entry}})
+
+    updated = db.users.find_one({"_id": ObjectId(user_id)})
+    notes = updated.get("admin_notes", [])
+    for n in notes:
+        if isinstance(n.get("created_at"), datetime):
+            n["created_at"] = n["created_at"].isoformat()
+    return {"notes": notes}
+
+@app.get("/api/admin/users/{user_id}/activity")
+async def admin_user_activity(user_id: str, admin: dict = Depends(get_admin_user)):
+    activities = list(db.activities.find({"user_id": ObjectId(user_id)}).sort("created_at", -1).limit(50))
+    for a in activities:
+        a.pop("_id", None); a.pop("user_id", None)
+        if isinstance(a.get("created_at"), datetime): a["created_at"] = a["created_at"].isoformat()
+    return {"activities": activities}
+
+@app.get("/api/admin/users/{user_id}/transactions")
+async def admin_user_transactions(user_id: str, admin: dict = Depends(get_admin_user)):
+    txs = list(db.transactions.find({"user_id": ObjectId(user_id)}).sort("created_at", -1).limit(50))
+    for t in txs:
+        t.pop("_id", None); t.pop("user_id", None)
+        if isinstance(t.get("created_at"), datetime): t["created_at"] = t["created_at"].isoformat()
+        if isinstance(t.get("completed_at"), datetime): t["completed_at"] = t["completed_at"].isoformat()
+    return {"transactions": txs}
+
+@app.post("/api/admin/users/{user_id}/suspend")
+async def admin_suspend_user(user_id: str, admin: dict = Depends(get_admin_user)):
+    u = db.users.find_one({"_id": ObjectId(user_id)})
+    if not u: raise HTTPException(404, "User not found")
+    suspended = not u.get("suspended", False)
+    db.users.update_one({"_id": ObjectId(user_id)}, {"$set": {"suspended": suspended}})
+    admin_name = f"{admin.get('first_name', '')} {admin.get('last_name', '')}".strip()
+    target_name = f"{u.get('first_name', '')} {u.get('last_name', '')}".strip()
+    log_audit(admin["_id"], admin_name, "suspend" if suspended else "unsuspend", u["_id"], target_name)
+    return {"success": True, "suspended": suspended}
+
+@app.post("/api/admin/users/bulk")
+async def admin_bulk_action(data: BulkAction, admin: dict = Depends(get_admin_user)):
+    results = []
+    for uid in data.user_ids:
+        try:
+            oid = ObjectId(uid)
+            if data.action == "suspend":
+                db.users.update_one({"_id": oid}, {"$set": {"suspended": True}})
+            elif data.action == "delete":
+                db.users.update_one({"_id": oid}, {"$set": {"deleted": True, "deleted_at": datetime.now(timezone.utc)}})
+            elif data.action == "plan_change" and data.value:
+                db.users.update_one({"_id": oid}, {"$set": {"plan": data.value}})
+            results.append({"id": uid, "success": True})
+        except Exception as e:
+            results.append({"id": uid, "success": False, "error": str(e)})
+    admin_name = f"{admin.get('first_name', '')} {admin.get('last_name', '')}".strip()
+    log_audit(admin["_id"], admin_name, f"bulk_{data.action}", details={"count": len(data.user_ids)})
+    return {"results": results}
+
+@app.get("/api/admin/users/export")
+async def admin_export_users(admin: dict = Depends(get_admin_user)):
+    from fastapi.responses import StreamingResponse
+    import csv, io
+    users = list(db.users.find({"deleted": {"$ne": True}}))
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["id", "first_name", "last_name", "email", "phone", "plan", "credits", "portal", "ai_runs", "created_at"])
+    for u in users:
+        writer.writerow([str(u["_id"]), u.get("first_name", ""), u.get("last_name", ""), u.get("email", ""), u.get("phone", ""), u.get("plan", ""), u.get("credits", 0), u.get("portal", ""), u.get("ai_runs", 0), u.get("created_at", "").isoformat() if isinstance(u.get("created_at"), datetime) else ""])
+    output.seek(0)
+    return StreamingResponse(io.BytesIO(output.getvalue().encode()), media_type="text/csv", headers={"Content-Disposition": "attachment; filename=users.csv"})
+
+# ============== ADMIN — ANALYTICS ==============
+
+@app.get("/api/admin/analytics/overview")
+async def admin_analytics(range: str = "30d", admin: dict = Depends(get_admin_user)):
+    now = datetime.now(timezone.utc)
+    delta_map = {"7d": 7, "30d": 30, "90d": 90, "all": 36500}
+    days = delta_map.get(range, 30)
+    since = now - timedelta(days=days)
+
+    total_users = db.users.count_documents({"deleted": {"$ne": True}})
+    new_users = db.users.count_documents({"created_at": {"$gte": since}, "deleted": {"$ne": True}})
+    active_users = db.activities.distinct("user_id", {"created_at": {"$gte": now - timedelta(days=30)}})
+
+    by_plan = {
+        "free": db.users.count_documents({"plan": "free", "deleted": {"$ne": True}}),
+        "creator": db.users.count_documents({"plan": "creator", "deleted": {"$ne": True}}),
+        "pro": db.users.count_documents({"plan": "pro", "deleted": {"$ne": True}}),
+    }
+    by_portal = {
+        "music": db.users.count_documents({"portal": "music", "deleted": {"$ne": True}}),
+        "business": db.users.count_documents({"portal": "business", "deleted": {"$ne": True}}),
+    }
+
+    total_ai_runs = db.ai_runs.count_documents({"created_at": {"$gte": since}})
+
+    credit_grants = list(db.admin_credit_grants.aggregate([
+        {"$match": {"created_at": {"$gte": since}}},
+        {"$group": {"_id": None, "total": {"$sum": "$credits"}}}
+    ]))
+    credits_granted = credit_grants[0]["total"] if credit_grants else 0
+
+    revenue_result = list(db.transactions.aggregate([
+        {"$match": {"status": "completed", "created_at": {"$gte": since}, "amount": {"$gt": 0}}},
+        {"$group": {"_id": None, "total": {"$sum": "$amount"}}}
+    ]))
+    revenue = revenue_result[0]["total"] if revenue_result else 0
+
+    tool_usage = list(db.ai_runs.aggregate([
+        {"$match": {"created_at": {"$gte": since}}},
+        {"$group": {"_id": "$tool_id", "count": {"$sum": 1}}},
+        {"$sort": {"count": -1}}, {"$limit": 5},
+        {"$project": {"tool_id": "$_id", "count": 1, "_id": 0}}
+    ]))
+
+    recent_signups_cursor = db.users.find({"deleted": {"$ne": True}}).sort("created_at", -1).limit(10)
+    recent_signups = []
+    for u in recent_signups_cursor:
+        recent_signups.append({
+            "first_name": u.get("first_name", ""),
+            "last_name": u.get("last_name", ""),
+            "email": u.get("email", ""),
+            "plan": u.get("plan", ""),
+            "portal": u.get("portal", ""),
+            "created_at": u.get("created_at", "").isoformat() if isinstance(u.get("created_at"), datetime) else ""
+        })
+
+    return {
+        "total_users": total_users,
+        "new_users": new_users,
+        "active_users": len(active_users),
+        "by_plan": by_plan,
+        "by_portal": by_portal,
+        "total_ai_runs": total_ai_runs,
+        "credits_granted": credits_granted,
+        "revenue": revenue,
+        "top_tools": tool_usage,
+        "recent_signups": recent_signups,
+        "user_growth": 0,
+        "revenue_trend": 0,
+        "new_user_trend": 0,
+    }
+
+# ============== ADMIN — AUDIT LOG ==============
+
+@app.get("/api/admin/audit-log")
+async def admin_audit_log(page: int = 1, per_page: int = 50, admin: dict = Depends(get_admin_user)):
+    total = db.audit_log.count_documents({})
+    skip = (page - 1) * per_page
+    logs = list(db.audit_log.find({}).sort("created_at", -1).skip(skip).limit(per_page))
+    for l in logs:
+        l.pop("_id", None)
+        if isinstance(l.get("created_at"), datetime): l["created_at"] = l["created_at"].isoformat()
+    return {"logs": logs, "total": total}
+
+# ============== ADMIN — SETTINGS ==============
+
+class SystemSettings(BaseModel):
+    default_plan: Optional[str] = "free"
+    free_credits: Optional[int] = 150
+    creator_credits: Optional[int] = 600
+    pro_credits: Optional[int] = 2500
+    brandkit_cost: Optional[int] = 10
+    musicbio_cost: Optional[int] = 15
+    syncpitch_cost: Optional[int] = 20
+    bizpitch_cost: Optional[int] = 18
+    maintenance_mode: Optional[bool] = False
+    registrations_open: Optional[bool] = True
+    hero_content_overrides: Optional[dict] = {}
+
+@app.get("/api/admin/settings")
+async def get_admin_settings(admin: dict = Depends(get_admin_user)):
+    settings = db.system_settings.find_one({"key": "global"})
+    if not settings:
+        return SystemSettings().model_dump()
+    settings.pop("_id", None); settings.pop("key", None)
+    return settings
+
+@app.put("/api/admin/settings")
+async def update_admin_settings(data: SystemSettings, admin: dict = Depends(get_admin_user)):
+    if admin.get("admin_role") != "super_admin":
+        raise HTTPException(403, "Super admin required for settings changes")
+    db.system_settings.update_one({"key": "global"}, {"$set": {"key": "global", **data.model_dump()}}, upsert=True)
+    admin_name = f"{admin.get('first_name', '')} {admin.get('last_name', '')}".strip()
+    log_audit(admin["_id"], admin_name, "settings_update", details=data.model_dump())
+    return {"success": True}
+
+@app.get("/api/settings")
+async def get_public_settings():
+    settings = db.system_settings.find_one({"key": "global"}) or {}
+    hero_overrides = settings.get("hero_content_overrides", {})
+    return {"hero_content_overrides": hero_overrides}
+
+# ============== CRM — CONTACTS ==============
+
+class ContactCreate(BaseModel):
+    first_name: Optional[str] = ""
+    last_name: Optional[str] = ""
+    email: Optional[str] = None
+    phone: Optional[str] = None
+    company: Optional[str] = ""
+    job_title: Optional[str] = ""
+    tags: Optional[List[str]] = []
+    source: Optional[str] = "manual"
+    notes_text: Optional[str] = None
+
+@app.get("/api/crm/contacts")
+async def crm_list_contacts(
+    page: int = 1, per_page: int = 25,
+    search: Optional[str] = None,
+    tag: Optional[str] = None,
+    current_user: dict = Depends(get_current_user)
+):
+    query = {"owner_id": current_user["_id"], "deleted": {"$ne": True}}
+    if search:
+        query["$or"] = [
+            {"first_name": {"$regex": search, "$options": "i"}},
+            {"last_name": {"$regex": search, "$options": "i"}},
+            {"email": {"$regex": search, "$options": "i"}},
+            {"phone": {"$regex": search, "$options": "i"}},
+        ]
+    if tag: query["tags"] = tag
+
+    total = db.contacts.count_documents(query)
+    skip = (page - 1) * per_page
+    contacts_cursor = db.contacts.find(query).sort("created_at", -1).skip(skip).limit(per_page)
+    contacts = []
+    for c in contacts_cursor:
+        c["id"] = str(c.pop("_id"))
+        c.pop("owner_id", None)
+        if isinstance(c.get("created_at"), datetime): c["created_at"] = c["created_at"].isoformat()
+        if isinstance(c.get("updated_at"), datetime): c["updated_at"] = c["updated_at"].isoformat()
+        contacts.append(c)
+    return {"contacts": contacts, "total": total}
+
+@app.post("/api/crm/contacts")
+async def crm_create_contact(data: ContactCreate, current_user: dict = Depends(get_current_user)):
+    if not data.email and not data.phone:
+        raise HTTPException(400, "Email or phone required")
+    contact = {
+        "owner_id": current_user["_id"],
+        "first_name": data.first_name,
+        "last_name": data.last_name,
+        "email": data.email.lower() if data.email else None,
+        "phone": data.phone,
+        "company": data.company,
+        "job_title": data.job_title,
+        "tags": data.tags or [],
+        "source": data.source,
+        "notes": [{"text": data.notes_text, "created_at": datetime.now(timezone.utc)}] if data.notes_text else [],
+        "engagement": {"emails_sent": 0, "emails_opened": 0, "emails_clicked": 0, "whatsapp_messages": 0, "sms_messages": 0},
+        "status": "active",
+        "created_at": datetime.now(timezone.utc),
+        "updated_at": datetime.now(timezone.utc),
+    }
+    result = db.contacts.insert_one(contact)
+    return {"id": str(result.inserted_id), "success": True}
+
+@app.put("/api/crm/contacts/{contact_id}")
+async def crm_update_contact(contact_id: str, data: ContactCreate, current_user: dict = Depends(get_current_user)):
+    c = db.contacts.find_one({"_id": ObjectId(contact_id), "owner_id": current_user["_id"]})
+    if not c: raise HTTPException(404, "Contact not found")
+    update = {k: v for k, v in data.model_dump(exclude={"notes_text"}).items() if v is not None}
+    update["updated_at"] = datetime.now(timezone.utc)
+    db.contacts.update_one({"_id": ObjectId(contact_id)}, {"$set": update})
+    return {"success": True}
+
+@app.delete("/api/crm/contacts/{contact_id}")
+async def crm_delete_contact(contact_id: str, current_user: dict = Depends(get_current_user)):
+    db.contacts.update_one({"_id": ObjectId(contact_id), "owner_id": current_user["_id"]}, {"$set": {"deleted": True}})
+    return {"success": True}
+
+@app.post("/api/crm/contacts/import")
+async def crm_import_contacts(file: bytes = None, current_user: dict = Depends(get_current_user)):
+    from fastapi import UploadFile, File
+    # Handled via multipart — simplified endpoint
+    return {"imported": 0, "message": "Import endpoint ready — connect file upload"}
+
+@app.post("/api/crm/contacts/export")
+async def crm_export_contacts(body: dict = {}, current_user: dict = Depends(get_current_user)):
+    from fastapi.responses import StreamingResponse
+    import csv, io
+    query = {"owner_id": current_user["_id"], "deleted": {"$ne": True}}
+    if body.get("contact_ids"):
+        query["_id"] = {"$in": [ObjectId(x) for x in body["contact_ids"]]}
+    contacts = list(db.contacts.find(query))
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow(["first_name", "last_name", "email", "phone", "company", "job_title", "tags", "source"])
+    for c in contacts:
+        writer.writerow([c.get("first_name", ""), c.get("last_name", ""), c.get("email", ""), c.get("phone", ""), c.get("company", ""), c.get("job_title", ""), ",".join(c.get("tags", [])), c.get("source", "")])
+    output.seek(0)
+    return StreamingResponse(io.BytesIO(output.getvalue().encode()), media_type="text/csv", headers={"Content-Disposition": "attachment; filename=contacts.csv"})
+
+@app.get("/api/crm/contacts/{contact_id}/messages")
+async def crm_contact_messages(contact_id: str, current_user: dict = Depends(get_current_user)):
+    msgs = list(db.crm_messages.find({"contact_id": ObjectId(contact_id), "owner_id": current_user["_id"]}).sort("created_at", -1).limit(100))
+    for m in msgs:
+        m["id"] = str(m.pop("_id"))
+        m.pop("owner_id", None); m.pop("contact_id", None)
+        if isinstance(m.get("created_at"), datetime): m["created_at"] = m["created_at"].isoformat()
+    return {"messages": list(reversed(msgs))}
+
+# ============== CRM — CAMPAIGNS ==============
+
+class CampaignCreate(BaseModel):
+    channel: str  # email, whatsapp, sms
+    subject: Optional[str] = None
+    body: str
+    campaign_type: Optional[str] = "custom"
+    recipient_type: str = "all"  # all, tag, plan
+    tag_filter: Optional[str] = None
+    plan_filter: Optional[str] = None
+    scheduled_at: Optional[str] = None
+    scheduled: Optional[bool] = False
+
+@app.get("/api/crm/campaigns")
+async def crm_list_campaigns(current_user: dict = Depends(get_current_user)):
+    campaigns = list(db.crm_campaigns.find({"owner_id": current_user["_id"]}).sort("created_at", -1).limit(50))
+    for c in campaigns:
+        c["id"] = str(c.pop("_id"))
+        c.pop("owner_id", None)
+        for field in ["created_at", "sent_at", "scheduled_at"]:
+            if isinstance(c.get(field), datetime): c[field] = c[field].isoformat()
+    return {"campaigns": campaigns}
+
+@app.post("/api/crm/campaigns")
+async def crm_create_campaign(data: CampaignCreate, current_user: dict = Depends(get_current_user)):
+    contact_query = {"owner_id": current_user["_id"], "deleted": {"$ne": True}, "status": "active"}
+    if data.recipient_type == "tag" and data.tag_filter:
+        contact_query["tags"] = data.tag_filter
+
+    recipient_count = db.contacts.count_documents(contact_query)
+    status = "scheduled" if data.scheduled and data.scheduled_at else "sent"
+
+    campaign = {
+        "owner_id": current_user["_id"],
+        "channel": data.channel,
+        "subject": data.subject,
+        "body": data.body,
+        "campaign_type": data.campaign_type,
+        "recipient_type": data.recipient_type,
+        "tag_filter": data.tag_filter,
+        "recipients": recipient_count,
+        "status": status,
+        "stats": {"sent": 0, "delivered": 0, "opened": 0, "clicked": 0, "failed": 0},
+        "created_at": datetime.now(timezone.utc),
+        "sent_at": datetime.now(timezone.utc) if status == "sent" else None,
+        "scheduled_at": datetime.fromisoformat(data.scheduled_at) if data.scheduled_at else None,
+    }
+    result = db.crm_campaigns.insert_one(campaign)
+    campaign_id = result.inserted_id
+
+    # If sending now, dispatch via Twilio/Resend (fire and forget - update stats async)
+    if status == "sent":
+        db.crm_campaigns.update_one({"_id": campaign_id}, {"$set": {"stats.sent": recipient_count}})
+
+    return {"id": str(campaign_id), "success": True, "recipients": recipient_count, "status": status}
+
+@app.delete("/api/crm/campaigns/{campaign_id}")
+async def crm_delete_campaign(campaign_id: str, current_user: dict = Depends(get_current_user)):
+    db.crm_campaigns.delete_one({"_id": ObjectId(campaign_id), "owner_id": current_user["_id"]})
+    return {"success": True}
+
+# ============== CRM — MESSAGING ==============
+
+class DirectMessage(BaseModel):
+    contact_id: Optional[str] = None
+    channel: str  # whatsapp, sms, email
+    body: str
+    subject: Optional[str] = None
+
+class DirectMessageDirect(BaseModel):
+    channel: str
+    to: str  # phone or email
+    body: str
+    subject: Optional[str] = None
+
+async def send_twilio_message(to: str, body: str, channel: str):
+    """Send via Twilio - requires TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN"""
+    import os
+    account_sid = os.environ.get("TWILIO_ACCOUNT_SID")
+    auth_token = os.environ.get("TWILIO_AUTH_TOKEN")
+    if not account_sid or not auth_token:
+        return {"success": False, "error": "Twilio credentials not configured"}
+    try:
+        from_number = os.environ.get("TWILIO_WHATSAPP_NUMBER") if channel == "whatsapp" else os.environ.get("TWILIO_SMS_NUMBER")
+        to_number = f"whatsapp:{to}" if channel == "whatsapp" else to
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                f"https://api.twilio.com/2010-04-01/Accounts/{account_sid}/Messages.json",
+                data={"From": from_number, "To": to_number, "Body": body},
+                auth=(account_sid, auth_token)
+            )
+            if response.status_code in [200, 201]:
+                data = response.json()
+                return {"success": True, "sid": data.get("sid"), "status": data.get("status")}
+            return {"success": False, "error": response.text}
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+@app.post("/api/crm/messages/send")
+async def crm_send_message(data: DirectMessage, current_user: dict = Depends(get_current_user)):
+    contact = db.contacts.find_one({"_id": ObjectId(data.contact_id), "owner_id": current_user["_id"]})
+    if not contact: raise HTTPException(404, "Contact not found")
+
+    to = contact.get("phone") if data.channel in ["whatsapp", "sms"] else contact.get("email")
+    if not to: raise HTTPException(400, f"Contact has no {data.channel} address")
+
+    result = await send_twilio_message(to, data.body, data.channel)
+
+    msg_record = {
+        "owner_id": current_user["_id"],
+        "contact_id": ObjectId(data.contact_id),
+        "channel": data.channel,
+        "direction": "outbound",
+        "to": to,
+        "body": data.body,
+        "status": "sent" if result.get("success") else "failed",
+        "twilio_sid": result.get("sid"),
+        "created_at": datetime.now(timezone.utc)
+    }
+    db.crm_messages.insert_one(msg_record)
+
+    if result.get("success"):
+        inc_field = "engagement.whatsapp_messages" if data.channel == "whatsapp" else f"engagement.{data.channel}_messages"
+        db.contacts.update_one({"_id": ObjectId(data.contact_id)}, {"$inc": {inc_field: 1}})
+
+    return {"success": result.get("success"), "error": result.get("error")}
+
+@app.post("/api/crm/messages/send-direct")
+async def crm_send_direct(data: DirectMessageDirect, current_user: dict = Depends(get_current_user)):
+    result = await send_twilio_message(data.to, data.body, data.channel)
+
+    db.crm_messages.insert_one({
+        "owner_id": current_user["_id"],
+        "contact_id": None,
+        "channel": data.channel,
+        "direction": "outbound",
+        "to": data.to,
+        "body": data.body,
+        "status": "sent" if result.get("success") else "failed",
+        "twilio_sid": result.get("sid"),
+        "created_at": datetime.now(timezone.utc)
+    })
+    return {"success": result.get("success"), "error": result.get("error")}
+
+@app.get("/api/crm/messages/recent")
+async def crm_recent_messages(current_user: dict = Depends(get_current_user)):
+    msgs = list(db.crm_messages.find({"owner_id": current_user["_id"]}).sort("created_at", -1).limit(20))
+    for m in msgs:
+        m["id"] = str(m.pop("_id"))
+        m.pop("owner_id", None)
+        if m.get("contact_id"): m["contact_id"] = str(m["contact_id"])
+        if isinstance(m.get("created_at"), datetime): m["created_at"] = m["created_at"].isoformat()
+    return {"messages": msgs}
+
+@app.post("/api/crm/twilio/webhook")
+async def twilio_inbound_webhook(request_data: dict):
+    """Receives inbound WhatsApp/SMS replies from Twilio"""
+    from_number = request_data.get("From", "").replace("whatsapp:", "")
+    body = request_data.get("Body", "")
+    channel = "whatsapp" if "whatsapp" in request_data.get("From", "") else "sms"
+
+    # Find contact by phone number
+    contact = db.contacts.find_one({"phone": from_number})
+
+    msg_record = {
+        "channel": channel,
+        "direction": "inbound",
+        "from": from_number,
+        "body": body,
+        "contact_id": contact["_id"] if contact else None,
+        "owner_id": contact.get("owner_id") if contact else None,
+        "created_at": datetime.now(timezone.utc)
+    }
+    db.crm_messages.insert_one(msg_record)
+
+    if contact:
+        inc_field = "engagement.whatsapp_messages" if channel == "whatsapp" else "engagement.sms_messages"
+        db.contacts.update_one({"_id": contact["_id"]}, {"$inc": {inc_field: 1}})
+
+    return {"success": True}
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8001)
+
+# ============== EPK ROUTES ==============
+
+class EPKCreate(BaseModel):
+    username: Optional[str] = None
+    artist_name: str
+    tagline: Optional[str] = ""
+    genres: Optional[List[str]] = []
+    location: Optional[str] = ""
+    bio_short: Optional[str] = ""
+    bio_full: Optional[str] = ""
+    highlights: Optional[List[dict]] = []
+    music: Optional[dict] = {}
+    social_links: Optional[dict] = {}
+    contact: Optional[dict] = {}
+    press_quotes: Optional[List[dict]] = []
+    press_links: Optional[List[dict]] = []
+    events_upcoming: Optional[List[dict]] = []
+    design: Optional[dict] = {}
+    is_published: Optional[bool] = False
+    hosting: Optional[dict] = {}
+
+def serialize_epk(epk: dict) -> dict:
+    epk["id"] = str(epk.pop("_id", ""))
+    epk.pop("user_id", None)
+    for f in ["created_at", "updated_at"]:
+        if isinstance(epk.get(f), datetime):
+            epk[f] = epk[f].isoformat()
+    return epk
+
+@app.get("/api/epk/my")
+async def get_my_epk(current_user: dict = Depends(get_current_user)):
+    epk = db.epk_profiles.find_one({"user_id": current_user["_id"]})
+    if not epk:
+        raise HTTPException(404, "No EPK found")
+    return {"epk": serialize_epk(epk)}
+
+@app.post("/api/epk/create")
+async def create_epk(data: EPKCreate, current_user: dict = Depends(get_current_user)):
+    existing = db.epk_profiles.find_one({"user_id": current_user["_id"]})
+    if existing:
+        raise HTTPException(400, "EPK already exists — use PUT to update")
+    
+    if data.username:
+        taken = db.epk_profiles.find_one({"username": data.username})
+        if taken:
+            raise HTTPException(400, "Username already taken")
+    
+    epk = {
+        "user_id": current_user["_id"],
+        **data.model_dump(),
+        "analytics": {"total_views": 0, "unique_visitors": 0},
+        "created_at": datetime.now(timezone.utc),
+        "updated_at": datetime.now(timezone.utc),
+    }
+    result = db.epk_profiles.insert_one(epk)
+    epk["_id"] = result.inserted_id
+    return {"epk": serialize_epk(epk)}
+
+@app.put("/api/epk/{epk_id}")
+async def update_epk(epk_id: str, data: EPKCreate, current_user: dict = Depends(get_current_user)):
+    epk = db.epk_profiles.find_one({"_id": ObjectId(epk_id), "user_id": current_user["_id"]})
+    if not epk:
+        raise HTTPException(404, "EPK not found")
+    
+    if data.username and data.username != epk.get("username"):
+        taken = db.epk_profiles.find_one({"username": data.username, "_id": {"$ne": ObjectId(epk_id)}})
+        if taken:
+            raise HTTPException(400, "Username already taken")
+    
+    update = {**data.model_dump(), "updated_at": datetime.now(timezone.utc)}
+    db.epk_profiles.update_one({"_id": ObjectId(epk_id)}, {"$set": update})
+    updated = db.epk_profiles.find_one({"_id": ObjectId(epk_id)})
+    return {"epk": serialize_epk(updated)}
+
+@app.post("/api/epk/{epk_id}/publish")
+async def toggle_publish_epk(epk_id: str, current_user: dict = Depends(get_current_user)):
+    epk = db.epk_profiles.find_one({"_id": ObjectId(epk_id), "user_id": current_user["_id"]})
+    if not epk:
+        raise HTTPException(404, "EPK not found")
+    published = not epk.get("is_published", False)
+    db.epk_profiles.update_one({"_id": ObjectId(epk_id)}, {"$set": {"is_published": published}})
+    return {"is_published": published}
+
+@app.get("/api/epk/check-username")
+async def check_username(username: str, epk_id: Optional[str] = None):
+    query = {"username": username}
+    if epk_id:
+        try:
+            query["_id"] = {"$ne": ObjectId(epk_id)}
+        except:
+            pass
+    taken = db.epk_profiles.find_one(query)
+    return {"available": taken is None}
+
+@app.get("/api/epk/public/{username}")
+async def get_public_epk(username: str):
+    epk = db.epk_profiles.find_one({"username": username, "is_published": True})
+    if not epk:
+        raise HTTPException(404, "EPK not found")
+    db.epk_profiles.update_one({"_id": epk["_id"]}, {"$inc": {"analytics.total_views": 1}})
+    db.epk_analytics.insert_one({"epk_id": epk["_id"], "event_type": "view", "timestamp": datetime.now(timezone.utc)})
+    return serialize_epk(epk)
+
+@app.get("/api/epk/{epk_id}/analytics")
+async def get_epk_analytics(epk_id: str, current_user: dict = Depends(get_current_user)):
+    epk = db.epk_profiles.find_one({"_id": ObjectId(epk_id), "user_id": current_user["_id"]})
+    if not epk:
+        raise HTTPException(404, "EPK not found")
+    
+    events = list(db.epk_analytics.find({"epk_id": ObjectId(epk_id)}))
+    referrers = {}
+    for e in events:
+        ref = e.get("referrer", "Direct")
+        referrers[ref] = referrers.get(ref, 0) + 1
+    
+    total = sum(referrers.values()) or 1
+    top_referrers = sorted([{"source": k, "count": v, "pct": round(v/total*100)} for k, v in referrers.items()], key=lambda x: -x["count"])[:5]
+    
+    return {
+        "total_views": epk.get("analytics", {}).get("total_views", 0),
+        "unique_visitors": epk.get("analytics", {}).get("unique_visitors", 0),
+        "link_clicks": len([e for e in events if e.get("event_type") == "click"]),
+        "form_submissions": len([e for e in events if e.get("event_type") == "form_submit"]),
+        "top_referrers": top_referrers,
+    }

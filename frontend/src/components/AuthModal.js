@@ -13,6 +13,7 @@ function AuthModal({ onClose }) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [passwordError, setPasswordError] = useState('');
+  const [formError, setFormError] = useState('');
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -25,11 +26,15 @@ function AuthModal({ onClose }) {
 
   // Check if we should show sign in or register
   useEffect(() => {
+    console.log('[AuthModal] Mounted on path:', location.pathname);
     if (location.state?.mode === 'signin') {
+      console.log('[AuthModal] Setting mode to signin');
       setIsLogin(true);
     } else if (location.state?.mode === 'register') {
+      console.log('[AuthModal] Setting mode to register');
       setIsLogin(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.state]);
 
   const handleChange = (e) => {
@@ -40,30 +45,70 @@ function AuthModal({ onClose }) {
     if (name === 'password' || name === 'confirm_password') {
       setPasswordError('');
     }
+    // Clear form error when typing
+    setFormError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Clear previous errors
+    setPasswordError('');
+    setFormError('');
+    
     // Validate password match on signup
-    if (!isLogin && formData.password !== formData.confirm_password) {
-      setPasswordError('Passwords do not match');
-      return;
+    if (!isLogin) {
+      if (!formData.first_name.trim()) {
+        setFormError('First name is required');
+        return;
+      }
+      if (!formData.email.trim()) {
+        setFormError('Email is required');
+        return;
+      }
+      if (formData.password.length < 8) {
+        setPasswordError('Password must be at least 8 characters');
+        return;
+      }
+      if (formData.password !== formData.confirm_password) {
+        setPasswordError('Passwords do not match');
+        return;
+      }
+      if (!acceptedTerms) {
+        setFormError('You must accept the Terms of Service and Privacy Policy');
+        return;
+      }
+    } else {
+      if (!formData.email.trim()) {
+        setFormError('Email is required');
+        return;
+      }
+      if (!formData.password.trim()) {
+        setFormError('Password is required');
+        return;
+      }
     }
     
     setLoading(true);
 
     let result;
-    if (isLogin) {
-      result = await login(formData.email, formData.password);
-    } else {
-      result = await register(formData);
-    }
+    try {
+      if (isLogin) {
+        result = await login(formData.email, formData.password);
+      } else {
+        result = await register(formData);
+      }
 
-    setLoading(false);
-    
-    if (result.success) {
-      navigate('/dashboard');
+      if (result.success) {
+        navigate('/dashboard');
+      } else {
+        setFormError(result.error || (isLogin ? 'Sign in failed' : 'Registration failed'));
+      }
+    } catch (error) {
+      console.error('Auth error:', error);
+      setFormError('An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -126,6 +171,20 @@ function AuthModal({ onClose }) {
             </button>
           </div>
 
+          {formError && (
+            <div className="form-error-banner" data-testid="form-error-banner" style={{
+              padding: '10px 12px',
+              marginBottom: '16px',
+              backgroundColor: 'rgba(220, 38, 38, 0.1)',
+              border: '1px solid rgba(220, 38, 38, 0.3)',
+              borderRadius: 'var(--r)',
+              color: '#ff6b6b',
+              fontSize: '13px'
+            }}>
+              {formError}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit}>
             {!isLogin && (
               <>
@@ -155,6 +214,7 @@ function AuthModal({ onClose }) {
                       placeholder="Diallo"
                       value={formData.last_name}
                       onChange={handleChange}
+                      required={!isLogin}
                       data-testid="last-name-input"
                     />
                   </div>

@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { HERO_IMAGES, HERO_FALLBACKS, CAROUSEL_LOGOS } from '../../imageRegistry';
 import { Link } from 'react-router-dom';
 import { Mail, Check } from 'lucide-react';
 import { FlatIcon } from '../FlatIcon';
+import LogoCarousel from './LogoCarousel';
 
 // Portal configurations matching original data.js
 const PORTALS = {
@@ -29,7 +31,7 @@ const PORTALS = {
         b2link: '/apps'
       },
       { 
-        dot: '#7c6ff7', 
+        dot: '#10b981', 
         badge: 'For creative brands',
         h: 'Brand it right.<br/><em style="color:#f59e0b">From day one.</em>',
         s: "Whether you're an artist, studio, or label — generate your full brand kit in seconds.",
@@ -129,20 +131,206 @@ const PORTALS = {
   }
 };
 
-const SLIDE_DURATION = 8000;
+const SUBDOMAIN_PAGES = {
+  djs: {
+    slides: [
+      {
+        dot: '#10b981',
+        badge: 'For DJs & event curators',
+        h: 'Mix your brand.<br/><em style="color:#22d3ee">Own every stage.</em>',
+        s: 'DJ-specific tools for bookings, promotions, and music marketing that work across playlists, parties, and press.',
+        b1: 'Launch your DJ brand',
+        b1link: '/apps',
+        b2: 'Explore Social AI',
+        b2link: '/tools'
+      },
+      {
+        dot: '#22d3ee',
+        badge: 'Grow your fanbase',
+        h: 'Promote your sets.<br/><em style="color:#f59e0b">Get more bookings.</em>',
+        s: 'Create compelling artist bios, social content, and pitch decks that help DJs win gigs and partnerships.',
+        b1: 'Build your promo pack',
+        b1link: '/apps',
+        b2: 'See featured tools',
+        b2link: '/tools'
+      },
+      {
+        dot: '#10b981',
+        badge: 'Stay ahead',
+        h: 'One platform for<br/><em style="color:#10b981">DJs, promoters, and brands.</em>',
+        s: 'Use AI tools, CRM, and content automation to make your DJ business more professional and more profitable.',
+        b1: 'Start free',
+        b1link: '/auth',
+        b2: 'Contact support',
+        b2link: '/help'
+      }
+    ],
+    ftitle: 'DJs, promoters and mix-makers need smart music tools',
+    btitle: 'Tools built for DJs and event brands',
+    bsub: 'From show promotion to social content, use AI and CRM to grow your bookings.',
+    carousel: CAROUSEL_LOGOS.djs,
+  },
+  labels: {
+    slides: [
+      {
+        dot: '#f59e0b',
+        badge: 'For record labels',
+        h: 'Sign artists.<br/><em style="color:#22d3ee">Scale your roster.</em>',
+        s: 'Label-ready tools for press kits, sync pitching, and artist branding across Africa and beyond.',
+        b1: 'See label tools',
+        b1link: '/apps',
+        b2: 'Connect with artists',
+        b2link: '/about'
+      },
+      {
+        dot: '#22d3ee',
+        badge: 'Manage releases',
+        h: 'Release strategy.<br/><em style="color:#10b981">Driven by data.</em>',
+        s: 'Create media pitches, social campaigns, and brand assets that put your artists in the right spotlight.',
+        b1: 'Generate press kits',
+        b1link: '/tools',
+        b2: 'Explore CRM',
+        b2link: '/apps'
+      },
+      {
+        dot: '#10b981',
+        badge: 'Grow in Africa',
+        h: 'A label platform for<br/><em style="color:#f59e0b">African music leaders.</em>',
+        s: 'Partner with artists, DJs, and media to build a stronger African music economy.',
+        b1: 'Start today',
+        b1link: '/auth',
+        b2: 'Learn more',
+        b2link: '/help'
+      }
+    ],
+    ftitle: 'Label operations, artist marketing and distribution tools',
+    btitle: 'Tools built for labels and managers',
+    bsub: 'Manage artists, launch campaigns, and pitch catalogues with AI support.',
+    carousel: CAROUSEL_LOGOS.labels,
+  },
+  producers: {
+    slides: [
+      {
+        dot: '#22d3ee',
+        badge: 'For producers',
+        h: 'Publish your sound.<br/><em style="color:#10b981">Build your brand.</em>',
+        s: 'Producer-focused tools for demos, social promotion, and sync pitching to labels and brands.',
+        b1: 'Promote your beats',
+        b1link: '/tools',
+        b2: 'See CRM tools',
+        b2link: '/apps'
+      },
+      {
+        dot: '#10b981',
+        badge: 'Build your catalog',
+        h: 'From studio to stage,<br/><em style="color:#f59e0b">connect with artists.</em>',
+        s: 'Create compelling portfolio content, brands, and pitches that help producers get noticed.',
+        b1: 'Write your bio',
+        b1link: '/tools',
+        b2: 'Explore brand kit',
+        b2link: '/apps'
+      },
+      {
+        dot: '#10b981',
+        badge: 'Partner with labels',
+        h: 'Smart tools for<br/><em style="color:#22d3ee">production teams.</em>',
+        s: 'Leverage AI to build your offer, communicate clearly, and grow your music business.',
+        b1: 'Start for free',
+        b1link: '/auth',
+        b2: 'Contact support',
+        b2link: '/help'
+      }
+    ],
+    ftitle: 'Producer and beat-maker tools for modern music businesses',
+    btitle: 'Tools built for producers and studios',
+    bsub: 'Create, pitch, and promote your production brand with AI-driven content.',
+    carousel: CAROUSEL_LOGOS.producers,
+  },
+  mediahouses: {
+    slides: [
+      {
+        dot: '#10b981',
+        badge: 'For media houses',
+        h: 'Program music.<br/><em style="color:#10b981">Launch campaigns.</em>',
+        s: 'Media-friendly tools for music curation, licensing, and campaign creation across audio and visual channels.',
+        b1: 'See music tools',
+        b1link: '/apps',
+        b2: 'Read our story',
+        b2link: '/about'
+      },
+      {
+        dot: '#22d3ee',
+        badge: 'Connect brands and artists',
+        h: 'Broadcast the right sound<br/><em style="color:#f59e0b">to the right audience.</em>',
+        s: 'From licensing pitches to social campaigns, Intermaven helps media houses move music with purpose.',
+        b1: 'Build press kits',
+        b1link: '/tools',
+        b2: 'Explore CRM',
+        b2link: '/apps'
+      },
+      {
+        dot: '#10b981',
+        badge: 'Scale your channels',
+        h: 'One platform for<br/><em style="color:#22d3ee">music operations.</em>',
+        s: 'Manage artists, campaigns, and distribution with tools designed for Africa’s creative media ecosystem.',
+        b1: 'Start free',
+        b1link: '/auth',
+        b2: 'Contact support',
+        b2link: '/help'
+      }
+    ],
+    ftitle: 'Media houses, studios and brand teams need tailored music tools',
+    btitle: 'Tools built for media and music brands',
+    bsub: 'Promote music, license tracks, and manage campaigns from a single platform.',
+    carousel: CAROUSEL_LOGOS.mediahouses,
+  }
+};
 
-function HomePage({ portal = 'music', onOpenAppModal, onOpenAuth, onToast }) {
+const FLAGSHIP_APPS = [
+  { title: 'Social AI', desc: 'Full-stack social content for every platform.', link: '/social', icon: 'social', iconColor: '#f43f5e', iconBg: 'rgba(244,63,94,0.12)' },
+  { title: 'Brand Kit AI', desc: 'Build your brand identity, voice, and visuals fast.', link: '/brandkit', icon: 'brandkit', iconColor: '#10b981', iconBg: 'rgba(124,111,247,0.12)' },
+  { title: 'Smart CRM', desc: 'Manage bookings, contacts, and revenue in one dashboard.', link: '/smartcrm', icon: 'crm', iconColor: '#10b981', iconBg: 'rgba(16,185,129,0.12)' },
+];
+
+const SLIDE_DURATION = 12000;
+
+function HomePage({ portal = 'music', subdomainPage = null, onOpenAppModal, onOpenAuth, onToast }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [slideState, setSlideState] = useState('in');
   const [progress, setProgress] = useState(0);
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterLoading, setNewsletterLoading] = useState(false);
   const [newsletterSuccess, setNewsletterSuccess] = useState(false);
+  const [heroOverrides, setHeroOverrides] = useState({});
   const progressRef = useRef(null);
   const timerRef = useRef(null);
 
   const portalData = PORTALS[portal];
-  const slides = portalData.slides;
+  const pageData = subdomainPage && SUBDOMAIN_PAGES[subdomainPage]
+    ? { ...portalData, ...SUBDOMAIN_PAGES[subdomainPage] }
+    : portalData;
+  const slides = pageData.slides || portalData.slides;
+  const carouselItems = pageData.carousel || CAROUSEL_LOGOS[subdomainPage] || CAROUSEL_LOGOS[portal] || [];
+
+  // Declare hero and slide variables BEFORE any useEffect or function that uses them
+  const heroImageKey = portal === 'music' ? 'intermavenmusic' : 'intermaven';
+  const heroOverrideKey = subdomainPage || portal;
+  const heroOverride = heroOverrides[heroOverrideKey] || {};
+  const heroImages = HERO_IMAGES[heroImageKey] || [];
+  const heroFallbacks = Array.isArray(heroOverride.heroFallbacks) && heroOverride.heroFallbacks.length > 0
+    ? heroOverride.heroFallbacks
+    : HERO_FALLBACKS[heroImageKey] || [];
+  const heroBackgrounds = Array.from({ length: 3 }, (_, index) => {
+    const imageIndex = heroImages.length ? index % heroImages.length : -1;
+    const heroImage = imageIndex >= 0 ? heroImages[imageIndex] : '';
+    const fallback = heroFallbacks[index] || heroFallbacks[0] || '';
+    return heroImage ? `url(${heroImage}), ${fallback}` : fallback;
+  });
+  const currentHeroImageIndex = heroBackgrounds.length ? currentSlide % heroBackgrounds.length : 0;
+  const slidesWithOverride = Array.isArray(heroOverride.slides) && heroOverride.slides.length > 0 ? heroOverride.slides : slides;
+  const heroSlides = slidesWithOverride.slice(0, 3);
+  const slideCount = heroSlides.length || 1;
+  const currentSlideData = heroSlides[currentSlide] || heroSlides[0];
 
   const handleNewsletterSubmit = async (e) => {
     e.preventDefault();
@@ -171,11 +359,28 @@ function HomePage({ portal = 'music', onOpenAppModal, onOpenAuth, onToast }) {
   };
 
   useEffect(() => {
-    // Reset on portal change
+    // Reset on portal or subdomain change
     setCurrentSlide(0);
     setProgress(0);
     setSlideState('in');
-  }, [portal]);
+  }, [portal, subdomainPage]);
+
+  useEffect(() => {
+    const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/settings`);
+        if (response.ok) {
+          const data = await response.json();
+          setHeroOverrides(data.hero_content_overrides || {});
+        }
+      } catch (error) {
+        // Keep default content if public settings are unavailable.
+      }
+    };
+
+    fetchSettings();
+  }, []);
 
   useEffect(() => {
     // Auto-advance slides
@@ -196,7 +401,7 @@ function HomePage({ portal = 'music', onOpenAppModal, onOpenAuth, onToast }) {
     timerRef.current = setTimeout(() => {
       setSlideState('out');
       setTimeout(() => {
-        setCurrentSlide((prev) => (prev + 1) % slides.length);
+        setCurrentSlide((prev) => (prev + 1) % slideCount);
         setProgress(0);
         setSlideState('in');
       }, 400);
@@ -206,7 +411,7 @@ function HomePage({ portal = 'music', onOpenAppModal, onOpenAuth, onToast }) {
       if (progressRef.current) cancelAnimationFrame(progressRef.current);
       if (timerRef.current) clearTimeout(timerRef.current);
     };
-  }, [currentSlide, slides.length]);
+  }, [currentSlide, slideCount]);
 
   const goToSlide = (index) => {
     if (index === currentSlide) return;
@@ -221,6 +426,14 @@ function HomePage({ portal = 'music', onOpenAppModal, onOpenAuth, onToast }) {
     }, 400);
   };
 
+  const goToPrevSlide = () => {
+    goToSlide((currentSlide - 1 + slideCount) % slideCount);
+  };
+
+  const goToNextSlide = () => {
+    goToSlide((currentSlide + 1) % slideCount);
+  };
+
   const handleFeatureClick = (feat) => {
     if (feat.appId) {
       onOpenAppModal(feat.appId);
@@ -229,17 +442,22 @@ function HomePage({ portal = 'music', onOpenAppModal, onOpenAuth, onToast }) {
     }
   };
 
-  const currentSlideData = slides[currentSlide];
-
   return (
     <>
       {/* Hero Section */}
       <div className="hw" data-testid="hero-section">
         <div className="bgs">
-          <div className={`bg bg1 ${currentSlide === 0 ? 'on' : ''}`} />
-          <div className={`bg bg2 ${currentSlide === 1 ? 'on' : ''}`} />
-          <div className={`bg bg3 ${currentSlide === 2 ? 'on' : ''}`} />
-          <div className={`bg bg4 ${currentSlide === 3 ? 'on' : ''}`} />
+          {heroBackgrounds.map((img, i) => (
+            <div
+              key={i}
+              className={`bg ${currentHeroImageIndex === i ? 'on' : ''}`}
+              style={{
+                backgroundImage: img,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
+            />
+          ))}
           <div className="bgo" />
         </div>
         
@@ -273,7 +491,12 @@ function HomePage({ portal = 'music', onOpenAppModal, onOpenAuth, onToast }) {
           </div>
         </div>
         
-        <div className="sui">
+        <div className={`sui-arrows ${slideState}`}>
+          <button type="button" className="slide-nav prev" onClick={goToPrevSlide} aria-label="Previous slide">‹</button>
+          <button type="button" className="slide-nav next" onClick={goToNextSlide} aria-label="Next slide">›</button>
+        </div>
+        
+        <div className={`sui-bottom ${slideState}`}>
           <div className="spr">
             <div 
               className="spb" 
@@ -281,9 +504,10 @@ function HomePage({ portal = 'music', onOpenAppModal, onOpenAuth, onToast }) {
             />
           </div>
           <div className="sdots">
-            {slides.map((_, index) => (
+            {heroSlides.map((_, index) => (
               <button
                 key={index}
+                type="button"
                 className={`sd ${index === currentSlide ? 'on' : ''}`}
                 onClick={() => goToSlide(index)}
                 aria-label={`Go to slide ${index + 1}`}
@@ -293,14 +517,41 @@ function HomePage({ portal = 'music', onOpenAppModal, onOpenAuth, onToast }) {
         </div>
       </div>
 
+      {carouselItems.length > 0 && (
+        <div className="logo-carousel-section">
+          <div className="cn">
+            <div className="sl2">Trusted by</div>
+            <LogoCarousel items={carouselItems} />
+          </div>
+        </div>
+      )}
+
+      <div className="home-flagship" data-testid="flagship-apps">
+        <div className="cn">
+          <div className="sl2">Flagship tools</div>
+          <div className="home-flagship-grid">
+            {FLAGSHIP_APPS.map((app, idx) => (
+              <Link key={idx} to={app.link} className="home-flagship-card">
+                <div className="home-flagship-card-icon">
+                  <FlatIcon name={app.icon} size={22} color={app.iconColor} />
+                </div>
+                <div className="home-flagship-card-title">{app.title}</div>
+                <div className="home-flagship-card-desc">{app.desc}</div>
+                <div className="home-flagship-card-cta">Explore →</div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </div>
+
       {/* Features Section */}
       <div className="fs" data-testid="features-section">
         <div className="cn">
           <div className="sl2">What we build</div>
-          <div className="st">{portalData.ftitle}</div>
+          <div className="st">{pageData.ftitle}</div>
           
           <div className="fg">
-            {portalData.feats.map((feat, index) => (
+            {pageData.feats.map((feat, index) => (
               <div 
                 key={index}
                 className="fc" 
@@ -323,14 +574,14 @@ function HomePage({ portal = 'music', onOpenAppModal, onOpenAuth, onToast }) {
           </div>
           
           <div className="mban">
-            <div style={{ fontSize: '24px' }}>
+            <div className="mban-icon">
               <FlatIcon name="rocket" size={24} color="var(--gr)" />
             </div>
             <div style={{ flex: 1 }}>
-              <h3>{portalData.btitle}</h3>
-              <p>{portalData.bsub}</p>
+              <h3>{pageData.btitle}</h3>
+              <p>{pageData.bsub}</p>
               <div className="pills">
-                {portalData.bpills.map((pill, index) => (
+                {pageData.bpills.map((pill, index) => (
                   <span key={index} className={`pill ${pill.lv ? 'lv' : ''}`}>
                     {pill.l}
                   </span>

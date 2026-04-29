@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Netbar from './Netbar';
 import Navbar from './Navbar';
@@ -12,10 +12,31 @@ import PricingPage from './PricingPage';
 import AboutPage from './AboutPage';
 import '../../styles/landing.css';
 
+function getInitialPortal(hostname) {
+  if (hostname.includes('intermavenmusic.com')) {
+    return 'music';
+  }
+  return 'business';
+}
+
+function getSubdomainPage(hostname) {
+  if (!hostname.endsWith('intermavenmusic.com')) return null;
+  const parts = hostname.split('.');
+  if (parts.length === 3) {
+    const sub = parts[0].toLowerCase();
+    const valid = ['djs', 'labels', 'producers', 'mediahouses'];
+    return valid.includes(sub) ? sub : null;
+  }
+  return null;
+}
+
 function LandingLayout({ page = 'home', onOpenAuth, onOpenSignIn, addToast }) {
-  const [portal, setPortal] = useState('music');
+  const hostname = window?.location?.hostname || '';
+  const [portal, setPortal] = useState(() => getInitialPortal(hostname));
+  const [subdomainPage] = useState(() => getSubdomainPage(hostname));
   const [legalModal, setLegalModal] = useState({ open: false, type: null });
   const [appModal, setAppModal] = useState({ open: false, appId: null });
+  const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
 
   const handlePortalChange = (newPortal) => {
@@ -69,12 +90,20 @@ function LandingLayout({ page = 'home', onOpenAuth, onOpenSignIn, addToast }) {
     }
   };
 
+  useEffect(() => {
+    const updateScroll = () => setIsScrolled(window.scrollY > 24);
+    updateScroll();
+    window.addEventListener('scroll', updateScroll);
+    return () => window.removeEventListener('scroll', updateScroll);
+  }, []);
+
   const renderPage = () => {
     switch (page) {
       case 'tools':
         return (
           <ToolsPage 
             portal={portal}
+            subdomainPage={subdomainPage}
             onOpenAuth={handleOpenAuthWrapper}
             onToast={handleToast}
           />
@@ -83,6 +112,7 @@ function LandingLayout({ page = 'home', onOpenAuth, onOpenSignIn, addToast }) {
         return (
           <AppsPage 
             portal={portal}
+            subdomainPage={subdomainPage}
             onOpenAppModal={handleOpenAppModal}
             onToast={handleToast}
           />
@@ -90,6 +120,8 @@ function LandingLayout({ page = 'home', onOpenAuth, onOpenSignIn, addToast }) {
       case 'pricing':
         return (
           <PricingPage 
+            portal={portal}
+            subdomainPage={subdomainPage}
             onOpenAuth={handleOpenAuthWrapper}
             onToast={handleToast}
           />
@@ -98,6 +130,7 @@ function LandingLayout({ page = 'home', onOpenAuth, onOpenSignIn, addToast }) {
         return (
           <AboutPage 
             portal={portal}
+            subdomainPage={subdomainPage}
             onToast={handleToast}
           />
         );
@@ -106,6 +139,7 @@ function LandingLayout({ page = 'home', onOpenAuth, onOpenSignIn, addToast }) {
         return (
           <HomePage 
             portal={portal}
+            subdomainPage={subdomainPage}
             onOpenAppModal={handleOpenAppModal}
             onOpenAuth={handleOpenAuthWrapper}
             onToast={handleToast}
@@ -115,7 +149,7 @@ function LandingLayout({ page = 'home', onOpenAuth, onOpenSignIn, addToast }) {
   };
 
   return (
-    <div className="landing-wrapper" data-testid="landing-wrapper">
+    <div className={`landing-wrapper${isScrolled ? ' scrolled' : ''}`} data-testid="landing-wrapper">
       <Netbar portal={portal} onPortalChange={handlePortalChange} />
       <Navbar 
         portal={portal} 

@@ -1,10 +1,19 @@
 import React from 'react';
+import PageHeader from './PageHeader';
 import { FlatIcon } from '../FlatIcon';
 
-function AboutPage({ portal = 'music', onToast }) {
+function AboutPage({ portal = 'music', subdomainPage = null, onToast }) {
   const handleContactSubmit = () => {
     onToast('Message received!', 'We will respond via WhatsApp within 24 hours.', '✓');
   };
+
+  const pageSubtitle = subdomainPage
+    ? 'Learn how Intermaven serves your specific music industry path.'
+    : 'Built in Nairobi. Built for Africa.';
+
+  const heroTitle = subdomainPage
+    ? `How Intermaven helps ${subdomainPage} scale on one platform`
+    : 'About Intermaven';
 
   const handlePortalSwitch = () => {
     onToast('Portal switch coming soon!', '');
@@ -19,15 +28,7 @@ function AboutPage({ portal = 'music', onToast }) {
   return (
     <>
       {/* Page Header */}
-      <div className="ph" data-testid="about-header">
-        <div className="phi" style={{ background: 'radial-gradient(ellipse at 35% 55%,#003d5c,#08090d)' }} />
-        <div className="pho" />
-        <div className="phc">
-          <div className="bc">Intermaven › About</div>
-          <div className="pht">About Intermaven</div>
-          <div className="phs">Built in Nairobi. Built for Africa.</div>
-        </div>
-      </div>
+      <PageHeader pageKey="about" breadcrumb="Intermaven › About" title={heroTitle} subtitle={pageSubtitle} testId="about-header" />
 
       {/* About Content */}
       <div style={{ padding: '48px 0 60px' }}>

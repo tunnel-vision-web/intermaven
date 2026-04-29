@@ -1,10 +1,17 @@
+import PageHeader from './PageHeader';
 import React from 'react';
 import { FlatIcon } from '../FlatIcon';
 
-function PricingPage({ onOpenAuth, onToast }) {
+function PricingPage({ portal = 'music', subdomainPage = null, onOpenAuth, onToast }) {
   const handlePayment = () => {
     onToast('M-Pesa payment coming soon!', '', '📲');
   };
+
+  const pageSubtitle = subdomainPage
+    ? 'Pricing crafted for your music team and creative operations.'
+    : portal === 'music'
+      ? 'Pay once. Credits never expire. No subscriptions, ever.'
+      : 'Simple credit pricing for business tools and creative operations.';
 
   const valueProps = [
     { icon: 'zap', color: 'var(--am)', title: 'Pay once', desc: 'No monthly fees. Buy credits when you need them.' },
@@ -24,15 +31,7 @@ function PricingPage({ onOpenAuth, onToast }) {
   return (
     <>
       {/* Page Header */}
-      <div className="ph" data-testid="pricing-header">
-        <div className="phi" style={{ background: 'radial-gradient(ellipse at 50% 50%,#2d0045,#08090d)' }} />
-        <div className="pho" />
-        <div className="phc">
-          <div className="bc">Intermaven › Pricing</div>
-          <div className="pht">Simple, honest pricing</div>
-          <div className="phs">Pay once. Credits never expire. No subscriptions, ever.</div>
-        </div>
-      </div>
+      <PageHeader pageKey="pricing" breadcrumb="Intermaven › Pricing" title="Simple, honest pricing" subtitle={pageSubtitle} />
 
       {/* Pricing Content */}
       <div style={{ padding: '40px 0 60px' }}>
