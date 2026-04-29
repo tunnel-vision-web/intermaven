@@ -8,7 +8,7 @@ from passlib.context import CryptContext
 from fastapi import Depends, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
-from .config import (
+from config import (
     db,
     JWT_SECRET,
     JWT_ALGORITHM,
