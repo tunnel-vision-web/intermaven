@@ -13,9 +13,9 @@ import os
 from dotenv import load_dotenv
 import httpx
 
-from .config import db, PLAN_CREDITS, logger
-from .utils import get_current_user, serialize_user, verify_password, get_password_hash, create_access_token
-from .routes import auth_router, user_router, files_router, folders_router
+from config import db, PLAN_CREDITS, logger
+from utils import get_current_user, serialize_user, verify_password, get_password_hash, create_access_token
+from routes import auth_router, user_router, files_router, folders_router
 
 load_dotenv()
 
@@ -1685,4 +1685,3 @@ async def get_epk_analytics(epk_id: str, current_user: dict = Depends(get_curren
         "form_submissions": len([e for e in events if e.get("event_type") == "form_submit"]),
         "top_referrers": top_referrers,
     }
-
