@@ -274,6 +274,10 @@ function Dashboard() {
               activities={activities}
               setActivePanel={setActivePanel}
               creditPercent={creditPercent}
+              showAddAppModal={showAddAppModal}
+              setShowAddAppModal={setShowAddAppModal}
+              availableApps={availableApps}
+              addApp={addApp}
             />
           )}
 
@@ -316,7 +320,7 @@ function Dashboard() {
 }
 
 // Overview Panel Component
-function OverviewPanel({ user, stats, activities, setActivePanel, creditPercent }) {
+function OverviewPanel({ user, stats, activities, setActivePanel, creditPercent, showAddAppModal, setShowAddAppModal, availableApps, addApp }) {
   return (
     <div className="panel active" data-testid="overview-panel">
       {user?.plan === 'free' && (
