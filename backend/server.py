@@ -10,12 +10,55 @@ from passlib.context import CryptContext
 from pymongo import MongoClient
 from bson import ObjectId
 import os
+import json
+import uuid
 from dotenv import load_dotenv
 import httpx
 
-from config import db, PLAN_CREDITS, logger
-from utils import get_current_user, serialize_user, verify_password, get_password_hash, create_access_token
-from routes import auth_router, user_router, files_router, folders_router
+# region agent log
+def _debug_log(hypothesis_id: str, location: str, message: str, data: dict):
+    try:
+        with open("debug-ef0398.log", "a", encoding="utf-8") as _f:
+            _f.write(json.dumps({
+                "sessionId": "ef0398",
+                "runId": os.environ.get("RENDER_GIT_COMMIT", "local"),
+                "hypothesisId": hypothesis_id,
+                "id": f"log_{uuid.uuid4().hex}",
+                "location": location,
+                "message": message,
+                "data": data,
+                "timestamp": int(datetime.now(timezone.utc).timestamp() * 1000),
+            }) + "\n")
+    except Exception:
+        pass
+# endregion
+
+# region agent log
+_debug_log(
+    "H2",
+    "backend/server.py:import-bootstrap",
+    "Server import bootstrap context",
+    {"cwd": os.getcwd(), "pythonpath": os.environ.get("PYTHONPATH", ""), "port": os.environ.get("PORT", "")},
+)
+# endregion
+
+try:
+    from config import db, PLAN_CREDITS, logger
+    from utils import get_current_user, serialize_user, verify_password, get_password_hash, create_access_token
+    from routes import auth_router, user_router, files_router, folders_router
+    # region agent log
+    _debug_log("H1", "backend/server.py:import-mode", "Imported local modules using root-style imports", {"mode": "root-style"})
+    # endregion
+except ModuleNotFoundError as import_err:
+    # region agent log
+    _debug_log("H1", "backend/server.py:import-mode-fallback", "Root-style imports failed; trying package-style imports", {"error": str(import_err)})
+    # endregion
+    from backend.config import db, PLAN_CREDITS, logger
+    from backend.utils import get_current_user, serialize_user, verify_password, get_password_hash, create_access_token
+    from backend.routes import auth_router, user_router, files_router, folders_router
+    # region agent log
+    _debug_log("H1", "backend/server.py:import-mode-fallback-success", "Package-style imports succeeded", {"mode": "package-style"})
+    # endregion
 
 load_dotenv()
 
