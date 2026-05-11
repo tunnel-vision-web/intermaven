@@ -1,0 +1,12 @@
+[options]
+pythonVersion = "3.11"
+
+[phases.install]
+cmds = [
+  "python -m venv /opt/venv",
+  "/opt/venv/bin/pip install --upgrade pip",
+  "/opt/venv/bin/pip install --only-binary :all: -r requirements.txt",
+]
+
+[start]
+cmd = "/opt/venv/bin/uvicorn server:app --host 0.0.0.0 --port $PORT"

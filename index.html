@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Intermaven — AI Tools for African Creatives</title>
+<link rel="stylesheet" href="css/variables.css"/>
+<link rel="stylesheet" href="css/base.css"/>
+<link rel="stylesheet" href="css/components.css"/>
+<link rel="stylesheet" href="css/layout.css"/>
+<link rel="stylesheet" href="css/pages.css"/>
+</head>
+<body>
+<div id="tc"></div>
+
+<!-- APP INFO MODAL -->
+<div class="app-modal-bg" id="app-modal-bg" onclick="closeAppModal(event)">
+<div class="app-modal" id="app-modal">
+  <div class="am-hero" id="am-hero"><div class="am-hero-glow" id="am-glow"></div><div class="am-hero-icon" id="am-icon">&#127912;</div><button class="am-close" onclick="closeAppModalDirect()">&#x2715;</button></div>
+  <div class="am-body"><div class="am-badge" id="am-badge"></div><div class="am-name" id="am-name"></div><div class="am-tag" id="am-tag"></div><div class="am-pitch" id="am-pitch"></div><div class="am-how"><h4>How it works</h4><div class="am-steps" id="am-steps"></div></div><div class="am-cta-row"><button class="am-cta" id="am-cta-btn">Get started &#8594;</button><button class="am-cta-ghost" onclick="closeAppModalDirect()">Maybe later</button></div><div class="am-credits" id="am-credits"></div></div>
+</div></div>
+
+<!-- SIGN-UP WIZARD -->
+<div class="ov" id="auth-ov"><div class="wiz">
+  <div class="wh"><div class="wl">INTER<b>MAVEN</b></div><button class="wx" onclick="closeAuth()">&#x2715;</button></div>
+  <div class="wds" id="wds"></div>
+  <div class="wb">
+    <div class="sp on" id="ws1">
+      <div class="wti">Create your account</div><div class="wsu">Join African creatives building with Intermaven.</div>
+      <div class="sg"><button class="sb" onclick="socialUp('Google')">&#128309; Google</button><button class="sb" onclick="socialUp('Facebook')">&#128311; Facebook</button><button class="sb" onclick="socialUp('Apple')">&#127822; Apple</button><button class="sb" onclick="socialUp('LinkedIn')">&#128188; LinkedIn</button></div>
+      <div class="or">or continue with email</div>
+      <div class="fr"><div class="fi"><label>First name</label><input id="rfn" placeholder="Amara"/></div><div class="fi"><label>Last name</label><input id="rln" placeholder="Diallo"/></div></div>
+      <div class="fi"><label>Email</label><div class="iw"><span class="ii">&#9993;</span><input id="rem" type="email" placeholder="you@example.com"/></div></div>
+      <div class="fi"><label>Phone (M-Pesa &amp; WhatsApp)</label><div class="iw"><span class="ii">&#128241;</span><input id="rph" type="tel" placeholder="+254 7XX XXX XXX"/></div><div class="fh">Used for M-Pesa payments and WhatsApp notifications</div></div>
+      <div class="fi"><label>Password</label><div class="iw" style="position:relative"><span class="ii">&#128274;</span><input id="rpw" type="password" placeholder="Min 8 characters"/><button class="pt" onclick="togPW('rpw',this)">SHOW</button></div></div>
+      <button class="bp" onclick="s1next()">Create account &#8594;</button>
+      <p style="text-align:center;font-size:11px;color:var(--mu);margin-top:11px">Already have an account? <button class="lk" onclick="closeAuth();openSI()">Sign in</button></p>
+    </div>
+    <div class="sp" id="ws2">
+      <div class="wti">Choose your plan</div><div class="wsu">Start free or top up credits anytime.</div>
+      <div class="pg"><div class="pc sl" id="pl-free" onclick="selPlan('free')"><div class="pn">Free</div><div class="ppr">KES 0</div><div class="pce">150 credits</div></div><div class="pc pp" id="pl-creator" onclick="selPlan('creator')"><div class="pn">Creator</div><div class="ppr">KES 500</div><div class="pce">600 credits</div></div><div class="pc" id="pl-pro" onclick="selPlan('pro')"><div class="pn">Pro</div><div class="ppr">KES 1,500</div><div class="pce">2,500 credits</div></div></div>
+      <div class="pdet" id="pdet">150 free credits &#8226; All AI tools &#8226; Social AI (2 accounts)</div>
+      <div class="brow"><button class="bg2x" onclick="gstep(1)">&#8592; Back</button><button class="bp" id="s2btn" onclick="s2next()">Continue &#8594;</button></div>
+    </div>
+    <div class="sp" id="ws3">
+      <div class="wti">Complete payment</div><div class="wsu">Credits added instantly after confirmation.</div>
+      <div class="pmx"><div class="pme sl" id="pm-mpesa" onclick="selPM('mpesa')"><span class="pmi">&#128242;</span>M-Pesa</div><div class="pme" id="pm-card" onclick="selPM('card')"><span class="pmi">&#128179;</span>Card</div><div class="pme" id="pm-paypal" onclick="selPM('paypal')"><span class="pmi">&#9443;</span>PayPal</div></div>
+      <div id="sec-mpesa"><div class="mbx"><p style="font-size:10px;color:var(--mu);margin-bottom:4px">Paybill number</p><div class="mco">522900</div><p style="font-size:11px;color:var(--mu);margin-top:3px">Account: <strong style="color:var(--tx)">IVM-00001</strong></p></div><div class="fi"><label>M-Pesa confirmation code</label><input id="mcod" placeholder="e.g. QGH7X2ABC1" style="text-transform:uppercase"/></div></div>
+      <div id="sec-card" style="display:none"><div class="fi"><label>Card number</label><input placeholder="1234 5678 9012 3456"/></div><div class="fr"><div class="fi"><label>Expiry</label><input placeholder="MM/YY"/></div><div class="fi"><label>CVC</label><input placeholder="123"/></div></div><div class="fi"><label>Name on card</label><input placeholder="As on card"/></div></div>
+      <div id="sec-paypal" style="display:none"><div style="text-align:center;padding:16px;background:var(--bg3);border:1px solid var(--b1);border-radius:var(--r);margin-bottom:11px"><div style="font-size:26px;margin-bottom:5px">&#9443;</div><p style="font-size:11px;color:var(--mu)">You will be redirected to PayPal.</p></div></div>
+      <div class="brow"><button class="bg2x" onclick="gstep(2)">&#8592; Back</button><button class="bp" id="paybtn" onclick="doPay()">Pay &amp; continue &#8594;</button></div>
+    </div>
+    <div class="sp" id="ws4"><div class="wti" id="ws4-title">Choose your apps</div><div class="wsu" id="ws4-sub">Select the tools you want. Add more anytime.</div><div class="ag" id="apsel"></div><div class="brow"><button class="bg2x" id="ws4-back" onclick="gstep(2)">&#8592; Back</button><button class="bp" onclick="gstep(5)">Continue &#8594;</button></div></div>
+    <div class="sp" id="ws5">
+      <div class="wti">Notification preferences</div><div class="wsu">Choose how Intermaven reaches you.</div>
+      <div style="font-size:9px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--mu);margin-bottom:6px">Channels</div>
+      <div class="nch"><div class="ncp on" id="nc-email" onclick="togCh('email')">&#9993; Email</div><div class="ncp on" id="nc-whatsapp" onclick="togCh('whatsapp')">&#128172; WhatsApp</div><div class="ncp" id="nc-sms" onclick="togCh('sms')">&#128241; SMS</div><div class="ncp" id="nc-push" onclick="togCh('push')">&#128276; Push</div></div>
+      <div class="nlist" id="nlst"></div>
+      <div class="brow" style="margin-top:13px"><button class="bg2x" onclick="gstep(4)">&#8592; Back</button><button class="bp" onclick="gstep(6)">Continue &#8594;</button></div>
+    </div>
+    <div class="sp" id="ws6">
+      <div class="wti">Meet your AI guide</div><div class="wsu">I will help you get set up in 2 minutes.</div>
+      <div class="aic" id="aicha"></div><div class="qrs" id="qrs"></div>
+      <div class="arow"><input class="ainp" id="aiinp" placeholder="Type or pick a suggestion..." onkeydown="if(event.key==='Enter')sendAI()"/><button class="asnd" onclick="sendAI()">Send</button></div>
+      <div style="margin-top:13px"><button class="bp" id="finbtn" style="display:none" onclick="finishOnboard()">Go to dashboard &#8594;</button></div>
+    </div>
+  </div>
+</div></div>
+
+<!-- SIGN IN -->
+<div class="ov" id="si-ov"><div class="wiz" style="max-width:390px">
+  <div class="wh"><div class="wl">INTER<b>MAVEN</b></div><button class="wx" onclick="closeSI()">&#x2715;</button></div>
+  <div class="wb">
+    <div class="wti">Welcome back</div><div class="wsu">Sign in to your Intermaven account.</div>
+    <div class="sg"><button class="sb" onclick="doSI()">&#128309; Google</button><button class="sb" onclick="doSI()">&#128311; Facebook</button><button class="sb" onclick="doSI()">&#127822; Apple</button><button class="sb" onclick="doSI()">&#128188; LinkedIn</button></div>
+    <div class="or">or sign in with email</div>
+    <div class="fi"><label>Email or phone</label><input id="siem" placeholder="you@example.com"/></div>
+    <div class="fi"><label>Password</label><div class="iw" style="position:relative"><span class="ii">&#128274;</span><input id="sipw" type="password" placeholder="Your password"/><button class="pt" onclick="togPW('sipw',this)">SHOW</button></div></div>
+    <div style="text-align:right;margin-bottom:11px"><button class="lk" onclick="toast('Reset link sent!','su','&#128273;')">Forgot password?</button></div>
+    <button class="bp" onclick="doSI()">Sign in &#8594;</button>
+    <p style="text-align:center;font-size:11px;color:var(--mu);margin-top:11px">No account? <button class="lk" onclick="closeSI();openAuth(null)">Get started free</button></p>
+  </div>
+</div></div>
+
+<!-- LEGAL MODAL -->
+<div class="ov" id="legal-ov"><div class="wiz" style="max-width:520px"><div class="wh"><div class="wl">INTER<b>MAVEN</b></div><button class="wx" onclick="document.getElementById('legal-ov').classList.remove('op')">&#x2715;</button></div><div class="wb"><div class="wti" id="legal-title">Policy</div><div id="legal-body" style="font-size:13px;color:var(--mu);line-height:1.8;max-height:55vh;overflow-y:auto"></div><button class="bp" style="margin-top:16px" onclick="document.getElementById('legal-ov').classList.remove('op')">Close</button></div></div></div>
+
+<!-- NETBAR -->
+<div class="netbar">
+  <span class="netlbl">Intermaven</span>
+  <button class="ntab on" id="tab-music" onclick="swPortal('music',this)"><span class="ndot"></span> music.intermaven.io</button>
+  <button class="ntab" id="tab-biz" onclick="swPortal('business',this)"><span class="ndot"></span> intermaven.io &#8212; Business</button>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <a class="logo" href="index.html">INTER<span style="color:var(--a2)">MAVEN</span> <span class="lbdg" id="lbdg">Music</span></a>
+    <button class="hamburger" id="hamburger" onclick="toggleMobileMenu()" aria-label="Toggle menu">
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+      <span class="hamburger-line"></span>
+    </button>
+    <div class="navl">
+      <a class="nl on" href="index.html">Home</a>
+      <a class="nl" href="tools.html">AI Tools</a>
+      <a class="nl" href="apps.html">Apps</a>
+      <a class="nl" href="pricing.html">Pricing</a>
+      <a class="nl" href="about.html">About</a>
+      <button class="ncta" onclick="openAuth(null)">Get started free</button>
+      <button class="nsign" onclick="openSI()">Sign in</button>
+    </div>
+  </div>
+</nav>
+
+<!-- Mobile Menu Overlay -->
+<div class="mobile-menu-overlay" id="mobile-menu-overlay" onclick="closeMobileMenuOverlay(event)"></div>
+
+<!-- Mobile Navigation Menu -->
+<div class="mobile-nav" id="mobile-nav">
+  <div class="navl">
+    <a class="nl on" href="index.html" onclick="closeMobileMenu()">Home</a>
+    <a class="nl" href="tools.html" onclick="closeMobileMenu()">AI Tools</a>
+    <a class="nl" href="apps.html" onclick="closeMobileMenu()">Apps</a>
+    <a class="nl" href="pricing.html" onclick="closeMobileMenu()">Pricing</a>
+    <a class="nl" href="about.html" onclick="closeMobileMenu()">About</a>
+    <button class="ncta" onclick="openAuth(null);closeMobileMenu()">Get started free</button>
+    <button class="nsign" onclick="openSI();closeMobileMenu()">Sign in</button>
+  </div>
+</div>
+
+<!-- HERO -->
+<div class="hw">
+  <div class="bgs">
+    <div class="bg bg1 on" id="bg0"></div><div class="bg bg2" id="bg1"></div>
+    <div class="bg bg3" id="bg2"></div><div class="bg bg4" id="bg3"></div>
+    <div class="bgo"></div>
+  </div>
+  <div class="hs">
+    <div class="hcont">
+      <div class="he hbadge"><span class="bdot" id="bdot" style="animation:pulse 2s infinite"></span>&nbsp;<span id="hbadget"></span></div>
+      <div class="ht htitle" id="htitle"></div>
+      <p class="hp hsub" id="hsub"></p>
+      <div class="hb hbtns" id="hbtns"></div>
+    </div>
+  </div>
+  <div class="sui"><div class="spr"><div class="spb" id="spb"></div></div><div class="sdots" id="sdots"></div></div>
+</div>
+
+<!-- FEATURES -->
+<div class="fs">
+  <div class="cn">
+    <div class="sl2">What we build</div>
+    <div class="st" id="ft-title"></div>
+    <div class="fg" id="ft-grid"></div>
+    <div class="mban">
+      <div style="font-size:24px">&#129513;</div>
+      <div style="flex:1"><h3 id="ban-title"></h3><p id="ban-sub"></p><div class="pills" id="ban-pills"></div></div>
+      <a class="hbp" href="apps.html" style="align-self:center;white-space:nowrap;text-decoration:none">See all apps &#8594;</a>
+    </div>
+    <div class="trust">
+      <p>Built for creatives across</p>
+      <div class="tlogos"><span>Nairobi</span><span>Lagos</span><span>Accra</span><span>Kampala</span><span>Dar es Salaam</span><span>Diaspora</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer><div class="cn">
+  <div class="footer-grid">
+    <div class="footer-brand"><div class="footer-logo">INTER<span>MAVEN</span></div><div class="footer-desc">AI-powered creative and business tools built for Africa's entrepreneurs and artists.</div><div class="footer-badges"><span class="fbadge">music.intermaven.io</span><span class="fbadge">intermaven.io</span></div></div>
+    <div class="footer-col"><h4>Product</h4><div class="footer-links"><a class="footer-link" href="tools.html">AI Tools</a><a class="footer-link" href="apps.html">App Marketplace</a><a class="footer-link" href="pricing.html">Pricing</a><button class="footer-link" onclick="toast('API docs coming soon','','&#128196;')">API &amp; Developers</button></div></div>
+    <div class="footer-col"><h4>Company</h4><div class="footer-links"><a class="footer-link" href="about.html">About us</a><button class="footer-link" onclick="toast('Blog coming soon','','&#9997;')">Blog</button><button class="footer-link" onclick="toast('Careers coming soon','','&#128188;')">Careers</button><a class="footer-link" href="about.html">Contact</a></div></div>
+    <div class="footer-col"><h4>Follow us</h4><div class="footer-social"><a class="sico" onclick="toast('Instagram coming soon','','&#128247;')">&#128247;</a><a class="sico" onclick="toast('X coming soon','','&#120143;')">&#120143;</a><a class="sico" onclick="toast('LinkedIn coming soon','','&#128188;')">in</a><a class="sico" onclick="toast('TikTok coming soon','','&#127929;')">&#9654;</a></div><div class="footer-copy">&#169; 2025 Intermaven Ltd.<br>Nairobi, Kenya</div></div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-bottom-links"><button class="fbl" onclick="showLegal('privacy')">Privacy Policy</button><button class="fbl" onclick="showLegal('terms')">Terms of Service</button><button class="fbl" onclick="showLegal('cookies')">Cookie Policy</button><button class="fbl" onclick="showLegal('refund')">Refund Policy</button></div>
+    <div style="font-size:11px;color:var(--mu2)">Made with &#10084; in Nairobi</div>
+  </div>
+</div></footer>
+
+<script src="js/data.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/portal.js"></script>
+<script src="js/dashboard.js"></script>
+<script>
+  mkWDots();
+  swPortal('music', document.getElementById('tab-music'));
+  selPlan('free');
+</script>
+</body>
+</html>
