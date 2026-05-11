@@ -1,7 +1,7 @@
 import os
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
 
 from config import db
@@ -17,6 +17,16 @@ class AIGenerateRequest(BaseModel):
     # Support legacy 'tool_id' and also accept as 'tool_id'
     class Config:
         extra = "allow"
+
+
+class TrySocialRequest(BaseModel):
+    topic: str
+    platform: str = "Instagram"
+    goal: str = "awareness"
+    tone: str = "hype"
+
+
+DEMO_DAILY_LIMIT = 3
 
 
 TOOL_COSTS = {
@@ -141,3 +151,84 @@ async def generate_ai_content(request: AIGenerateRequest, current_user: dict = D
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI generation failed: {str(e)}")
+
+
+
+def _get_client_ip(request: Request) -> str:
+    """Resolve client IP behind ingress/proxies."""
+    xff = request.headers.get("x-forwarded-for")
+    if xff:
+        return xff.split(",")[0].strip()
+    return request.client.host if request.client else "unknown"
+
+
+@router.get("/api/ai/try-social/status")
+async def try_social_status(request: Request):
+    """Return how many free demo runs the caller has left today."""
+    ip = _get_client_ip(request)
+    since = datetime.now(timezone.utc) - timedelta(hours=24)
+    used = db.demo_runs.count_documents({"ip": ip, "tool_id": "social", "created_at": {"$gte": since}})
+    return {
+        "limit": DEMO_DAILY_LIMIT,
+        "used": used,
+        "remaining": max(0, DEMO_DAILY_LIMIT - used),
+    }
+
+
+@router.post("/api/ai/try-social")
+async def try_social_demo(payload: TrySocialRequest, request: Request):
+    """Un-gated free demo of Social AI. Rate-limited per IP."""
+    ip = _get_client_ip(request)
+    since = datetime.now(timezone.utc) - timedelta(hours=24)
+    used = db.demo_runs.count_documents({"ip": ip, "tool_id": "social", "created_at": {"$gte": since}})
+    if used >= DEMO_DAILY_LIMIT:
+        raise HTTPException(
+            status_code=429,
+            detail=f"Free demo limit reached ({DEMO_DAILY_LIMIT}/day). Sign up to keep going.",
+        )
+
+    topic = (payload.topic or "").strip()
+    if not topic:
+        raise HTTPException(status_code=400, detail="Topic is required")
+    if len(topic) > 280:
+        raise HTTPException(status_code=400, detail="Topic must be 280 characters or fewer")
+
+    prompt = TOOL_PROMPTS["social"]({
+        "topic": topic,
+        "platform": payload.platform,
+        "goal": payload.goal,
+        "tone": payload.tone,
+        "extra": "",
+    })
+
+    try:
+        from emergentintegrations.llm.chat import LlmChat, UserMessage
+
+        chat = LlmChat(
+            api_key=os.environ.get("EMERGENT_LLM_KEY"),
+            session_id=f"intermaven-demo-{ip}",
+            system_message="You are a helpful AI assistant specialized in African creative and business markets."
+        ).with_model("anthropic", "claude-sonnet-4-5-20250929")
+
+        user_message = UserMessage(text=prompt)
+        response = await chat.send_message(user_message)
+
+        db.demo_runs.insert_one({
+            "ip": ip,
+            "tool_id": "social",
+            "topic": topic[:120],
+            "platform": payload.platform,
+            "created_at": datetime.now(timezone.utc),
+        })
+
+        remaining = max(0, DEMO_DAILY_LIMIT - (used + 1))
+        return {
+            "success": True,
+            "content": response,
+            "remaining": remaining,
+            "limit": DEMO_DAILY_LIMIT,
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Demo generation failed: {str(e)}")

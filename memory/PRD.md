@@ -60,6 +60,8 @@ Duplicate Pesapal block in `server.py` was deleted (the canonical version lives 
 - [x] Backend modularization (ALL clusters extracted)
 - [x] Login working end-to-end
 - [x] Hamburger menu + auth flow fixes (frontend)
+- [x] AI tools functional end-to-end (Claude Sonnet 4.5 via EMERGENT_LLM_KEY)
+- [x] Free Social AI demo on `/tools` page (un-gated, IP rate-limited 3/day, hard CTA to signup)
 - [ ] React dashboard completion (admin, CRM, EPK pages) — partial
 
 **Phase 2 — Launch readiness** — not started

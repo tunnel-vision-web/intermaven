@@ -1,6 +1,210 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FlatIcon } from '../FlatIcon';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+
+const PLATFORM_OPTIONS = ['Instagram', 'TikTok', 'X (Twitter)', 'LinkedIn', 'Facebook'];
+
+function TrySocialAI({ onOpenAuth, onToast }) {
+  const [topic, setTopic] = useState('');
+  const [platform, setPlatform] = useState('Instagram');
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState('');
+  const [remaining, setRemaining] = useState(null);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    fetch(`${API_URL}/api/ai/try-social/status`)
+      .then((r) => r.ok ? r.json() : null)
+      .then((d) => { if (d) setRemaining(d.remaining); })
+      .catch(() => {});
+  }, []);
+
+  const handleTry = async (e) => {
+    e.preventDefault();
+    if (!topic.trim()) {
+      setError('Drop a topic first — e.g. "new EP launch" or "weekly studio tip".');
+      return;
+    }
+    setError('');
+    setLoading(true);
+    setResult('');
+    try {
+      const res = await fetch(`${API_URL}/api/ai/try-social`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ topic, platform, goal: 'awareness', tone: 'hype' })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.detail || 'Generation failed. Try again.');
+      } else {
+        setResult(data.content || '');
+        setRemaining(typeof data.remaining === 'number' ? data.remaining : remaining);
+        if (onToast) onToast('Generated — sign up to save & unlock 4 more tools', 'success');
+      }
+    } catch (err) {
+      setError('Network error. Please retry.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div
+      data-testid="try-social-ai-widget"
+      style={{
+        background: 'linear-gradient(135deg, rgba(244,63,94,.10), rgba(124,111,247,.06))',
+        border: '1px solid rgba(244,63,94,.28)',
+        borderRadius: 'var(--r)',
+        padding: '22px',
+        marginBottom: '28px'
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px', flexWrap: 'wrap' }}>
+        <FlatIcon name="social" size={22} color="#f43f5e" />
+        <div style={{ fontSize: '15px', fontWeight: '800' }}>Try Social AI free — no signup</div>
+        <span
+          data-testid="try-social-free-badge"
+          style={{
+            fontSize: '9px',
+            fontWeight: '800',
+            letterSpacing: '.5px',
+            textTransform: 'uppercase',
+            color: 'var(--gr)',
+            background: 'rgba(16,185,129,.12)',
+            border: '1px solid rgba(16,185,129,.35)',
+            borderRadius: '999px',
+            padding: '3px 8px'
+          }}
+        >
+          Free
+        </span>
+        {remaining !== null && (
+          <span
+            data-testid="try-social-remaining"
+            style={{ fontSize: '11px', color: 'var(--mu)', marginLeft: 'auto' }}
+          >
+            {remaining}/3 free runs left today
+          </span>
+        )}
+      </div>
+      <p style={{ fontSize: '12px', color: 'var(--mu)', marginBottom: '14px', maxWidth: '560px' }}>
+        Type a topic, pick a platform, and we'll generate captions, hashtags, and posting timing built for African audiences. Powered by the same engine paying users get.
+      </p>
+
+      <form onSubmit={handleTry} style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '10px' }}>
+        <input
+          data-testid="try-social-topic-input"
+          type="text"
+          value={topic}
+          onChange={(e) => setTopic(e.target.value)}
+          placeholder='e.g. "new EP launch" or "weekly studio tip"'
+          maxLength={280}
+          style={{
+            flex: '1 1 260px',
+            background: 'var(--ca)',
+            border: '1px solid var(--b1)',
+            borderRadius: 'var(--r)',
+            color: 'var(--tx)',
+            padding: '10px 13px',
+            fontSize: '13px'
+          }}
+        />
+        <select
+          data-testid="try-social-platform-select"
+          value={platform}
+          onChange={(e) => setPlatform(e.target.value)}
+          style={{
+            background: 'var(--ca)',
+            border: '1px solid var(--b1)',
+            borderRadius: 'var(--r)',
+            color: 'var(--tx)',
+            padding: '10px 13px',
+            fontSize: '13px'
+          }}
+        >
+          {PLATFORM_OPTIONS.map((p) => (
+            <option key={p} value={p}>{p}</option>
+          ))}
+        </select>
+        <button
+          data-testid="try-social-generate-btn"
+          type="submit"
+          disabled={loading}
+          className="hbp"
+          style={{ minWidth: '130px', opacity: loading ? 0.7 : 1 }}
+        >
+          {loading ? 'Generating…' : 'Generate →'}
+        </button>
+      </form>
+
+      {error && (
+        <div
+          data-testid="try-social-error"
+          style={{
+            fontSize: '12px',
+            color: '#fda4af',
+            background: 'rgba(244,63,94,.10)',
+            border: '1px solid rgba(244,63,94,.35)',
+            borderRadius: 'var(--r)',
+            padding: '8px 10px',
+            marginBottom: '10px'
+          }}
+        >
+          {error}
+        </div>
+      )}
+
+      {result && (
+        <div data-testid="try-social-result-block" style={{ marginTop: '10px' }}>
+          <div
+            data-testid="try-social-result"
+            style={{
+              background: 'var(--ca)',
+              border: '1px solid var(--b1)',
+              borderRadius: 'var(--r)',
+              padding: '14px',
+              fontSize: '12.5px',
+              lineHeight: '1.55',
+              whiteSpace: 'pre-wrap',
+              maxHeight: '420px',
+              overflowY: 'auto'
+            }}
+          >
+            {result}
+          </div>
+          <div
+            style={{
+              marginTop: '12px',
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '10px',
+              background: 'rgba(124,111,247,.10)',
+              border: '1px solid rgba(124,111,247,.35)',
+              borderRadius: 'var(--r)',
+              padding: '12px 14px'
+            }}
+          >
+            <div style={{ fontSize: '12.5px', fontWeight: '600' }}>
+              Like what you see? Save this + unlock <strong>4 more tools</strong> + 150 free credits.
+            </div>
+            <button
+              data-testid="try-social-signup-cta"
+              onClick={() => onOpenAuth && onOpenAuth()}
+              className="hbp"
+            >
+              Sign up free →
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 const TOOL_PAGE_COPY = {
   default: {
@@ -64,6 +268,9 @@ function ToolsPage({ portal = 'music', subdomainPage = null, onOpenAuth, onToast
       {/* Tools Content */}
       <div style={{ padding: '28px 0 60px' }}>
         <div className="cn">
+          {/* FREE DEMO — Try Social AI without signup */}
+          <TrySocialAI onOpenAuth={onOpenAuth} onToast={onToast} />
+
           {/* Credits bar + top-up */}
           <div style={{ 
             display: 'flex', 
