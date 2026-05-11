@@ -33,6 +33,9 @@ logger = logging.getLogger("intermaven")
 MONGO_URL = os.environ.get("MONGO_URL")
 DB_NAME = os.environ.get("DB_NAME", "intermaven")
 
+# Diagnostic: holds the *actual* connection error so /api/health/db can surface it.
+DB_STARTUP_ERROR = None
+
 # region agent log
 _debug_log(
     "H3",
@@ -44,6 +47,7 @@ _debug_log(
 
 # Validate MONGO_URL
 if not MONGO_URL:
+    DB_STARTUP_ERROR = "MONGO_URL environment variable is not set"
     logger.error("MONGO_URL environment variable is not set!")
     logger.error("Please set a valid MongoDB connection string in your .env file or environment.")
     db = None
@@ -53,6 +57,7 @@ if not MONGO_URL:
 else:
     # Check for placeholder password (common mistake)
     if "<db_password>" in MONGO_URL or "placeholder" in MONGO_URL.lower():
+        DB_STARTUP_ERROR = "MONGO_URL still contains a placeholder password. Replace it with the actual password."
         logger.error("MONGO_URL contains a placeholder password. Please replace it with your actual password.")
         logger.error("Example: mongodb+srv://username:actualpassword@cluster.mongodb.net/dbname")
         db = None
@@ -72,10 +77,17 @@ else:
             logger.info(f"✓ Successfully connected to MongoDB: {DB_NAME}")
             _debug_log("H4", "backend/config.py:mongo-ping", "Mongo ping succeeded", {"db_name": DB_NAME})
         except (ServerSelectionTimeoutError, ConnectionFailure, ConfigurationError, OperationFailure) as e:
+            DB_STARTUP_ERROR = f"{type(e).__name__}: {str(e)[:500]}"
             logger.error(f"✗ Failed to connect to MongoDB: {e}")
             logger.error("Check your MONGO_URL, network, and IP whitelist (if using Atlas).")
             db = None
             _debug_log("H4", "backend/config.py:mongo-ping-failed", "Mongo connection failed", {"error": str(e), "db_name": DB_NAME})
+        except Exception as e:
+            # Catch unexpected errors too (e.g., missing dnspython for mongodb+srv://, DNS SRV resolution failures)
+            DB_STARTUP_ERROR = f"{type(e).__name__}: {str(e)[:500]}"
+            logger.error(f"✗ Unexpected MongoDB connection error: {e}")
+            db = None
+            _debug_log("H4", "backend/config.py:mongo-ping-unexpected", "Unexpected error", {"error": str(e)})
 
 # Other configuration values (safe even if db is None)
 JWT_SECRET = os.environ.get("JWT_SECRET", "intermaven_secret_key")

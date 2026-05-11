@@ -105,20 +105,42 @@ async def log_exceptions(request: Request, exc: Exception):
 
 @app.get("/api/health/db")
 async def health_db():
-    """Diagnostic: confirms the MongoDB connection is alive. Returns 503 if down."""
+    """Diagnostic: confirms the MongoDB connection is alive. Returns 503 with the real error if down."""
     try:
-        from config import db as _db
+        from config import db as _db, DB_STARTUP_ERROR as _startup_err, MONGO_URL as _mongo_url, DB_NAME as _db_name
     except Exception:
-        from backend.config import db as _db
+        from backend.config import db as _db, DB_STARTUP_ERROR as _startup_err, MONGO_URL as _mongo_url, DB_NAME as _db_name
+
+    # Mask the password in MONGO_URL for safe display
+    safe_url = "<not set>"
+    if _mongo_url:
+        try:
+            # mongodb+srv://user:pass@host/db?... -> mask the :pass@
+            scheme, rest = _mongo_url.split("://", 1)
+            if "@" in rest and ":" in rest.split("@", 1)[0]:
+                userpass, hostpart = rest.split("@", 1)
+                user = userpass.split(":", 1)[0]
+                safe_url = f"{scheme}://{user}:***@{hostpart}"
+            else:
+                safe_url = f"{scheme}://{rest[:30]}..."
+        except Exception:
+            safe_url = "<unparseable>"
+
     if _db is None:
         from fastapi.responses import JSONResponse as _JR
-        return _JR(status_code=503, content={"status": "db_unavailable", "detail": "MongoDB connection failed at startup. Check MONGO_URL env var and Atlas IP whitelist."})
+        return _JR(status_code=503, content={
+            "status": "db_unavailable",
+            "startup_error": _startup_err or "Unknown (db is None but no error captured)",
+            "mongo_url_masked": safe_url,
+            "db_name": _db_name,
+            "hint": "If you see 'ServerSelectionTimeoutError' → IP whitelist; 'authentication failed' → wrong username/password; 'name resolution failed' → wrong cluster host or missing dnspython.",
+        })
     try:
         _db.command("ping")
-        return {"status": "ok", "db": "connected"}
+        return {"status": "ok", "db": "connected", "db_name": _db_name}
     except Exception as e:
         from fastapi.responses import JSONResponse as _JR
-        return _JR(status_code=503, content={"status": "db_unavailable", "detail": str(e)})
+        return _JR(status_code=503, content={"status": "db_unavailable", "detail": f"{type(e).__name__}: {str(e)}"})
 
 app.include_router(auth_router)
 app.include_router(user_router)
