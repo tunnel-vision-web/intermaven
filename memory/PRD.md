@@ -22,10 +22,10 @@ Pull all files from git (https://github.com/tunnel-vision-web/intermaven.git), r
 | Folders (`/api/folders/*`) | `routes/folders.py` | ✅ |
 | Payments / Pesapal (`/api/payments/*`) | `routes/payments.py` | ✅ (newly wired) |
 | EPK (`/api/epk/*`) | `routes/epk.py` | ✅ (newly wired) |
+| Notifications + Activities (`/api/notifications/*`, `/api/activities`) | `routes/notifications.py` | ✅ (extracted this session) |
 
 Still inside `server.py` monolith (next extraction targets):
 - AI generation (`/api/ai/generate`) + TOOL_COSTS/TOOL_PROMPTS
-- Notifications, Activities
 - Newsletter, Beta signups, Support tickets
 - CRM waitlist, contacts, campaigns, messaging (Twilio webhook)
 - Admin: users, analytics, audit log, settings, credit grants, suspensions

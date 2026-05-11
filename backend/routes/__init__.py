@@ -4,6 +4,7 @@ from .files import router as files_router
 from .folders import router as folders_router
 from .payments import router as payments_router
 from .epk import epk_router
+from .notifications import router as notifications_router
 
 __all__ = [
     "auth_router",
@@ -12,4 +13,5 @@ __all__ = [
     "folders_router",
     "payments_router",
     "epk_router",
+    "notifications_router",
 ]

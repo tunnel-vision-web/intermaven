@@ -45,7 +45,7 @@ _debug_log(
 try:
     from config import db, PLAN_CREDITS, logger
     from utils import get_current_user, serialize_user, verify_password, get_password_hash, create_access_token
-    from routes import auth_router, user_router, files_router, folders_router, payments_router, epk_router
+    from routes import auth_router, user_router, files_router, folders_router, payments_router, epk_router, notifications_router
     # region agent log
     _debug_log("H1", "backend/server.py:import-mode", "Imported local modules using root-style imports", {"mode": "root-style"})
     # endregion
@@ -55,7 +55,7 @@ except ModuleNotFoundError as import_err:
     # endregion
     from backend.config import db, PLAN_CREDITS, logger
     from backend.utils import get_current_user, serialize_user, verify_password, get_password_hash, create_access_token
-    from backend.routes import auth_router, user_router, files_router, folders_router, payments_router, epk_router
+    from backend.routes import auth_router, user_router, files_router, folders_router, payments_router, epk_router, notifications_router
     # region agent log
     _debug_log("H1", "backend/server.py:import-mode-fallback-success", "Package-style imports succeeded", {"mode": "package-style"})
     # endregion
@@ -101,6 +101,7 @@ app.include_router(files_router)
 app.include_router(folders_router)
 app.include_router(payments_router)
 app.include_router(epk_router)
+app.include_router(notifications_router)
 
 # ============== SECURITY ==============
 security = HTTPBearer()
@@ -160,34 +161,6 @@ class AIGenerateRequest(BaseModel):
 class PlanUpgrade(BaseModel):
     plan: str
     payment_method: str
-
-# ============== NOTIFICATIONS ==============
-
-@app.get("/api/notifications")
-async def get_notifications(current_user: dict = Depends(get_current_user)):
-    notifications = list(db.notifications.find(
-        {"user_id": current_user["_id"]},
-        {"_id": 0, "user_id": 0}
-    ).sort("created_at", -1).limit(20))
-    
-    for n in notifications:
-        if isinstance(n.get("created_at"), datetime):
-            n["created_at"] = n["created_at"].isoformat()
-    
-    unread_count = db.notifications.count_documents({
-        "user_id": current_user["_id"],
-        "read": False
-    })
-    
-    return {"notifications": notifications, "unread_count": unread_count}
-
-@app.post("/api/notifications/mark-read")
-async def mark_notifications_read(current_user: dict = Depends(get_current_user)):
-    db.notifications.update_many(
-        {"user_id": current_user["_id"]},
-        {"$set": {"read": True}}
-    )
-    return {"success": True}
 
 # ============== AI GENERATION ==============
 
@@ -312,21 +285,6 @@ async def generate_ai_content(request: AIGenerateRequest, current_user: dict = D
         
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI generation failed: {str(e)}")
-
-# ============== ACTIVITY ==============
-
-@app.get("/api/activities")
-async def get_activities(current_user: dict = Depends(get_current_user)):
-    activities = list(db.activities.find(
-        {"user_id": current_user["_id"]},
-        {"_id": 0, "user_id": 0}
-    ).sort("created_at", -1).limit(10))
-    
-    for a in activities:
-        if isinstance(a.get("created_at"), datetime):
-            a["created_at"] = a["created_at"].isoformat()
-    
-    return {"activities": activities}
 
 # ============== PESAPAL PAYMENTS ==============
 
