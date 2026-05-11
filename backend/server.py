@@ -88,10 +88,37 @@ async def add_security_headers(request: Request, call_next):
 @app.exception_handler(Exception)
 async def log_exceptions(request: Request, exc: Exception):
     logger.exception("Unhandled exception on %s %s", request.method, request.url)
+    # CRITICAL: include CORS headers on error responses so browsers don't mask
+    # backend 500s as CORS failures. Starlette skips CORSMiddleware for
+    # exception_handler responses, so we add the headers manually here.
+    origin = request.headers.get("origin", "*")
     return JSONResponse(
         status_code=500,
-        content={"detail": "Internal server error"}
+        content={"detail": "Internal server error"},
+        headers={
+            "Access-Control-Allow-Origin": origin,
+            "Access-Control-Allow-Credentials": "false",
+            "Vary": "Origin",
+        },
     )
+
+
+@app.get("/api/health/db")
+async def health_db():
+    """Diagnostic: confirms the MongoDB connection is alive. Returns 503 if down."""
+    try:
+        from config import db as _db
+    except Exception:
+        from backend.config import db as _db
+    if _db is None:
+        from fastapi.responses import JSONResponse as _JR
+        return _JR(status_code=503, content={"status": "db_unavailable", "detail": "MongoDB connection failed at startup. Check MONGO_URL env var and Atlas IP whitelist."})
+    try:
+        _db.command("ping")
+        return {"status": "ok", "db": "connected"}
+    except Exception as e:
+        from fastapi.responses import JSONResponse as _JR
+        return _JR(status_code=503, content={"status": "db_unavailable", "detail": str(e)})
 
 app.include_router(auth_router)
 app.include_router(user_router)
