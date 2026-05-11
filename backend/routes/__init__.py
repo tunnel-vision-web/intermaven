@@ -5,6 +5,7 @@ from .folders import router as folders_router
 from .payments import router as payments_router
 from .epk import epk_router
 from .notifications import router as notifications_router
+from .ai import router as ai_router
 
 __all__ = [
     "auth_router",
@@ -14,4 +15,5 @@ __all__ = [
     "payments_router",
     "epk_router",
     "notifications_router",
+    "ai_router",
 ]
