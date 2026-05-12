@@ -1,9 +1,11 @@
 # Test Credentials
 
 ## Backend MongoDB
-- URL: `mongodb+srv://tunnelandvision_db_user:test%40123@intermaven-c.vjbwldo.mongodb.net/intermaven`
+- URL: `mongodb+srv://tunnelandvision_db_user:Kaligraphix198016@intermaven-c.vjbwldo.mongodb.net/intermaven`
 - DB: `intermaven`
-- Raw password: `test@123` (URL-encoded as `test%40123` — the `@` must be `%40` in the connection string)
+- Atlas user: `tunnelandvision_db_user`
+- Atlas password: `Kaligraphix198016` (no special chars — safe to paste anywhere without URL encoding)
+- Cluster host: `intermaven-c.vjbwldo.mongodb.net`
 
 ## Test User (sandbox)
 - Email: `diagnose@test.com`
