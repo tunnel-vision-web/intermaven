@@ -33,6 +33,24 @@ logger = logging.getLogger("intermaven")
 MONGO_URL = os.environ.get("MONGO_URL")
 DB_NAME = os.environ.get("DB_NAME", "intermaven")
 
+# FALLBACK: if MONGO_URL is missing or truncated (a known Render UI paste quirk for long values),
+# assemble it from short individual env vars that the platform UI can't mangle.
+# Required if MONGO_URL is not set: MONGO_USER, MONGO_PASSWORD, MONGO_HOST.
+# Optional: MONGO_SCHEME (default "mongodb+srv"), MONGO_OPTIONS (default "retryWrites=true&w=majority").
+if not MONGO_URL or "@" not in MONGO_URL or "." not in MONGO_URL.split("@")[-1]:
+    _mongo_user = os.environ.get("MONGO_USER")
+    _mongo_pass = os.environ.get("MONGO_PASSWORD")
+    _mongo_host = os.environ.get("MONGO_HOST")
+    if _mongo_user and _mongo_pass and _mongo_host:
+        _scheme = os.environ.get("MONGO_SCHEME", "mongodb+srv")
+        _options = os.environ.get("MONGO_OPTIONS", "retryWrites=true&w=majority")
+        # URL-encode user + password automatically so special characters never break the URL.
+        MONGO_URL = (
+            f"{_scheme}://{quote_plus(_mongo_user)}:{quote_plus(_mongo_pass)}"
+            f"@{_mongo_host}/{DB_NAME}?{_options}"
+        )
+        logger.info("Assembled MONGO_URL from MONGO_USER/MONGO_PASSWORD/MONGO_HOST env vars.")
+
 # Diagnostic: holds the *actual* connection error so /api/health/db can surface it.
 DB_STARTUP_ERROR = None
 
