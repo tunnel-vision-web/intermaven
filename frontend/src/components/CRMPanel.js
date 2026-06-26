@@ -32,7 +32,7 @@ function Badge({ color, children }) {
   const map = { email: '#10b981', whatsapp: '#25D366', sms: '#f59e0b', active: '#10b981', sent: '#10b981', draft: '#9096b8', scheduled: '#22d3ee', failed: '#ef4444' };
   const c = map[color] || color || '#9096b8';
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 20, fontSize: 11, fontWeight: 600, background: `${c}22`, color: c, border: `1px solid ${c}44` }}>
+    <span style={{ display: 'inline-flex', alignItems: 'center', padding: '2px 8px', borderRadius: 3, fontSize: 11, fontWeight: 600, background: `${c}22`, color: c, border: `1px solid ${c}44` }}>
       {children}
     </span>
   );

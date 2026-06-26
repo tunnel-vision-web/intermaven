@@ -2694,7 +2694,7 @@
 .logo span { color: var(--a2); }
 .lbdg {
   padding: 4px 10px;
-  border-radius: 999px;
+  border-radius: 3px;
   background: rgba(124,111,247,0.12);
   color: var(--a2);
   font-size: 11px;
@@ -2824,7 +2824,7 @@
   text-align: center;
 }
 .he { display: inline-flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 18px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; opacity: 0; transform: translateX(-24px); transition: opacity 0.65s ease, transform 0.65s ease; font-family: 'Sansation', sans-serif; }
-.hbadge { background: rgba(255,255,255,0.08); border-radius: 999px; padding: 10px 16px; }
+.hbadge { background: rgba(255,255,255,0.08); border-radius: 3px; padding: 10px 16px; }
 .hbadge span { display: inline-flex; align-items: center; gap: 6px; }
 .bdot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
 .ht { font-size: clamp(30px, 3.8vw, 48px); font-weight: 900; line-height: 1.05; margin-bottom: 7px; opacity: 0; transform: translateX(-24px); transition: opacity 0.65s ease 0.12s, transform 0.65s ease 0.12s; font-family: 'Sansation', sans-serif; }
@@ -2880,7 +2880,7 @@
   justify-content: center;
   width: 40px;
   height: 40px;
-  border-radius: 999px;
+  border-radius: 3px;
   border: 1px solid rgba(255,255,255,0.12);
   background: rgba(0,0,0,0.35);
   color: #fff;
@@ -2902,7 +2902,7 @@
   justify-content: center;
   width: 40px;
   height: 40px;
-  border-radius: 999px;
+  border-radius: 3px;
   border: 1px solid rgba(255,255,255,0.12);
   background: rgba(0,0,0,0.35);
   color: #fff;
@@ -2933,7 +2933,7 @@
   from { opacity: 0; transform: scale(1.02); }
   to { opacity: 1; transform: scale(1); }
 }
-.spr { flex: 1; height: 4px; background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden; }
+.spr { flex: 1; height: 4px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; }
 .spb { height: 100%; background: var(--btn); width: 0%; transition: width 0.2s ease; }
 .sdots { display: flex; gap: 8px; }
 .sd { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.16); border: none; cursor: pointer; }
@@ -2981,7 +2981,7 @@
   display: inline-flex;
   margin-top: 18px;
   padding: 6px 10px;
-  border-radius: 999px;
+  border-radius: 3px;
   font-size: 11px;
   font-weight: 700;
 }
@@ -3019,7 +3019,7 @@
 .pill {
   padding: 10px 14px;
   background: rgba(255,255,255,0.06);
-  border-radius: 999px;
+  border-radius: 3px;
   font-size: 12px;
   color: var(--mu);
 }
@@ -3376,7 +3376,7 @@
   border: 1px solid rgba(255,255,255,0.08);
   color: rgba(255,255,255,0.85);
   padding: 8px 12px;
-  border-radius: 999px;
+  border-radius: 3px;
   font-size: 13px;
 }
 .footer-col h4 {
@@ -3698,7 +3698,7 @@
   width: 200px;
   height: 65px;
   padding: 10px 16px;
-  border-radius: 4px;
+  border-radius: 3px;
   background: rgba(255,255,255,0.03);
   border: 1px solid rgba(255,255,255,0.05);
   opacity: 0.55;
@@ -4380,7 +4380,7 @@
 .popb {
   position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
   background: var(--gr); color: #04130d; font-size: 10px; font-weight: 800;
-  letter-spacing: .04em; text-transform: uppercase; padding: 4px 12px; border-radius: 999px;
+  letter-spacing: .04em; text-transform: uppercase; padding: 4px 12px; border-radius: 3px;
 }
 .prn { font-size: 15px; font-weight: 700; color: var(--tx); margin-bottom: 6px; }
 .prp { font-size: 32px; font-weight: 800; color: var(--tx); margin: 4px 0 2px; line-height: 1.1; }
@@ -4410,7 +4410,7 @@
 /* ===== Apps Marketplace ===== */
 .apf { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
 .apf .fb {
-  padding: 8px 16px; border-radius: 999px; cursor: pointer;
+  padding: 8px 16px; border-radius: 3px; cursor: pointer;
   background: var(--ca); border: 1px solid var(--b1); color: var(--mu);
   font-size: 12px; font-weight: 700; transition: background-color .18s ease, color .18s ease, border-color .18s ease;
 }
@@ -4429,7 +4429,7 @@
 .apc .apacc { position: absolute; top: 0; left: 0; right: 0; height: 4px; }
 .apc .aph2 { display: flex; align-items: center; justify-content: center; width: 100%; margin-bottom: 14px; }
 .apc .apiw { width: 40px; height: 40px; border-radius: 3px; display: grid; place-items: center; }
-.apc .aps { position: absolute; top: 12px; right: 12px; font-size: 9px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; }
+.apc .aps { position: absolute; top: 12px; right: 12px; font-size: 9px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; padding: 3px 9px; border-radius: 3px; }
 .apc .aps.slv { color: var(--gr); background: rgba(16,185,129,.12); border: 1px solid rgba(16,185,129,.35); }
 .apc .aps.ssn { color: var(--mu); background: rgba(255,255,255,.05); border: 1px solid var(--b1); }
 .apc h3 { font-size: 15px; font-weight: 700; color: var(--tx); margin: 0 0 6px; }
@@ -4461,7 +4461,7 @@
 .beta-card .apacc { position: absolute; top: 0; left: 0; right: 0; height: 4px; }
 .beta-card .aph2 { display: flex; align-items: center; justify-content: center; width: 100%; margin-bottom: 14px; }
 .beta-card .apiw { width: 40px; height: 40px; border-radius: 3px; display: grid; place-items: center; }
-.beta-card .beta-badge { position: absolute; top: 12px; right: 12px; font-size: 9px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; color: var(--mu); background: rgba(255,255,255,.05); border: 1px solid var(--b1); display: flex; align-items: center; gap: 4px; }
+.beta-card .beta-badge { position: absolute; top: 12px; right: 12px; font-size: 9px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; padding: 3px 9px; border-radius: 3px; color: var(--mu); background: rgba(255,255,255,.05); border: 1px solid var(--b1); display: flex; align-items: center; gap: 4px; }
 .beta-card .beta-badge-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--mu); }
 .beta-card h3 { font-size: 15px; font-weight: 700; color: var(--tx); margin: 0 0 6px; }
 .beta-card p { font-size: 12.5px; color: var(--mu); line-height: 1.5; margin: 0 0 16px; flex: 1; }
@@ -4571,3 +4571,20 @@
   font-size: 15px !important;
 }
 
+
+/* ============================================================
+   App font-size bump: increase base text inside the dashboard
+   backend by 1px so apps feel a touch more readable. Scoped to
+   .backend-container so public landing typography is unaffected.
+   Inline px font-sizes set on elements directly are intentionally
+   left untouched to preserve typographic hierarchy.
+   ============================================================ */
+.backend-container { font-size: 15px; line-height: 1.55; }
+.backend-container :where(p, span, label, button, input, textarea, select, li, td, th, a) {
+  font-size: 15px;
+}
+.backend-container :where(h1) { font-size: 33px; }
+.backend-container :where(h2) { font-size: 25px; }
+.backend-container :where(h3) { font-size: 21px; }
+.backend-container :where(h4) { font-size: 17px; }
+.backend-container :where(h5, h6) { font-size: 15px; }

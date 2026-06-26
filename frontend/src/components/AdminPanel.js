@@ -43,7 +43,7 @@ function Badge({ color, children }) {
   return (
     <span style={{
       display: 'inline-flex', alignItems: 'center', padding: '2px 8px',
-      borderRadius: '20px', fontSize: '11px', fontWeight: 600,
+      borderRadius: '3px', fontSize: '11px', fontWeight: 600,
       background: `${c}22`, color: c, border: `1px solid ${c}44`
     }}>
       {children}

@@ -276,6 +276,28 @@ function Dashboard() {
             {getAccountTypeLabel()}
           </div>
 
+          {/* View Site link — lets logged-in users browse the public frontend */}
+          <a
+            href="/"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="view-site-link"
+            style={{
+              color: '#cbd5e1',
+              fontSize: '13px',
+              fontWeight: 600,
+              textDecoration: 'none',
+              padding: '6px 12px',
+              border: '1px solid #334155',
+              borderRadius: '3px',
+              transition: 'all 0.2s'
+            }}
+            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#22d3ee'; e.currentTarget.style.color = '#22d3ee'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#334155'; e.currentTarget.style.color = '#cbd5e1'; }}
+          >
+            View Site ↗
+          </a>
+
           {/* Notification bell and tray */}
           <div style={{ position: 'relative' }}>
             <button 

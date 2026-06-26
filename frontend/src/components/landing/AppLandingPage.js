@@ -580,7 +580,7 @@ function AppLandingPage({ appId, onOpenAuth, onOpenSignIn }) {
               <div className="footer-links">
                 <a href="/about" className="footer-link">About us</a>
                 <a href="/help" className="footer-link">Help Center</a>
-                <span className="footer-link">Blog</span>
+                <a href="/forum" className="footer-link">Forum</a>
                 <span className="footer-link">Careers</span>
               </div>
             </div>

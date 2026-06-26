@@ -495,14 +495,14 @@ function EPKBuilder({ user, addToast, updateUser }) {
               <div className="form-group">
                 <label className="form-label">Primary Colour</label>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                  <input type="color" value={form.design?.primary_color || '#10b981'} onChange={e => handleChange('design.primary_color', e.target.value)} style={{ width: 40, height: 36, padding: 2, background: 'var(--bg3)', border: '1px solid var(--b1)', borderRadius: 4, cursor: 'pointer' }} />
+                  <input type="color" value={form.design?.primary_color || '#10b981'} onChange={e => handleChange('design.primary_color', e.target.value)} style={{ width: 40, height: 36, padding: 2, background: 'var(--bg3)', border: '1px solid var(--b1)', borderRadius: 3, cursor: 'pointer' }} />
                   <input className="form-input" value={form.design?.primary_color || '#10b981'} onChange={e => handleChange('design.primary_color', e.target.value)} style={{ width: 100 }} />
                 </div>
               </div>
               <div className="form-group">
                 <label className="form-label">Accent Colour</label>
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                  <input type="color" value={form.design?.secondary_color || '#c084fc'} onChange={e => handleChange('design.secondary_color', e.target.value)} style={{ width: 40, height: 36, padding: 2, background: 'var(--bg3)', border: '1px solid var(--b1)', borderRadius: 4, cursor: 'pointer' }} />
+                  <input type="color" value={form.design?.secondary_color || '#c084fc'} onChange={e => handleChange('design.secondary_color', e.target.value)} style={{ width: 40, height: 36, padding: 2, background: 'var(--bg3)', border: '1px solid var(--b1)', borderRadius: 3, cursor: 'pointer' }} />
                   <input className="form-input" value={form.design?.secondary_color || '#c084fc'} onChange={e => handleChange('design.secondary_color', e.target.value)} style={{ width: 100 }} />
                 </div>
               </div>
