@@ -32,37 +32,37 @@ export function localizeImagePath(path) {
   
   // Map standard files to their Western counterparts
   return path
-    .replace('./images/hero/intermaven/hero-1.jpg', './images/hero/intermaven_western/hero-1.png')
-    .replace('./images/hero/intermaven/hero-2.jpg', './images/hero/intermaven_western/hero-2.png')
-    .replace('./images/hero/intermaven/hero-3.jpg', './images/hero/intermaven_western/hero-3.png')
-    .replace('./images/hero/intermavenmusic/hero-1.jpg', './images/hero/intermavenmusic_western/hero-1.png')
-    .replace('./images/hero/intermavenmusic/hero-2.jpg', './images/hero/intermavenmusic_western/hero-2.png')
-    .replace('./images/hero/intermavenmusic/hero-3.jpg', './images/hero/intermavenmusic_western/hero-3.png')
-    .replace('./images/headers/intermaven/header-tools.jpg', './images/headers/intermaven_western/header-tools.png')
-    .replace('./images/headers/intermaven/header-apps.jpg', './images/headers/intermaven_western/header-apps.png')
-    .replace('./images/headers/intermaven/header-pricing.jpg', './images/headers/intermaven_western/header-pricing.png')
-    .replace('./images/headers/intermaven/header-about.jpg', './images/headers/intermaven_western/header-about.png')
-    .replace('./images/headers/intermaven/header-help.jpg', './images/headers/intermaven_western/header-help.png')
-    .replace('./images/headers/intermaven/header-forum.jpg', './images/headers/intermaven_western/header-forum.png')
-    .replace('./images/headers/intermavenmusic/header-tools.jpg', './images/headers/intermavenmusic_western/header-tools.png')
-    .replace('./images/headers/intermavenmusic/header-apps.jpg', './images/headers/intermavenmusic_western/header-apps.png')
-    .replace('./images/headers/intermavenmusic/header-pricing.jpg', './images/headers/intermavenmusic_western/header-pricing.png')
-    .replace('./images/headers/intermavenmusic/header-about.jpg', './images/headers/intermavenmusic_western/header-about.png')
-    .replace('./images/headers/intermavenmusic/header-help.jpg', './images/headers/intermavenmusic_western/header-help.png')
-    .replace('./images/headers/intermavenmusic/header-forum.jpg', './images/headers/intermavenmusic_western/header-forum.png');
+    .replace('/images/hero/intermaven/hero-1.jpg', '/images/hero/intermaven_western/hero-1.png')
+    .replace('/images/hero/intermaven/hero-2.jpg', '/images/hero/intermaven_western/hero-2.png')
+    .replace('/images/hero/intermaven/hero-3.jpg', '/images/hero/intermaven_western/hero-3.png')
+    .replace('/images/hero/intermavenmusic/hero-1.jpg', '/images/hero/intermavenmusic_western/hero-1.png')
+    .replace('/images/hero/intermavenmusic/hero-2.jpg', '/images/hero/intermavenmusic_western/hero-2.png')
+    .replace('/images/hero/intermavenmusic/hero-3.jpg', '/images/hero/intermavenmusic_western/hero-3.png')
+    .replace('/images/headers/intermaven/header-tools.jpg', '/images/headers/intermaven_western/header-tools.png')
+    .replace('/images/headers/intermaven/header-apps.jpg', '/images/headers/intermaven_western/header-apps.png')
+    .replace('/images/headers/intermaven/header-pricing.jpg', '/images/headers/intermaven_western/header-pricing.png')
+    .replace('/images/headers/intermaven/header-about.jpg', '/images/headers/intermaven_western/header-about.png')
+    .replace('/images/headers/intermaven/header-help.jpg', '/images/headers/intermaven_western/header-help.png')
+    .replace('/images/headers/intermaven/header-forum.jpg', '/images/headers/intermaven_western/header-forum.png')
+    .replace('/images/headers/intermavenmusic/header-tools.jpg', '/images/headers/intermavenmusic_western/header-tools.png')
+    .replace('/images/headers/intermavenmusic/header-apps.jpg', '/images/headers/intermavenmusic_western/header-apps.png')
+    .replace('/images/headers/intermavenmusic/header-pricing.jpg', '/images/headers/intermavenmusic_western/header-pricing.png')
+    .replace('/images/headers/intermavenmusic/header-about.jpg', '/images/headers/intermavenmusic_western/header-about.png')
+    .replace('/images/headers/intermavenmusic/header-help.jpg', '/images/headers/intermavenmusic_western/header-help.png')
+    .replace('/images/headers/intermavenmusic/header-forum.jpg', '/images/headers/intermavenmusic_western/header-forum.png');
 }
 
 // ── Hero slide images ─────────────────────────────────────────────
 const raw_hero_images = {
   intermaven: [
-    './images/hero/intermaven/hero-1.jpg',
-    './images/hero/intermaven/hero-2.jpg',
-    './images/hero/intermaven/hero-3.jpg',
+    '/images/hero/intermaven/hero-1.jpg',
+    '/images/hero/intermaven/hero-2.jpg',
+    '/images/hero/intermaven/hero-3.jpg',
   ],
   intermavenmusic: [
-    './images/hero/intermavenmusic/hero-1.jpg',
-    './images/hero/intermavenmusic/hero-2.jpg',
-    './images/hero/intermavenmusic/hero-3.jpg',
+    '/images/hero/intermavenmusic/hero-1.jpg',
+    '/images/hero/intermavenmusic/hero-2.jpg',
+    '/images/hero/intermavenmusic/hero-3.jpg',
   ],
 };
 
@@ -109,31 +109,31 @@ export const HERO_FALLBACKS = {
 
 // ── Page header images ─────────────────────────────────────────────
 const raw_header_images = {
-  tools:       './images/headers/intermaven/header-tools.jpg',
-  apps:        './images/headers/intermaven/header-apps.jpg',
-  pricing:     './images/headers/intermaven/header-pricing.jpg',
-  about:       './images/headers/intermaven/header-about.jpg',
-  help:        './images/headers/intermaven/header-help.jpg',
-  forum:       './images/headers/intermaven/header-forum.jpg',
-  dashboard:   './images/headers/intermaven/header-dashboard.jpg',
-  brandkit:    './images/headers/intermaven/header-brandkit.jpg',
-  musicbio:    './images/headers/intermaven/header-musicbio.jpg',
-  social:      './images/headers/intermaven/header-social.jpg',
-  syncpitch:   './images/headers/intermaven/header-syncpitch.jpg',
-  bizpitch:    './images/headers/intermaven/header-bizpitch.jpg',
-  consumer:    './images/headers/intermavenmusic/header-consumer.jpg',
-  creator:     './images/headers/intermavenmusic/header-creator.jpg',
-  label:       './images/headers/intermavenmusic/header-label.jpg',
-  dj:          './images/headers/intermavenmusic/header-dj.jpg',
-  filmstudio:  './images/headers/intermavenmusic/header-filmstudio.jpg',
-  corporate:   './images/headers/intermavenmusic/header-corporate.jpg',
-  mediahouse:  './images/headers/intermavenmusic/header-mediahouse.jpg',
-  musicabout:  './images/headers/intermavenmusic/header-about.jpg',
-  musictools:   './images/headers/intermavenmusic/header-tools.jpg',
-  musicapps:    './images/headers/intermavenmusic/header-apps.jpg',
-  musicpricing: './images/headers/intermavenmusic/header-pricing.jpg',
-  musichelp:    './images/headers/intermavenmusic/header-help.jpg',
-  musicforum:   './images/headers/intermavenmusic/header-forum.jpg',
+  tools:       '/images/headers/intermaven/header-tools.jpg',
+  apps:        '/images/headers/intermaven/header-apps.jpg',
+  pricing:     '/images/headers/intermaven/header-pricing.jpg',
+  about:       '/images/headers/intermaven/header-about.jpg',
+  help:        '/images/headers/intermaven/header-help.jpg',
+  forum:       '/images/headers/intermaven/header-forum.jpg',
+  dashboard:   '/images/headers/intermaven/header-dashboard.jpg',
+  brandkit:    '/images/headers/intermaven/header-brandkit.jpg',
+  musicbio:    '/images/headers/intermaven/header-musicbio.jpg',
+  social:      '/images/headers/intermaven/header-social.jpg',
+  syncpitch:   '/images/headers/intermaven/header-syncpitch.jpg',
+  bizpitch:    '/images/headers/intermaven/header-bizpitch.jpg',
+  consumer:    '/images/headers/intermavenmusic/header-consumer.jpg',
+  creator:     '/images/headers/intermavenmusic/header-creator.jpg',
+  label:       '/images/headers/intermavenmusic/header-label.jpg',
+  dj:          '/images/headers/intermavenmusic/header-dj.jpg',
+  filmstudio:  '/images/headers/intermavenmusic/header-filmstudio.jpg',
+  corporate:   '/images/headers/intermavenmusic/header-corporate.jpg',
+  mediahouse:  '/images/headers/intermavenmusic/header-mediahouse.jpg',
+  musicabout:  '/images/headers/intermavenmusic/header-about.jpg',
+  musictools:   '/images/headers/intermavenmusic/header-tools.jpg',
+  musicapps:    '/images/headers/intermavenmusic/header-apps.jpg',
+  musicpricing: '/images/headers/intermavenmusic/header-pricing.jpg',
+  musichelp:    '/images/headers/intermavenmusic/header-help.jpg',
+  musicforum:   '/images/headers/intermavenmusic/header-forum.jpg',
 };
 
 export const HEADER_IMAGES = new Proxy(raw_header_images, {
@@ -187,44 +187,44 @@ export const APP_ICONS = {
   grant:     './icons/grant.png',
 };
 
-export const INTERMAVEN_LOGO = './images/logos/intermaven/intermaven-logo-web.png';
-export const INTERMAVEN_LOGO_FOOTER = './images/logos/intermaven/intermaven-logo-footer.png';
+export const INTERMAVEN_LOGO = '/images/logos/intermaven/intermaven-logo-web.png';
+export const INTERMAVEN_LOGO_FOOTER = '/images/logos/intermaven/intermaven-logo-footer.png';
 
 export const CAROUSEL_LOGOS = {
   music: [
-    { src: './images/carousel/logos/logo-dj.svg', alt: 'DJ stage', link: '/apps' },
-    { src: './images/carousel/logos/logo-label.svg', alt: 'Label network', link: '/apps' },
-    { src: './images/carousel/logos/logo-producer.svg', alt: 'Producer community', link: '/apps' },
-    { src: './images/carousel/logos/logo-artist.svg', alt: 'Artist collective', link: '/apps' },
-    { src: './images/carousel/logos/logo-social.svg', alt: 'Social creators', link: '/apps' },
-    { src: './images/carousel/logos/logo-brandkit.svg', alt: 'Brand kit partners', link: '/apps' },
+    { src: '/images/carousel/logos/logo-dj.svg', alt: 'DJ stage', link: '/apps' },
+    { src: '/images/carousel/logos/logo-label.svg', alt: 'Label network', link: '/apps' },
+    { src: '/images/carousel/logos/logo-producer.svg', alt: 'Producer community', link: '/apps' },
+    { src: '/images/carousel/logos/logo-artist.svg', alt: 'Artist collective', link: '/apps' },
+    { src: '/images/carousel/logos/logo-social.svg', alt: 'Social creators', link: '/apps' },
+    { src: '/images/carousel/logos/logo-brandkit.svg', alt: 'Brand kit partners', link: '/apps' },
   ],
   business: [
-    { src: './images/carousel/logos/logo-brandkit.svg', alt: 'Brand builders', link: '/apps' },
-    { src: './images/carousel/logos/logo-crm.svg', alt: 'Smart CRM', link: '/apps' },
-    { src: './images/carousel/logos/logo-dj.svg', alt: 'Creative events', link: '/apps' },
-    { src: './images/carousel/logos/logo-social.svg', alt: 'Social storefronts', link: '/apps' },
-    { src: './images/carousel/logos/logo-artist.svg', alt: 'Creative services', link: '/apps' },
+    { src: '/images/carousel/logos/logo-brandkit.svg', alt: 'Brand builders', link: '/apps' },
+    { src: '/images/carousel/logos/logo-crm.svg', alt: 'Smart CRM', link: '/apps' },
+    { src: '/images/carousel/logos/logo-dj.svg', alt: 'Creative events', link: '/apps' },
+    { src: '/images/carousel/logos/logo-social.svg', alt: 'Social storefronts', link: '/apps' },
+    { src: '/images/carousel/logos/logo-artist.svg', alt: 'Creative services', link: '/apps' },
   ],
   djs: [
-    { src: './images/carousel/logos/logo-dj.svg', alt: 'DJ bookings', link: '/apps' },
-    { src: './images/carousel/logos/logo-social.svg', alt: 'Audience content', link: '/apps' },
-    { src: './images/carousel/logos/logo-brandkit.svg', alt: 'Brand identity', link: '/apps' },
+    { src: '/images/carousel/logos/logo-dj.svg', alt: 'DJ bookings', link: '/apps' },
+    { src: '/images/carousel/logos/logo-social.svg', alt: 'Audience content', link: '/apps' },
+    { src: '/images/carousel/logos/logo-brandkit.svg', alt: 'Brand identity', link: '/apps' },
   ],
   labels: [
-    { src: './images/carousel/logos/logo-label.svg', alt: 'Label services', link: '/apps' },
-    { src: './images/carousel/logos/logo-producer.svg', alt: 'Producer partnerships', link: '/apps' },
-    { src: './images/carousel/logos/logo-crm.svg', alt: 'Label CRM', link: '/apps' },
+    { src: '/images/carousel/logos/logo-label.svg', alt: 'Label services', link: '/apps' },
+    { src: '/images/carousel/logos/logo-producer.svg', alt: 'Producer partnerships', link: '/apps' },
+    { src: '/images/carousel/logos/logo-crm.svg', alt: 'Label CRM', link: '/apps' },
   ],
   producers: [
-    { src: './images/carousel/logos/logo-producer.svg', alt: 'Producer network', link: '/apps' },
-    { src: './images/carousel/logos/logo-social.svg', alt: 'Portfolios & promo', link: '/apps' },
-    { src: './images/carousel/logos/logo-brandkit.svg', alt: 'Music branding', link: '/apps' },
+    { src: '/images/carousel/logos/logo-producer.svg', alt: 'Producer network', link: '/apps' },
+    { src: '/images/carousel/logos/logo-social.svg', alt: 'Portfolios & promo', link: '/apps' },
+    { src: '/images/carousel/logos/logo-brandkit.svg', alt: 'Music branding', link: '/apps' },
   ],
   mediahouses: [
-    { src: './images/carousel/logos/logo-mediahouse.svg', alt: 'Media houses', link: '/apps' },
-    { src: './images/carousel/logos/logo-crm.svg', alt: 'Content operations', link: '/apps' },
-    { src: './images/carousel/logos/logo-brandkit.svg', alt: 'Campaign branding', link: '/apps' },
+    { src: '/images/carousel/logos/logo-mediahouse.svg', alt: 'Media houses', link: '/apps' },
+    { src: '/images/carousel/logos/logo-crm.svg', alt: 'Content operations', link: '/apps' },
+    { src: '/images/carousel/logos/logo-brandkit.svg', alt: 'Campaign branding', link: '/apps' },
   ],
 };
 
