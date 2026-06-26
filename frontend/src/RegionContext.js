@@ -210,6 +210,20 @@ export function RegionProvider({ children }) {
       country, countryName, currency, currencyInfo, language, languages, options, ready,
       source, hasSavedRegion,
       changeCountry, changeCurrency, changeLanguage,
+      // Derived helpers
+      isAfrican: ['KE','UG','TZ','RW','BI','SS','SO','ET','DJ','ER','SD','EG','MA','TN','DZ','LY','NG','GH','SN','CI','BJ','TG','BF','ML','NE','MR','GM','GN','GW','SL','LR','CM','GA','CG','CD','AO','ZA','BW','NA','ZW','MZ','MG','MU','MW','ZM','LS','SZ','KM','SC','ST','CV','EH','CF','TD','EQ'].includes((country || 'KE').toUpperCase()),
+      isWestern: ['US','CA','GB','IE','AU','NZ','FR','DE','IT','ES','NL','BE','SE','NO','FI','DK','AT','CH','PT','PL','CZ','HU','GR','LU','IS','LI','MT','CY','EE','LV','LT','SI','SK','HR','RO','BG'].includes((country || '').toUpperCase()),
+      isUSorCA: ['US','CA'].includes((country || '').toUpperCase()),
+      contactPhone: (() => {
+        const cc = (country || 'KE').toUpperCase();
+        if (cc === 'US' || cc === 'CA') return '+1 (800) 555-0114';
+        if (cc === 'GB') return '+44 800 016 6028';
+        if (cc === 'KE') return '+254 700 000 000';
+        if (cc === 'NG') return '+234 800 000 0000';
+        if (cc === 'ZA') return '+27 800 000 000';
+        return '+254 700 000 000';
+      })(),
+      contactPhoneCountry: (country || 'KE').toUpperCase(),
     }}>
       {children}
     </RegionContext.Provider>

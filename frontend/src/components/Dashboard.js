@@ -23,12 +23,18 @@ import StrategyPanel from './wizard/StrategyPanel';
 import RequiredChannelsCard from './wizard/RequiredChannelsCard';
 
 const APPS = {
-  brandkit: { id: 'brandkit', name: 'Brand Kit AI', color: '#10b981', icon: Palette },
-  musicbio: { id: 'musicbio', name: 'Music Bio & Press Kit', color: '#22d3ee', icon: Music },
-  social: { id: 'social', name: 'Social AI', color: '#f43f5e', icon: Share2 },
-  syncpitch: { id: 'syncpitch', name: 'Sync Pitch AI', color: '#f59e0b', icon: Film },
-  bizpitch: { id: 'bizpitch', name: 'Pitch Deck AI', color: '#8b5cf6', icon: Presentation }
+  brandkit: { id: 'brandkit', name: 'Brand Kit AI', color: '#10b981', icon: Palette, portals: ['business', 'music'] },
+  musicbio: { id: 'musicbio', name: 'Music Bio & Press Kit', color: '#22d3ee', icon: Music, portals: ['music'] },
+  social: { id: 'social', name: 'Social AI', color: '#f43f5e', icon: Share2, portals: ['business', 'music', 'hospitality'] },
+  syncpitch: { id: 'syncpitch', name: 'Sync Pitch AI', color: '#f59e0b', icon: Film, portals: ['music'] },
+  bizpitch: { id: 'bizpitch', name: 'Pitch Deck AI', color: '#8b5cf6', icon: Presentation, portals: ['business'] }
 };
+
+const ALL_PORTALS = [
+  { id: 'business', label: 'Business', enabled: true },
+  { id: 'music', label: 'Music (TuneMavens)', enabled: true },
+  { id: 'hospitality', label: 'Hospitality', enabled: false, comingSoon: true },
+];
 
 const PLAN_CREDITS = { free: 150, creator: 600, pro: 2500 };
 
@@ -76,7 +82,8 @@ function Dashboard() {
     bio: '',
     preferred_channel: 'email',
     avatar: '',
-    password: ''
+    password: '',
+    enabled_portals: ['business', 'music'],
   });
 
   // Auto-collapse on mobile
@@ -124,6 +131,10 @@ function Dashboard() {
       try {
         const p = await api.get('/api/business-profile');
         setBusinessProfile(p.data);
+        // Hydrate enabled_portals from business profile (defaults to business+music)
+        if (p.data?.enabled_portals && Array.isArray(p.data.enabled_portals) && p.data.enabled_portals.length > 0) {
+          setProfileForm(prev => ({ ...prev, enabled_portals: p.data.enabled_portals }));
+        }
         // Show discovery modal automatically if not completed and user hasn't dismissed it
         if (!p.data?.completed && !sessionStorage.getItem('discovery_skipped')) {
           setShowDiscovery(true);
@@ -250,16 +261,29 @@ function Dashboard() {
 
   const handleSaveProfile = async () => {
     try {
-      const payload = { ...profileForm };
+      const { enabled_portals, ...rest } = profileForm;
+      const payload = { ...rest };
       if (!payload.password) delete payload.password;
       
       const response = await api.put('/api/user/profile', payload);
       updateUser(response.data);
+      // Save portal preference separately to business profile
+      try {
+        await api.put('/api/business-profile', { enabled_portals: enabled_portals || ['business', 'music'] });
+      } catch (e) { /* non-fatal */ }
       alert('Profile updated successfully!');
     } catch (err) {
       alert(err.response?.data?.detail || 'Failed to update profile');
     }
   };
+
+  // Filter APPS based on the user's enabled portals (default business + music)
+  const enabledPortals = profileForm.enabled_portals && profileForm.enabled_portals.length > 0
+    ? profileForm.enabled_portals
+    : ['business', 'music'];
+  const visibleApps = Object.values(APPS).filter(app =>
+    !app.portals || app.portals.some(p => enabledPortals.includes(p))
+  );
 
   const sidebarWidth = collapsed ? '70px' : '20%';
   const currentPlan = user?.plan || 'free';
@@ -567,7 +591,7 @@ function Dashboard() {
               {!collapsed && 'MY APPS'}
             </div>
 
-            {Object.values(APPS).map(app => (
+            {visibleApps.map(app => (
               <button
                 key={app.id}
                 onClick={() => openApp(app.id)}
@@ -738,7 +762,7 @@ function Dashboard() {
                 <div style={{ backgroundColor: '#1e2937', borderRadius: '3px', padding: '24px', border: '1px solid #334155' }}>
                   <h4 style={{ margin: '0 0 16px 0', color: '#64748b', fontSize: '13px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Quick Launch</h4>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(80px, 1fr))', gap: '12px' }}>
-                    {Object.values(APPS).map(app => (
+                    {visibleApps.map(app => (
                       <div 
                         key={app.id} 
                         onClick={() => openApp(app.id)} 
@@ -1006,10 +1030,77 @@ function Dashboard() {
                       <input 
                         type="text" 
                         placeholder="https://example.com/avatar.jpg"
-                        value={profileForm.avatar && !AVATAR_PRESETS.some(p => p.id === profileForm.avatar) ? profileForm.avatar : ''}
+                        value={profileForm.avatar && !AVATAR_PRESETS.some(p => p.id === profileForm.avatar) && !profileForm.avatar.startsWith('data:') ? profileForm.avatar : ''}
                         onChange={(e) => setProfileForm(p => ({ ...p, avatar: e.target.value }))}
                         style={{ width: '100%', padding: '10px', background: '#33415544', border: '1px solid #334155', borderRadius: '3px', color: '#e2e8f0', fontSize: '13px', marginTop: '6px' }}
                       />
+                    </div>
+
+                    {/* Upload from device — saves to File Manager */}
+                    <div style={{ marginTop: '14px' }}>
+                      <span style={{ fontSize: '12px', color: '#64748b', display: 'block', marginBottom: 6 }}>Or upload from your device (saved to File Manager → Avatars)</span>
+                      <label data-testid="avatar-upload-label"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#22d3ee', color: '#0f172a', padding: '8px 14px', borderRadius: '3px', fontWeight: 700, fontSize: 13, cursor: 'pointer' }}>
+                        <Upload size={14} /> Upload image
+                        <input
+                          type="file"
+                          accept="image/png,image/jpeg,image/jpg,image/webp,image/gif"
+                          data-testid="avatar-upload-input"
+                          style={{ display: 'none' }}
+                          onChange={async (e) => {
+                            const f = e.target.files?.[0];
+                            if (!f) return;
+                            try {
+                              const fd = new FormData();
+                              fd.append('file', f);
+                              const r = await api.post('/api/user/avatar/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+                              if (r.data?.avatar) {
+                                setProfileForm(p => ({ ...p, avatar: r.data.avatar }));
+                                alert('Avatar uploaded and saved to File Manager → Avatars.');
+                              }
+                            } catch (err) {
+                              alert('Upload failed: ' + (err.response?.data?.detail || err.message));
+                            }
+                          }}
+                        />
+                      </label>
+                    </div>
+
+                    {/* Portal preference — show business / music / hospitality apps */}
+                    <div style={{ marginTop: '22px', paddingTop: '16px', borderTop: '1px solid #33415555' }}>
+                      <div style={{ fontSize: '13px', color: '#94a3b8', fontWeight: 600, marginBottom: 8 }}>Portals to show in your sidebar</div>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                        {ALL_PORTALS.map(p => {
+                          const enabled = (profileForm.enabled_portals || ['business', 'music']).includes(p.id);
+                          const disabled = !p.enabled;
+                          return (
+                            <button
+                              key={p.id}
+                              type="button"
+                              disabled={disabled}
+                              data-testid={`portal-toggle-${p.id}`}
+                              onClick={() => {
+                                if (disabled) return;
+                                setProfileForm(prev => {
+                                  const current = prev.enabled_portals || ['business', 'music'];
+                                  const next = current.includes(p.id) ? current.filter(x => x !== p.id) : [...current, p.id];
+                                  return { ...prev, enabled_portals: next.length === 0 ? ['business'] : next };
+                                });
+                              }}
+                              style={{
+                                padding: '8px 14px', borderRadius: '3px', fontWeight: 600, fontSize: 12, cursor: disabled ? 'not-allowed' : 'pointer',
+                                background: enabled ? '#22d3ee22' : 'transparent',
+                                color: disabled ? '#475569' : enabled ? '#22d3ee' : '#cbd5e1',
+                                border: enabled ? '1px solid #22d3ee' : '1px solid #334155',
+                                opacity: disabled ? 0.6 : 1,
+                              }}
+                            >
+                              {enabled ? '✓ ' : ''}{p.label}{p.comingSoon ? ' (Coming soon)' : ''}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <div style={{ fontSize: '11px', color: '#64748b', marginTop: 8 }}>Show only the apps relevant to your business. You can change this anytime.</div>
                     </div>
                   </div>
 

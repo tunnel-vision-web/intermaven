@@ -319,15 +319,21 @@ function HomePage({ portal = 'music', subdomainPage = null, onOpenAppModal, onOp
       let h = s.h || '';
       let sText = s.s || '';
       
-      badge = badge.replace('Africa', 'Creators').replace('Nairobi', 'Atlanta').replace('Kenya', 'US');
-      h = h.replace('Africa', 'Creators').replace('Nairobi', 'Atlanta').replace('Kenya', 'US');
+      badge = badge.replace('Africa', 'Creators').replace('Nairobi', 'Atlanta').replace('Kenya', 'US').replace(/M-Pesa native payments?/gi, 'Card-native payments');
+      h = h.replace('Africa', 'Creators').replace('Nairobi', 'Atlanta').replace('Kenya', 'US').replace(/African audiences?/gi, 'creator audiences').replace(/East African/gi, 'US');
       sText = sText
         .replace('African artists', 'independent artists')
         .replace('across Africa and the diaspora', 'globally')
         .replace('Nairobi entrepreneurs', 'modern entrepreneurs')
+        .replace(/works natively with M-Pesa, cards, and mobile money/gi, 'works natively with cards, Apple Pay, and digital wallets')
         .replace('M-Pesa, cards, and mobile money', 'cards, PayPal, and mobile pay')
+        .replace(/M-Pesa invoices?/gi, 'Card & ACH invoices')
+        .replace(/M-Pesa/gi, 'card & digital wallet')
+        .replace(/Nairobi and East African/gi, 'US and global creator')
+        .replace(/Nairobi and East Africa/gi, 'US and global creator')
         .replace('Nairobi retail', 'modern retail')
-        .replace('Nairobi businesses', 'modern businesses');
+        .replace('Nairobi businesses', 'modern businesses')
+        .replace(/Nairobi/g, 'US');
       
       return { ...s, badge, h, s: sText };
     });

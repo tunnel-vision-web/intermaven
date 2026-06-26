@@ -192,7 +192,9 @@ function PricingPage({ portal = 'music', subdomainPage = null, onOpenAuth, onToa
 
   const valueProps = [
     { icon: 'zap', color: 'var(--am)', title: 'Pay once', desc: 'No monthly fees. Buy credits when you need them.' },
-    { icon: 'mpesa', color: 'var(--gr)', title: 'Local payments', desc: 'M-Pesa, card, or PayPal. Credits load instantly.' },
+    isWestern
+      ? { icon: 'card', color: 'var(--gr)', title: 'Card-native payments', desc: 'Card, Apple Pay, Google Pay, PayPal. Credits load instantly.' }
+      : { icon: 'mpesa', color: 'var(--gr)', title: 'Local payments', desc: 'M-Pesa, card, or PayPal. Credits load instantly.' },
     { icon: 'refresh', color: 'var(--a3)', title: 'Credits never expire', desc: 'Paid credits roll over forever. Use them at your own pace.' },
     { icon: 'unlock', color: 'var(--a2)', title: 'No lock-in', desc: "Cancel nothing — there's nothing to cancel. Ever." }
   ];

@@ -4,6 +4,7 @@ import { Clock, User, ChevronLeft, ThumbsUp, MessageSquare, Eye, Share2, Bookmar
 import { api } from '../../App';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import PageHeader from './PageHeader';
 import '../../styles/landing.css';
 
 // Full article content registry
@@ -1046,8 +1047,16 @@ function ArticlePage() {
   return (
     <div className="landing-wrapper">
       <Navbar currentPage={isForum ? "forum" : "help"} />
-      
-      <div className="article-page" style={{ padding: '40px 0 80px', marginTop: 'calc(var(--bh) + var(--nh))' }}>
+
+      {/* Hero header — matches the parent help / forum page styling */}
+      <PageHeader
+        pageKey={isForum ? "forum" : "help"}
+        breadcrumb={isForum ? `Intermaven › Forum › ${article.category}` : `Intermaven › Help › ${article.category}`}
+        title={article.title}
+        subtitle={article.author ? `By ${article.author} · ${article.date}` : ''}
+      />
+
+      <div className="article-page" style={{ padding: '40px 0 80px' }}>
         <div className="cn">
           <Link to={backPath} className="article-back" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#10b981', textDecoration: 'none', fontWeight: 600, marginBottom: '24px', fontSize: '14px' }}>
             <ChevronLeft size={18} />

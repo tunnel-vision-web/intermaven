@@ -31,6 +31,7 @@ class BusinessProfileUpdate(BaseModel):
     budget_band: Optional[str] = None       # none, <100, 100-500, 500-2000, 2000+
     brand_voice: Optional[str] = None
     notes: Optional[str] = None
+    enabled_portals: Optional[List[str]] = None  # subset of ['business','music','hospitality']
 
 
 class DiscoverTurnRequest(BaseModel):

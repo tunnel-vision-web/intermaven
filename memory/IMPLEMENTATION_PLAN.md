@@ -122,13 +122,7 @@ Each phase ends with targeted tests; large phases end with `testing_agent`.
 - Phase 6 Music rebrand intermavenmusic → tunemavens.com.
 - Phase 7 Autonomous AI Testing Agent ("Sentinel", full version per user choice).
 
-### Backlog addition (June 2026) — Geolocation-aware contact details
-- **Phone numbers must change based on geolocation** (alongside currency/language). Today contact/support phone
-  numbers are hardcoded Kenyan (`+254 700 000 000`, M-Pesa Paybill, "Mon–Fri 9am–5pm EAT") in About/Help/Footer/Pricing.
-- Plan: add per-region contact metadata to `region_config` (support phone, WhatsApp number, business hours/timezone,
-  Paybill/local-payment ref) resolved via `/api/geo/resolve`; render dynamically in Footer, About contact card,
-  Help "Contact Support", Pricing M-Pesa callout. Fallback to a global/international number when no regional number exists.
-  Fold into Phase 1 (region foundation) data model + Phase 8 go-live (provision real regional numbers). **Not yet coded.**
+### Backlog addition (June 2026) — Geolocation-aware contact details — DEPRECATED, see Phase 10 above
 
 ## DECISIONS LOCKED (user, June 2026)
 1. Currencies/languages: ALL African + Western (incl. tribal langs + Spanish for US). ✅ built into regions.py
@@ -137,3 +131,57 @@ Each phase ends with targeted tests; large phases end with `testing_agent`.
 4. Payments: Stripe + PayPal (West) + Pesapal/M-Pesa (Kenya).
 5. AI Testing Agent: full autonomous version.
 6. Build immediately. ✅ (Phases 1–2 delivered)
+
+---
+
+## NEW (Jan 2026) — Phase 9 & 10 additions
+
+### Phase 9 — SEO Management Module (Admin-only)
+**Status: planned · not yet built**
+
+A backend-driven SEO control center built into `/admin/seo` for Intermaven Official.
+Scope (industry best practices):
+
+- **Global meta defaults**: site title template, description, default OG image, robots.txt + sitemap.xml generators
+- **Per-page overrides**: title / meta-description / canonical / OG image / structured data per landing, app-landing, pricing, help, forum, article
+- **Social media account registry**: Intermaven's own Instagram / TikTok / X / LinkedIn / YouTube / Facebook / Threads / Pinterest / Spotify / Apple-Music / Google Business handles — used for footer links, schema.org `sameAs`, JSON-LD organization
+- **JSON-LD schemas**: Organization, WebSite, BreadcrumbList, Article, FAQPage, Product, SoftwareApplication, LocalBusiness — auto-rendered from CMS data
+- **Sitemap & robots**: auto-generated from page registry + manual override
+- **Open Graph & Twitter Cards**: per-page editor with live preview
+- **Tracking & analytics**: GA4 measurement IDs, GTM container, Meta Pixel, TikTok Pixel, LinkedIn Insight, Plausible/PostHog — toggled per consent
+- **Search Console / Bing Webmaster verification meta tags**
+- **Performance**: Lighthouse score targets, Core Web Vitals dashboards, image alt-text checks, broken-link reports
+- **AI-assisted**: Claude auto-suggests meta titles / descriptions / OG copy from page content
+- **Full SEO audit pass** (manual + automated) executed as part of this phase
+
+### Phase 10 — CMS Integration (port from Atlanta TV Mount Pro, made the "mother")
+**Status: planned · not yet built**
+
+The atltvmountpro repo already has a working CMS pattern. Port to Intermaven and make it the canonical CMS for all sister portals (Intermaven, TuneMavens, and future ones like Hospitality):
+
+- **Editable everywhere**: site copy, phone numbers (per region), addresses, social handles, payment options shown, hero images, testimonials, FAQs, help/forum articles, pricing notes, legal pages
+- **Per-region overrides**: every CMS string supports `KE/NG/ZA/US/GB/AU/...` variants — so M-Pesa/Nairobi never leak to Western visitors
+- **Per-portal overrides**: the same key can render differently on intermaven.io vs tunemavens.com vs hospitality.intermaven.io
+- **Versioning & rollback**: every edit saves a revision; admin can preview + roll back per page
+- **Locked vs editable**: certain values (system config) are protected
+- **Schema**: `cms_keys { _id, key, default, regions:{KE:..., US:...}, portals:{business:..., music:...}, updated_at, updated_by }`
+- **API**: `GET /api/cms/{key}?region=US&portal=business` resolves the right variant
+- **Atlanta TV Mount Pro becomes a consumer of the Intermaven CMS** once the schema is shared
+- **First migration**: phone numbers, addresses, social handles, M-Pesa callouts → CMS-managed
+
+### Backlog addition (Jan 2026) — Channels hub + portals
+- ✅ Channels hub shipped (13 channels: Social, Google LSA/GBP/Search Ads, Messaging)
+- ✅ Per-user portal toggle (business / music / hospitality coming soon)
+- ✅ Avatar upload routed to File Manager
+- Geo-aware content scrubbing extended (M-Pesa, Nairobi, Africa) across Pricing, AppLandingPage, AboutPage, HomePage carousel
+- Region-aware phone numbers wired through `RegionContext.contactPhone` (CMS-ready)
+- Article pages now match parent help/forum styling (hero header via `PageHeader`)
+
+
+### Backlog addition (June 2026) — Geolocation-aware contact details
+- **Phone numbers must change based on geolocation** (alongside currency/language). Today contact/support phone
+  numbers are hardcoded Kenyan (`+254 700 000 000`, M-Pesa Paybill, "Mon–Fri 9am–5pm EAT") in About/Help/Footer/Pricing.
+- Plan: add per-region contact metadata to `region_config` (support phone, WhatsApp number, business hours/timezone,
+  Paybill/local-payment ref) resolved via `/api/geo/resolve`; render dynamically in Footer, About contact card,
+  Help "Contact Support", Pricing M-Pesa callout. Fallback to a global/international number when no regional number exists.
+  Fold into Phase 1 (region foundation) data model + Phase 8 go-live (provision real regional numbers). **Partially live** (RegionContext.contactPhone) — full CMS plumbing pending Phase 10.

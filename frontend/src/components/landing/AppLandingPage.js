@@ -2,6 +2,47 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Zap, ChevronDown, ChevronUp, ArrowRight, Star } from 'lucide-react';
 import { INTERMAVEN_LOGO } from '../../imageRegistry';
+import { useRegion } from '../../RegionContext';
+
+// Geo-aware text scrubber — strips Africa/Nairobi/M-Pesa for Western visitors
+function localizeForWest(text) {
+  if (!text || typeof text !== 'string') return text;
+  return text
+    .replace(/African creatives and entrepreneurs/gi, 'independent creators and entrepreneurs')
+    .replace(/African artists?/gi, 'independent artists')
+    .replace(/Nairobi musician/gi, 'Atlanta-based musician')
+    .replace(/Afro-soul artist, Nairobi/gi, 'Independent artist, USA')
+    .replace(/Fashion brand founder, Nairobi/gi, 'Fashion brand founder, USA')
+    .replace(/Producer, Nairobi/gi, 'Producer, USA')
+    .replace(/Fintech founder, Nairobi/gi, 'Fintech founder, USA')
+    .replace(/Nairobi accelerator/gi, 'US accelerator')
+    .replace(/Nairobi and East African/gi, 'US and global creator')
+    .replace(/Nairobi and East Africa/gi, 'US and global creator')
+    .replace(/Optimal timing for African audiences?/gi, 'Optimal timing for global audiences')
+    .replace(/Kenyan telco/gi, 'major brand')
+    .replace(/specific to African markets\??/gi, 'tailored to your market?')
+    .replace(/optimised for Nairobi and East African brand culture/gi, 'optimised for global creator culture')
+    .replace(/thousands of African creatives/gi, 'thousands of creators')
+    .replace(/Made with ❤ in Nairobi/gi, 'Made with ❤ for creators worldwide')
+    .replace(/M-Pesa native payments?/gi, 'Card-native payments')
+    .replace(/M-Pesa, cards, and mobile money/gi, 'cards, Apple Pay, and digital wallets')
+    .replace(/M-Pesa invoices?/gi, 'Card & ACH invoices')
+    .replace(/M-Pesa/gi, 'card & digital wallet')
+    .replace(/Nairobi, Kenya/gi, 'Atlanta, USA')
+    .replace(/Nairobi/g, 'Atlanta');
+}
+
+function deepLocalize(value, enabled) {
+  if (!enabled) return value;
+  if (typeof value === 'string') return localizeForWest(value);
+  if (Array.isArray(value)) return value.map(v => deepLocalize(v, enabled));
+  if (value && typeof value === 'object') {
+    const out = {};
+    for (const k of Object.keys(value)) out[k] = deepLocalize(value[k], enabled);
+    return out;
+  }
+  return value;
+}
 
 // ── App configs ────────────────────────────────────────────────────
 const APP_CONFIGS = {
@@ -274,7 +315,9 @@ function FAQItem({ q, a }) {
 
 // ── Main App Landing Page ─────────────────────────────────────────
 function AppLandingPage({ appId, onOpenAuth, onOpenSignIn }) {
-  const config = APP_CONFIGS[appId];
+  const rawConfig = APP_CONFIGS[appId];
+  const { isWestern } = useRegion() || {};
+  const config = rawConfig ? deepLocalize(rawConfig, !!isWestern) : rawConfig;
   const navigate = useNavigate();
   const [logoLoaded, setLogoLoaded] = useState(true);
   const [slideState, setSlideState] = useState('in');

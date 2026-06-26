@@ -15,6 +15,7 @@ from .sso import router as sso_router
 from .wizard import router as wizard_router
 from .strategies import router as strategies_router
 from .channels import router as channels_router
+from .avatar import router as avatar_router
 
 __all__ = [
     "auth_router",
@@ -35,4 +36,5 @@ __all__ = [
     "wizard_router",
     "strategies_router",
     "channels_router",
+    "avatar_router",
 ]

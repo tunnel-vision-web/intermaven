@@ -1,7 +1,9 @@
 import React from 'react';
+import { useRegion } from '../../RegionContext';
 
 // Expanded AboutPage with richer content and polished contact form
 const AboutPage = () => {
+  const { contactPhone, isWestern } = useRegion() || {};
   return (
     <div className="about-page cn">
       <div className="about-content">
@@ -115,13 +117,13 @@ const AboutPage = () => {
                 <div style={{ fontWeight: 600 }}>hello@intermaven.io</div>
               </div>
               <div style={{ background: '#1e2937', border: '1px solid #334155', borderRadius: '14px', padding: '18px 20px' }}>
-                <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '4px' }}>WHATSAPP</div>
-                <div style={{ fontWeight: 600 }}>+254 700 000 000</div>
-                <div style={{ fontSize: '13px', color: '#64748b', marginTop: '2px' }}>Mon–Fri, 9am–5pm EAT</div>
+                <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '4px' }}>{isWestern ? 'PHONE' : 'WHATSAPP'}</div>
+                <div style={{ fontWeight: 600 }}>{contactPhone || '+254 700 000 000'}</div>
+                <div style={{ fontSize: '13px', color: '#64748b', marginTop: '2px' }}>{isWestern ? 'Mon–Fri, 9am–5pm ET' : 'Mon–Fri, 9am–5pm EAT'}</div>
               </div>
               <div style={{ background: '#1e2937', border: '1px solid #334155', borderRadius: '14px', padding: '18px 20px' }}>
                 <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '4px' }}>BASED IN</div>
-                <div style={{ fontWeight: 600 }}>Nairobi, Kenya</div>
+                <div style={{ fontWeight: 600 }}>{isWestern ? 'Atlanta, USA · Nairobi, Kenya' : 'Nairobi, Kenya'}</div>
               </div>
             </div>
           </div>
