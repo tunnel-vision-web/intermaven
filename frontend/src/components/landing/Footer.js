@@ -1,11 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useRegion } from '../../RegionContext';
+import { useCms } from '../../cms/CmsContext';
 import { INTERMAVEN_LOGO_FOOTER } from '../../imageRegistry';
 
 function Footer({ onShowLegal, onToast }) {
   const { country } = useRegion();
   const isWestern = ['US', 'CA', 'GB', 'IE', 'AU', 'NZ', 'FR', 'DE', 'IT', 'ES', 'NL', 'BE', 'SE', 'NO', 'FI', 'DK', 'AT', 'CH', 'PT', 'PL', 'CZ', 'HU', 'GR'].includes(country?.toUpperCase());
+  // Mother-CMS lookups — region-aware, admin-editable
+  const cmsAddress = useCms('footer.contact.address', isWestern ? 'Atlanta, USA' : 'Nairobi, Kenya');
+  const cmsTagline = useCms('footer.tagline', isWestern ? 'Made with ❤ in Atlanta' : 'Made with ❤ in Nairobi');
+  const cmsPhone = useCms('footer.contact.phone', null);
 
   const handleComingSoon = (feature, icon) => {
     if (onToast) {
@@ -86,7 +91,7 @@ function Footer({ onShowLegal, onToast }) {
             </div>
             <div className="footer-copy">
               © 2025 Intermaven Ltd.<br />
-              {isWestern ? "Atlanta, USA" : "Nairobi, Kenya"}
+              {cmsAddress}
             </div>
           </div>
         </div>
@@ -107,7 +112,8 @@ function Footer({ onShowLegal, onToast }) {
             </Link>
           </div>
           <div style={{ fontSize: '11px', color: 'var(--mu2)' }}>
-            {isWestern ? "Made with ❤ in Atlanta" : "Made with ❤ in Nairobi"}
+            {cmsTagline}
+            {cmsPhone && <span style={{ marginLeft: 10, color: '#94a3b8' }}>· {cmsPhone}</span>}
           </div>
         </div>
       </div>

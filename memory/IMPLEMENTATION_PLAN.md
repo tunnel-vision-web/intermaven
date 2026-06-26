@@ -155,7 +155,28 @@ Scope (industry best practices):
 - **Full SEO audit pass** (manual + automated) executed as part of this phase
 
 ### Phase 10 — CMS Integration (port from Atlanta TV Mount Pro, made the "mother")
-**Status: planned · not yet built**
+**Status: Wave 1 SHIPPED · Wave 2 + 3 remaining**
+
+#### Wave 1 (✅ delivered Jan 2026)
+- ✅ Backend `routes/cms.py` — 7 endpoints (public GET key, GET bulk, admin list/get/upsert/history/rollback/delete)
+- ✅ Schema: `cms_keys { _id, default, regions:{...}, portals:{...}, description, history:[...], updated_at, updated_by }`
+- ✅ Resolution priority: `portals[portal][region]` → `portals[portal][default]` → `regions[region]` → `default`
+- ✅ Versioning + 1-click rollback via `/api/admin/cms/{key}/rollback/{revision_id}`
+- ✅ Seed: `seed_cms_keys.py` — auto-inserts 14 default keys (phone/address/tagline/payment callouts/social handles) idempotently on startup
+- ✅ Frontend `cms/CmsContext.js` — `<CmsProvider portal="business">`, `useCms(key, fallback)` hook, `<CmsText>` component, preload + lazy-fetch strategy
+- ✅ First migrations: PricingPage callout title/body, Footer address/tagline/phone — all now CMS-resolved
+- ✅ Region resolution verified: US → "Pay instantly with Venmo, Cash App, or Zelle" / KE → "Pay instantly with M-Pesa"
+
+#### Wave 2 (pending)
+- Admin CMS editor UI in AdminPanel (table of keys, click-to-edit modal with region+portal grid, history view, rollback button)
+- Migrate remaining strings: HomePage tagline/badge, AppLandingPage CTAs, AboutPage phone+hours, ToolsPage hero
+- `/cms` marketing landing page on intermaven.io (positioning the CMS as a flagship feature)
+- Landing-page section with animated diagram (single CMS pushing to all portals)
+
+#### Wave 3 (pending)
+- Atlanta TV Mount Pro consumes Intermaven Mother-CMS (proof-of-concept case study)
+- Comparison page: "Intermaven CMS vs Webflow vs Contentful vs Sanity"
+- `/docs/cms-overview.md`, `/docs/cms-api.md`
 
 The atltvmountpro repo already has a working CMS pattern. Port to Intermaven and make it the canonical CMS for all sister portals (Intermaven, TuneMavens, and future ones like Hospitality):
 

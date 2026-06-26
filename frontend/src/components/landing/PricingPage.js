@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { FlatIcon } from '../FlatIcon';
 import { useRegion } from '../../RegionContext';
+import { useCms } from '../../cms/CmsContext';
 import fallbackData from '../../fallbackData.json';
 
 const API_URL =
@@ -139,6 +140,9 @@ const calculateFallbackPricing = (targetCurrency, fallbackData) => {
 
 function PricingPage({ portal = 'music', subdomainPage = null, onOpenAuth, onToast }) {
   const { currency, countryName, country } = useRegion();
+  // Mother-CMS pulls — region-aware payment callouts, editable by admin without code changes
+  const calloutTitle = useCms('pricing.callout.title', 'Pay instantly with M-Pesa');
+  const calloutBody = useCms('pricing.callout.body', 'Send to Paybill 522900. Credits load the moment your payment confirms — no waiting, no approval.');
   const isWestern = ['US', 'CA', 'GB', 'IE', 'AU', 'NZ', 'FR', 'DE', 'IT', 'ES', 'NL', 'BE', 'SE', 'NO', 'FI', 'DK', 'AT', 'CH', 'PT', 'PL', 'CZ', 'HU', 'GR'].includes(country?.toUpperCase());
   const isUSorCA = ['US', 'CA'].includes(country?.toUpperCase());
   const [pricing, setPricing] = useState(null);
@@ -296,32 +300,9 @@ function PricingPage({ portal = 'music', subdomainPage = null, onOpenAuth, onToa
             <div>
               <FlatIcon name={isWestern ? 'card' : 'mpesa'} size={32} color="var(--gr)" />
             </div>
-            <div>
-              {isUSorCA ? (
-                <>
-                  <h4>Pay instantly with <strong>Venmo, Cash App, or Zelle</strong></h4>
-                  <p>
-                    Transfer directly to our handle <strong style={{ color: 'var(--tx)' }}>@intermaven</strong>.
-                    Credits load the moment your payment confirms — no waiting, no approval.
-                  </p>
-                </>
-              ) : isWestern ? (
-                <>
-                  <h4>Pay instantly with <strong>Card or Apple Pay</strong></h4>
-                  <p>
-                    Safe, secure checkout via Stripe.
-                    Credits load the moment your payment confirms — no waiting, no approval.
-                  </p>
-                </>
-              ) : (
-                <>
-                  <h4>Pay instantly with <strong>M-Pesa</strong></h4>
-                  <p>
-                    Send to Paybill <strong style={{ color: 'var(--tx)' }}>522900</strong>.
-                    Credits load the moment your payment confirms — no waiting, no approval.
-                  </p>
-                </>
-              )}
+            <div data-testid="pricing-callout">
+              <h4>{calloutTitle}</h4>
+              <p>{calloutBody}</p>
               <p style={{ marginTop: '6px' }}>
                 Also accepted: <strong style={{ color: 'var(--tx)' }}>Visa, Mastercard, PayPal</strong> for users worldwide.
               </p>

@@ -21,6 +21,7 @@ import CareersPage from './components/landing/CareersPage';
 import DevelopersPage from './components/landing/DevelopersPage';
 import AppLandingPage from './components/landing/AppLandingPage';
 import { RegionProvider } from './RegionContext';
+import { CmsProvider } from './cms/CmsContext';
 import GeoWelcomeToast from './components/landing/GeoWelcomeToast';
 import SSOAuthorizePage from './components/SSOAuthorizePage';
 import EmbedAppPage from './components/EmbedAppPage';
@@ -337,6 +338,7 @@ function App() {
 
   return (
     <RegionProvider>
+    <CmsProvider portal="business">
     <AuthContext.Provider value={{ user, login, register, logout, updateUser }}>
       <ToastContext.Provider value={{ addToast }}>
         <Router>
@@ -424,6 +426,7 @@ function App() {
         <GeoWelcomeToast />
       </ToastContext.Provider>
     </AuthContext.Provider>
+    </CmsProvider>
     </RegionProvider>
   );
 }
