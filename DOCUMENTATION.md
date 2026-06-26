@@ -1156,6 +1156,84 @@ All Intermaven application tools (Brand Kit, EPK Builder, Social AI, Pitch Deck)
 
 ---
 
-*Document Version: 4.0*
-*Last Updated: June 24, 2026*
+---
+
+# 14. Mother-CMS — Flagship Differentiator (Phase 10)
+
+> **One source of truth. Every portal. Every region. Every language.**
+
+The Intermaven CMS — ported from Atlanta TV Mount Pro and elevated to "mother" status — is not just an internal tool but a **standalone product feature** of the Intermaven platform. Every Intermaven plan from Creator tier and up includes Mother-CMS access.
+
+## 14.1 What It Is
+A centralized, region-aware, portal-aware content management layer that powers every Intermaven sister site (intermaven.io, tunemavens.com, the upcoming Hospitality portal, and partner platforms like Atlanta TV Mount Pro).
+
+## 14.2 Three Feature Pillars
+1. **Region-aware** — every key supports per-country overrides. M-Pesa appears for Nairobi visitors, Venmo/Cash App/Zelle for Atlanta visitors, automatically and without code changes.
+2. **Portal-aware** — the same CMS key can render different copy on intermaven.io vs tunemavens.com vs hospitality.intermaven.io vs atltvmountpro.com. Edit once; publish everywhere correctly.
+3. **Audit-ready** — full version history per key, per edit. One-click rollback. Diff view. Approval workflows for enterprise clients.
+
+## 14.3 Schema
+```json
+{
+  "_id": "footer.contact.phone",
+  "default": "+254 700 000 000",
+  "regions": {
+    "US": "+1 (800) 555-0114",
+    "GB": "+44 800 016 6028",
+    "KE": "+254 700 000 000",
+    "NG": "+234 800 000 0000",
+    "ZA": "+27 800 000 000"
+  },
+  "portals": {
+    "business":    { "US": "+1 (800) 555-0114" },
+    "music":       { "US": "+1 (800) 555-0140" },
+    "hospitality": { "US": "+1 (800) 555-0188" }
+  },
+  "updated_at": "2026-03-24T10:11:00Z",
+  "updated_by": "user_id",
+  "history": [ /* prior versions */ ]
+}
+```
+
+## 14.4 API
+```
+GET  /api/cms/{key}?region=US&portal=business
+GET  /api/cms/bulk?keys=footer.phone,footer.address&region=US&portal=business
+PUT  /api/admin/cms/{key}             # admin-only · creates a new revision
+POST /api/admin/cms/{key}/rollback/{revision_id}
+GET  /api/admin/cms/{key}/history
+```
+
+## 14.5 Atlanta TV Mount Pro as First Consumer
+Once the CMS schema is shared, Atlanta TV Mount Pro switches from local content to consuming `/api/cms/*` from Intermaven. The migration validates the multi-portal architecture and creates the first concrete proof-of-concept for the "Mother CMS" positioning.
+
+## 14.6 Marketing & Positioning
+Mother-CMS is positioned as a **product differentiator** in addition to internal infrastructure:
+
+- **Landing-page section** (`/` and dedicated `/cms` page): animated diagram showing one CMS pushing copy to intermaven.io, tunemavens.com, hospitality.intermaven.io, atltvmountpro.com simultaneously
+- **Pricing tier inclusion**:
+  - Creator tier: Mother-CMS access for up to 3 portals
+  - Pro tier: unlimited portals + API access (enables white-label / agency resale)
+- **Comparison page**: "Intermaven CMS vs Webflow vs Contentful vs Sanity" — emphasizing region + portal awareness (a unique angle other CMS products don't have)
+- **Enterprise sales angle**: agencies, multi-brand operators, franchise networks, hotel groups — all targetable once the CMS is positioned as a product rather than internal plumbing
+- **Tagline**: *"Edit once. Publish to every portal, every region, every language. Roll back any change."*
+
+## 14.7 Documentation Deliverables (when Phase 10 ships)
+1. `/docs/cms-overview.md` — product overview for end users
+2. `/docs/cms-api.md` — developer-facing API for consumer portals
+3. New `/cms` marketing landing page on intermaven.io
+4. Comparison page: "Intermaven CMS vs Webflow vs Contentful vs Sanity"
+5. Case study: how Atlanta TV Mount Pro consumes the Intermaven CMS (becomes proof-of-concept content)
+
+## 14.8 Status
+- Schema designed: ✅ (this section)
+- Backend `/api/cms/*` endpoints: pending Phase 10 build
+- Atlanta TV Mount Pro consumer migration: pending Phase 10 build
+- Marketing landing section + `/cms` page: pending Phase 10 build
+- Pricing tier inclusion: planned for Phase 10 release
+
+---
+
+*Document Version: 4.1*
+*Last Updated: January 2026*
 *Platform: Intermaven — Africa's Creative & Music Operating System*

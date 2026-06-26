@@ -103,3 +103,37 @@ graph TD
 ### Phase 10 — Media House Routing
 - Deploy playlist reporting with AI discrepancy validation scanner (flags broadcast reporting mismatch).
 - Build media appearance booking module.
+
+---
+
+## 4. Platform-Wide Phases (Intermaven Mother Platform)
+
+### Phase 9 — SEO Management Module (Admin-only)
+- Backend-driven admin SEO control center (`/admin/seo`).
+- Global meta defaults, per-page overrides, sitemap.xml + robots.txt generators.
+- Social media account registry for org schema.org `sameAs` + JSON-LD generation (Organization, WebSite, BreadcrumbList, Article, FAQPage, Product, SoftwareApplication, LocalBusiness).
+- Tracking & analytics pixel manager (GA4, GTM, Meta, TikTok, LinkedIn, PostHog) with consent-aware loading.
+- AI-assisted meta copy generation via Claude Sonnet 4.5.
+- Full SEO audit pass executed during this phase.
+- Performance dashboards (Core Web Vitals, Lighthouse score targets, broken-link reports, alt-text checks).
+
+### Phase 10 — Mother-CMS (port from Atlanta TV Mount Pro, elevated)
+- Region-aware + portal-aware content management.
+- Schema: `cms_keys` with default value + per-region overrides + per-portal overrides + version history.
+- Endpoints: `GET /api/cms/{key}?region=US&portal=business`, bulk lookup, admin PUT with auto-versioning, rollback, history.
+- Migration: all phone numbers, addresses, social handles, M-Pesa callouts move into CMS.
+- Atlanta TV Mount Pro becomes the **first consumer** of the Intermaven Mother-CMS — proof of multi-portal architecture.
+
+#### Phase 10 — Mother-CMS as flagship differentiator (positioning / marketing)
+Beyond infrastructure, Mother-CMS is positioned as a **standalone product feature**:
+
+- **Tagline**: *"One source of truth. Every portal. Every region. Every language."*
+- **Landing-page section** + dedicated `/cms` page with animated diagram showing one CMS pushing copy to intermaven.io, tunemavens.com, hospitality.intermaven.io, atltvmountpro.com simultaneously.
+- **Three pillars marketing**: Region-aware · Portal-aware · Audit-ready (versioning + rollback).
+- **Pricing tier inclusion**:
+  - Creator tier: Mother-CMS access for up to 3 portals
+  - Pro tier: unlimited portals + API access for white-label / agency resale
+- **Comparison page**: "Intermaven CMS vs Webflow vs Contentful vs Sanity" emphasizing the region/portal-aware angle (a unique differentiator competing products lack).
+- **Enterprise sales angle**: agencies, franchise networks, multi-brand operators, hotel groups — all reachable once CMS is positioned as a product not infrastructure.
+- **Documentation deliverables** when Phase 10 ships: `/docs/cms-overview.md`, `/docs/cms-api.md`, `/cms` marketing page, comparison page, atltvmountpro case study.
+- See **DOCUMENTATION.md §14** for full Mother-CMS spec including schema, API surface, and rollout plan.

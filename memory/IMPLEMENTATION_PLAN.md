@@ -169,6 +169,30 @@ The atltvmountpro repo already has a working CMS pattern. Port to Intermaven and
 - **Atlanta TV Mount Pro becomes a consumer of the Intermaven CMS** once the schema is shared
 - **First migration**: phone numbers, addresses, social handles, M-Pesa callouts → CMS-managed
 
+#### Phase 10 Enhancement — Mother-CMS as a flagship differentiator
+- Once Phase 10 ships, position the Intermaven CMS as a **standalone product feature** in marketing — not just an internal tool.
+- **Tagline (draft)**: *"One source of truth. Every portal. Every region. Every language."*
+- **Positioning**:
+  - Sold as "powered by our own multi-portal CMS — your hospitality, music, and business sites all share one source of truth"
+  - Targets prospective **enterprise / agency / multi-brand clients** later
+  - Highlight: a marketing agency running 10 client brands could use ONE Intermaven CMS to push region-aware copy to all of them
+- **Landing-page section to build** (after Phase 10 backend is live):
+  - Section title: *"Multi-Portal CMS — built into every Intermaven plan"*
+  - Subhead: *"Edit once. Publish to every portal, every region, every language. Roll back any change."*
+  - Visual: animated diagram showing one CMS pushing copy to intermaven.io, tunemavens.com, hospitality.intermaven.io, atltvmountpro.com simultaneously
+  - 3 feature pillars:
+    1. **Region-aware** — M-Pesa for Nairobi, Venmo for Atlanta, automatically
+    2. **Portal-aware** — same key can render differently per portal (music vs business vs hospitality)
+    3. **Audit-ready** — full version history + 1-click rollback
+  - CTA: *"See it in action — sign up for Creator plan"* (CMS access ships in Creator+ tier)
+- **Pricing positioning**: include in Creator tier ("Mother CMS access · up to 3 portals") + Pro tier ("unlimited portals + API access for white-label resale")
+- **Use as enterprise sales angle**: agencies, multi-brand operators, franchise networks all become reachable once the CMS is positioned as a product rather than infrastructure
+- **Documentation deliverables when Phase 10 ships**:
+  1. `/docs/cms-overview.md` — product overview for end users
+  2. `/docs/cms-api.md` — developer-facing API for consumer portals
+  3. Marketing landing section in `HomePage.js` + standalone `/cms` page
+  4. Comparison page: "Intermaven CMS vs Webflow vs Contentful vs Sanity" emphasizing region/portal awareness
+
 ### Backlog addition (Jan 2026) — Channels hub + portals
 - ✅ Channels hub shipped (13 channels: Social, Google LSA/GBP/Search Ads, Messaging)
 - ✅ Per-user portal toggle (business / music / hospitality coming soon)
