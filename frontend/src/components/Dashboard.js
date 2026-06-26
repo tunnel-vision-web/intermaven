@@ -5,7 +5,7 @@ import {
   Home, Zap, Users, FileText, HardDrive, Settings, LogOut,
   Palette, Music, Share2, Film, Presentation, Bell,
   TrendingUp, Download, Upload, BarChart3, DollarSign, UserPlus,
-  BookOpen, Sparkles, Library, ShoppingBag
+  BookOpen, Sparkles, Library, ShoppingBag, Plug
 } from 'lucide-react';
 import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
@@ -15,10 +15,12 @@ import SocialAI from './SocialAI';
 import CRMPanel from './CRMPanel';
 import EPKBuilder from './EPKBuilder';
 import FileManager from './FileManager';
+import Channels from './Channels';
 import BusinessDiscoveryModal from './wizard/BusinessDiscoveryModal';
 import WizardShell from './wizard/WizardShell';
 import HOW_TO_GUIDES from './wizard/howto-content';
 import StrategyPanel from './wizard/StrategyPanel';
+import RequiredChannelsCard from './wizard/RequiredChannelsCard';
 
 const APPS = {
   brandkit: { id: 'brandkit', name: 'Brand Kit AI', color: '#10b981', icon: Palette },
@@ -595,6 +597,11 @@ function Dashboard() {
               {!collapsed && <span>Smart CRM</span>}
             </button>
 
+            <button onClick={() => setActivePanel('channels')} data-testid="sidebar-channels-btn" style={{ width: '100%', padding: collapsed ? '16px' : '16px 24px', display: 'flex', alignItems: 'center', gap: '16px', background: activePanel === 'channels' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer' }}>
+              <Plug size={24} color="#22d3ee" />
+              {!collapsed && <span>Channels</span>}
+            </button>
+
             <button onClick={() => setActivePanel('settings')} style={{ width: '100%', padding: collapsed ? '16px' : '16px 24px', display: 'flex', alignItems: 'center', gap: '16px', background: activePanel === 'settings' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer' }}>
               <Settings size={24} color="#22d3ee" />
               {!collapsed && <span>Settings</span>}
@@ -631,6 +638,9 @@ function Dashboard() {
                   </button>
                 </div>
               )}
+
+              {/* Required Channels CTA — shown when user has a strategy with unconnected channels */}
+              <RequiredChannelsCard onGoToChannels={() => setActivePanel('channels')} />
 
               {/* Upgrade Banner */}
               <div style={{ backgroundColor: '#1e2937', borderRadius: '3px', padding: '28px', marginBottom: '28px', border: '1px solid #334155' }}>
@@ -1119,18 +1129,20 @@ function Dashboard() {
           )}
 
           {/* Real apps - full container */}
-          {activePanel === 'social' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><WizardShell appId="social" appName="Social AI" color="#f43f5e" howToTopics={HOW_TO_GUIDES.social}><SocialAI /></WizardShell></div>}
-          {activePanel === 'crm' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><WizardShell appId="crm" appName="Smart CRM" color="#22d3ee" howToTopics={HOW_TO_GUIDES.crm}><CRMPanel /></WizardShell></div>}
-          {activePanel === 'epk' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><WizardShell appId="epk" appName="EPK Builder" color="#22d3ee" howToTopics={HOW_TO_GUIDES.epk}><EPKBuilder /></WizardShell></div>}
+          {activePanel === 'social' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><WizardShell appId="social" appName="Social AI" color="#f43f5e" howToTopics={HOW_TO_GUIDES.social} onGoToChannels={() => setActivePanel('channels')}><SocialAI /></WizardShell></div>}
+          {activePanel === 'crm' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><WizardShell appId="crm" appName="Smart CRM" color="#22d3ee" howToTopics={HOW_TO_GUIDES.crm} onGoToChannels={() => setActivePanel('channels')}><CRMPanel /></WizardShell></div>}
+          {activePanel === 'epk' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><WizardShell appId="epk" appName="EPK Builder" color="#22d3ee" howToTopics={HOW_TO_GUIDES.epk} onGoToChannels={() => setActivePanel('channels')}><EPKBuilder /></WizardShell></div>}
           {activePanel === 'filemanager' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><FileManager /></div>}
+          {activePanel === 'channels' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><Channels /></div>}
 
-          {APPS[activePanel] && !['social','crm','epk','filemanager','settings'].includes(activePanel) && (
+          {APPS[activePanel] && !['social','crm','epk','filemanager','settings','channels'].includes(activePanel) && (
             <div style={{ flex: 1, height: '100%', overflow: 'auto' }}>
               <WizardShell
                 appId={activePanel}
                 appName={APPS[activePanel].name}
                 color={APPS[activePanel].color}
                 howToTopics={HOW_TO_GUIDES[activePanel] || []}
+                onGoToChannels={() => setActivePanel('channels')}
               >
                 <div style={{ textAlign: 'center', padding: 40 }}>
                   <h3 style={{ color: APPS[activePanel].color, fontSize: 20, marginBottom: 8 }}>{APPS[activePanel].name}</h3>

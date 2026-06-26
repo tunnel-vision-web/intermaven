@@ -14,6 +14,18 @@ import React, { useEffect, useState } from 'react';
 import { api } from '../../App';
 import { Sparkles, Settings as SettingsIcon, BookOpen, Wand2, ChevronRight, Loader2, Lightbulb } from 'lucide-react';
 import { WizardProvider } from './WizardContext';
+import ChannelStatusStrip from './ChannelStatusStrip';
+
+// Default mapping app → relevant channel ids (used by the status strip)
+const APP_CHANNELS = {
+  social: ['instagram', 'facebook', 'tiktok', 'x', 'linkedin', 'youtube', 'threads'],
+  crm: ['whatsapp_business', 'email_resend', 'sms_twilio'],
+  epk: ['instagram', 'youtube', 'email_resend'],
+  brandkit: [],
+  musicbio: ['instagram', 'youtube'],
+  syncpitch: ['email_resend'],
+  bizpitch: ['email_resend', 'linkedin'],
+};
 
 const accentBtn = (active, color) => ({
   display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -23,7 +35,7 @@ const accentBtn = (active, color) => ({
   color: active ? color : '#cbd5e1', fontWeight: 600, fontSize: 13
 });
 
-export default function WizardShell({ appId, appName, color = '#22d3ee', children, howToTopics = [], onWizardComplete }) {
+export default function WizardShell({ appId, appName, color = '#22d3ee', children, howToTopics = [], onWizardComplete, appChannels, onGoToChannels }) {
   const [mode, setMode] = useState('wizard');             // wizard | advanced
   const [showHowTo, setShowHowTo] = useState(false);
   const [step, setStep] = useState(null);
@@ -154,6 +166,10 @@ export default function WizardShell({ appId, appName, color = '#22d3ee', childre
             />
           ) : (
             <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: '3px', padding: 20 }}>
+              <ChannelStatusStrip
+                appChannels={appChannels || APP_CHANNELS[appId] || []}
+                onGoToChannels={onGoToChannels}
+              />
               {appliedFromWizard && Object.keys(wizardState).length > 0 && (
                 <div data-testid={`wizard-applied-banner-${appId}`} style={{ marginBottom: 16, padding: '12px 14px', background: '#10b98122', border: '1px solid #10b98166', borderRadius: '3px', display: 'flex', alignItems: 'flex-start', gap: 10 }}>
                   <Sparkles size={16} color="#10b981" style={{ flexShrink: 0, marginTop: 2 }} />

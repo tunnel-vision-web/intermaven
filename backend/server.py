@@ -40,7 +40,7 @@ try:
         auth_router, user_router, apps_router, files_router, folders_router,
         payments_router, epk_router, notifications_router, ai_router,
         public_router, crm_router, admin_router, geo_router, pricing_router,
-        sso_router, wizard_router, strategies_router,
+        sso_router, wizard_router, strategies_router, channels_router,
     )
     # region agent log
     _debug_log("H1", "backend/server.py:import-mode", "Imported local modules using root-style imports", {"mode": "root-style"})
@@ -54,7 +54,7 @@ except ModuleNotFoundError as import_err:
         auth_router, user_router, apps_router, files_router, folders_router,
         payments_router, epk_router, notifications_router, ai_router,
         public_router, crm_router, admin_router, geo_router, pricing_router,
-        sso_router, wizard_router, strategies_router,
+        sso_router, wizard_router, strategies_router, channels_router,
     )
     # region agent log
     _debug_log("H1", "backend/server.py:import-mode-fallback-success", "Package-style imports succeeded", {"mode": "package-style"})
@@ -183,6 +183,15 @@ app.include_router(pricing_router)
 app.include_router(sso_router)
 app.include_router(wizard_router)
 app.include_router(strategies_router)
+app.include_router(channels_router)
+
+# ============== SEED CURATED CONTENT ==============
+try:
+    from seed_strategies import seed_curated_strategies
+    seed_curated_strategies()
+except Exception as _seed_err:
+    import logging
+    logging.warning(f"Curated strategy seed skipped: {_seed_err}")
 
 # ============== HEALTH CHECK ==============
 

@@ -269,7 +269,18 @@ async def wizard_strategy(
         '  "kpis": [ {"metric": "Followers", "target_90d": "+1000"} ],\n'
         '  "first_30_days": [ "actionable step 1", "step 2", "step 3", "step 4" ]\n'
         "}\n"
-        "Recommend 2–4 channels max. Be specific to the user's region, audience, and budget. "
+        "Recommend 2–4 channels max. Be specific to the user's region, audience, and budget.\n"
+        "Channels you may pick from include (but are not limited to): "
+        "Instagram, TikTok, YouTube / YouTube Shorts, Facebook, X (Twitter), LinkedIn, Threads, "
+        "WhatsApp Business, Email (Resend/SendGrid), SMS, "
+        "Google Local Services Ads (PRIMARY pick for ANY local SERVICE business — plumbers, "
+        "lawyers, mount-pros, cleaners, consultants — because it's pay-per-booked-lead and shows "
+        "the Google Guarantee badge), "
+        "Google Search Ads, Google Business Profile, Google Display, YouTube Ads, "
+        "Meta Ads, TikTok Ads, Spotify for Artists, Apple Music for Artists.\n"
+        "If the user is a LOCAL service-based business (anything in the home services, legal, "
+        "health, beauty, professional-services categories), always include Google Local Services "
+        "Ads + Google Business Profile in the channels list.\n"
         "Return ONLY valid JSON, no markdown fences."
     )
     user_text = (

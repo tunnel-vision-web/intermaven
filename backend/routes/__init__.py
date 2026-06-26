@@ -14,6 +14,7 @@ from .pricing import router as pricing_router
 from .sso import router as sso_router
 from .wizard import router as wizard_router
 from .strategies import router as strategies_router
+from .channels import router as channels_router
 
 __all__ = [
     "auth_router",
@@ -33,4 +34,5 @@ __all__ = [
     "sso_router",
     "wizard_router",
     "strategies_router",
+    "channels_router",
 ]
