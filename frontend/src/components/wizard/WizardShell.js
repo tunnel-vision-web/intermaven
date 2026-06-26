@@ -13,6 +13,7 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../../App';
 import { Sparkles, Settings as SettingsIcon, BookOpen, Wand2, ChevronRight, Loader2, Lightbulb } from 'lucide-react';
+import { WizardProvider } from './WizardContext';
 
 const accentBtn = (active, color) => ({
   display: 'inline-flex', alignItems: 'center', gap: 8,
@@ -31,8 +32,9 @@ export default function WizardShell({ appId, appName, color = '#22d3ee', childre
   const [loading, setLoading] = useState(false);
   const [strategy, setStrategy] = useState(null);
   const [profileComplete, setProfileComplete] = useState(true);
+  const [appliedFromWizard, setAppliedFromWizard] = useState(false);
 
-  // Load strategy + profile state
+  // Load strategy + profile state + any previously saved wizard state for this app
   useEffect(() => {
     (async () => {
       try {
@@ -40,8 +42,15 @@ export default function WizardShell({ appId, appName, color = '#22d3ee', childre
         setStrategy(r.data?.strategy || null);
         setProfileComplete(!!r.data?.completed);
       } catch (e) { /* ignore */ }
+      try {
+        const ws = await api.get(`/api/wizard/state/${appId}`);
+        if (ws.data?.state && Object.keys(ws.data.state).length > 0) {
+          setWizardState(ws.data.state);
+          setAppliedFromWizard(true);
+        }
+      } catch (e) { /* ignore */ }
     })();
-  }, []);
+  }, [appId]);
 
   // Initialize first step
   useEffect(() => {
@@ -70,6 +79,11 @@ export default function WizardShell({ appId, appName, color = '#22d3ee', childre
   const handleNext = async () => {
     const newState = { ...wizardState, [`step_${stepIndex}`]: { ...wizardState } };
     if (step?.final) {
+      // Persist wizard state for this app + apply to advanced
+      try {
+        await api.put('/api/wizard/state', { app_id: appId, state: newState });
+      } catch (e) { /* non-fatal */ }
+      setAppliedFromWizard(true);
       onWizardComplete?.(newState);
       setMode('advanced');
       return;
@@ -140,7 +154,18 @@ export default function WizardShell({ appId, appName, color = '#22d3ee', childre
             />
           ) : (
             <div style={{ background: '#1e293b', border: '1px solid #334155', borderRadius: '3px', padding: 20 }}>
-              {children}
+              {appliedFromWizard && Object.keys(wizardState).length > 0 && (
+                <div data-testid={`wizard-applied-banner-${appId}`} style={{ marginBottom: 16, padding: '12px 14px', background: '#10b98122', border: '1px solid #10b98166', borderRadius: '3px', display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+                  <Sparkles size={16} color="#10b981" style={{ flexShrink: 0, marginTop: 2 }} />
+                  <div style={{ fontSize: 13, color: '#cbd5e1', flex: 1 }}>
+                    <strong style={{ color: '#10b981' }}>Applied from your wizard:</strong>{' '}
+                    {Object.entries(wizardState).filter(([k,v]) => v && typeof v !== 'object').map(([k,v]) => `${k.replace(/_/g,' ')}: ${v}`).join(' · ') || 'Saved wizard answers loaded.'}
+                  </div>
+                </div>
+              )}
+              <WizardProvider value={{ state: wizardState, appliedFromWizard, appId }}>
+                {children}
+              </WizardProvider>
             </div>
           )}
         </div>

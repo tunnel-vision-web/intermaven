@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { api } from '../App';
+import { useWizard } from './wizard/WizardContext';
 import {
   Copy, Download, Zap, ChevronDown, ChevronUp,
   Instagram, Facebook, Twitter, Linkedin, Video,
@@ -222,6 +223,36 @@ function SocialAI({ user, updateUser, addToast, fetchStats, fetchActivities }) {
   const [mentions, setMentions] = useState('');
   const [links, setLinks] = useState('');
 
+  // Pre-populate from wizard answers when user is in Advanced mode after finishing wizard
+  const wizard = useWizard();
+  useEffect(() => {
+    if (!wizard?.appliedFromWizard || !wizard?.state) return;
+    const s = wizard.state;
+    const platformKey = s.platform || s.primary_platform || s.channel;
+    if (platformKey && typeof platformKey === 'string') {
+      const pid = platformKey.toLowerCase().replace(/\s/g, '');
+      const known = ['instagram', 'facebook', 'threads', 'tiktok', 'twitter', 'linkedin', 'youtube'];
+      const match = known.find(k => pid.includes(k));
+      if (match) setSelectedPlatforms(p => Array.from(new Set([...p, match])));
+    }
+    const goalKey = s.goal || s.content_goal || s.objective;
+    if (goalKey && typeof goalKey === 'string' && !goal) setGoal(goalKey);
+    const toneKey = s.tone || s.brand_voice || s.voice;
+    if (toneKey && typeof toneKey === 'string') setTones(t => t.length === 0 ? [toneKey] : t);
+    const topicKey = s.topic || s.post_topic;
+    if (topicKey && !topic) setTopic(topicKey);
+    const postTypeKey = s.post_type || s.format;
+    if (postTypeKey && platformKey) {
+      const pid = (platformKey || '').toLowerCase();
+      const known = ['instagram', 'facebook', 'threads', 'tiktok', 'twitter', 'linkedin', 'youtube'];
+      const platformMatch = known.find(k => pid.includes(k));
+      if (platformMatch) {
+        setSelectedFormats(prev => ({ ...prev, [platformMatch]: [postTypeKey.toLowerCase()] }));
+      }
+    }
+  }, [wizard?.appliedFromWizard]); // eslint-disable-line
+
+
   const togglePlatform = (platId) => {
     if (selectedPlatforms.includes(platId)) {
       setSelectedPlatforms(p => p.filter(x => x !== platId));
@@ -413,7 +444,7 @@ Format your response with clear headers for each platform, then each format. Mak
 
           {/* PLATFORM SELECTION */}
           <Section title="Platforms" icon={Globe} defaultOpen={true}>
-            <p className="social-hint">Select all platforms you're posting to. Choose formats for each.</p>
+            <p className="social-hint">Select all platforms you&apos;re posting to. Choose formats for each.</p>
             <div className="social-platform-grid">
               {PLATFORMS.map(plat => {
                 const PlatIcon = plat.icon;

@@ -4,7 +4,8 @@ import { useAuth, api } from '../App';
 import { 
   Home, Zap, Users, FileText, HardDrive, Settings, LogOut,
   Palette, Music, Share2, Film, Presentation, Bell,
-  TrendingUp, Download, Upload, BarChart3, DollarSign, UserPlus
+  TrendingUp, Download, Upload, BarChart3, DollarSign, UserPlus,
+  BookOpen, Sparkles, Library, ShoppingBag
 } from 'lucide-react';
 import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
@@ -17,6 +18,7 @@ import FileManager from './FileManager';
 import BusinessDiscoveryModal from './wizard/BusinessDiscoveryModal';
 import WizardShell from './wizard/WizardShell';
 import HOW_TO_GUIDES from './wizard/howto-content';
+import StrategyPanel from './wizard/StrategyPanel';
 
 const APPS = {
   brandkit: { id: 'brandkit', name: 'Brand Kit AI', color: '#10b981', icon: Palette },
@@ -878,6 +880,17 @@ function Dashboard() {
                   </BarChart>
                 </ResponsiveContainer>
               </div>
+
+              {/* ============================================================ */}
+              {/* STRATEGY PANEL — Save · Library · Brand Playbook PDF          */}
+              {/* ============================================================ */}
+              <StrategyPanel
+                businessProfile={businessProfile}
+                onStrategyChanged={(s) => {
+                  // Refetch profile so the strategy banner & PDF reflect the new active strategy
+                  api.get('/api/business-profile').then(r => setBusinessProfile(r.data)).catch(() => {});
+                }}
+              />
 
               {/* ============================================================ */}
               {/* REPORTS — Import / Export                                     */}
