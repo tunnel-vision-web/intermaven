@@ -12,6 +12,7 @@ from .admin import router as admin_router
 from .geo import router as geo_router
 from .pricing import router as pricing_router
 from .sso import router as sso_router
+from .wizard import router as wizard_router
 
 __all__ = [
     "auth_router",
@@ -29,4 +30,5 @@ __all__ = [
     "geo_router",
     "pricing_router",
     "sso_router",
+    "wizard_router",
 ]

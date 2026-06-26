@@ -14,6 +14,9 @@ import SocialAI from './SocialAI';
 import CRMPanel from './CRMPanel';
 import EPKBuilder from './EPKBuilder';
 import FileManager from './FileManager';
+import BusinessDiscoveryModal from './wizard/BusinessDiscoveryModal';
+import WizardShell from './wizard/WizardShell';
+import HOW_TO_GUIDES from './wizard/howto-content';
 
 const APPS = {
   brandkit: { id: 'brandkit', name: 'Brand Kit AI', color: '#10b981', icon: Palette },
@@ -55,6 +58,10 @@ function Dashboard() {
   const [contactsCount, setContactsCount] = useState(0);
   const [importing, setImporting] = useState(false);
   const [importMsg, setImportMsg] = useState('');
+
+  // Business Discovery State
+  const [businessProfile, setBusinessProfile] = useState(null);
+  const [showDiscovery, setShowDiscovery] = useState(false);
 
   // Profile Form State
   const [profileForm, setProfileForm] = useState({
@@ -110,6 +117,14 @@ function Dashboard() {
   useEffect(() => {
     if (!user) return;
     (async () => {
+      try {
+        const p = await api.get('/api/business-profile');
+        setBusinessProfile(p.data);
+        // Show discovery modal automatically if not completed and user hasn't dismissed it
+        if (!p.data?.completed && !sessionStorage.getItem('discovery_skipped')) {
+          setShowDiscovery(true);
+        }
+      } catch (e) { /* non-fatal */ }
       try {
         const s = await api.get('/api/user/stats');
         setUserStats(s.data);
@@ -597,6 +612,24 @@ function Dashboard() {
 
           {activePanel === 'overview' && (
             <div>
+              {/* Business Discovery CTA — shown if not completed */}
+              {businessProfile && !businessProfile.completed && (
+                <div data-testid="discovery-cta" style={{ backgroundColor: '#22d3ee11', borderRadius: '3px', padding: '18px 22px', marginBottom: '20px', border: '1px solid #22d3ee66', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
+                  <div>
+                    <div style={{ color: '#22d3ee', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Recommended · 2 min</div>
+                    <div style={{ color: '#f1f5f9', fontWeight: 600, fontSize: '16px', marginTop: '4px' }}>Tell Ayo about your business</div>
+                    <div style={{ color: '#94a3b8', fontSize: '13px', marginTop: '2px' }}>I&apos;ll generate a custom strategy &amp; personalize every app for you.</div>
+                  </div>
+                  <button
+                    onClick={() => { sessionStorage.removeItem('discovery_skipped'); setShowDiscovery(true); }}
+                    data-testid="start-discovery-btn"
+                    style={{ backgroundColor: '#22d3ee', color: '#0f172a', border: 'none', padding: '10px 18px', borderRadius: '3px', fontWeight: 700, cursor: 'pointer', fontSize: '13px' }}
+                  >
+                    Start discovery →
+                  </button>
+                </div>
+              )}
+
               {/* Upgrade Banner */}
               <div style={{ backgroundColor: '#1e2937', borderRadius: '3px', padding: '28px', marginBottom: '28px', border: '1px solid #334155' }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '24px' }}>
@@ -1073,19 +1106,41 @@ function Dashboard() {
           )}
 
           {/* Real apps - full container */}
-          {activePanel === 'social' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><SocialAI /></div>}
-          {activePanel === 'crm' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><CRMPanel /></div>}
-          {activePanel === 'epk' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><EPKBuilder /></div>}
+          {activePanel === 'social' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><WizardShell appId="social" appName="Social AI" color="#f43f5e" howToTopics={HOW_TO_GUIDES.social}><SocialAI /></WizardShell></div>}
+          {activePanel === 'crm' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><WizardShell appId="crm" appName="Smart CRM" color="#22d3ee" howToTopics={HOW_TO_GUIDES.crm}><CRMPanel /></WizardShell></div>}
+          {activePanel === 'epk' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><WizardShell appId="epk" appName="EPK Builder" color="#22d3ee" howToTopics={HOW_TO_GUIDES.epk}><EPKBuilder /></WizardShell></div>}
           {activePanel === 'filemanager' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><FileManager /></div>}
 
           {APPS[activePanel] && !['social','crm','epk','filemanager','settings'].includes(activePanel) && (
-            <div style={{ backgroundColor: '#1e2937', borderRadius: '3px', padding: '60px', textAlign: 'center', color: '#e2e8f0', flex: 1, height: '100%', border: '1px solid #334155' }}>
-              <h2 style={{ color: APPS[activePanel].color, fontSize: '24px' }}>{APPS[activePanel].name}</h2>
-              <p style={{ marginTop: '20px', fontSize: '18px' }}>Full app interface loads here.</p>
+            <div style={{ flex: 1, height: '100%', overflow: 'auto' }}>
+              <WizardShell
+                appId={activePanel}
+                appName={APPS[activePanel].name}
+                color={APPS[activePanel].color}
+                howToTopics={HOW_TO_GUIDES[activePanel] || []}
+              >
+                <div style={{ textAlign: 'center', padding: 40 }}>
+                  <h3 style={{ color: APPS[activePanel].color, fontSize: 20, marginBottom: 8 }}>{APPS[activePanel].name}</h3>
+                  <p style={{ color: '#94a3b8', fontSize: 14 }}>Full advanced interface for this app is being built. Use the Wizard tab above to generate content with Ayo.</p>
+                </div>
+              </WizardShell>
             </div>
           )}
         </div>
       </div>
+
+      {/* Business Discovery Modal — auto-shows on first login until completed */}
+      {showDiscovery && (
+        <BusinessDiscoveryModal
+          onClose={() => { setShowDiscovery(false); sessionStorage.setItem('discovery_skipped', '1'); }}
+          onComplete={(strategy) => {
+            setShowDiscovery(false);
+            sessionStorage.removeItem('discovery_skipped');
+            // Refresh local profile state
+            api.get('/api/business-profile').then(r => setBusinessProfile(r.data)).catch(() => {});
+          }}
+        />
+      )}
     </div>
   );
 }
