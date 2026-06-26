@@ -1,0 +1,26 @@
+/* ── Intermaven Design Tokens ── */
+:root {
+  --bg:   #08090d;
+  --bg2:  #0f1117;
+  --bg3:  #161820;
+  --bg4:  #1c1f2a;
+  --b1:   #ffffff12;
+  --b2:   #ffffff22;
+  --b3:   #ffffff35;
+  --tx:   #f0f0f5;
+  --mu:   #9096b8;
+  --mu2:  #555870;
+  --btn:  #7c6ff7;
+  --bth:  #6a5ee0;
+  --a2:   #c084fc;
+  --a3:   #22d3ee;
+  --gr:   #10b981;
+  --am:   #f59e0b;
+  --rd:   #ef4444;
+  --ca:   rgba(255,255,255,.05);
+  --ch:   rgba(255,255,255,.08);
+  --r:    3px;
+  --ff:   'Inter', system-ui, sans-serif;
+  --bh:   36px;
+  --nh:   58px;
+}

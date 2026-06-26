@@ -1,0 +1,128 @@
+{
+  "timestamp": "2026-03-24T11:35:00.798000",
+  "total_tests": 20,
+  "passed_tests": 20,
+  "success_rate": 100.0,
+  "results": [
+    {
+      "test": "Health Check",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2026-03-24T11:34:40.692715"
+    },
+    {
+      "test": "User Login (Demo)",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2026-03-24T11:34:41.030031"
+    },
+    {
+      "test": "Login Token",
+      "success": true,
+      "details": "Demo user token received",
+      "timestamp": "2026-03-24T11:34:41.030608"
+    },
+    {
+      "test": "Get Current User",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2026-03-24T11:34:41.243576"
+    },
+    {
+      "test": "User Data",
+      "success": true,
+      "details": "Email: demo@intermaven.io",
+      "timestamp": "2026-03-24T11:34:41.244149"
+    },
+    {
+      "test": "User Stats",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2026-03-24T11:34:41.377853"
+    },
+    {
+      "test": "Stats Fields",
+      "success": true,
+      "details": "Credits: 150, Plan: free",
+      "timestamp": "2026-03-24T11:34:41.378469"
+    },
+    {
+      "test": "Get Notifications",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2026-03-24T11:34:41.512258"
+    },
+    {
+      "test": "Notifications Data",
+      "success": true,
+      "details": "Found 1 notifications",
+      "timestamp": "2026-03-24T11:34:41.512844"
+    },
+    {
+      "test": "Mark Notifications Read",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2026-03-24T11:34:41.615088"
+    },
+    {
+      "test": "Update Profile",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2026-03-24T11:34:41.716073"
+    },
+    {
+      "test": "Profile Data Updated",
+      "success": true,
+      "details": "First name updated successfully",
+      "timestamp": "2026-03-24T11:34:41.716697"
+    },
+    {
+      "test": "AI Generation (Social)",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2026-03-24T11:35:00.421106"
+    },
+    {
+      "test": "AI Content Generated",
+      "success": true,
+      "details": "Generated 1670 characters",
+      "timestamp": "2026-03-24T11:35:00.421797"
+    },
+    {
+      "test": "Get Activities",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2026-03-24T11:35:00.555986"
+    },
+    {
+      "test": "Activities Data",
+      "success": true,
+      "details": "Found 1 activities",
+      "timestamp": "2026-03-24T11:35:00.556719"
+    },
+    {
+      "test": "Payment Initiate",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2026-03-24T11:35:00.680853"
+    },
+    {
+      "test": "Payment Mock Response",
+      "success": true,
+      "details": "Mock payment response received",
+      "timestamp": "2026-03-24T11:35:00.681476"
+    },
+    {
+      "test": "Get Transactions",
+      "success": true,
+      "details": "Status: 200",
+      "timestamp": "2026-03-24T11:35:00.795647"
+    },
+    {
+      "test": "Transactions Data",
+      "success": true,
+      "details": "Found 1 transactions",
+      "timestamp": "2026-03-24T11:35:00.797721"
+    }
+  ]
+}

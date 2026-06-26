@@ -1,0 +1,2082 @@
+{
+  "countries": [
+    {
+      "code": "DZ",
+      "name": "Algeria",
+      "currency": "DZD"
+    },
+    {
+      "code": "AO",
+      "name": "Angola",
+      "currency": "AOA"
+    },
+    {
+      "code": "AU",
+      "name": "Australia",
+      "currency": "AUD"
+    },
+    {
+      "code": "BE",
+      "name": "Belgium",
+      "currency": "EUR"
+    },
+    {
+      "code": "BJ",
+      "name": "Benin",
+      "currency": "XOF"
+    },
+    {
+      "code": "BW",
+      "name": "Botswana",
+      "currency": "BWP"
+    },
+    {
+      "code": "BF",
+      "name": "Burkina Faso",
+      "currency": "XOF"
+    },
+    {
+      "code": "BI",
+      "name": "Burundi",
+      "currency": "BIF"
+    },
+    {
+      "code": "CM",
+      "name": "Cameroon",
+      "currency": "XAF"
+    },
+    {
+      "code": "CA",
+      "name": "Canada",
+      "currency": "CAD"
+    },
+    {
+      "code": "CV",
+      "name": "Cape Verde",
+      "currency": "CVE"
+    },
+    {
+      "code": "CF",
+      "name": "Central African Republic",
+      "currency": "XAF"
+    },
+    {
+      "code": "TD",
+      "name": "Chad",
+      "currency": "XAF"
+    },
+    {
+      "code": "KM",
+      "name": "Comoros",
+      "currency": "KMF"
+    },
+    {
+      "code": "CG",
+      "name": "Congo",
+      "currency": "XAF"
+    },
+    {
+      "code": "CI",
+      "name": "Côte d'Ivoire",
+      "currency": "XOF"
+    },
+    {
+      "code": "DK",
+      "name": "Denmark",
+      "currency": "DKK"
+    },
+    {
+      "code": "DJ",
+      "name": "Djibouti",
+      "currency": "DJF"
+    },
+    {
+      "code": "CD",
+      "name": "DR Congo",
+      "currency": "CDF"
+    },
+    {
+      "code": "EG",
+      "name": "Egypt",
+      "currency": "EGP"
+    },
+    {
+      "code": "ER",
+      "name": "Eritrea",
+      "currency": "ERN"
+    },
+    {
+      "code": "SZ",
+      "name": "Eswatini",
+      "currency": "SZL"
+    },
+    {
+      "code": "ET",
+      "name": "Ethiopia",
+      "currency": "ETB"
+    },
+    {
+      "code": "FR",
+      "name": "France",
+      "currency": "EUR"
+    },
+    {
+      "code": "GA",
+      "name": "Gabon",
+      "currency": "XAF"
+    },
+    {
+      "code": "GM",
+      "name": "Gambia",
+      "currency": "GMD"
+    },
+    {
+      "code": "DE",
+      "name": "Germany",
+      "currency": "EUR"
+    },
+    {
+      "code": "GH",
+      "name": "Ghana",
+      "currency": "GHS"
+    },
+    {
+      "code": "GN",
+      "name": "Guinea",
+      "currency": "GNF"
+    },
+    {
+      "code": "IN",
+      "name": "India",
+      "currency": "INR"
+    },
+    {
+      "code": "IE",
+      "name": "Ireland",
+      "currency": "EUR"
+    },
+    {
+      "code": "IT",
+      "name": "Italy",
+      "currency": "EUR"
+    },
+    {
+      "code": "JP",
+      "name": "Japan",
+      "currency": "JPY"
+    },
+    {
+      "code": "KE",
+      "name": "Kenya",
+      "currency": "KES"
+    },
+    {
+      "code": "LS",
+      "name": "Lesotho",
+      "currency": "LSL"
+    },
+    {
+      "code": "LR",
+      "name": "Liberia",
+      "currency": "LRD"
+    },
+    {
+      "code": "LY",
+      "name": "Libya",
+      "currency": "LYD"
+    },
+    {
+      "code": "MG",
+      "name": "Madagascar",
+      "currency": "MGA"
+    },
+    {
+      "code": "MW",
+      "name": "Malawi",
+      "currency": "MWK"
+    },
+    {
+      "code": "ML",
+      "name": "Mali",
+      "currency": "XOF"
+    },
+    {
+      "code": "MR",
+      "name": "Mauritania",
+      "currency": "MRU"
+    },
+    {
+      "code": "MU",
+      "name": "Mauritius",
+      "currency": "MUR"
+    },
+    {
+      "code": "MA",
+      "name": "Morocco",
+      "currency": "MAD"
+    },
+    {
+      "code": "MZ",
+      "name": "Mozambique",
+      "currency": "MZN"
+    },
+    {
+      "code": "NA",
+      "name": "Namibia",
+      "currency": "NAD"
+    },
+    {
+      "code": "NL",
+      "name": "Netherlands",
+      "currency": "EUR"
+    },
+    {
+      "code": "NZ",
+      "name": "New Zealand",
+      "currency": "NZD"
+    },
+    {
+      "code": "NE",
+      "name": "Niger",
+      "currency": "XOF"
+    },
+    {
+      "code": "NG",
+      "name": "Nigeria",
+      "currency": "NGN"
+    },
+    {
+      "code": "NO",
+      "name": "Norway",
+      "currency": "NOK"
+    },
+    {
+      "code": "PT",
+      "name": "Portugal",
+      "currency": "EUR"
+    },
+    {
+      "code": "RW",
+      "name": "Rwanda",
+      "currency": "RWF"
+    },
+    {
+      "code": "ST",
+      "name": "São Tomé & Príncipe",
+      "currency": "STN"
+    },
+    {
+      "code": "SN",
+      "name": "Senegal",
+      "currency": "XOF"
+    },
+    {
+      "code": "SC",
+      "name": "Seychelles",
+      "currency": "SCR"
+    },
+    {
+      "code": "SL",
+      "name": "Sierra Leone",
+      "currency": "SLE"
+    },
+    {
+      "code": "SO",
+      "name": "Somalia",
+      "currency": "SOS"
+    },
+    {
+      "code": "ZA",
+      "name": "South Africa",
+      "currency": "ZAR"
+    },
+    {
+      "code": "SS",
+      "name": "South Sudan",
+      "currency": "SSP"
+    },
+    {
+      "code": "ES",
+      "name": "Spain",
+      "currency": "EUR"
+    },
+    {
+      "code": "SD",
+      "name": "Sudan",
+      "currency": "SDG"
+    },
+    {
+      "code": "SE",
+      "name": "Sweden",
+      "currency": "SEK"
+    },
+    {
+      "code": "CH",
+      "name": "Switzerland",
+      "currency": "CHF"
+    },
+    {
+      "code": "TZ",
+      "name": "Tanzania",
+      "currency": "TZS"
+    },
+    {
+      "code": "TG",
+      "name": "Togo",
+      "currency": "XOF"
+    },
+    {
+      "code": "TN",
+      "name": "Tunisia",
+      "currency": "TND"
+    },
+    {
+      "code": "UG",
+      "name": "Uganda",
+      "currency": "UGX"
+    },
+    {
+      "code": "AE",
+      "name": "United Arab Emirates",
+      "currency": "AED"
+    },
+    {
+      "code": "GB",
+      "name": "United Kingdom",
+      "currency": "GBP"
+    },
+    {
+      "code": "US",
+      "name": "United States",
+      "currency": "USD"
+    },
+    {
+      "code": "ZM",
+      "name": "Zambia",
+      "currency": "ZMW"
+    },
+    {
+      "code": "ZW",
+      "name": "Zimbabwe",
+      "currency": "ZWL"
+    }
+  ],
+  "currencies": [
+    {
+      "code": "DZD",
+      "symbol": "DA",
+      "name": "Algerian Dinar"
+    },
+    {
+      "code": "AOA",
+      "symbol": "Kz",
+      "name": "Angolan Kwanza"
+    },
+    {
+      "code": "AUD",
+      "symbol": "A$",
+      "name": "Australian Dollar"
+    },
+    {
+      "code": "BWP",
+      "symbol": "P",
+      "name": "Botswana Pula"
+    },
+    {
+      "code": "GBP",
+      "symbol": "£",
+      "name": "British Pound"
+    },
+    {
+      "code": "BIF",
+      "symbol": "FBu",
+      "name": "Burundian Franc"
+    },
+    {
+      "code": "CAD",
+      "symbol": "C$",
+      "name": "Canadian Dollar"
+    },
+    {
+      "code": "CVE",
+      "symbol": "$",
+      "name": "Cape Verdean Escudo"
+    },
+    {
+      "code": "XAF",
+      "symbol": "FCFA",
+      "name": "Central African CFA Franc"
+    },
+    {
+      "code": "KMF",
+      "symbol": "CF",
+      "name": "Comorian Franc"
+    },
+    {
+      "code": "CDF",
+      "symbol": "FC",
+      "name": "Congolese Franc"
+    },
+    {
+      "code": "DKK",
+      "symbol": "kr",
+      "name": "Danish Krone"
+    },
+    {
+      "code": "DJF",
+      "symbol": "Fdj",
+      "name": "Djiboutian Franc"
+    },
+    {
+      "code": "EGP",
+      "symbol": "E£",
+      "name": "Egyptian Pound"
+    },
+    {
+      "code": "ERN",
+      "symbol": "Nfk",
+      "name": "Eritrean Nakfa"
+    },
+    {
+      "code": "SZL",
+      "symbol": "E",
+      "name": "Eswatini Lilangeni"
+    },
+    {
+      "code": "ETB",
+      "symbol": "Br",
+      "name": "Ethiopian Birr"
+    },
+    {
+      "code": "EUR",
+      "symbol": "€",
+      "name": "Euro"
+    },
+    {
+      "code": "GMD",
+      "symbol": "D",
+      "name": "Gambian Dalasi"
+    },
+    {
+      "code": "GHS",
+      "symbol": "GH₵",
+      "name": "Ghanaian Cedi"
+    },
+    {
+      "code": "GNF",
+      "symbol": "FG",
+      "name": "Guinean Franc"
+    },
+    {
+      "code": "INR",
+      "symbol": "₹",
+      "name": "Indian Rupee"
+    },
+    {
+      "code": "JPY",
+      "symbol": "¥",
+      "name": "Japanese Yen"
+    },
+    {
+      "code": "KES",
+      "symbol": "KSh",
+      "name": "Kenyan Shilling"
+    },
+    {
+      "code": "LSL",
+      "symbol": "L",
+      "name": "Lesotho Loti"
+    },
+    {
+      "code": "LRD",
+      "symbol": "L$",
+      "name": "Liberian Dollar"
+    },
+    {
+      "code": "LYD",
+      "symbol": "LD",
+      "name": "Libyan Dinar"
+    },
+    {
+      "code": "MGA",
+      "symbol": "Ar",
+      "name": "Malagasy Ariary"
+    },
+    {
+      "code": "MWK",
+      "symbol": "MK",
+      "name": "Malawian Kwacha"
+    },
+    {
+      "code": "MRU",
+      "symbol": "UM",
+      "name": "Mauritanian Ouguiya"
+    },
+    {
+      "code": "MUR",
+      "symbol": "₨",
+      "name": "Mauritian Rupee"
+    },
+    {
+      "code": "MAD",
+      "symbol": "DH",
+      "name": "Moroccan Dirham"
+    },
+    {
+      "code": "MZN",
+      "symbol": "MT",
+      "name": "Mozambican Metical"
+    },
+    {
+      "code": "NAD",
+      "symbol": "N$",
+      "name": "Namibian Dollar"
+    },
+    {
+      "code": "NZD",
+      "symbol": "NZ$",
+      "name": "New Zealand Dollar"
+    },
+    {
+      "code": "NGN",
+      "symbol": "₦",
+      "name": "Nigerian Naira"
+    },
+    {
+      "code": "NOK",
+      "symbol": "kr",
+      "name": "Norwegian Krone"
+    },
+    {
+      "code": "RWF",
+      "symbol": "FRw",
+      "name": "Rwandan Franc"
+    },
+    {
+      "code": "STN",
+      "symbol": "Db",
+      "name": "São Tomé Dobra"
+    },
+    {
+      "code": "SCR",
+      "symbol": "₨",
+      "name": "Seychellois Rupee"
+    },
+    {
+      "code": "SLE",
+      "symbol": "Le",
+      "name": "Sierra Leonean Leone"
+    },
+    {
+      "code": "SOS",
+      "symbol": "Sh",
+      "name": "Somali Shilling"
+    },
+    {
+      "code": "ZAR",
+      "symbol": "R",
+      "name": "South African Rand"
+    },
+    {
+      "code": "SSP",
+      "symbol": "£",
+      "name": "South Sudanese Pound"
+    },
+    {
+      "code": "SDG",
+      "symbol": "ج.س",
+      "name": "Sudanese Pound"
+    },
+    {
+      "code": "SEK",
+      "symbol": "kr",
+      "name": "Swedish Krona"
+    },
+    {
+      "code": "CHF",
+      "symbol": "CHF",
+      "name": "Swiss Franc"
+    },
+    {
+      "code": "TZS",
+      "symbol": "TSh",
+      "name": "Tanzanian Shilling"
+    },
+    {
+      "code": "TND",
+      "symbol": "DT",
+      "name": "Tunisian Dinar"
+    },
+    {
+      "code": "AED",
+      "symbol": "د.إ",
+      "name": "UAE Dirham"
+    },
+    {
+      "code": "UGX",
+      "symbol": "USh",
+      "name": "Ugandan Shilling"
+    },
+    {
+      "code": "USD",
+      "symbol": "$",
+      "name": "US Dollar"
+    },
+    {
+      "code": "XOF",
+      "symbol": "CFA",
+      "name": "West African CFA Franc"
+    },
+    {
+      "code": "ZMW",
+      "symbol": "ZK",
+      "name": "Zambian Kwacha"
+    },
+    {
+      "code": "ZWL",
+      "symbol": "Z$",
+      "name": "Zimbabwean Dollar"
+    }
+  ],
+  "languages": [
+    {
+      "code": "en",
+      "name": "English",
+      "native": "English"
+    },
+    {
+      "code": "sw",
+      "name": "Swahili",
+      "native": "Kiswahili"
+    },
+    {
+      "code": "luo",
+      "name": "Luo (Dholuo)",
+      "native": "Dholuo"
+    },
+    {
+      "code": "kik",
+      "name": "Kikuyu",
+      "native": "Gĩkũyũ"
+    },
+    {
+      "code": "luy",
+      "name": "Luhya",
+      "native": "Luluhya"
+    },
+    {
+      "code": "kln",
+      "name": "Kalenjin",
+      "native": "Kalenjin"
+    },
+    {
+      "code": "kam",
+      "name": "Kamba",
+      "native": "Kĩkamba"
+    },
+    {
+      "code": "som",
+      "name": "Somali",
+      "native": "Soomaali"
+    },
+    {
+      "code": "am",
+      "name": "Amharic",
+      "native": "አማርኛ"
+    },
+    {
+      "code": "ti",
+      "name": "Tigrinya",
+      "native": "ትግርኛ"
+    },
+    {
+      "code": "ha",
+      "name": "Hausa",
+      "native": "Hausa"
+    },
+    {
+      "code": "yo",
+      "name": "Yoruba",
+      "native": "Yorùbá"
+    },
+    {
+      "code": "ig",
+      "name": "Igbo",
+      "native": "Igbo"
+    },
+    {
+      "code": "pcm",
+      "name": "Nigerian Pidgin",
+      "native": "Naijá"
+    },
+    {
+      "code": "zu",
+      "name": "Zulu",
+      "native": "isiZulu"
+    },
+    {
+      "code": "xh",
+      "name": "Xhosa",
+      "native": "isiXhosa"
+    },
+    {
+      "code": "af",
+      "name": "Afrikaans",
+      "native": "Afrikaans"
+    },
+    {
+      "code": "st",
+      "name": "Sotho",
+      "native": "Sesotho"
+    },
+    {
+      "code": "tn",
+      "name": "Tswana",
+      "native": "Setswana"
+    },
+    {
+      "code": "sn",
+      "name": "Shona",
+      "native": "chiShona"
+    },
+    {
+      "code": "nd",
+      "name": "Ndebele",
+      "native": "isiNdebele"
+    },
+    {
+      "code": "rw",
+      "name": "Kinyarwanda",
+      "native": "Ikinyarwanda"
+    },
+    {
+      "code": "rn",
+      "name": "Kirundi",
+      "native": "Ikirundi"
+    },
+    {
+      "code": "lg",
+      "name": "Luganda",
+      "native": "Luganda"
+    },
+    {
+      "code": "wo",
+      "name": "Wolof",
+      "native": "Wolof"
+    },
+    {
+      "code": "ff",
+      "name": "Fula",
+      "native": "Fulfulde"
+    },
+    {
+      "code": "bm",
+      "name": "Bambara",
+      "native": "Bamanankan"
+    },
+    {
+      "code": "twi",
+      "name": "Twi (Akan)",
+      "native": "Twi"
+    },
+    {
+      "code": "mg",
+      "name": "Malagasy",
+      "native": "Malagasy"
+    },
+    {
+      "code": "ny",
+      "name": "Chichewa",
+      "native": "Chichewa"
+    },
+    {
+      "code": "ar",
+      "name": "Arabic",
+      "native": "العربية"
+    },
+    {
+      "code": "fr",
+      "name": "French",
+      "native": "Français"
+    },
+    {
+      "code": "pt",
+      "name": "Portuguese",
+      "native": "Português"
+    },
+    {
+      "code": "es",
+      "name": "Spanish",
+      "native": "Español"
+    },
+    {
+      "code": "de",
+      "name": "German",
+      "native": "Deutsch"
+    },
+    {
+      "code": "it",
+      "name": "Italian",
+      "native": "Italiano"
+    },
+    {
+      "code": "nl",
+      "name": "Dutch",
+      "native": "Nederlands"
+    }
+  ],
+  "rawCountries": {
+    "KE": {
+      "name": "Kenya",
+      "currency": "KES",
+      "langs": [
+        "en",
+        "sw",
+        "kik",
+        "luo",
+        "luy",
+        "kln",
+        "kam",
+        "som"
+      ]
+    },
+    "UG": {
+      "name": "Uganda",
+      "currency": "UGX",
+      "langs": [
+        "en",
+        "sw",
+        "lg"
+      ]
+    },
+    "TZ": {
+      "name": "Tanzania",
+      "currency": "TZS",
+      "langs": [
+        "sw",
+        "en"
+      ]
+    },
+    "RW": {
+      "name": "Rwanda",
+      "currency": "RWF",
+      "langs": [
+        "rw",
+        "en",
+        "fr",
+        "sw"
+      ]
+    },
+    "BI": {
+      "name": "Burundi",
+      "currency": "BIF",
+      "langs": [
+        "rn",
+        "fr",
+        "en"
+      ]
+    },
+    "ET": {
+      "name": "Ethiopia",
+      "currency": "ETB",
+      "langs": [
+        "am",
+        "ti",
+        "en"
+      ]
+    },
+    "SO": {
+      "name": "Somalia",
+      "currency": "SOS",
+      "langs": [
+        "som",
+        "ar",
+        "en"
+      ]
+    },
+    "SS": {
+      "name": "South Sudan",
+      "currency": "SSP",
+      "langs": [
+        "en",
+        "ar"
+      ]
+    },
+    "SD": {
+      "name": "Sudan",
+      "currency": "SDG",
+      "langs": [
+        "ar",
+        "en"
+      ]
+    },
+    "DJ": {
+      "name": "Djibouti",
+      "currency": "DJF",
+      "langs": [
+        "fr",
+        "ar",
+        "som"
+      ]
+    },
+    "ER": {
+      "name": "Eritrea",
+      "currency": "ERN",
+      "langs": [
+        "ti",
+        "ar",
+        "en"
+      ]
+    },
+    "NG": {
+      "name": "Nigeria",
+      "currency": "NGN",
+      "langs": [
+        "en",
+        "pcm",
+        "ha",
+        "yo",
+        "ig"
+      ]
+    },
+    "GH": {
+      "name": "Ghana",
+      "currency": "GHS",
+      "langs": [
+        "en",
+        "twi"
+      ]
+    },
+    "CI": {
+      "name": "Côte d'Ivoire",
+      "currency": "XOF",
+      "langs": [
+        "fr"
+      ]
+    },
+    "SN": {
+      "name": "Senegal",
+      "currency": "XOF",
+      "langs": [
+        "fr",
+        "wo"
+      ]
+    },
+    "ML": {
+      "name": "Mali",
+      "currency": "XOF",
+      "langs": [
+        "fr",
+        "bm"
+      ]
+    },
+    "BF": {
+      "name": "Burkina Faso",
+      "currency": "XOF",
+      "langs": [
+        "fr"
+      ]
+    },
+    "BJ": {
+      "name": "Benin",
+      "currency": "XOF",
+      "langs": [
+        "fr"
+      ]
+    },
+    "TG": {
+      "name": "Togo",
+      "currency": "XOF",
+      "langs": [
+        "fr"
+      ]
+    },
+    "NE": {
+      "name": "Niger",
+      "currency": "XOF",
+      "langs": [
+        "fr",
+        "ha"
+      ]
+    },
+    "SL": {
+      "name": "Sierra Leone",
+      "currency": "SLE",
+      "langs": [
+        "en"
+      ]
+    },
+    "LR": {
+      "name": "Liberia",
+      "currency": "LRD",
+      "langs": [
+        "en"
+      ]
+    },
+    "GM": {
+      "name": "Gambia",
+      "currency": "GMD",
+      "langs": [
+        "en"
+      ]
+    },
+    "GN": {
+      "name": "Guinea",
+      "currency": "GNF",
+      "langs": [
+        "fr",
+        "ff"
+      ]
+    },
+    "CV": {
+      "name": "Cape Verde",
+      "currency": "CVE",
+      "langs": [
+        "pt"
+      ]
+    },
+    "CM": {
+      "name": "Cameroon",
+      "currency": "XAF",
+      "langs": [
+        "fr",
+        "en"
+      ]
+    },
+    "GA": {
+      "name": "Gabon",
+      "currency": "XAF",
+      "langs": [
+        "fr"
+      ]
+    },
+    "CG": {
+      "name": "Congo",
+      "currency": "XAF",
+      "langs": [
+        "fr"
+      ]
+    },
+    "TD": {
+      "name": "Chad",
+      "currency": "XAF",
+      "langs": [
+        "fr",
+        "ar"
+      ]
+    },
+    "CF": {
+      "name": "Central African Republic",
+      "currency": "XAF",
+      "langs": [
+        "fr"
+      ]
+    },
+    "CD": {
+      "name": "DR Congo",
+      "currency": "CDF",
+      "langs": [
+        "fr",
+        "sw"
+      ]
+    },
+    "AO": {
+      "name": "Angola",
+      "currency": "AOA",
+      "langs": [
+        "pt"
+      ]
+    },
+    "ST": {
+      "name": "São Tomé & Príncipe",
+      "currency": "STN",
+      "langs": [
+        "pt"
+      ]
+    },
+    "ZA": {
+      "name": "South Africa",
+      "currency": "ZAR",
+      "langs": [
+        "en",
+        "zu",
+        "xh",
+        "af",
+        "st",
+        "tn"
+      ]
+    },
+    "ZM": {
+      "name": "Zambia",
+      "currency": "ZMW",
+      "langs": [
+        "en",
+        "ny"
+      ]
+    },
+    "MW": {
+      "name": "Malawi",
+      "currency": "MWK",
+      "langs": [
+        "en",
+        "ny"
+      ]
+    },
+    "MZ": {
+      "name": "Mozambique",
+      "currency": "MZN",
+      "langs": [
+        "pt"
+      ]
+    },
+    "BW": {
+      "name": "Botswana",
+      "currency": "BWP",
+      "langs": [
+        "en",
+        "tn"
+      ]
+    },
+    "NA": {
+      "name": "Namibia",
+      "currency": "NAD",
+      "langs": [
+        "en",
+        "af"
+      ]
+    },
+    "ZW": {
+      "name": "Zimbabwe",
+      "currency": "ZWL",
+      "langs": [
+        "en",
+        "sn",
+        "nd"
+      ]
+    },
+    "SZ": {
+      "name": "Eswatini",
+      "currency": "SZL",
+      "langs": [
+        "en"
+      ]
+    },
+    "LS": {
+      "name": "Lesotho",
+      "currency": "LSL",
+      "langs": [
+        "en",
+        "st"
+      ]
+    },
+    "MG": {
+      "name": "Madagascar",
+      "currency": "MGA",
+      "langs": [
+        "mg",
+        "fr"
+      ]
+    },
+    "MU": {
+      "name": "Mauritius",
+      "currency": "MUR",
+      "langs": [
+        "en",
+        "fr"
+      ]
+    },
+    "SC": {
+      "name": "Seychelles",
+      "currency": "SCR",
+      "langs": [
+        "en",
+        "fr"
+      ]
+    },
+    "KM": {
+      "name": "Comoros",
+      "currency": "KMF",
+      "langs": [
+        "fr",
+        "ar"
+      ]
+    },
+    "MR": {
+      "name": "Mauritania",
+      "currency": "MRU",
+      "langs": [
+        "ar",
+        "fr"
+      ]
+    },
+    "EG": {
+      "name": "Egypt",
+      "currency": "EGP",
+      "langs": [
+        "ar",
+        "en"
+      ]
+    },
+    "MA": {
+      "name": "Morocco",
+      "currency": "MAD",
+      "langs": [
+        "ar",
+        "fr"
+      ]
+    },
+    "DZ": {
+      "name": "Algeria",
+      "currency": "DZD",
+      "langs": [
+        "ar",
+        "fr"
+      ]
+    },
+    "TN": {
+      "name": "Tunisia",
+      "currency": "TND",
+      "langs": [
+        "ar",
+        "fr"
+      ]
+    },
+    "LY": {
+      "name": "Libya",
+      "currency": "LYD",
+      "langs": [
+        "ar"
+      ]
+    },
+    "US": {
+      "name": "United States",
+      "currency": "USD",
+      "langs": [
+        "en",
+        "es"
+      ]
+    },
+    "GB": {
+      "name": "United Kingdom",
+      "currency": "GBP",
+      "langs": [
+        "en"
+      ]
+    },
+    "CA": {
+      "name": "Canada",
+      "currency": "CAD",
+      "langs": [
+        "en",
+        "fr"
+      ]
+    },
+    "AU": {
+      "name": "Australia",
+      "currency": "AUD",
+      "langs": [
+        "en"
+      ]
+    },
+    "NZ": {
+      "name": "New Zealand",
+      "currency": "NZD",
+      "langs": [
+        "en"
+      ]
+    },
+    "IE": {
+      "name": "Ireland",
+      "currency": "EUR",
+      "langs": [
+        "en"
+      ]
+    },
+    "FR": {
+      "name": "France",
+      "currency": "EUR",
+      "langs": [
+        "fr"
+      ]
+    },
+    "DE": {
+      "name": "Germany",
+      "currency": "EUR",
+      "langs": [
+        "de",
+        "en"
+      ]
+    },
+    "ES": {
+      "name": "Spain",
+      "currency": "EUR",
+      "langs": [
+        "es"
+      ]
+    },
+    "IT": {
+      "name": "Italy",
+      "currency": "EUR",
+      "langs": [
+        "it"
+      ]
+    },
+    "PT": {
+      "name": "Portugal",
+      "currency": "EUR",
+      "langs": [
+        "pt"
+      ]
+    },
+    "NL": {
+      "name": "Netherlands",
+      "currency": "EUR",
+      "langs": [
+        "nl",
+        "en"
+      ]
+    },
+    "BE": {
+      "name": "Belgium",
+      "currency": "EUR",
+      "langs": [
+        "nl",
+        "fr"
+      ]
+    },
+    "CH": {
+      "name": "Switzerland",
+      "currency": "CHF",
+      "langs": [
+        "de",
+        "fr",
+        "it"
+      ]
+    },
+    "SE": {
+      "name": "Sweden",
+      "currency": "SEK",
+      "langs": [
+        "en"
+      ]
+    },
+    "NO": {
+      "name": "Norway",
+      "currency": "NOK",
+      "langs": [
+        "en"
+      ]
+    },
+    "DK": {
+      "name": "Denmark",
+      "currency": "DKK",
+      "langs": [
+        "en"
+      ]
+    },
+    "AE": {
+      "name": "United Arab Emirates",
+      "currency": "AED",
+      "langs": [
+        "ar",
+        "en"
+      ]
+    },
+    "IN": {
+      "name": "India",
+      "currency": "INR",
+      "langs": [
+        "en"
+      ]
+    },
+    "JP": {
+      "name": "Japan",
+      "currency": "JPY",
+      "langs": [
+        "en"
+      ]
+    }
+  },
+  "rawCurrencies": {
+    "KES": {
+      "symbol": "KSh",
+      "name": "Kenyan Shilling",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "UGX": {
+      "symbol": "USh",
+      "name": "Ugandan Shilling",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "TZS": {
+      "symbol": "TSh",
+      "name": "Tanzanian Shilling",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "RWF": {
+      "symbol": "FRw",
+      "name": "Rwandan Franc",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "BIF": {
+      "symbol": "FBu",
+      "name": "Burundian Franc",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "ETB": {
+      "symbol": "Br",
+      "name": "Ethiopian Birr",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "SOS": {
+      "symbol": "Sh",
+      "name": "Somali Shilling",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "SSP": {
+      "symbol": "£",
+      "name": "South Sudanese Pound",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "SDG": {
+      "symbol": "ج.س",
+      "name": "Sudanese Pound",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "DJF": {
+      "symbol": "Fdj",
+      "name": "Djiboutian Franc",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "ERN": {
+      "symbol": "Nfk",
+      "name": "Eritrean Nakfa",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "NGN": {
+      "symbol": "₦",
+      "name": "Nigerian Naira",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "GHS": {
+      "symbol": "GH₵",
+      "name": "Ghanaian Cedi",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "XOF": {
+      "symbol": "CFA",
+      "name": "West African CFA Franc",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "after"
+    },
+    "SLE": {
+      "symbol": "Le",
+      "name": "Sierra Leonean Leone",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "LRD": {
+      "symbol": "L$",
+      "name": "Liberian Dollar",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "GMD": {
+      "symbol": "D",
+      "name": "Gambian Dalasi",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "GNF": {
+      "symbol": "FG",
+      "name": "Guinean Franc",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "CVE": {
+      "symbol": "$",
+      "name": "Cape Verdean Escudo",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "XAF": {
+      "symbol": "FCFA",
+      "name": "Central African CFA Franc",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "after"
+    },
+    "CDF": {
+      "symbol": "FC",
+      "name": "Congolese Franc",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "AOA": {
+      "symbol": "Kz",
+      "name": "Angolan Kwanza",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "STN": {
+      "symbol": "Db",
+      "name": "São Tomé Dobra",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "ZAR": {
+      "symbol": "R",
+      "name": "South African Rand",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "ZMW": {
+      "symbol": "ZK",
+      "name": "Zambian Kwacha",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "MWK": {
+      "symbol": "MK",
+      "name": "Malawian Kwacha",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "MZN": {
+      "symbol": "MT",
+      "name": "Mozambican Metical",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "BWP": {
+      "symbol": "P",
+      "name": "Botswana Pula",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "NAD": {
+      "symbol": "N$",
+      "name": "Namibian Dollar",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "ZWL": {
+      "symbol": "Z$",
+      "name": "Zimbabwean Dollar",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "SZL": {
+      "symbol": "E",
+      "name": "Eswatini Lilangeni",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "LSL": {
+      "symbol": "L",
+      "name": "Lesotho Loti",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "MGA": {
+      "symbol": "Ar",
+      "name": "Malagasy Ariary",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "MUR": {
+      "symbol": "₨",
+      "name": "Mauritian Rupee",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "SCR": {
+      "symbol": "₨",
+      "name": "Seychellois Rupee",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "KMF": {
+      "symbol": "CF",
+      "name": "Comorian Franc",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "MRU": {
+      "symbol": "UM",
+      "name": "Mauritanian Ouguiya",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "EGP": {
+      "symbol": "E£",
+      "name": "Egyptian Pound",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "MAD": {
+      "symbol": "DH",
+      "name": "Moroccan Dirham",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "DZD": {
+      "symbol": "DA",
+      "name": "Algerian Dinar",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "TND": {
+      "symbol": "DT",
+      "name": "Tunisian Dinar",
+      "decimals": 2,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "LYD": {
+      "symbol": "LD",
+      "name": "Libyan Dinar",
+      "decimals": 2,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "USD": {
+      "symbol": "$",
+      "name": "US Dollar",
+      "decimals": 2,
+      "rounding": "ninety_nine",
+      "pos": "before"
+    },
+    "EUR": {
+      "symbol": "€",
+      "name": "Euro",
+      "decimals": 2,
+      "rounding": "ninety_nine",
+      "pos": "before"
+    },
+    "GBP": {
+      "symbol": "£",
+      "name": "British Pound",
+      "decimals": 2,
+      "rounding": "ninety_nine",
+      "pos": "before"
+    },
+    "CAD": {
+      "symbol": "C$",
+      "name": "Canadian Dollar",
+      "decimals": 2,
+      "rounding": "ninety_nine",
+      "pos": "before"
+    },
+    "AUD": {
+      "symbol": "A$",
+      "name": "Australian Dollar",
+      "decimals": 2,
+      "rounding": "ninety_nine",
+      "pos": "before"
+    },
+    "CHF": {
+      "symbol": "CHF",
+      "name": "Swiss Franc",
+      "decimals": 2,
+      "rounding": "ninety_nine",
+      "pos": "before"
+    },
+    "SEK": {
+      "symbol": "kr",
+      "name": "Swedish Krona",
+      "decimals": 2,
+      "rounding": "ninety_nine",
+      "pos": "after"
+    },
+    "NOK": {
+      "symbol": "kr",
+      "name": "Norwegian Krone",
+      "decimals": 2,
+      "rounding": "ninety_nine",
+      "pos": "after"
+    },
+    "DKK": {
+      "symbol": "kr",
+      "name": "Danish Krone",
+      "decimals": 2,
+      "rounding": "ninety_nine",
+      "pos": "after"
+    },
+    "NZD": {
+      "symbol": "NZ$",
+      "name": "New Zealand Dollar",
+      "decimals": 2,
+      "rounding": "ninety_nine",
+      "pos": "before"
+    },
+    "AED": {
+      "symbol": "د.إ",
+      "name": "UAE Dirham",
+      "decimals": 2,
+      "rounding": "ninety_nine",
+      "pos": "before"
+    },
+    "JPY": {
+      "symbol": "¥",
+      "name": "Japanese Yen",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    },
+    "INR": {
+      "symbol": "₹",
+      "name": "Indian Rupee",
+      "decimals": 0,
+      "rounding": "clean",
+      "pos": "before"
+    }
+  },
+  "rawLanguages": {
+    "en": {
+      "name": "English",
+      "native": "English"
+    },
+    "sw": {
+      "name": "Swahili",
+      "native": "Kiswahili"
+    },
+    "luo": {
+      "name": "Luo (Dholuo)",
+      "native": "Dholuo"
+    },
+    "kik": {
+      "name": "Kikuyu",
+      "native": "Gĩkũyũ"
+    },
+    "luy": {
+      "name": "Luhya",
+      "native": "Luluhya"
+    },
+    "kln": {
+      "name": "Kalenjin",
+      "native": "Kalenjin"
+    },
+    "kam": {
+      "name": "Kamba",
+      "native": "Kĩkamba"
+    },
+    "som": {
+      "name": "Somali",
+      "native": "Soomaali"
+    },
+    "am": {
+      "name": "Amharic",
+      "native": "አማርኛ"
+    },
+    "ti": {
+      "name": "Tigrinya",
+      "native": "ትግርኛ"
+    },
+    "ha": {
+      "name": "Hausa",
+      "native": "Hausa"
+    },
+    "yo": {
+      "name": "Yoruba",
+      "native": "Yorùbá"
+    },
+    "ig": {
+      "name": "Igbo",
+      "native": "Igbo"
+    },
+    "pcm": {
+      "name": "Nigerian Pidgin",
+      "native": "Naijá"
+    },
+    "zu": {
+      "name": "Zulu",
+      "native": "isiZulu"
+    },
+    "xh": {
+      "name": "Xhosa",
+      "native": "isiXhosa"
+    },
+    "af": {
+      "name": "Afrikaans",
+      "native": "Afrikaans"
+    },
+    "st": {
+      "name": "Sotho",
+      "native": "Sesotho"
+    },
+    "tn": {
+      "name": "Tswana",
+      "native": "Setswana"
+    },
+    "sn": {
+      "name": "Shona",
+      "native": "chiShona"
+    },
+    "nd": {
+      "name": "Ndebele",
+      "native": "isiNdebele"
+    },
+    "rw": {
+      "name": "Kinyarwanda",
+      "native": "Ikinyarwanda"
+    },
+    "rn": {
+      "name": "Kirundi",
+      "native": "Ikirundi"
+    },
+    "lg": {
+      "name": "Luganda",
+      "native": "Luganda"
+    },
+    "wo": {
+      "name": "Wolof",
+      "native": "Wolof"
+    },
+    "ff": {
+      "name": "Fula",
+      "native": "Fulfulde"
+    },
+    "bm": {
+      "name": "Bambara",
+      "native": "Bamanankan"
+    },
+    "twi": {
+      "name": "Twi (Akan)",
+      "native": "Twi"
+    },
+    "mg": {
+      "name": "Malagasy",
+      "native": "Malagasy"
+    },
+    "ny": {
+      "name": "Chichewa",
+      "native": "Chichewa"
+    },
+    "ar": {
+      "name": "Arabic",
+      "native": "العربية"
+    },
+    "fr": {
+      "name": "French",
+      "native": "Français"
+    },
+    "pt": {
+      "name": "Portuguese",
+      "native": "Português"
+    },
+    "es": {
+      "name": "Spanish",
+      "native": "Español"
+    },
+    "de": {
+      "name": "German",
+      "native": "Deutsch"
+    },
+    "it": {
+      "name": "Italian",
+      "native": "Italiano"
+    },
+    "nl": {
+      "name": "Dutch",
+      "native": "Nederlands"
+    }
+  },
+  "fxRates": {
+    "KES": 1,
+    "USD": 0.0077,
+    "EUR": 0.0071,
+    "GBP": 0.0061,
+    "CAD": 0.0105,
+    "AUD": 0.0117,
+    "CHF": 0.0068,
+    "NZD": 0.0128,
+    "AED": 0.0283,
+    "INR": 0.66,
+    "JPY": 1.16,
+    "SEK": 0.082,
+    "NOK": 0.083,
+    "DKK": 0.053,
+    "UGX": 28.5,
+    "TZS": 20.5,
+    "RWF": 10.8,
+    "BIF": 22.7,
+    "ETB": 0.96,
+    "SOS": 4.4,
+    "SSP": 34,
+    "SDG": 4.6,
+    "DJF": 1.37,
+    "ERN": 0.115,
+    "NGN": 11.8,
+    "GHS": 0.115,
+    "XOF": 4.65,
+    "SLE": 0.176,
+    "LRD": 1.5,
+    "GMD": 0.55,
+    "GNF": 66,
+    "CVE": 0.78,
+    "XAF": 4.65,
+    "CDF": 22,
+    "AOA": 7.1,
+    "STN": 0.174,
+    "ZAR": 0.14,
+    "ZMW": 0.21,
+    "MWK": 13.4,
+    "MZN": 0.49,
+    "BWP": 0.105,
+    "NAD": 0.14,
+    "ZWL": 0.25,
+    "SZL": 0.14,
+    "LSL": 0.14,
+    "MGA": 35,
+    "MUR": 0.35,
+    "SCR": 0.105,
+    "KMF": 3.5,
+    "MRU": 0.31,
+    "EGP": 0.38,
+    "MAD": 0.077,
+    "DZD": 1.04,
+    "TND": 0.024,
+    "LYD": 0.037
+  },
+  "plans": [
+    {
+      "id": "free",
+      "name": "Free starter",
+      "kes": 0,
+      "credits": "150 free credits",
+      "billing": "",
+      "popular": false,
+      "cta": "Start free — no card needed",
+      "features": [
+        "All AI tools (limited runs)",
+        "Social AI — 2 accounts",
+        "Copy & download results",
+        "Credits valid for 90 days"
+      ]
+    },
+    {
+      "id": "creator",
+      "name": "Creator pack",
+      "kes": 500,
+      "credits": "600 credits • ~40 full runs",
+      "billing": "one-time",
+      "popular": true,
+      "cta": "Buy now →",
+      "features": [
+        "Everything in Free",
+        "Social AI — 6 accounts",
+        "Priority AI generation speed",
+        "Save & organise outputs",
+        "Credits never expire"
+      ]
+    },
+    {
+      "id": "pro",
+      "name": "Pro bundle",
+      "kes": 1500,
+      "credits": "2,500 credits • ~165 full runs",
+      "billing": "one-time",
+      "popular": false,
+      "cta": "Buy now →",
+      "features": [
+        "Everything in Creator",
+        "Unlimited Social AI accounts",
+        "White-label output",
+        "API access (beta)",
+        "Priority WhatsApp support",
+        "Credits never expire"
+      ]
+    }
+  ],
+  "toolCosts": [
+    {
+      "icon": "brandkit",
+      "color": "#c084fc",
+      "name": "Brand Kit AI",
+      "credits": "10 credits per run",
+      "kes": 8.3
+    },
+    {
+      "icon": "musicbio",
+      "color": "#22d3ee",
+      "name": "Music Bio & Press Kit",
+      "credits": "15 credits per run",
+      "kes": 12.5
+    },
+    {
+      "icon": "social",
+      "color": "#f43f5e",
+      "name": "Social AI",
+      "credits": "Free — 0 credits",
+      "kes": 0,
+      "always_free": true
+    },
+    {
+      "icon": "syncpitch",
+      "color": "#f59e0b",
+      "name": "Sync Pitch AI",
+      "credits": "20 credits per run",
+      "kes": 16.7
+    },
+    {
+      "icon": "pitchdeck",
+      "color": "#8b5cf6",
+      "name": "Pitch Deck AI",
+      "credits": "18 credits per run",
+      "kes": 15
+    }
+  ]
+}
