@@ -44,7 +44,8 @@ const API_URL = process.env.REACT_APP_BACKEND_URL || FALLBACK_LOCAL_API;
 
 const api = axios.create({
   baseURL: API_URL,
-  headers: { 'Content-Type': 'application/json' }
+  headers: { 'Content-Type': 'application/json' },
+  withCredentials: true
 });
 
 api.interceptors.request.use((config) => {
@@ -301,7 +302,12 @@ function App() {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await api.post('/api/auth/logout');
+    } catch (err) {
+      console.error('Logout API call failed:', err);
+    }
     localStorage.removeItem('token');
     setUser(null);
     addToast('Signed out', 'See you next time!', '');
@@ -313,16 +319,15 @@ function App() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        try {
-          const response = await api.get('/api/auth/me');
-          setUser(response.data);
-        } catch (error) {
-          localStorage.removeItem('token');
-        }
+      try {
+        const response = await api.get('/api/auth/me');
+        setUser(response.data);
+      } catch (error) {
+        setUser(null);
+        localStorage.removeItem('token');
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     checkAuth();
   }, []);

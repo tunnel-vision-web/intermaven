@@ -5,7 +5,7 @@ from bson import ObjectId
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 from config import (
@@ -74,8 +74,14 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
     return jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
 
 
-def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
-    token = credentials.credentials
+def get_current_user(request: Request) -> dict:
+    token = request.cookies.get("access_token")
+    if not token:
+        auth_header = request.headers.get("Authorization")
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
+    if not token:
+        raise HTTPException(status_code=401, detail="Not authenticated")
     try:
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         user_id = payload.get("sub")
@@ -109,11 +115,10 @@ def serialize_user(user: dict) -> dict:
     }
 
 
-def get_admin_user(credentials: HTTPAuthorizationCredentials = Depends(security)) -> dict:
-    user = get_current_user(credentials)
-    if not user.get("admin_role") or user["admin_role"] not in ADMIN_ROLES:
+def get_admin_user(current_user: dict = Depends(get_current_user)) -> dict:
+    if not current_user.get("admin_role") or current_user["admin_role"] not in ADMIN_ROLES:
         raise HTTPException(status_code=403, detail="Admin access required")
-    return user
+    return current_user
 
 
 def log_audit(admin_id, admin_name: str, action: str, target_user_id=None, target_user_name: str = "", details: dict = None):

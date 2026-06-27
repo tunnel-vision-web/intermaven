@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from datetime import datetime, timezone
 import json
 import os
@@ -117,6 +117,23 @@ async def register(user_data: UserCreate):
         "created_at": datetime.now(timezone.utc)
     })
 
+    # Set secure subdomain cookie
+    cookie_domain = os.getenv("COOKIE_DOMAIN", ".tunemavens.com")
+    host = request.headers.get("host", "")
+    if "localhost" in host or "127.0.0.1" in host:
+        cookie_domain = None
+
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        max_age=15 * 24 * 60 * 60,
+        expires=15 * 24 * 60 * 60,
+        domain=cookie_domain,
+        samesite="lax",
+        secure=True if cookie_domain else False
+    )
+
     return TokenResponse(
         access_token=access_token,
         user=UserResponse(**serialize_user(new_user))
@@ -124,7 +141,7 @@ async def register(user_data: UserCreate):
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(user_data: UserLogin):
+async def login(user_data: UserLogin, request: Request, response: Response):
     if db is None:
         raise HTTPException(status_code=503, detail="Database unavailable. Check MONGO_URL and Atlas IP whitelist.")
     # region agent log
@@ -156,10 +173,45 @@ async def login(user_data: UserLogin):
         {"user_id": str(user["_id"])},
     )
     # endregion
+
+    # Set secure subdomain cookie
+    cookie_domain = os.getenv("COOKIE_DOMAIN", ".tunemavens.com")
+    host = request.headers.get("host", "")
+    if "localhost" in host or "127.0.0.1" in host:
+        cookie_domain = None
+
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        max_age=15 * 24 * 60 * 60,
+        expires=15 * 24 * 60 * 60,
+        domain=cookie_domain,
+        samesite="lax",
+        secure=True if cookie_domain else False
+    )
+
     return TokenResponse(
         access_token=access_token,
         user=UserResponse(**serialize_user(user))
     )
+
+
+@router.post("/logout")
+async def logout(request: Request, response: Response):
+    cookie_domain = os.getenv("COOKIE_DOMAIN", ".tunemavens.com")
+    host = request.headers.get("host", "")
+    if "localhost" in host or "127.0.0.1" in host:
+        cookie_domain = None
+
+    response.delete_cookie(
+        key="access_token",
+        domain=cookie_domain,
+        httponly=True,
+        samesite="lax",
+        secure=True if cookie_domain else False
+    )
+    return {"success": True, "message": "Logged out successfully"}
 
 
 @router.get("/me", response_model=UserResponse)
