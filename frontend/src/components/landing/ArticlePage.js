@@ -1012,6 +1012,14 @@ function ArticlePage() {
     }
   }, [article]);
 
+  const [scrolled, setScrolled] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   if (loading) {
     return (
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: '#08090d', color: '#cbd5e1' }}>
@@ -1045,7 +1053,7 @@ function ArticlePage() {
   };
 
   return (
-    <div className="landing-wrapper">
+    <div className={"landing-wrapper " + (scrolled ? "scrolled" : "")}>
       <Navbar currentPage={isForum ? "forum" : "help"} />
 
       {/* Hero header — matches the parent help / forum page styling */}

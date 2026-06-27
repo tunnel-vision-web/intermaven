@@ -2648,8 +2648,10 @@
   transition: background 0.3s ease, border-color 0.3s ease, padding 0.3s ease;
 }
 .landing-wrapper.scrolled .landing-nav {
-  background: rgba(15, 17, 23, 0.88);
+  background: rgba(15, 17, 23, 0.82);
   border-bottom: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 .landing-wrapper.scrolled .netbar {
   background: rgba(15, 17, 23, 0.92);
