@@ -16,7 +16,8 @@ export function isWesternRegion() {
       const cc = saved.country.toUpperCase();
       const westernCountries = new Set([
         'US', 'CA', 'GB', 'IE', 'AU', 'NZ',
-        'FR', 'DE', 'IT', 'ES', 'NL', 'BE', 'SE', 'NO', 'FI', 'DK', 'AT', 'CH', 'PT', 'PL', 'CZ', 'HU', 'GR'
+        'FR', 'DE', 'IT', 'ES', 'NL', 'BE', 'SE', 'NO', 'FI', 'DK', 'AT', 'CH', 'PT', 'PL', 'CZ', 'HU', 'GR',
+        'LU', 'IS', 'LI', 'MT', 'CY', 'EE', 'LV', 'LT', 'SI', 'SK', 'HR', 'RO', 'BG'
       ]);
       return westernCountries.has(cc);
     }
