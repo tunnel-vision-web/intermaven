@@ -118,13 +118,12 @@ def _next_missing_field(profile: dict) -> Optional[tuple]:
 
 async def _llm_chat(system_message: str, user_text: str, session_suffix: str, user_id: str) -> str:
     """Thin wrapper around emergentintegrations LlmChat → Claude Sonnet 4.5."""
-    from emergentintegrations.llm.chat import LlmChat, UserMessage
-    chat = LlmChat(
-        api_key=os.environ.get("EMERGENT_LLM_KEY"),
-        session_id=f"intermaven-wizard-{user_id}-{session_suffix}",
+    from llm_fallback import run_llm_completion
+    response = await run_llm_completion(
+        prompt=user_text,
         system_message=system_message,
-    ).with_model("anthropic", "claude-sonnet-4-5-20250929")
-    response = await chat.send_message(UserMessage(text=user_text))
+        session_id="intermaven-wizard-{0}-{1}".format(user_id, session_suffix)
+    )
     return response if isinstance(response, str) else str(response)
 
 

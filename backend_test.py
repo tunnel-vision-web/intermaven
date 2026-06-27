@@ -1,10 +1,11 @@
+# -*- coding: utf-8 -*-
 import requests
 import sys
 import json
 from datetime import datetime
 
 class Intermaven_API_Tester:
-    def __init__(self, base_url="https://151c44ef-2fa8-40cf-a20d-7837dfcf2942.preview.emergentagent.com"):
+    def __init__(self, base_url="https://intermaven.onrender.com"):
         self.base_url = base_url
         self.token = None
         self.user_id = None
@@ -27,15 +28,15 @@ class Intermaven_API_Tester:
         self.test_results.append(result)
         
         status = "✅ PASS" if success else "❌ FAIL"
-        print(f"{status} - {name}: {details}")
+        print("{0} - {1}: {2}".format(status, name, details))
 
     def run_test(self, name, method, endpoint, expected_status, data=None, headers=None):
         """Run a single API test"""
-        url = f"{self.base_url}/{endpoint}"
+        url = "{0}/{1}".format(self.base_url, endpoint)
         test_headers = {'Content-Type': 'application/json'}
         
         if self.token:
-            test_headers['Authorization'] = f'Bearer {self.token}'
+            test_headers['Authorization'] = 'Bearer {0}'.format(self.token)
         
         if headers:
             test_headers.update(headers)
@@ -53,24 +54,24 @@ class Intermaven_API_Tester:
             if success:
                 try:
                     response_data = response.json()
-                    self.log_test(name, True, f"Status: {response.status_code}")
+                    self.log_test(name, True, "Status: {0}".format(response.status_code))
                     return True, response_data
                 except:
-                    self.log_test(name, True, f"Status: {response.status_code} (No JSON)")
+                    self.log_test(name, True, "Status: {0} (No JSON)".format(response.status_code))
                     return True, {}
             else:
                 try:
                     error_data = response.json()
-                    self.log_test(name, False, f"Expected {expected_status}, got {response.status_code}: {error_data.get('detail', 'Unknown error')}")
+                    self.log_test(name, False, "Expected {0}, got {1}: {2}".format(expected_status, response.status_code, error_data.get('detail', 'Unknown error')))
                 except:
-                    self.log_test(name, False, f"Expected {expected_status}, got {response.status_code}: {response.text[:100]}")
+                    self.log_test(name, False, "Expected {0}, got {1}: {2}".format(expected_status, response.status_code, response.text[:100]))
                 return False, {}
 
         except requests.exceptions.Timeout:
             self.log_test(name, False, "Request timeout (30s)")
             return False, {}
         except Exception as e:
-            self.log_test(name, False, f"Request error: {str(e)}")
+            self.log_test(name, False, "Request error: {0}".format(str(e)))
             return False, {}
 
     def test_health_check(self):
@@ -86,7 +87,7 @@ class Intermaven_API_Tester:
     def test_register(self):
         """Test user registration"""
         test_user_data = {
-            "email": f"test_{datetime.now().strftime('%H%M%S')}@intermaven.test",
+            "email": "test_{0}@intermaven.co".format(datetime.now().strftime('%H%M%S')),
             "password": "testpass123",
             "first_name": "Test",
             "last_name": "User",
@@ -151,7 +152,7 @@ class Intermaven_API_Tester:
         )
         
         if success and 'email' in response:
-            self.log_test("User Data", True, f"Email: {response.get('email')}")
+            self.log_test("User Data", True, "Email: {0}".format(response.get('email')))
         
         return success
 
@@ -172,9 +173,9 @@ class Intermaven_API_Tester:
             stats = ["credits", "plan", "ai_runs_week", "active_apps"]
             missing = [s for s in stats if s not in response]
             if missing:
-                self.log_test("Stats Fields", False, f"Missing: {missing}")
+                self.log_test("Stats Fields", False, "Missing: {0}".format(missing))
             else:
-                self.log_test("Stats Fields", True, f"Credits: {response.get('credits')}, Plan: {response.get('plan')}")
+                self.log_test("Stats Fields", True, "Credits: {0}, Plan: {1}".format(response.get('credits'), response.get('plan')))
         
         return success
 
@@ -193,7 +194,7 @@ class Intermaven_API_Tester:
         
         if success and 'notifications' in response:
             count = len(response['notifications'])
-            self.log_test("Notifications Data", True, f"Found {count} notifications")
+            self.log_test("Notifications Data", True, "Found {0} notifications".format(count))
         
         return success
 
@@ -265,7 +266,7 @@ class Intermaven_API_Tester:
         
         if success and 'content' in response:
             content_length = len(response['content'])
-            self.log_test("AI Content Generated", True, f"Generated {content_length} characters")
+            self.log_test("AI Content Generated", True, "Generated {0} characters".format(content_length))
         elif success:
             self.log_test("AI Content Generated", False, "No content in response")
         
@@ -286,7 +287,7 @@ class Intermaven_API_Tester:
         
         if success and 'activities' in response:
             count = len(response['activities'])
-            self.log_test("Activities Data", True, f"Found {count} activities")
+            self.log_test("Activities Data", True, "Found {0} activities".format(count))
         
         return success
 
@@ -332,14 +333,14 @@ class Intermaven_API_Tester:
         
         if success and 'transactions' in response:
             count = len(response['transactions'])
-            self.log_test("Transactions Data", True, f"Found {count} transactions")
+            self.log_test("Transactions Data", True, "Found {0} transactions".format(count))
         
         return success
 
     def run_all_tests(self):
         """Run all tests in sequence"""
         print("🚀 Starting Intermaven API Tests...")
-        print(f"📍 Base URL: {self.base_url}")
+        print("📍 Base URL: {0}".format(self.base_url))
         print("=" * 60)
         
         # Health check first
@@ -367,24 +368,34 @@ class Intermaven_API_Tester:
         
         # Print summary
         print("=" * 60)
-        print(f"📊 Tests completed: {self.tests_passed}/{self.tests_run} passed")
+        print("📊 Tests completed: {0}/{1} passed".format(self.tests_passed, self.tests_run))
         
         if self.tests_passed == self.tests_run:
             print("🎉 All tests passed!")
             return True
         else:
             failed_tests = [r for r in self.test_results if not r['success']]
-            print(f"❌ {len(failed_tests)} tests failed:")
+            print("❌ {0} tests failed:".format(len(failed_tests)))
             for test in failed_tests:
-                print(f"   - {test['test']}: {test['details']}")
+                print("   - {0}: {1}".format(test['test'], test['details']))
             return False
 
 def main():
-    tester = Intermaven_API_Tester()
+    import os
+    base_url = "https://intermaven.onrender.com"
+    if len(sys.argv) > 1:
+        base_url = sys.argv[1]
+        
+    tester = Intermaven_API_Tester(base_url=base_url)
     success = tester.run_all_tests()
     
     # Save test results
-    with open('/app/test_reports/backend_test_results.json', 'w') as f:
+    report_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_reports')
+    if not os.path.exists(report_dir):
+        os.makedirs(report_dir)
+    report_path = os.path.join(report_dir, 'backend_test_results.json')
+    
+    with open(report_path, 'w') as f:
         json.dump({
             'timestamp': datetime.now().isoformat(),
             'total_tests': tester.tests_run,
@@ -393,6 +404,7 @@ def main():
             'results': tester.test_results
         }, f, indent=2)
     
+    print("📝 Test results saved to {0}".format(report_path))
     return 0 if success else 1
 
 if __name__ == "__main__":

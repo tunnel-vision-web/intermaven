@@ -115,16 +115,12 @@ async def generate_ai_content(request: AIGenerateRequest, current_user: dict = D
     prompt = TOOL_PROMPTS[tool_id](inputs)
 
     try:
-        from emergentintegrations.llm.chat import LlmChat, UserMessage
-
-        chat = LlmChat(
-            api_key=os.environ.get("EMERGENT_LLM_KEY"),
-            session_id=f"intermaven-{str(current_user['_id'])}-{tool_id}",
-            system_message="You are a helpful AI assistant specialized in African creative and business markets."
-        ).with_model("anthropic", "claude-sonnet-4-5-20250929")
-
-        user_message = UserMessage(text=prompt)
-        response = await chat.send_message(user_message)
+        from llm_fallback import run_llm_completion
+        response = await run_llm_completion(
+            prompt=prompt,
+            system_message="You are a helpful AI assistant specialized in African creative and business markets.",
+            session_id="intermaven-{0}-{1}".format(str(current_user['_id']), tool_id)
+        )
 
         # Deduct credits
         if cost > 0:
@@ -211,16 +207,12 @@ async def try_social_demo(payload: TrySocialRequest, request: Request):
     })
 
     try:
-        from emergentintegrations.llm.chat import LlmChat, UserMessage
-
-        chat = LlmChat(
-            api_key=os.environ.get("EMERGENT_LLM_KEY"),
-            session_id=f"intermaven-demo-{ip}",
-            system_message="You are a helpful AI assistant specialized in African creative and business markets."
-        ).with_model("anthropic", "claude-sonnet-4-5-20250929")
-
-        user_message = UserMessage(text=prompt)
-        response = await chat.send_message(user_message)
+        from llm_fallback import run_llm_completion
+        response = await run_llm_completion(
+            prompt=prompt,
+            system_message="You are a helpful AI assistant specialized in African creative and business markets.",
+            session_id="intermaven-demo-{0}".format(ip)
+        )
 
         db.demo_runs.insert_one({
             "ip": ip,

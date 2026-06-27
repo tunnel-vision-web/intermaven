@@ -1,128 +1,128 @@
 {
-  "timestamp": "2026-03-24T11:35:00.798000",
-  "total_tests": 20,
-  "passed_tests": 20,
-  "success_rate": 100.0,
+  "timestamp": "2026-06-27T09:47:06.656246", 
+  "passed_tests": 18, 
+  "total_tests": 20, 
   "results": [
     {
-      "test": "Health Check",
-      "success": true,
-      "details": "Status: 200",
-      "timestamp": "2026-03-24T11:34:40.692715"
-    },
+      "test": "Health Check", 
+      "timestamp": "2026-06-27T09:46:43.373656", 
+      "details": "Status: 200", 
+      "success": true
+    }, 
     {
-      "test": "User Login (Demo)",
-      "success": true,
-      "details": "Status: 200",
-      "timestamp": "2026-03-24T11:34:41.030031"
-    },
+      "test": "User Login (Demo)", 
+      "timestamp": "2026-06-27T09:46:44.839420", 
+      "details": "Expected 200, got 401: Invalid email or password", 
+      "success": false
+    }, 
     {
-      "test": "Login Token",
-      "success": true,
-      "details": "Demo user token received",
-      "timestamp": "2026-03-24T11:34:41.030608"
-    },
+      "test": "User Registration", 
+      "timestamp": "2026-06-27T09:46:48.798641", 
+      "details": "Status: 200", 
+      "success": true
+    }, 
     {
-      "test": "Get Current User",
-      "success": true,
-      "details": "Status: 200",
-      "timestamp": "2026-03-24T11:34:41.243576"
-    },
+      "test": "Registration Token", 
+      "timestamp": "2026-06-27T09:46:48.798729", 
+      "details": "Token received", 
+      "success": true
+    }, 
     {
-      "test": "User Data",
-      "success": true,
-      "details": "Email: demo@intermaven.io",
-      "timestamp": "2026-03-24T11:34:41.244149"
-    },
+      "test": "Get Current User", 
+      "timestamp": "2026-06-27T09:46:49.838719", 
+      "details": "Status: 200", 
+      "success": true
+    }, 
     {
-      "test": "User Stats",
-      "success": true,
-      "details": "Status: 200",
-      "timestamp": "2026-03-24T11:34:41.377853"
-    },
+      "test": "User Data", 
+      "timestamp": "2026-06-27T09:46:49.838825", 
+      "details": "Email: test_094644@intermaven.co", 
+      "success": true
+    }, 
     {
-      "test": "Stats Fields",
-      "success": true,
-      "details": "Credits: 150, Plan: free",
-      "timestamp": "2026-03-24T11:34:41.378469"
-    },
+      "test": "User Stats", 
+      "timestamp": "2026-06-27T09:46:51.065916", 
+      "details": "Status: 200", 
+      "success": true
+    }, 
     {
-      "test": "Get Notifications",
-      "success": true,
-      "details": "Status: 200",
-      "timestamp": "2026-03-24T11:34:41.512258"
-    },
+      "test": "Stats Fields", 
+      "timestamp": "2026-06-27T09:46:51.065955", 
+      "details": "Credits: 150, Plan: free", 
+      "success": true
+    }, 
     {
-      "test": "Notifications Data",
-      "success": true,
-      "details": "Found 1 notifications",
-      "timestamp": "2026-03-24T11:34:41.512844"
-    },
+      "test": "Get Notifications", 
+      "timestamp": "2026-06-27T09:46:52.552834", 
+      "details": "Status: 200", 
+      "success": true
+    }, 
     {
-      "test": "Mark Notifications Read",
-      "success": true,
-      "details": "Status: 200",
-      "timestamp": "2026-03-24T11:34:41.615088"
-    },
+      "test": "Notifications Data", 
+      "timestamp": "2026-06-27T09:46:52.552909", 
+      "details": "Found 1 notifications", 
+      "success": true
+    }, 
     {
-      "test": "Update Profile",
-      "success": true,
-      "details": "Status: 200",
-      "timestamp": "2026-03-24T11:34:41.716073"
-    },
+      "test": "Mark Notifications Read", 
+      "timestamp": "2026-06-27T09:46:53.801259", 
+      "details": "Status: 200", 
+      "success": true
+    }, 
     {
-      "test": "Profile Data Updated",
-      "success": true,
-      "details": "First name updated successfully",
-      "timestamp": "2026-03-24T11:34:41.716697"
-    },
+      "test": "Update Profile", 
+      "timestamp": "2026-06-27T09:46:55.276177", 
+      "details": "Status: 200", 
+      "success": true
+    }, 
     {
-      "test": "AI Generation (Social)",
-      "success": true,
-      "details": "Status: 200",
-      "timestamp": "2026-03-24T11:35:00.421106"
-    },
+      "test": "Profile Data Updated", 
+      "timestamp": "2026-06-27T09:46:55.276265", 
+      "details": "First name updated successfully", 
+      "success": true
+    }, 
     {
-      "test": "AI Content Generated",
-      "success": true,
-      "details": "Generated 1670 characters",
-      "timestamp": "2026-03-24T11:35:00.421797"
-    },
+      "test": "AI Generation (Social)", 
+      "timestamp": "2026-06-27T09:46:56.973671", 
+      "details": "Expected 200, got 500: AI generation failed: No module named 'emergentintegrations'", 
+      "success": false
+    }, 
     {
-      "test": "Get Activities",
-      "success": true,
-      "details": "Status: 200",
-      "timestamp": "2026-03-24T11:35:00.555986"
-    },
+      "test": "Get Activities", 
+      "timestamp": "2026-06-27T09:46:58.268326", 
+      "details": "Status: 200", 
+      "success": true
+    }, 
     {
-      "test": "Activities Data",
-      "success": true,
-      "details": "Found 1 activities",
-      "timestamp": "2026-03-24T11:35:00.556719"
-    },
+      "test": "Activities Data", 
+      "timestamp": "2026-06-27T09:46:58.268401", 
+      "details": "Found 0 activities", 
+      "success": true
+    }, 
     {
-      "test": "Payment Initiate",
-      "success": true,
-      "details": "Status: 200",
-      "timestamp": "2026-03-24T11:35:00.680853"
-    },
+      "test": "Payment Initiate", 
+      "timestamp": "2026-06-27T09:47:05.264547", 
+      "details": "Status: 200", 
+      "success": true
+    }, 
     {
-      "test": "Payment Mock Response",
-      "success": true,
-      "details": "Mock payment response received",
-      "timestamp": "2026-03-24T11:35:00.681476"
-    },
+      "test": "Payment Mock Response", 
+      "timestamp": "2026-06-27T09:47:05.264623", 
+      "details": "Mock payment response received", 
+      "success": true
+    }, 
     {
-      "test": "Get Transactions",
-      "success": true,
-      "details": "Status: 200",
-      "timestamp": "2026-03-24T11:35:00.795647"
-    },
+      "test": "Get Transactions", 
+      "timestamp": "2026-06-27T09:47:06.653483", 
+      "details": "Status: 200", 
+      "success": true
+    }, 
     {
-      "test": "Transactions Data",
-      "success": true,
-      "details": "Found 1 transactions",
-      "timestamp": "2026-03-24T11:35:00.797721"
+      "test": "Transactions Data", 
+      "timestamp": "2026-06-27T09:47:06.653560", 
+      "details": "Found 1 transactions", 
+      "success": true
     }
-  ]
+  ], 
+  "success_rate": 0.0
 }
