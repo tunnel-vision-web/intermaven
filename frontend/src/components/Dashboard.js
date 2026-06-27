@@ -5,7 +5,8 @@ import {
   Home, Zap, Users, FileText, HardDrive, Settings, LogOut,
   Palette, Music, Share2, Film, Presentation, Bell,
   TrendingUp, Download, Upload, BarChart3, DollarSign, UserPlus,
-  BookOpen, Sparkles, Library, ShoppingBag, Plug, Smartphone, Receipt
+  BookOpen, Sparkles, Library, ShoppingBag, Plug, Smartphone, Receipt,
+  Activity, Globe
 } from 'lucide-react';
 import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
@@ -17,6 +18,8 @@ import EPKBuilder from './EPKBuilder';
 import FileManager from './FileManager';
 import Channels from './Channels';
 import POSPanel from './POSPanel';
+import DistroPanel from './DistroPanel';
+import HostingPanel from './HostingPanel';
 import BusinessDiscoveryModal from './wizard/BusinessDiscoveryModal';
 import WizardShell from './wizard/WizardShell';
 import HOW_TO_GUIDES from './wizard/howto-content';
@@ -29,7 +32,9 @@ const APPS = {
   social: { id: 'social', name: 'Social AI', color: '#f43f5e', icon: Share2, portals: ['business', 'music', 'hospitality'] },
   syncpitch: { id: 'syncpitch', name: 'Sync Pitch AI', color: '#f59e0b', icon: Film, portals: ['music'] },
   bizpitch: { id: 'bizpitch', name: 'Pitch Deck AI', color: '#8b5cf6', icon: Presentation, portals: ['business'] },
-  pos: { id: 'pos', name: 'Intermaven POS', color: '#0ea5e9', icon: Smartphone, portals: ['business', 'music'] }
+  pos: { id: 'pos', name: 'Intermaven POS', color: '#0ea5e9', icon: Smartphone, portals: ['business', 'music'] },
+  distro: { id: 'distro', name: 'Distribution Tracker', color: '#0ea5e9', icon: Activity, portals: ['music'] },
+  hosting: { id: 'hosting', name: 'Hosting Manager', color: '#10b981', icon: Globe, portals: ['business', 'music'] }
 };
 
 const ALL_PORTALS = [
@@ -1228,8 +1233,10 @@ function Dashboard() {
           {activePanel === 'filemanager' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><FileManager /></div>}
           {activePanel === 'channels' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><Channels /></div>}
           {activePanel === 'pos' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><POSPanel /></div>}
+          {activePanel === 'distro' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><DistroPanel /></div>}
+          {activePanel === 'hosting' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><HostingPanel /></div>}
 
-          {APPS[activePanel] && !['social','crm','epk','filemanager','settings','channels','pos'].includes(activePanel) && (
+          {APPS[activePanel] && !['social','crm','epk','filemanager','settings','channels','pos','distro','hosting'].includes(activePanel) && (
             <div style={{ flex: 1, height: '100%', overflow: 'auto' }}>
               <WizardShell
                 appId={activePanel}
