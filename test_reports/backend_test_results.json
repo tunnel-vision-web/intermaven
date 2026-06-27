@@ -1,23 +1,23 @@
 {
-  "timestamp": "2026-06-27T11:58:50.211254", 
+  "timestamp": "2026-06-27T12:01:00.096996", 
   "passed_tests": 1, 
   "total_tests": 3, 
   "results": [
     {
       "test": "Health Check", 
-      "timestamp": "2026-06-27T11:58:45.192975", 
+      "timestamp": "2026-06-27T12:00:55.531738", 
       "details": "Status: 200", 
       "success": true
     }, 
     {
       "test": "User Login (Demo)", 
-      "timestamp": "2026-06-27T11:58:46.253378", 
+      "timestamp": "2026-06-27T12:00:56.656963", 
       "details": "Expected 200, got 401: Invalid email or password", 
       "success": false
     }, 
     {
       "test": "User Registration", 
-      "timestamp": "2026-06-27T11:58:50.210202", 
+      "timestamp": "2026-06-27T12:01:00.095873", 
       "details": "Expected 200, got 500: Internal server error", 
       "success": false
     }

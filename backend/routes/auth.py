@@ -128,7 +128,7 @@ async def register(user_data: UserCreate):
         value=access_token,
         httponly=True,
         max_age=15 * 24 * 60 * 60,
-        expires=15 * 24 * 60 * 60,
+
         domain=cookie_domain,
         samesite="lax",
         secure=True if cookie_domain else False
@@ -185,7 +185,7 @@ async def login(user_data: UserLogin, request: Request, response: Response):
         value=access_token,
         httponly=True,
         max_age=15 * 24 * 60 * 60,
-        expires=15 * 24 * 60 * 60,
+
         domain=cookie_domain,
         samesite="lax",
         secure=True if cookie_domain else False
