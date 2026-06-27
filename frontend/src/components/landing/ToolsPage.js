@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FlatIcon } from '../FlatIcon';
+import PageHeader from './PageHeader';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
@@ -255,15 +256,13 @@ function ToolsPage({ portal = 'music', subdomainPage = null, onOpenAuth, onToast
   return (
     <>
       {/* Page Header */}
-      <div className="ph" data-testid="tools-header">
-        <div className="phi" style={{ background: 'radial-gradient(ellipse at 40% 60%,#3b1f6e,#08090d)' }} />
-        <div className="pho" />
-        <div className="phc">
-          <div className="bc">Intermaven › AI Tools</div>
-          <div className="pht">{pageCopy.header}</div>
-          <div className="phs">{pageCopy.subtitle}</div>
-        </div>
-      </div>
+      <PageHeader 
+        pageKey="tools" 
+        portal={portal} 
+        breadcrumb="Intermaven › AI Tools" 
+        title={pageCopy.header} 
+        subtitle={pageCopy.subtitle} 
+      />
 
       {/* Tools Content */}
       <div style={{ padding: '28px 0 60px' }}>
