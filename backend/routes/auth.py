@@ -41,7 +41,7 @@ _debug_log(
 
 
 @router.post("/register", response_model=TokenResponse)
-async def register(user_data: UserCreate):
+async def register(user_data: UserCreate, request: Request, response: Response):
     if db is None:
         raise HTTPException(status_code=503, detail="Database unavailable. Check MONGO_URL and Atlas IP whitelist.")
     
