@@ -51,7 +51,7 @@ const AboutPage = () => {
                     width: '100%', 
                     background: '#1e2937', 
                     border: '1px solid #334155', 
-                    borderRadius: '10px', 
+                    borderRadius: '3px', 
                     padding: '12px 16px', 
                     color: '#e2e8f0',
                     fontSize: '15px'
@@ -67,7 +67,7 @@ const AboutPage = () => {
                     width: '100%', 
                     background: '#1e2937', 
                     border: '1px solid #334155', 
-                    borderRadius: '10px', 
+                    borderRadius: '3px', 
                     padding: '12px 16px', 
                     color: '#e2e8f0',
                     fontSize: '15px'
@@ -83,7 +83,7 @@ const AboutPage = () => {
                     width: '100%', 
                     background: '#1e2937', 
                     border: '1px solid #334155', 
-                    borderRadius: '10px', 
+                    borderRadius: '3px', 
                     padding: '14px 16px', 
                     color: '#e2e8f0',
                     fontSize: '15px',
@@ -99,7 +99,7 @@ const AboutPage = () => {
                   color: '#0f172a',
                   border: 'none',
                   padding: '12px 28px',
-                  borderRadius: '9999px',
+                  borderRadius: '3px',
                   fontWeight: 700,
                   fontSize: '15px',
                   cursor: 'pointer',
@@ -112,16 +112,16 @@ const AboutPage = () => {
 
             {/* Contact info cards */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div style={{ background: '#1e2937', border: '1px solid #334155', borderRadius: '14px', padding: '18px 20px' }}>
+              <div style={{ background: '#1e2937', border: '1px solid #334155', borderRadius: '3px', padding: '18px 20px' }}>
                 <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '4px' }}>EMAIL US</div>
                 <div style={{ fontWeight: 600 }}>hello@intermaven.io</div>
               </div>
-              <div style={{ background: '#1e2937', border: '1px solid #334155', borderRadius: '14px', padding: '18px 20px' }}>
+              <div style={{ background: '#1e2937', border: '1px solid #334155', borderRadius: '3px', padding: '18px 20px' }}>
                 <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '4px' }}>{isWestern ? 'PHONE' : 'WHATSAPP'}</div>
                 <div style={{ fontWeight: 600 }}>{contactPhone || '+254 700 000 000'}</div>
                 <div style={{ fontSize: '13px', color: '#64748b', marginTop: '2px' }}>{isWestern ? 'Mon–Fri, 9am–5pm ET' : 'Mon–Fri, 9am–5pm EAT'}</div>
               </div>
-              <div style={{ background: '#1e2937', border: '1px solid #334155', borderRadius: '14px', padding: '18px 20px' }}>
+              <div style={{ background: '#1e2937', border: '1px solid #334155', borderRadius: '3px', padding: '18px 20px' }}>
                 <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '4px' }}>BASED IN</div>
                 <div style={{ fontWeight: 600 }}>{isWestern ? 'Atlanta, USA · Nairobi, Kenya' : 'Nairobi, Kenya'}</div>
               </div>
