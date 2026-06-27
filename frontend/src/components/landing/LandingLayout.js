@@ -3,6 +3,7 @@ import Netbar from './Netbar';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import PageHeader from './PageHeader';
+import { useRegion } from '../../RegionContext';
 
 import HomePage from './HomePage';
 import ToolsPage from './ToolsPage';
@@ -23,6 +24,7 @@ const pageComponents = {
 };
 
 function LandingLayout({ page = 'home', onOpenAuth, onOpenSignIn, addToast }) {
+  const region = useRegion();
   const [scrolled, setScrolled] = useState(false);
   const [portal, setPortal] = useState('business'); // Business is the default
 

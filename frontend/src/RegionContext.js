@@ -135,16 +135,26 @@ export function RegionProvider({ children }) {
         setCountry(d.country);
         setCountryName(d.country_name);
         setLanguages(d.languages || []);
+        let resolvedCurrency = d.currency;
+        let resolvedCurrencyInfo = d.currency_info;
         if (saved && saved.currency) {
-          setCurrency(saved.currency);
-          setCurrencyInfo(saved.currencyInfo || d.currency_info);
-        } else {
-          setCurrency(d.currency);
-          setCurrencyInfo(d.currency_info);
+          resolvedCurrency = saved.currency;
+          resolvedCurrencyInfo = saved.currencyInfo || d.currency_info;
         }
-        if (saved && saved.language) setLanguage(saved.language);
-        else setLanguage(d.default_language || 'en');
+        setCurrency(resolvedCurrency);
+        setCurrencyInfo(resolvedCurrencyInfo);
+        let resolvedLanguage = d.default_language || 'en';
+        if (saved && saved.language) {
+          resolvedLanguage = saved.language;
+        }
+        setLanguage(resolvedLanguage);
         setReady(true);
+        persist({
+          country: d.country,
+          currency: resolvedCurrency,
+          currencyInfo: resolvedCurrencyInfo,
+          language: resolvedLanguage
+        });
       }).catch(() => {
         // Local Fallback resolution
         const d = resolveRegionLocally(countryCode);
@@ -152,16 +162,26 @@ export function RegionProvider({ children }) {
         setCountry(d.country);
         setCountryName(d.country_name);
         setLanguages(d.languages || []);
+        let resolvedCurrency = d.currency;
+        let resolvedCurrencyInfo = d.currency_info;
         if (saved && saved.currency) {
-          setCurrency(saved.currency);
-          setCurrencyInfo(saved.currencyInfo || d.currency_info);
-        } else {
-          setCurrency(d.currency);
-          setCurrencyInfo(d.currency_info);
+          resolvedCurrency = saved.currency;
+          resolvedCurrencyInfo = saved.currencyInfo || d.currency_info;
         }
-        if (saved && saved.language) setLanguage(saved.language);
-        else setLanguage(d.default_language || 'en');
+        setCurrency(resolvedCurrency);
+        setCurrencyInfo(resolvedCurrencyInfo);
+        let resolvedLanguage = d.default_language || 'en';
+        if (saved && saved.language) {
+          resolvedLanguage = saved.language;
+        }
+        setLanguage(resolvedLanguage);
         setReady(true);
+        persist({
+          country: d.country,
+          currency: resolvedCurrency,
+          currencyInfo: resolvedCurrencyInfo,
+          language: resolvedLanguage
+        });
       });
     };
 

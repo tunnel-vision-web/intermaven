@@ -5,6 +5,7 @@ import { api } from '../../App';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import PageHeader from './PageHeader';
+import { useRegion } from '../../RegionContext';
 import '../../styles/landing.css';
 
 // Full article content registry
@@ -951,6 +952,7 @@ function renderMarkdown(content) {
 }
 
 function ArticlePage() {
+  const region = useRegion();
   const { slug } = useParams();
   const location = useLocation();
   const staticArticle = ARTICLES[slug];
