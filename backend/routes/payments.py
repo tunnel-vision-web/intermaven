@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, BackgroundTasks
 from pydantic import BaseModel
 from typing import Optional
 import os
@@ -273,3 +273,131 @@ async def stripe_webhook(request: Request):
                 })
 
     return {"success": True}
+
+import asyncio
+import uuid
+
+class MpesaSTKPushRequest(BaseModel):
+    phone: str
+    amount: int
+    item: str
+
+class CardCollectRequest(BaseModel):
+    card_name: str
+    card_number: str
+    amount: int
+    item: str
+
+async def simulate_mpesa_completion(checkout_request_id: str, user_id: str, amount: int, item: str):
+    await asyncio.sleep(8)
+    from bson import ObjectId
+    transaction = db.transactions.find_one({"checkout_request_id": checkout_request_id, "status": "pending"})
+    if transaction:
+        db.transactions.update_one(
+            {"_id": transaction["_id"]},
+            {"$set": {"status": "completed", "completed_at": datetime.now(timezone.utc)}}
+        )
+        credits_to_add = int(amount)
+        db.users.update_one(
+            {"_id": ObjectId(user_id)},
+            {"$inc": {"credits": credits_to_add}}
+        )
+        db.notifications.insert_one({
+            "user_id": ObjectId(user_id),
+            "icon": "📱",
+            "title": "M-Pesa Payment Received",
+            "text": f"Successfully collected KES {amount} for '{item}'. Added {credits_to_add} credits.",
+            "read": False,
+            "created_at": datetime.now(timezone.utc)
+        })
+
+async def simulate_card_completion(checkout_request_id: str, user_id: str, amount: int, item: str):
+    await asyncio.sleep(3)
+    from bson import ObjectId
+    transaction = db.transactions.find_one({"checkout_request_id": checkout_request_id, "status": "pending"})
+    if transaction:
+        db.transactions.update_one(
+            {"_id": transaction["_id"]},
+            {"$set": {"status": "completed", "completed_at": datetime.now(timezone.utc)}}
+        )
+        credits_to_add = int(amount)
+        db.users.update_one(
+            {"_id": ObjectId(user_id)},
+            {"$inc": {"credits": credits_to_add}}
+        )
+        db.notifications.insert_one({
+            "user_id": ObjectId(user_id),
+            "icon": "💳",
+            "title": "Card Payment Received",
+            "text": f"Successfully collected USD {amount} for '{item}'. Added {credits_to_add} credits.",
+            "read": False,
+            "created_at": datetime.now(timezone.utc)
+        })
+
+@router.post("/mpesa/stkpush")
+async def mpesa_stkpush(req: MpesaSTKPushRequest, background_tasks: BackgroundTasks, current_user: dict = Depends(get_current_user)):
+    checkout_request_id = f"ws_CO_{uuid.uuid4().hex[:16]}"
+    transaction = {
+        "user_id": current_user["_id"],
+        "type": "mpesa_stk",
+        "checkout_request_id": checkout_request_id,
+        "phone": req.phone,
+        "amount": req.amount,
+        "item": req.item,
+        "status": "pending",
+        "created_at": datetime.now(timezone.utc)
+    }
+    db.transactions.insert_one(transaction)
+    background_tasks.add_task(
+        simulate_mpesa_completion,
+        checkout_request_id,
+        str(current_user["_id"]),
+        req.amount,
+        req.item
+    )
+    return {
+        "success": True,
+        "checkout_request_id": checkout_request_id,
+        "message": "STK Push initiated successfully."
+    }
+
+@router.post("/card/collect")
+async def card_collect(req: CardCollectRequest, background_tasks: BackgroundTasks, current_user: dict = Depends(get_current_user)):
+    checkout_request_id = f"ws_CC_{uuid.uuid4().hex[:16]}"
+    transaction = {
+        "user_id": current_user["_id"],
+        "type": "card_pos",
+        "checkout_request_id": checkout_request_id,
+        "card_name": req.card_name,
+        "amount": req.amount,
+        "item": req.item,
+        "status": "pending",
+        "created_at": datetime.now(timezone.utc)
+    }
+    db.transactions.insert_one(transaction)
+    background_tasks.add_task(
+        simulate_card_completion,
+        checkout_request_id,
+        str(current_user["_id"]),
+        req.amount,
+        req.item
+    )
+    return {
+        "success": True,
+        "checkout_request_id": checkout_request_id,
+        "message": "Card transaction initiated successfully."
+    }
+
+@router.get("/mpesa/status/{checkout_request_id}")
+async def get_mpesa_status(checkout_request_id: str, current_user: dict = Depends(get_current_user)):
+    transaction = db.transactions.find_one({
+        "checkout_request_id": checkout_request_id,
+        "user_id": current_user["_id"]
+    })
+    if not transaction:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    return {
+        "status": transaction.get("status", "pending"),
+        "amount": transaction.get("amount"),
+        "item": transaction.get("item")
+    }

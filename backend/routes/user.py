@@ -124,7 +124,7 @@ async def get_available_apps():
         "syncpitch": {"id": "syncpitch", "name": "Sync Pitch AI", "icon": "syncpitch", "color": "#f59e0b", "desc": "Film, TV and advertising pitches", "cost": 20, "status": "live"},
         "bizpitch": {"id": "bizpitch", "name": "Pitch Deck AI", "icon": "pitchdeck", "color": "#8b5cf6", "desc": "Investor and grant pitch decks", "cost": 18, "status": "live"},
         "epk": {"id": "epk", "name": "Electronic Press Kit", "icon": "epk", "color": "#ec4899", "desc": "Hosted EPK pages for artists", "cost": 25, "status": "coming_soon"},
-        "pos": {"id": "pos", "name": "Intermaven POS", "icon": "pos", "color": "#0e9499", "desc": "M-Pesa native point of sale", "cost": 0, "status": "coming_soon"},
+        "pos": {"id": "pos", "name": "Intermaven POS", "icon": "pos", "color": "#0e9499", "desc": "Mobile money and card terminal", "cost": 0, "status": "live"},
         "distro": {"id": "distro", "name": "Distribution Tracker", "icon": "distro", "color": "#0ea5e9", "desc": "Track music across platforms", "cost": 10, "status": "coming_soon"}
     }
     return {"apps": apps}
