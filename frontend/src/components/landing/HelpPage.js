@@ -310,7 +310,7 @@ const HelpPage = () => {
           </div>
 
           <div className="help-content">
-            <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '20px' }}>Help Topics</h2>
+            <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '20px', textAlign: 'center' }}>Help Topics</h2>
             
             <div className="help-categories" style={{ 
               display: 'grid', 
@@ -763,8 +763,8 @@ const HelpPage = () => {
                 // ================= TICKET SUBMISSION FORM =================
                 <form onSubmit={handleSubmitTicket} style={{ display: 'grid', gap: '18px' }}>
                   <div>
-                    <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#fff' }}>Submit a Support Ticket</h2>
-                    <p style={{ fontSize: '13px', color: '#94a3b8', marginTop: '4px' }}>
+                    <h2 style={{ fontSize: '18px', fontWeight: 800, color: '#fff', textAlign: 'center' }}>Submit a Support Ticket</h2>
+                    <p style={{ fontSize: '13px', color: '#94a3b8', marginTop: '4px', textAlign: 'center' }}>
                       Fill out your concern and our support agents and AI helper will assist you shortly.
                     </p>
                   </div>

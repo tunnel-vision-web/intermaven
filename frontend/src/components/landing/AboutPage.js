@@ -15,7 +15,7 @@ const AboutPage = () => {
         </div>
 
         <section className="our-story" style={{ marginBottom: '60px' }}>
-          <h2 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '16px' }}>Our Story</h2>
+          <h2 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '16px', textAlign: 'center' }}>Our Story</h2>
           <div style={{ display: 'grid', gap: '20px', maxWidth: '780px' }}>
             <p style={{ color: '#cbd5e1', lineHeight: 1.7 }}>
               We built Intermaven because creators in Africa deserve world-class tools that understand their unique challenges — 
@@ -29,8 +29,8 @@ const AboutPage = () => {
         </section>
 
         <section className="contact-section" style={{ marginBottom: '40px' }}>
-          <h2 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '8px' }}>Send Us a Message</h2>
-          <p style={{ color: '#94a3b8', marginBottom: '24px' }}>
+          <h2 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '8px', textAlign: 'center' }}>Send Us a Message</h2>
+          <p style={{ color: '#94a3b8', marginBottom: '24px', textAlign: 'center' }}>
             Have questions, feedback, or partnership ideas? We'd love to hear from you.
           </p>
           
