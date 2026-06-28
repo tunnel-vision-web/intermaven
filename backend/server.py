@@ -6,7 +6,6 @@ import os
 import json
 import uuid
 from dotenv import load_dotenv
-import traceback
 
 # region agent log
 def _debug_log(hypothesis_id: str, location: str, message: str, data: dict):
@@ -115,11 +114,13 @@ async def add_security_headers(request: Request, call_next):
 @app.exception_handler(Exception)
 async def log_exceptions(request: Request, exc: Exception):
     logger.exception("Unhandled exception on %s %s", request.method, request.url)
+    # CRITICAL: include CORS headers on error responses so browsers don't mask
+    # backend 500s as CORS failures. Starlette skips CORSMiddleware for
+    # exception_handler responses, so we add the headers manually here.
     origin = request.headers.get("origin", "*")
-    tb = "".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
     return JSONResponse(
         status_code=500,
-        content={"detail": "Internal server error", "traceback": tb},
+        content={"detail": "Internal server error"},
         headers={
             "Access-Control-Allow-Origin": origin,
             "Access-Control-Allow-Credentials": "false",
