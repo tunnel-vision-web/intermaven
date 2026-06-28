@@ -204,7 +204,12 @@ except Exception as _seed_err:
 
 @app.get("/api/health")
 async def health_check():
-    return {"status": "healthy", "service": "Intermaven API"}
+    return {
+        "status": "healthy",
+        "service": "Intermaven API",
+        "commit": os.environ.get("RENDER_GIT_COMMIT", "local"),
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
 
 if __name__ == "__main__":
     import uvicorn
