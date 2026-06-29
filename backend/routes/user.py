@@ -73,7 +73,7 @@ class AddAppRequest(BaseModel):
     app_id: str
 
 
-AVAILABLE_APPS = ['brandkit', 'musicbio', 'social', 'syncpitch', 'bizpitch']
+AVAILABLE_APPS = ['brandkit', 'musicbio', 'social', 'syncpitch', 'bizpitch', 'epk', 'pos', 'distro', 'hosting']
 
 
 @apps_router.post("/api/users/apps")

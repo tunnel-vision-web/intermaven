@@ -334,14 +334,97 @@ async def simulate_card_completion(checkout_request_id: str, user_id: str, amoun
             "created_at": datetime.now(timezone.utc)
         })
 
+async def get_mpesa_access_token():
+    consumer_key = os.environ.get("MPESA_CONSUMER_KEY")
+    consumer_secret = os.environ.get("MPESA_CONSUMER_SECRET")
+    if not consumer_key or not consumer_secret:
+        return None
+    url = "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, auth=(consumer_key, consumer_secret))
+            if response.status_code == 200:
+                return response.json().get("access_token")
+    except Exception:
+        pass
+    return None
+
 @router.post("/mpesa/stkpush")
 async def mpesa_stkpush(req: MpesaSTKPushRequest, background_tasks: BackgroundTasks, current_user: dict = Depends(get_current_user)):
+    # Format and normalize phone number
+    phone = req.phone.strip()
+    if phone.startswith("+"):
+        phone = phone[1:]
+    if phone.startswith("0"):
+        phone = "254" + phone[1:]
+    if not phone.startswith("254"):
+        phone = "254" + phone
+
     checkout_request_id = f"ws_CO_{uuid.uuid4().hex[:16]}"
+    access_token = await get_mpesa_access_token()
+    
+    if access_token:
+        # Real Safaricom M-Pesa STK Push
+        shortcode = os.environ.get("MPESA_SHORTCODE", "174379")
+        passkey = os.environ.get("MPESA_PASSKEY", "bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919")
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S")
+        password_str = f"{shortcode}{passkey}{timestamp}"
+        import base64
+        password = base64.b64encode(password_str.encode()).decode()
+        
+        callback_url = os.environ.get("MPESA_CALLBACK_URL", "https://api.intermaven.io/api/payments/mpesa/callback")
+        
+        payload = {
+            "BusinessShortCode": shortcode,
+            "Password": password,
+            "Timestamp": timestamp,
+            "TransactionType": "CustomerPayBillOnline",
+            "Amount": int(req.amount),
+            "PartyA": phone,
+            "PartyB": shortcode,
+            "PhoneNumber": phone,
+            "CallBackURL": callback_url,
+            "AccountReference": "TuneMavens",
+            "TransactionDesc": req.item
+        }
+        
+        try:
+            async with httpx.AsyncClient() as client:
+                res = await client.post(
+                    "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
+                    json=payload,
+                    headers={"Authorization": f"Bearer {access_token}"}
+                )
+                if res.status_code == 200:
+                    res_data = res.json()
+                    if res_data.get("ResponseCode") == "0":
+                        checkout_request_id = res_data.get("CheckoutRequestID", checkout_request_id)
+                        transaction = {
+                            "user_id": current_user["_id"],
+                            "type": "mpesa_stk",
+                            "checkout_request_id": checkout_request_id,
+                            "phone": phone,
+                            "amount": req.amount,
+                            "item": req.item,
+                            "status": "pending",
+                            "created_at": datetime.now(timezone.utc)
+                        }
+                        db.transactions.insert_one(transaction)
+                        return {
+                            "success": True,
+                            "checkout_request_id": checkout_request_id,
+                            "message": "STK Push sent. Please check your phone for the PIN prompt."
+                        }
+        except Exception as e:
+            print(f"M-Pesa API Call failed: {e}")
+            pass
+
+    # Simulated fallback
     transaction = {
         "user_id": current_user["_id"],
         "type": "mpesa_stk",
         "checkout_request_id": checkout_request_id,
-        "phone": req.phone,
+        "phone": phone,
         "amount": req.amount,
         "item": req.item,
         "status": "pending",
@@ -358,8 +441,84 @@ async def mpesa_stkpush(req: MpesaSTKPushRequest, background_tasks: BackgroundTa
     return {
         "success": True,
         "checkout_request_id": checkout_request_id,
-        "message": "STK Push initiated successfully."
+        "message": "STK Push initiated successfully (Simulated mode)."
     }
+
+@router.post("/mpesa/callback")
+async def mpesa_callback(request: Request):
+    payload = await request.json()
+    stk_callback = payload.get("Body", {}).get("stkCallback", {})
+    result_code = stk_callback.get("ResultCode")
+    checkout_request_id = stk_callback.get("CheckoutRequestID")
+    
+    if not checkout_request_id:
+        raise HTTPException(status_code=400, detail="Invalid callback payload")
+        
+    transaction = db.transactions.find_one({"checkout_request_id": checkout_request_id})
+    if not transaction:
+        return {"success": False, "message": "Transaction not found"}
+        
+    from bson import ObjectId
+    if result_code == 0:
+        meta_items = stk_callback.get("CallbackMetadata", {}).get("Item", [])
+        amount = 0
+        receipt = ""
+        for item in meta_items:
+            name = item.get("Name")
+            value = item.get("Value")
+            if name == "Amount":
+                amount = value
+            elif name == "MpesaReceiptNumber":
+                receipt = value
+                
+        db.transactions.update_one(
+            {"_id": transaction["_id"]},
+            {
+                "$set": {
+                    "status": "completed",
+                    "completed_at": datetime.now(timezone.utc),
+                    "receipt_number": receipt,
+                    "callback_amount": amount
+                }
+            }
+        )
+        
+        credits_to_add = int(amount if amount > 0 else transaction.get("amount", 0))
+        db.users.update_one(
+            {"_id": ObjectId(transaction["user_id"])},
+            {"$inc": {"credits": credits_to_add}}
+        )
+        
+        db.notifications.insert_one({
+            "user_id": ObjectId(transaction["user_id"]),
+            "icon": "📱",
+            "title": "M-Pesa Payment Received",
+            "text": f"Successfully collected KES {amount} (Receipt: {receipt}) for '{transaction.get('item')}'",
+            "read": False,
+            "created_at": datetime.now(timezone.utc)
+        })
+    else:
+        result_desc = stk_callback.get("ResultDesc", "Transaction failed")
+        db.transactions.update_one(
+            {"_id": transaction["_id"]},
+            {
+                "$set": {
+                    "status": "failed",
+                    "error_description": result_desc,
+                    "completed_at": datetime.now(timezone.utc)
+                }
+            }
+        )
+        db.notifications.insert_one({
+            "user_id": ObjectId(transaction["user_id"]),
+            "icon": "⚠️",
+            "title": "M-Pesa Payment Failed",
+            "text": f"Collection of KES {transaction.get('amount')} for '{transaction.get('item')}' failed: {result_desc}",
+            "read": False,
+            "created_at": datetime.now(timezone.utc)
+        })
+        
+    return {"success": True}
 
 @router.post("/card/collect")
 async def card_collect(req: CardCollectRequest, background_tasks: BackgroundTasks, current_user: dict = Depends(get_current_user)):
