@@ -851,13 +851,15 @@ db.users.updateOne(
 
 Shared infrastructure with intermaven.io. Users from intermaven.io are auto-recognized. No re-registration required. Same JWT, same credits, same MongoDB.
 
+tunemavens.com is positioned as a **comprehensive music business marketplace** — not just a streaming/distribution utility, but the operating layer for publishing, distribution, sync licensing, and placement across the African music ecosystem and beyond.
+
 ## 9.2 User Types (7 total)
 
 Each has a dedicated multi-step modal onboarding wizard.
 
 **Consumer** — Streaming and downloading. Wizard: Personal info → Genre/content prefs → Creator discovery (pick 3) → Device detection → Pricing → Payment → Dashboard.
 
-**Creator (Artist/Educator/Podcaster)** — Distribution, publishing, sync, merch. Wizard: About + payment + type → Details/bio/gallery → Discography/products → Compensation matrix → E-sign → Dashboard.
+**Creator (Artist/Educator/Podcaster)** — Distribution, publishing, sync, merch. Wizard: About + payment + type → Details/bio/gallery → Discography/products → **Publishing & Distribution election** (see 9.3.1, 9.3.2) → **App Marketplace recommendation step** (see 9.6) → Compensation matrix → E-sign → Dashboard.
 
 **Record Label** — Full roster management. Default 50/50 Gross Net split (editable per label in admin). Bulk upload for roster and catalogue with CSV validation.
 
@@ -869,12 +871,68 @@ Each has a dedicated multi-step modal onboarding wizard.
 
 **Media House** — Content licensing, broadcast royalties, interview/appearance requests. Mandatory playlist reporting with AI discrepancy detection. Escrow for appearance fees.
 
+---
+
 ## 9.3 Compensation Engine
 
 Cascade payment logic resolves all splits in one transaction cycle:
-Intermaven commission → Label share → Artist split → Manager fee → Investor recoupment
 
-Supports: distribution, publishing, sync, merch, ads, partnerships — each with independent split logic. Milestone-based payment schedules for partnership deals. Escrow for interview fees and pre-delivery licensing payments. Immutable audit trail accessible to all rights holders.
+**Intermaven/Tunemavens commission → Label share → Artist split → Manager fee → Investor recoupment**
+
+Supports: distribution, publishing, sync, merch, ads, partnerships — each with independent split logic configured per deal type. Milestone-based payment schedules for partnership deals. Escrow for interview fees and pre-delivery licensing payments. Immutable audit trail accessible to all rights holders.
+
+The cascade engine is deal-type-agnostic at the transaction layer — it always resolves Commission → Label/Publisher → Artist → Manager → Investor in that order — but the **percentage configuration and recoupment stack differ per revenue category**, as detailed below. Every configuration is stored as a versioned record attached to the relevant contract, never as a global constant, so two artists on the platform can run materially different splits without code changes.
+
+### 9.3.1 Publishing — Three Configurations
+
+Most creators arriving on the platform have **no existing publishing administration**. Tunemavens offers three tiers of publishing relationship, selected during the Creator onboarding wizard:
+
+**A. Tunemavens Publishing (Standard Administration)**
+- Creator opts in to have Tunemavens administer their publishing rights only (no active pitching/placement service).
+- Split follows **standard Western publishing convention: 50/50 on the publisher's share** — i.e. of the total publishing royalty, 50% is allocated to the writer's share (always retained by the songwriter, non-negotiable under standard convention) and 50% to the publisher's share, which is split 50/50 between Tunemavens Publishing and the writer/creator acting as their own publisher (or split further if a co-publisher is involved — see 9.3.1.B).
+- This is an administrative-only relationship: Tunemavens registers works, collects royalties via PRO/CMO relationships, and distributes — no active sync pitching service is included at this tier.
+
+**B. Tunemavens Placement, Publishing & Sync Agent (Full-Service / Co-Publishing)**
+- Creator opts in to a full-service relationship: Tunemavens actively pitches the catalogue for sync and placement opportunities using its existing label, sync, and media-house network.
+- This is structured as a **co-publishing deal**, most often involving one of Tunemavens' existing publishing partners.
+- **Publisher's share split: 50/50 between the collective publishers** (Tunemavens + co-publishing partner, combined, vs. the writer/creator's publisher-side share) — consistent with the standard publishing convention in 9.3.1.A, but now shared across two publishing entities on the administering side.
+- **Writing/production contribution share**: if Tunemavens (or a Tunemavens-affiliated writer/producer) contributed creatively to the work — writing, top-line, production, etc. — the collective publishers may additionally hold a **writer-side or production-credit share** in the work itself, separate from and in addition to the publisher-side administration split. This must be documented per-work in the contract (see Compensation & Contracts doc, §2).
+- **Recoupables**: any advances, catalogue purchase costs, or marketing/pitching spend fronted by Tunemavens under this tier are tracked as recoupable against the creator's share, recouped before ongoing splits resume (see 9.3.3).
+- All downstream payments — once the co-publishing split and any recoupment are resolved — cascade through the standard Compensation Engine waterfall (Commission → Label → Artist → Manager → Investor) exactly as any other deal type.
+
+**C. Catalogue Acquisition / Advance Recoupment**
+- Applies when Tunemavens has purchased a catalogue outright, or has advanced funds against future earnings (publishing, distribution, sync, or otherwise).
+- Advances and acquisition costs are **recouped in standard recoupment order** — i.e. 100% of net receipts apply against the outstanding advance/acquisition balance until fully recovered, after which normal splits resume per the relevant configuration (9.3.1.A or 9.3.1.B).
+- Recoupment balances are tracked per-deal in an immutable ledger, visible to the rights holder, with real-time remaining-balance reporting.
+
+### 9.3.2 Distribution — Three Paths
+
+Tunemavens offers distribution comparable to DistroKid-style aggregators, plus a native rev-share option:
+
+**A. Standard Distribution (Fee-Matched)**
+- Mirrors third-party distributor pricing models (flat annual/per-release fee structures, consistent with how competing platforms price distribution — not a revenue split).
+- Creator retains their full royalty share from DSPs; Tunemavens charges the matched flat fee for distribution service only.
+
+**B. Tunemavens Native Distribution (Revenue Share)**
+- Distributing directly through tunemavens.com (rather than out to third-party DSPs via the standard pipeline) runs on a **flat 45/55 split in Tunemavens' favor** (Tunemavens 45% / Creator 55%), admin-editable per artist or per release.
+- This is a genuinely distinct pricing model from 9.3.2.A — flat-fee vs. rev-share — and the two must never be conflated in the schema or contract templates (see Compensation & Contracts doc, §3).
+
+**C. Label / Catalogue Owner Negotiation (AI Wizard)**
+- For labels and catalogue owners, an AI/wizard-guided negotiation flow opens at a **50/50 starting split** and iterates through guided counter-offer rounds until both parties lock in terms.
+- Once agreed, the negotiated split is finalized and flows into the Contract Creation System exactly like the fixed-split paths — the contract generator is informed which path (fixed 45/55 vs. negotiated) produced the terms, so it pulls the correct clause set and discloses negotiation history in the contract metadata.
+
+### 9.3.3 Recoupment Order (applies across 9.3.1 and 9.3.2)
+
+When recoupable advances exist (catalogue purchase, publishing advance, distribution advance, or sync advance), recoupment is always applied **before** the relevant cascade resumes normal split behavior:
+
+```
+Gross Receipts → Recoupment Balance (if any) → Standard Cascade:
+  Commission → Label/Publisher Share → Artist Split → Manager Fee → Investor Recoupment
+```
+
+Recoupment balances are deal-specific (tied to the originating contract/advance record) and never cross-collateralize between unrelated deals unless the contract explicitly states cross-collateralization.
+
+---
 
 ## 9.4 AI Notification Layer
 
@@ -883,6 +941,74 @@ Fires on every meaningful platform event across both portals. Respects each user
 ## 9.5 EPK Cross-Platform Hosting
 
 Artists can host their EPK on intermaven.io, tunemavens.com, or a custom domain — or all three simultaneously. Single source of truth: updates on one instance propagate to all hosted instances automatically.
+
+## 9.6 Intermaven App Marketplace (Cross-Portal App Toggle)
+
+All Intermaven apps (Brand Kit AI, Social AI, Music Bio & Press Kit, Sync Pitch AI, Pitch Deck AI, EPK Builder, CRM & Comms, File Manager, and future roadmap apps) are available **inside the tunemavens.com dashboard**, not gated behind a separate intermaven.io login.
+
+- **Simple toggle activation**: each app appears as a togglable card in the user's dashboard; activating adds it to `users.apps[]` (existing field — no schema change needed for the toggle itself).
+- **Onboarding recommendation engine**: during the Creator (and other user-type) onboarding wizards, the system makes intelligent app recommendations based on wizard answers — e.g. an artist who indicates active touring gets Tour Manager and Merch Designer Brief surfaced; an artist focused on sync gets Sync Pitch AI and Sync Brief AI surfaced. Recommendations are suggestions, not defaults — nothing auto-activates without user confirmation.
+- **Per-user custom dashboard**: each user's dashboard panel arrangement, active app set, and layout is fully custom and editable at any time — not a fixed template tied to user type. This requires a net-new field on the `users` schema: `dashboard_layout: Object` (free-form layout/ordering state, analogous to how `apps: [String]` already tracks activation but doesn't track arrangement).
+
+---
+
+## 9.7 Schema Additions Required for This Update
+
+```js
+// users collection — new field
+dashboard_layout: Object   // free-form per-user panel ordering/layout state
+
+// new collection: publishing_deals
+{
+  _id: ObjectId,
+  creator_id: ObjectId,
+  tier: String,                  // 'standard_admin' | 'full_service_copub'
+  copublisher_partner_id: ObjectId,   // null if standard_admin
+  publisher_share_split: {
+    tunemavens_pct: Number,      // 50 by default (of the publisher's share)
+    creator_publisher_pct: Number,
+    copublisher_partner_pct: Number    // null if standard_admin
+  },
+  writer_credit_share: {          // only if Tunemavens contributed creatively
+    applies: Boolean,
+    pct: Number,
+    contributors: [String]
+  },
+  recoupment_balance: Number,     // outstanding advance/acquisition balance, 0 if none
+  status: String,                 // 'active' | 'terminated'
+  contract_id: ObjectId,
+  created_at: Date
+}
+
+// new collection: distribution_deals
+{
+  _id: ObjectId,
+  creator_id: ObjectId,
+  path: String,                   // 'standard_fee_matched' | 'tunemavens_native' | 'label_negotiated'
+  fee_structure: String,          // 'flat_fee' | 'rev_share'
+  tunemavens_split_pct: Number,   // 45 for native default; null for flat_fee path
+  creator_split_pct: Number,      // 55 for native default; null for flat_fee path
+  negotiation_history: [Object],  // only populated for label_negotiated path
+  contract_id: ObjectId,
+  created_at: Date
+}
+
+// catalogue_acquisitions / advances — recoupment ledger
+{
+  _id: ObjectId,
+  creator_id: ObjectId,
+  deal_type: String,              // 'catalogue_purchase' | 'publishing_advance' | 'distribution_advance' | 'sync_advance'
+  original_amount: Number,
+  recouped_to_date: Number,
+  remaining_balance: Number,
+  cross_collateralized: Boolean,
+  linked_contract_id: ObjectId,
+  created_at: Date,
+  updated_at: Date
+}
+```
+
+*This section supersedes the prior §9.3 Compensation Engine description and adds §9.6–9.7. See the companion document `COMPENSATION_AND_CONTRACTS.md` for the contract-template and clause-level detail behind each configuration above.*
 
 ---
 

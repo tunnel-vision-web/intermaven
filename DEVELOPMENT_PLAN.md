@@ -2,6 +2,12 @@
 
 This development plan integrates the complete platform roadmap, including the 22 remaining dashboard applications and the full architecture for `tunemavens.com`.
 
+**Companion documents:**
+- `DOCUMENTATION.md §9` — full technical spec for tunemavens.com (user types, Compensation Engine with 3 publishing tiers + 3 distribution paths, App Marketplace, schema additions).
+- `COMPENSATION_AND_CONTRACTS.md` — legal counterpart to the Compensation Engine: 6 contract templates, routing logic, audit-trail requirements, and the rule that no cascade transaction may fire without a signed `contract_id`.
+
+tunemavens.com is positioned as a **comprehensive music business marketplace** — the operating layer for publishing, distribution, sync licensing, and placement across the African music ecosystem and beyond — not merely a streaming/distribution utility.
+
 ---
 
 ## 1. Shared Infrastructure Architecture (`intermaven.io` & `tunemavens.com`)
@@ -72,13 +78,15 @@ graph TD
 - Build onboarding flow for listeners: personal details → preferences → device detection.
 
 ### Phase 3 — Creator Pipeline
-- Implement multi-step wizard for artists: bio -> catalog upload -> payout settings -> e-sign terms.
+- Implement multi-step wizard for artists: about/payment/type → details/bio/gallery → discography/products → **Publishing & Distribution election** (3-tier publishing, 3-path distribution — see Phase 7) → **App Marketplace recommendation step** (see Phase 7.5) → compensation matrix → e-sign → dashboard.
 - Setup EPK distribution settings allowing cross-platform mirror hosting.
+- Add `dashboard_layout: Object` field to `users` collection for per-user custom panel ordering (decoupled from `users.apps[]` activation list).
 
 ### Phase 4 — Record Label Console
 - Build roster directory dashboard for managers.
 - Implement catalog bulk CSV uploader with strict metadata schema verification.
 - Establish default 50/50 gross net royalty split configurations (editable per artist).
+- Wire labels into the **Distribution Path C (Label / Catalogue Owner Negotiation)** AI wizard (50/50 opening offer, iterative counter-offer rounds, terms persisted to `distribution_deals.negotiation_history`).
 
 ### Phase 5 — DJ Pool Engine
 - Create high-quality audio download center (WAV/MP3-320) featuring extended intro/outro edits.
@@ -88,13 +96,63 @@ graph TD
 - scene-based AI search engine indexed by moods and visual tags.
 - Secure marketplace listing 30-second watermarked tracks.
 
-### Phase 7 — Split Cascade Engine
-- Develop database transaction ledger to resolve multi-tier payment splits instantly:
-  `Platform Commission -> Label Share -> Artist Split -> Manager Fee -> Investor Recoupment`
+### Phase 7 — Split Cascade Engine (Compensation Engine)
+Develop database transaction ledger to resolve multi-tier payment splits instantly:
+`Platform Commission → Label/Publisher Share → Artist Split → Manager Fee → Investor Recoupment`
+
+The cascade engine is **deal-type-agnostic at the transaction layer** — order is fixed — but percentage configuration and recoupment stack vary per revenue category. Every configuration is stored as a versioned record attached to the relevant contract (never as a global constant). See `DOCUMENTATION.md §9.3` for the full spec.
+
+**7.1 Publishing — three configurations (`publishing_deals` collection)**
+- **A. Standard Administration** — 50/50 publisher's share, writer's share retained by songwriter, administration-only (no pitching obligation).
+- **B. Full-Service Co-Publishing** — publisher's share split 50/50 between collective publishers (Tunemavens + named partner) vs. creator's publisher-side interest; active pitching obligation; optional writer/production credit share tracked per-work; recoupables itemised.
+- **C. Catalogue Acquisition / Advance** — 100% of net receipts recoup against outstanding balance until cleared; reversion terms documented per deal.
+
+**7.2 Distribution — three paths (`distribution_deals` collection)**
+- **A. Standard (Fee-Matched, flat fee)** — service fee only, creator retains 100% of DSP royalties. Must never be conflated with rev-share path.
+- **B. Tunemavens Native (Revenue Share)** — 45/55 in Tunemavens' favour, admin-editable per artist/release (always backed by a signed amendment, never unilateral).
+- **C. Label / Catalogue Owner Negotiation** — AI wizard opens at 50/50, iterates counter-offer rounds until both parties lock terms; full negotiation history persisted.
+
+**7.3 Recoupment ledger (`catalogue_acquisitions` collection)**
+- Applies across Publishing and Distribution paths.
+- Gross Receipts → Recoupment Balance (if any) → Standard Cascade.
+- Deal-specific, no cross-collateralisation unless contract explicitly states otherwise.
+- Real-time remaining-balance reporting exposed to rights holders.
+
+**7.4 Schema additions** — new collections `publishing_deals`, `distribution_deals`, `catalogue_acquisitions`; new field `users.dashboard_layout`. Full schema in `DOCUMENTATION.md §9.7`.
+
+**7.5 Intermaven App Marketplace cross-portal integration (`DOCUMENTATION.md §9.6`)**
+- All intermaven.io apps appear as togglable cards inside the tunemavens.com dashboard — no separate login.
+- Activation toggle writes to existing `users.apps[]` (no schema change needed for activation).
+- Onboarding wizard runs an **app recommendation engine** based on user answers (e.g. touring artist → Tour Manager + Merch Designer Brief; sync-focused artist → Sync Pitch AI + Sync Brief AI). Recommendations are suggestions only — no auto-activation.
+- Per-user dashboard layout is custom and editable (uses new `users.dashboard_layout: Object` field, separate from `apps[]`).
 
 ### Phase 8 — Escrow & Contract Module
 - Integrate milestone-based payment processing.
 - Deploy escrow holds for appearance booking fees and upfront sync licensing advances.
+
+**8.1 Contract Creation System (`COMPENSATION_AND_CONTRACTS.md`)**
+The Contract Creation System is the legal counterpart of the Phase 7 Compensation Engine. Every compensation configuration must produce a corresponding signed contract before any cascade transaction is permitted to fire. The cascade is **code-gated** to refuse any deal lacking a signed `contract_id`.
+
+**8.2 Template families (6 templates total)**
+- **Publishing**: 2.1 Standard Administration · 2.2 Full-Service Co-Publishing (+ Work-Specific Writer/Production Addendum when applicable) · 2.3 Catalogue Acquisition / Advance.
+- **Distribution**: 3.1 Standard Flat-Fee · 3.2 Native Revenue Share · 3.3 Label / Catalogue Owner Negotiated (+ Negotiation History Schedule auto-attached).
+
+**8.3 Routing logic**
+```
+IF deal_type == "publishing":
+    standard_admin       → Template 2.1
+    full_service_copub   → Template 2.2 (+ writer/production addendum if applicable)
+    catalogue_acquisition→ Template 2.3
+IF deal_type == "distribution":
+    standard_fee_matched → Template 3.1
+    tunemavens_native    → Template 3.2
+    label_negotiated     → Template 3.3 (+ negotiation history schedule)
+```
+
+**8.4 Required behaviour**
+- All percentage and recoupment figures pulled **live from the deal record**, never from static template defaults — signed document must reflect actual configured terms.
+- After e-signature, contract stored and `contract_id` written back to the deal record, unlocking it for the Compensation Engine.
+- **Audit trail per contract** (immutable ledger from §9.3): downloadable signed contract, real-time recoupment balance, full cascade payment history, negotiation history (where applicable).
 
 ### Phase 9 — Ad Injection Platform
 - Create sponsorship desk allowing brands to bid on custom playlist sponsorships.
