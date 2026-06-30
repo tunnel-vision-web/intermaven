@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import PageHeader from './PageHeader';
 import { useRegion } from '../../RegionContext';
+import { CmsProvider } from '../../cms/CmsContext';
 
 import HomePage from './HomePage';
 import ToolsPage from './ToolsPage';
@@ -55,39 +56,41 @@ function LandingLayout({ page = 'home', onOpenAuth, onOpenSignIn, addToast }) {
   const showFullHeader = layoutHeaderPages.includes(page);
 
   return (
-    <div className={`landing-wrapper ${scrolled ? 'scrolled' : ''}`}>
-      <Netbar 
-        portal={portal}
-        onPortalChange={handlePortalChange}
-      />
-      <Navbar 
-        onOpenAuth={onOpenAuth} 
-        onOpenSignIn={onOpenSignIn} 
-      />
-      
-      {showFullHeader && (
-        <PageHeader 
-          pageKey={page} 
+    <CmsProvider portal={portal}>
+      <div className={`landing-wrapper ${scrolled ? 'scrolled' : ''}`}>
+        <Netbar 
           portal={portal}
-          title={page === 'forum' ? 'Community Forum' : 
-                 page === 'help' ? 'Help Center' : 
-                 page === 'about' ? 'About Intermaven' : ''}
+          onPortalChange={handlePortalChange}
         />
-      )}
-
-      <main className="landing-content">
-        <PageComponent 
-          portal={portal}
+        <Navbar 
           onOpenAuth={onOpenAuth} 
           onOpenSignIn={onOpenSignIn} 
-          onOpenAppModal={onOpenAuth}
-          onToast={addToast}
-          addToast={addToast}
         />
-      </main>
+        
+        {showFullHeader && (
+          <PageHeader 
+            pageKey={page} 
+            portal={portal}
+            title={page === 'forum' ? 'Community Forum' : 
+                   page === 'help' ? 'Help Center' : 
+                   page === 'about' ? 'About Intermaven' : ''}
+          />
+        )}
 
-      <Footer />
-    </div>
+        <main className="landing-content">
+          <PageComponent 
+            portal={portal}
+            onOpenAuth={onOpenAuth} 
+            onOpenSignIn={onOpenSignIn} 
+            onOpenAppModal={onOpenAuth}
+            onToast={addToast}
+            addToast={addToast}
+          />
+        </main>
+
+        <Footer />
+      </div>
+    </CmsProvider>
   );
 }
 

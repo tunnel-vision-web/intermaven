@@ -1292,6 +1292,154 @@ function AdminSettingsPanel({ addToast }) {
   );
 }
 
+// ── CMS Asset Picker Modal ──────────────────────────────────────────
+function AssetPickerModal({ onClose, onSelect, addToast }) {
+  const [files, setFiles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+
+  const fetchFiles = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await api.get('/api/files');
+      setFiles(res.data.files || []);
+    } catch {
+      addToast('Failed to load files', '', 'error');
+    }
+    setLoading(false);
+  }, [addToast]);
+
+  useEffect(() => {
+    fetchFiles();
+  }, [fetchFiles]);
+
+  const handleUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    const formData = new FormData();
+    formData.append('file', file);
+    try {
+      const res = await api.post('/api/files/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      addToast('File uploaded successfully', '', 'success');
+      fetchFiles();
+      if (res.data?.url) {
+        onSelect(res.data.url);
+      }
+    } catch (err) {
+      addToast('Upload failed', err.response?.data?.detail || 'Verify storage credentials are set', 'error');
+    }
+    setUploading(false);
+  };
+
+  return (
+    <Modal title="Choose Asset or Image" onClose={onClose} width={500}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <div style={{ padding: '12px', border: '1px dashed rgba(255,255,255,0.08)', borderRadius: '3px', textAlign: 'center', background: 'rgba(255,255,255,0.02)' }}>
+          <span style={{ fontSize: '12px', color: 'var(--mu)', display: 'block', marginBottom: '8px' }}>Upload new image/file:</span>
+          <input type="file" accept="image/*,video/*,audio/*" onChange={handleUpload} disabled={uploading} style={{ fontSize: '12px' }} />
+          {uploading && <div style={{ fontSize: '11px', color: 'var(--cyan)', marginTop: '6px' }}>Uploading to S3...</div>}
+        </div>
+
+        <div style={{ maxHeight: '250px', overflowY: 'auto' }}>
+          {loading ? (
+            <div className="admin-loading"><RefreshCw className="spinner" size={14} /> Loading assets...</div>
+          ) : files.length === 0 ? (
+            <div className="admin-empty">No assets uploaded in the File Manager.</div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+              {files.map(f => {
+                const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(f.filename);
+                return (
+                  <div
+                    key={f.id}
+                    onClick={() => onSelect(f.url)}
+                    style={{
+                      border: '1px solid rgba(255,255,255,0.06)',
+                      borderRadius: '3px',
+                      overflow: 'hidden',
+                      aspectRatio: '1',
+                      cursor: 'pointer',
+                      background: 'rgba(0,0,0,0.2)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      position: 'relative'
+                    }}
+                    title={f.filename}
+                  >
+                    {isImage ? (
+                      <img src={f.url} alt={f.filename} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <div style={{ fontSize: '10px', color: 'var(--mu)', textAlign: 'center', wordBreak: 'break-all', padding: '4px' }}>
+                        {f.filename.slice(-10)}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+// ── CMS Rich Formatting Toolbar ─────────────────────────────────────
+function CmsToolbar({ textareaId, value, onChange, addToast }) {
+  const [showPicker, setShowPicker] = useState(false);
+
+  const applyFormat = (openTag, closeTag, placeholder = 'text') => {
+    const el = document.getElementById(textareaId);
+    if (!el) return;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const text = el.value;
+    const selectedText = text.substring(start, end) || placeholder;
+    const replacement = openTag + selectedText + closeTag;
+    const newValue = text.substring(0, start) + replacement + text.substring(end);
+    
+    onChange(newValue);
+    
+    setTimeout(() => {
+      el.focus();
+      el.setSelectionRange(start, start + replacement.length);
+    }, 0);
+  };
+
+  const handleInsertAsset = (url) => {
+    applyFormat(`<img src="${url}" alt="Asset" style="max-width: 100%; height: auto; border-radius: 3px;" />`, '', '');
+    setShowPicker(false);
+  };
+
+  return (
+    <div style={{ display: 'flex', gap: '4px', background: 'rgba(255,255,255,0.03)', border: '1px solid var(--b1)', borderBottom: 'none', padding: '4px 6px', borderTopLeftRadius: '3px', borderTopRightRadius: '3px', alignItems: 'center' }}>
+      <button className="admin-action-btn" type="button" title="Bold" onClick={() => applyFormat('<strong>', '</strong>', 'bold text')} style={{ fontWeight: 'bold', fontSize: '11px', width: '22px', height: '22px', padding: 0 }}>B</button>
+      <button className="admin-action-btn" type="button" title="Italic" onClick={() => applyFormat('<em>', '</em>', 'italic text')} style={{ fontStyle: 'italic', fontSize: '11px', width: '22px', height: '22px', padding: 0 }}>I</button>
+      <button className="admin-action-btn" type="button" title="Link" onClick={() => {
+        const url = prompt('Enter link URL (e.g. https://google.com):');
+        if (url) applyFormat(`<a href="${url}" target="_blank" rel="noopener noreferrer">`, '</a>', 'link text');
+      }} style={{ fontSize: '10px', width: '38px', height: '22px', padding: 0 }}>Link</button>
+      <button className="admin-action-btn" type="button" title="Heading 3" onClick={() => applyFormat('<h3>', '</h3>', 'Heading 3')} style={{ fontSize: '10px', width: '30px', height: '22px', padding: 0 }}>H3</button>
+      <button className="admin-action-btn" type="button" title="List Item" onClick={() => applyFormat('<ul>\n  <li>', '</li>\n</ul>', 'list item')} style={{ fontSize: '10px', width: '32px', height: '22px', padding: 0 }}>List</button>
+      <button className="admin-action-btn" type="button" title="Insert Media/Image" onClick={() => setShowPicker(true)} style={{ fontSize: '11px', height: '22px', padding: '0 6px', marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '3px', color: 'var(--cyan)' }}>
+        🖼️ Media
+      </button>
+
+      {showPicker && (
+        <AssetPickerModal
+          onClose={() => setShowPicker(false)}
+          onSelect={handleInsertAsset}
+          addToast={addToast}
+        />
+      )}
+    </div>
+  );
+}
+
 // ── CMS Manager Panel ──────────────────────────────────────────────
 function CmsManagerPanel({ addToast }) {
   const [keys, setKeys] = useState([]);
@@ -1538,9 +1686,11 @@ function CmsManagerPanel({ addToast }) {
 
             <div>
               <label className="admin-settings-title" style={{ display: 'block', marginBottom: '6px' }}>Default Fallback Value</label>
+              <CmsToolbar textareaId="cms-edit-default" value={formDefault} onChange={setFormDefault} addToast={addToast} />
               <textarea
+                id="cms-edit-default"
                 className="admin-search"
-                style={{ width: '100%', height: '80px', fontFamily: 'inherit', padding: '8px', resize: 'vertical' }}
+                style={{ width: '100%', height: '80px', fontFamily: 'inherit', padding: '8px', resize: 'vertical', borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
                 placeholder="Fallback value if no regional or portal overrides match..."
                 value={formDefault}
                 onChange={e => setFormDefault(e.target.value)}
@@ -1563,35 +1713,47 @@ function CmsManagerPanel({ addToast }) {
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {formRegions.map((r, idx) => (
-                    <div key={idx} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                      <input
-                        className="admin-search"
-                        style={{ width: '80px', textTransform: 'uppercase' }}
-                        placeholder="e.g. US"
-                        value={r.code}
-                        onChange={e => {
+                    <div key={idx} style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', flexDirection: 'column', borderBottom: '1px solid rgba(255,255,255,0.03)', paddingBottom: '12px' }}>
+                      <div style={{ display: 'flex', gap: '8px', width: '100%', alignItems: 'center' }}>
+                        <input
+                          className="admin-search"
+                          style={{ width: '80px', textTransform: 'uppercase' }}
+                          placeholder="e.g. US"
+                          value={r.code}
+                          onChange={e => {
+                            const updated = [...formRegions];
+                            updated[idx].code = e.target.value;
+                            setFormRegions(updated);
+                          }}
+                        />
+                        <span style={{ fontSize: '11px', color: 'var(--mu)' }}>Value Override:</span>
+                        <button
+                          className="admin-action-btn delete"
+                          style={{ marginLeft: 'auto' }}
+                          onClick={() => setFormRegions(formRegions.filter((_, i) => i !== idx))}
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                      <div style={{ width: '100%' }}>
+                        <CmsToolbar textareaId={`cms-edit-region-${idx}`} value={r.value} onChange={val => {
                           const updated = [...formRegions];
-                          updated[idx].code = e.target.value;
+                          updated[idx].value = val;
                           setFormRegions(updated);
-                        }}
-                      />
-                      <input
-                        className="admin-search"
-                        style={{ flex: 1 }}
-                        placeholder="Override value..."
-                        value={r.value}
-                        onChange={e => {
-                          const updated = [...formRegions];
-                          updated[idx].value = e.target.value;
-                          setFormRegions(updated);
-                        }}
-                      />
-                      <button
-                        className="admin-action-btn delete"
-                        onClick={() => setFormRegions(formRegions.filter((_, i) => i !== idx))}
-                      >
-                        <Trash2 size={13} />
-                      </button>
+                        }} addToast={addToast} />
+                        <textarea
+                          id={`cms-edit-region-${idx}`}
+                          className="admin-search"
+                          style={{ width: '100%', height: '60px', fontFamily: 'inherit', padding: '6px', resize: 'vertical', borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
+                          placeholder="Regional override value..."
+                          value={r.value}
+                          onChange={e => {
+                            const updated = [...formRegions];
+                            updated[idx].value = e.target.value;
+                            setFormRegions(updated);
+                          }}
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -1615,7 +1777,7 @@ function CmsManagerPanel({ addToast }) {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {formPortals.map((p, idx) => (
                     <div key={idx} style={{ padding: '12px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: '4px' }}>
-                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px', flexWrap: 'wrap' }}>
                         <select
                           className="admin-search"
                           style={{ width: '130px', padding: '4px 6px', background: 'var(--bg3)', border: '1px solid var(--b1)', color: 'var(--tx)' }}
@@ -1633,28 +1795,17 @@ function CmsManagerPanel({ addToast }) {
                           <option value="producers">producers</option>
                           <option value="mediahouses">mediahouses</option>
                         </select>
-                        <span style={{ fontSize: '11px', color: 'var(--mu)' }}>Default:</span>
-                        <input
-                          className="admin-search"
-                          style={{ flex: 1 }}
-                          placeholder="Default value for this portal..."
-                          value={p.default}
-                          onChange={e => {
-                            const updated = [...formPortals];
-                            updated[idx].default = e.target.value;
-                            setFormPortals(updated);
-                          }}
-                        />
+                        <span style={{ fontSize: '11px', color: 'var(--mu)' }}>Default Value:</span>
                         <button
                           className="admin-btn-secondary"
-                          style={{ padding: '4px 8px', fontSize: '10px' }}
+                          style={{ padding: '4px 8px', fontSize: '10px', marginLeft: 'auto' }}
                           onClick={() => {
                             const updated = [...formPortals];
                             updated[idx].regions.push({ code: '', value: '' });
                             setFormPortals(updated);
                           }}
                         >
-                          <Plus size={10} style={{ marginRight: 2 }} /> Region
+                          <Plus size={10} style={{ marginRight: 2 }} /> Region Override
                         </button>
                         <button
                           className="admin-action-btn delete"
@@ -1663,43 +1814,74 @@ function CmsManagerPanel({ addToast }) {
                           <Trash2 size={13} />
                         </button>
                       </div>
+                      <div style={{ marginBottom: '10px' }}>
+                        <CmsToolbar textareaId={`cms-edit-portal-default-${idx}`} value={p.default} onChange={val => {
+                          const updated = [...formPortals];
+                          updated[idx].default = val;
+                          setFormPortals(updated);
+                        }} addToast={addToast} />
+                        <textarea
+                          id={`cms-edit-portal-default-${idx}`}
+                          className="admin-search"
+                          style={{ width: '100%', height: '60px', fontFamily: 'inherit', padding: '6px', resize: 'vertical', borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
+                          placeholder="Portal default value..."
+                          value={p.default}
+                          onChange={e => {
+                            const updated = [...formPortals];
+                            updated[idx].default = e.target.value;
+                            setFormPortals(updated);
+                          }}
+                        />
+                      </div>
 
                       {p.regions.length > 0 && (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginLeft: '16px', borderLeft: '1px dashed rgba(255,255,255,0.08)', paddingLeft: '12px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginLeft: '16px', borderLeft: '1px dashed rgba(255,255,255,0.08)', paddingLeft: '12px' }}>
                           {p.regions.map((pr, sidx) => (
-                            <div key={sidx} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                              <input
-                                className="admin-search"
-                                style={{ width: '60px', textTransform: 'uppercase', fontSize: '11px' }}
-                                placeholder="US"
-                                value={pr.code}
-                                onChange={e => {
+                            <div key={sidx} style={{ display: 'flex', flexDirection: 'column', gap: '4px', borderBottom: '1px dashed rgba(255,255,255,0.02)', paddingBottom: '8px' }}>
+                              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                <input
+                                  className="admin-search"
+                                  style={{ width: '60px', textTransform: 'uppercase', fontSize: '11px' }}
+                                  placeholder="US"
+                                  value={pr.code}
+                                  onChange={e => {
+                                    const updated = [...formPortals];
+                                    updated[idx].regions[sidx].code = e.target.value;
+                                    setFormPortals(updated);
+                                  }}
+                                />
+                                <span style={{ fontSize: '11px', color: 'var(--mu)' }}>Regional Value for {p.portal}:</span>
+                                <button
+                                  className="admin-action-btn delete"
+                                  style={{ marginLeft: 'auto' }}
+                                  onClick={() => {
+                                    const updated = [...formPortals];
+                                    updated[idx].regions = updated[idx].regions.filter((_, i) => i !== sidx);
+                                    setFormPortals(updated);
+                                  }}
+                                >
+                                  <Trash2 size={11} />
+                                </button>
+                              </div>
+                              <div>
+                                <CmsToolbar textareaId={`cms-edit-portal-region-${idx}-${sidx}`} value={pr.value} onChange={val => {
                                   const updated = [...formPortals];
-                                  updated[idx].regions[sidx].code = e.target.value;
+                                  updated[idx].regions[sidx].value = val;
                                   setFormPortals(updated);
-                                }}
-                              />
-                              <input
-                                className="admin-search"
-                                style={{ flex: 1, fontSize: '11px' }}
-                                placeholder="Portal-specific regional value..."
-                                value={pr.value}
-                                onChange={e => {
-                                  const updated = [...formPortals];
-                                  updated[idx].regions[sidx].value = e.target.value;
-                                  setFormPortals(updated);
-                                }}
-                              />
-                              <button
-                                className="admin-action-btn delete"
-                                onClick={() => {
-                                  const updated = [...formPortals];
-                                  updated[idx].regions = updated[idx].regions.filter((_, i) => i !== sidx);
-                                  setFormPortals(updated);
-                                }}
-                              >
-                                <Trash2 size={11} />
-                              </button>
+                                }} addToast={addToast} />
+                                <textarea
+                                  id={`cms-edit-portal-region-${idx}-${sidx}`}
+                                  className="admin-search"
+                                  style={{ width: '100%', height: '50px', fontFamily: 'inherit', padding: '6px', fontSize: '12px', resize: 'vertical', borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
+                                  placeholder="Portal regional value..."
+                                  value={pr.value}
+                                  onChange={e => {
+                                    const updated = [...formPortals];
+                                    updated[idx].regions[sidx].value = e.target.value;
+                                    setFormPortals(updated);
+                                  }}
+                                />
+                              </div>
                             </div>
                           ))}
                         </div>

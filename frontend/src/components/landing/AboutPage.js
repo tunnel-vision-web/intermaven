@@ -1,30 +1,47 @@
 import React from 'react';
 import { useRegion } from '../../RegionContext';
+import { useCms, CmsText } from '../../cms/CmsContext';
 
 // Expanded AboutPage with richer content and polished contact form
 const AboutPage = () => {
   const { contactPhone, isWestern } = useRegion() || {};
+  const phoneLabel = useCms('about.phone_label', isWestern ? 'PHONE' : 'WHATSAPP');
+  const phone = useCms('footer.contact.phone', contactPhone || '+254 700 000 000');
+  const businessHours = useCms('about.business_hours', isWestern ? 'Mon–Fri, 9am–5pm ET' : 'Mon–Fri, 9am–5pm EAT');
+  const basedIn = useCms('about.based_in', isWestern ? 'Atlanta, USA · Nairobi, Kenya' : 'Nairobi, Kenya');
+
   return (
     <div className="about-page cn">
       <div className="about-content">
         <div style={{ maxWidth: '780px', marginBottom: '60px' }}>
-          <p style={{ fontSize: '17px', color: '#94a3b8', lineHeight: 1.6 }}>
-            Intermaven is the complete creative operating system for African musicians, creators, and entrepreneurs. 
-            We combine powerful AI tools, smart CRM, professional EPK builder, secure file management, and a full music ecosystem in one beautiful platform.
-          </p>
+          <CmsText 
+            keyName="about.description"
+            fallback="Intermaven is the complete creative operating system for African musicians, creators, and entrepreneurs. We combine powerful AI tools, smart CRM, professional EPK builder, secure file management, and a full music ecosystem in one beautiful platform."
+            as="p"
+            style={{ fontSize: '17px', color: '#94a3b8', lineHeight: 1.6 }}
+          />
         </div>
 
         <section className="our-story" style={{ marginBottom: '60px' }}>
-          <h2 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '16px', textAlign: 'center' }}>Our Story</h2>
+          <CmsText
+            keyName="about.story_title"
+            fallback="Our Story"
+            as="h2"
+            style={{ fontSize: '20px', fontWeight: 700, marginBottom: '16px', textAlign: 'center' }}
+          />
           <div style={{ display: 'grid', gap: '20px', maxWidth: '780px' }}>
-            <p style={{ color: '#cbd5e1', lineHeight: 1.7 }}>
-              We built Intermaven because creators in Africa deserve world-class tools that understand their unique challenges — 
-              from unreliable power and internet to complex payment systems and limited access to global markets.
-            </p>
-            <p style={{ color: '#cbd5e1', lineHeight: 1.7 }}>
-              What started as a simple EPK builder in 2024 has grown into a full operating system used by thousands of independent artists, 
-              DJs, labels, managers, and creative entrepreneurs across the continent and diaspora.
-            </p>
+            <CmsText
+              keyName="about.story_body_1"
+              fallback="We built Intermaven because creators in Africa deserve world-class tools that understand their unique challenges — from unreliable power and internet to complex payment systems and limited access to global markets."
+              as="p"
+              style={{ color: '#cbd5e1', lineHeight: 1.7 }}
+            />
+            <CmsText
+              keyName="about.story_body_2"
+              fallback="What started as a simple EPK builder in 2024 has grown into a full operating system used by thousands of independent artists, DJs, labels, managers, and creative entrepreneurs across the continent and diaspora."
+              as="p"
+              style={{ color: '#cbd5e1', lineHeight: 1.7 }}
+            />
           </div>
         </section>
 
@@ -113,17 +130,17 @@ const AboutPage = () => {
             {/* Contact info cards */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div style={{ background: '#1e2937', border: '1px solid #334155', borderRadius: '3px', padding: '18px 20px' }}>
-                <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '4px' }}>EMAIL US</div>
-                <div style={{ fontWeight: 600 }}>hello@intermaven.io</div>
+                <CmsText keyName="about.email_label" fallback="EMAIL US" style={{ fontSize: '13px', color: '#64748b', marginBottom: '4px', display: 'block' }} />
+                <CmsText keyName="about.email" fallback="hello@intermaven.io" style={{ fontWeight: 600, display: 'block' }} />
               </div>
               <div style={{ background: '#1e2937', border: '1px solid #334155', borderRadius: '3px', padding: '18px 20px' }}>
-                <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '4px' }}>{isWestern ? 'PHONE' : 'WHATSAPP'}</div>
-                <div style={{ fontWeight: 600 }}>{contactPhone || '+254 700 000 000'}</div>
-                <div style={{ fontSize: '13px', color: '#64748b', marginTop: '2px' }}>{isWestern ? 'Mon–Fri, 9am–5pm ET' : 'Mon–Fri, 9am–5pm EAT'}</div>
+                <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '4px' }}>{phoneLabel}</div>
+                <div style={{ fontWeight: 600 }}>{phone}</div>
+                <div style={{ fontSize: '13px', color: '#64748b', marginTop: '2px' }}>{businessHours}</div>
               </div>
               <div style={{ background: '#1e2937', border: '1px solid #334155', borderRadius: '3px', padding: '18px 20px' }}>
                 <div style={{ fontSize: '13px', color: '#64748b', marginBottom: '4px' }}>BASED IN</div>
-                <div style={{ fontWeight: 600 }}>{isWestern ? 'Atlanta, USA · Nairobi, Kenya' : 'Nairobi, Kenya'}</div>
+                <div style={{ fontWeight: 600 }}>{basedIn}</div>
               </div>
             </div>
           </div>

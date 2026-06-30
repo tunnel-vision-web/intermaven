@@ -33,6 +33,17 @@ const KNOWN_KEYS = [
   'social.facebook',
   'about.phone_label',
   'about.business_hours',
+  'about.description',
+  'about.story_title',
+  'about.story_body_1',
+  'about.story_body_2',
+  'about.email_label',
+  'about.email',
+  'about.based_in',
+  'tools.header',
+  'tools.subtitle',
+  'tools.cta',
+  'tools.cta_desc'
 ];
 
 const CmsContext = createContext({ values: {}, get: () => null });
@@ -98,7 +109,11 @@ export function useCms(key, fallback = null) {
 
 /** <CmsText keyName="..." fallback="..." /> — drop-in <span> */
 export function CmsText({ keyName, fallback = '', as: As = 'span', ...rest }) {
-  const v = useCms(keyName, fallback);
+  const v = useCms(keyName, fallback) || '';
+  const isHtml = /<[a-z][\s\S]*>/i.test(v);
+  if (isHtml) {
+    return <As {...rest} dangerouslySetInnerHTML={{ __html: v }} />;
+  }
   return <As {...rest}>{v}</As>;
 }
 

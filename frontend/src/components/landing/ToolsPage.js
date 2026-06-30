@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FlatIcon } from '../FlatIcon';
 import PageHeader from './PageHeader';
+import { useCms } from '../../cms/CmsContext';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
@@ -251,7 +252,12 @@ const TOOL_CARDS = [
 
 function ToolsPage({ portal = 'music', subdomainPage = null, onOpenAuth, onToast }) {
   const [credits] = useState(150);
-  const pageCopy = TOOL_PAGE_COPY[subdomainPage] || TOOL_PAGE_COPY.default;
+  const fallbackCopy = TOOL_PAGE_COPY[subdomainPage] || TOOL_PAGE_COPY.default;
+
+  const header = useCms('tools.header', fallbackCopy.header);
+  const subtitle = useCms('tools.subtitle', fallbackCopy.subtitle);
+  const cta = useCms('tools.cta', fallbackCopy.cta);
+  const ctaDesc = useCms('tools.cta_desc', fallbackCopy.ctaDesc);
 
   return (
     <>
@@ -260,8 +266,8 @@ function ToolsPage({ portal = 'music', subdomainPage = null, onOpenAuth, onToast
         pageKey="tools" 
         portal={portal} 
         breadcrumb="Intermaven › AI Tools" 
-        title={pageCopy.header} 
-        subtitle={pageCopy.subtitle} 
+        title={header} 
+        subtitle={subtitle} 
       />
 
       {/* Tools Content */}
@@ -387,7 +393,7 @@ function ToolsPage({ portal = 'music', subdomainPage = null, onOpenAuth, onToast
               Sign up to use AI tools
             </div>
             <p style={{ fontSize: '13px', color: 'var(--mu)', marginBottom: '16px', maxWidth: '400px', margin: '0 auto 16px' }}>
-              Create a free account to access all AI tools with 150 free credits. No credit card required.
+              {ctaDesc}
             </p>
             <button 
               className="hbp"
@@ -395,12 +401,9 @@ function ToolsPage({ portal = 'music', subdomainPage = null, onOpenAuth, onToast
               style={{ display: 'inline-block' }}
               data-testid="tools-get-started"
             >
-              {pageCopy.cta}
+              {cta}
             </button>
           </div>
-          <p style={{ fontSize: '13px', color: 'var(--mu)', marginBottom: '16px', maxWidth: '400px', margin: '0 auto 16px' }}>
-            {pageCopy.ctaDesc}
-          </p>
 
           {/* CTA */}
           <div style={{ 
