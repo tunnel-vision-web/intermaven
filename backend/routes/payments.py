@@ -289,6 +289,8 @@ class CardCollectRequest(BaseModel):
     item: str
 
 async def simulate_mpesa_completion(checkout_request_id: str, user_id: str, amount: int, item: str):
+    if item and "no-simulate" in item:
+        return
     await asyncio.sleep(8)
     from bson import ObjectId
     transaction = db.transactions.find_one({"checkout_request_id": checkout_request_id, "status": "pending"})
@@ -312,6 +314,8 @@ async def simulate_mpesa_completion(checkout_request_id: str, user_id: str, amou
         })
 
 async def simulate_card_completion(checkout_request_id: str, user_id: str, amount: int, item: str):
+    if item and "no-simulate" in item:
+        return
     await asyncio.sleep(3)
     from bson import ObjectId
     transaction = db.transactions.find_one({"checkout_request_id": checkout_request_id, "status": "pending"})

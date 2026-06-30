@@ -2,13 +2,13 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { api, useAuth } from '../App';
 import { useRegion } from '../RegionContext';
 import { 
-  Smartphone, CreditCard, DollarSign, RefreshCw, 
-  CheckCircle, XCircle, ArrowLeft, History, ShoppingBag 
+  Smartphone, CreditCard, RefreshCw, 
+  CheckCircle, XCircle, History, ShoppingBag 
 } from 'lucide-react';
 
 export default function POSPanel() {
-  const { user, updateUser } = useAuth();
-  const { isWestern, isAfrican, contactPhone } = useRegion() || {};
+  const { updateUser } = useAuth();
+  const { isWestern, contactPhone } = useRegion() || {};
 
   const [mode, setMode] = useState('collect'); // 'collect' | 'history'
   
