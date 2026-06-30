@@ -137,3 +137,22 @@ Beyond infrastructure, Mother-CMS is positioned as a **standalone product featur
 - **Enterprise sales angle**: agencies, franchise networks, multi-brand operators, hotel groups — all reachable once CMS is positioned as a product not infrastructure.
 - **Documentation deliverables** when Phase 10 ships: `/docs/cms-overview.md`, `/docs/cms-api.md`, `/cms` marketing page, comparison page, atltvmountpro case study.
 - See **DOCUMENTATION.md §14** for full Mother-CMS spec including schema, API surface, and rollout plan.
+
+---
+
+## 5. Native Mobile Apps & Backend Deployment Architecture
+
+### 5.1. Native Mobile App Roadmap
+The platform will support **three (3) distinct mobile application packages**, leveraging hybrid wrappers (like Capacitor) to compile web components into native iOS and Android versions:
+1. **TuneMavens Consumer App**: High-fidelity web player wrapper with offline audio caching, playlist controls, and direct tip integrations.
+2. **Creator Companion App**: Mobile metrics dashboard allowing creators and managers to check split ledgers and strategy playbooks on the go.
+3. **M-Pesa POS App**: Portable Point of Sale checkout app for labels to process ticket scans and merchandise sales at live events.
+
+### 5.2. Database Architecture (MongoDB Atlas)
+MongoDB is designated as the core transactional and document database:
+- **Flexible Schemas**: Ideal for the Mother-CMS overrides (per-region/per-portal) and conversational strategy plans without DB migration lockups.
+- **Transactional Consistency**: Utilizes MongoDB Atlas atomic updates (`$inc`, `$push`) and session transactions to ensure credit pools and split schedules execute with strict ledger consistency.
+
+### 5.3. Backend Hosting Strategy (PaaS vs. Self-Hosted)
+- **Phase 1-4 (Launch & Beta)**: Deploy the shared Python FastAPI backend cluster on **Render / Railway (PaaS)** for zero-ops updates and seamless staging.
+- **Phase 5+ (Scale)**: Migrate the media streaming and database assets to dedicated **VPS droplets / AWS EC2** to reduce audio bandwidth costs and allow low-level utilities (FFmpeg/Sox) tuning.
