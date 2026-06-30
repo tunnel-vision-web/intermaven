@@ -7,7 +7,8 @@ import {
   Eye, EyeOff, RefreshCw, Download, Upload, X, Plus,
   MessageSquare, Activity, Zap, Bell, Mail, Phone,
   MoreHorizontal, ChevronLeft, ChevronRight, Star,
-  Lock, Unlock, UserCheck, UserX, ArrowUp, ArrowDown
+  Lock, Unlock, UserCheck, UserX, ArrowUp, ArrowDown,
+  FileText, Globe, RotateCcw
 } from 'lucide-react';
 
 // ── Constants ────────────────────────────────────────────────────
@@ -1291,6 +1292,504 @@ function AdminSettingsPanel({ addToast }) {
   );
 }
 
+// ── CMS Manager Panel ──────────────────────────────────────────────
+function CmsManagerPanel({ addToast }) {
+  const [keys, setKeys] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
+  const [editKey, setEditKey] = useState(null);
+  const [historyKey, setHistoryKey] = useState(null);
+  const [history, setHistory] = useState([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
+  const [deleteConfirmKey, setDeleteConfirmKey] = useState(null);
+
+  const [formKeyId, setFormKeyId] = useState('');
+  const [formDesc, setFormDesc] = useState('');
+  const [formDefault, setFormDefault] = useState('');
+  const [formRegions, setFormRegions] = useState([]);
+  const [formPortals, setFormPortals] = useState([]);
+
+  const fetchKeys = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await api.get('/api/admin/cms');
+      setKeys(res.data.keys || []);
+    } catch {
+      addToast('Failed to load CMS keys', '', 'error');
+    }
+    setLoading(false);
+  }, [addToast]);
+
+  useEffect(() => {
+    fetchKeys();
+  }, [fetchKeys]);
+
+  const handleOpenEdit = (k) => {
+    if (!k) {
+      setEditKey({ isNew: true });
+      setFormKeyId('');
+      setFormDesc('');
+      setFormDefault('');
+      setFormRegions([]);
+      setFormPortals([]);
+    } else {
+      setEditKey(k);
+      setFormKeyId(k._id || k.key || '');
+      setFormDesc(k.description || '');
+      setFormDefault(k.default || '');
+      
+      const regs = Object.entries(k.regions || {}).map(([code, value]) => ({ code, value }));
+      setFormRegions(regs);
+
+      const ports = Object.entries(k.portals || {}).map(([portal, pObj]) => {
+        const pDefault = pObj.default || '';
+        const pRegs = Object.entries(pObj || {}).filter(([x]) => x !== 'default').map(([code, value]) => ({ code, value }));
+        return { portal, default: pDefault, regions: pRegs };
+      });
+      setFormPortals(ports);
+    }
+  };
+
+  const handleSaveKey = async () => {
+    if (!formKeyId.trim()) {
+      addToast('Key ID is required', '', 'error');
+      return;
+    }
+
+    const regionsPayload = {};
+    formRegions.forEach(r => {
+      if (r.code.trim()) {
+        regionsPayload[r.code.trim().toUpperCase()] = r.value;
+      }
+    });
+
+    const portalsPayload = {};
+    formPortals.forEach(p => {
+      if (p.portal.trim()) {
+        const portObj = {};
+        if (p.default !== undefined) {
+          portObj['default'] = p.default;
+        }
+        p.regions.forEach(pr => {
+          if (pr.code.trim()) {
+            portObj[pr.code.trim().toUpperCase()] = pr.value;
+          }
+        });
+        portalsPayload[p.portal.trim()] = portObj;
+      }
+    });
+
+    const payload = {
+      default: formDefault,
+      description: formDesc,
+      regions: regionsPayload,
+      portals: portalsPayload
+    };
+
+    try {
+      await api.put(`/api/admin/cms/${formKeyId.trim()}`, payload);
+      addToast(editKey.isNew ? 'CMS Key created' : 'CMS Key updated', '', 'success');
+      setEditKey(null);
+      fetchKeys();
+    } catch (err) {
+      addToast('Failed to save CMS key', err.response?.data?.detail || '', 'error');
+    }
+  };
+
+  const handleOpenHistory = async (keyId) => {
+    setHistoryKey(keyId);
+    setLoadingHistory(true);
+    try {
+      const res = await api.get(`/api/admin/cms/${keyId}/history`);
+      setHistory(res.data.history || []);
+    } catch {
+      addToast('Failed to load version history', '', 'error');
+    }
+    setLoadingHistory(false);
+  };
+
+  const handleRollback = async (revId) => {
+    try {
+      await api.post(`/api/admin/cms/${historyKey}/rollback/${revId}`);
+      addToast('Rollback successful', 'Restored previous state', 'success');
+      setHistoryKey(null);
+      fetchKeys();
+    } catch (err) {
+      addToast('Rollback failed', err.response?.data?.detail || '', 'error');
+    }
+  };
+
+  const handleDeleteKey = async () => {
+    try {
+      await api.delete(`/api/admin/cms/${deleteConfirmKey}`);
+      addToast('CMS Key deleted', '', 'success');
+      setDeleteConfirmKey(null);
+      fetchKeys();
+    } catch {
+      addToast('Failed to delete key', '', 'error');
+    }
+  };
+
+  const filteredKeys = keys.filter(k => 
+    k._id.toLowerCase().includes(search.toLowerCase()) ||
+    (k.description || '').toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div className="admin-panel-content">
+      <div className="admin-toolbar">
+        <div className="admin-search-wrap">
+          <Search size={14} className="admin-search-icon" />
+          <input
+            className="admin-search"
+            placeholder="Search CMS keys..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+        </div>
+        <button className="admin-btn-primary" onClick={() => handleOpenEdit(null)}>
+          <Plus size={14} style={{ marginRight: 6 }} /> Create CMS Key
+        </button>
+      </div>
+
+      {loading ? (
+        <div className="admin-loading"><RefreshCw className="spinner" size={16} /> Loading keys...</div>
+      ) : filteredKeys.length === 0 ? (
+        <div className="admin-empty">No CMS keys found matching the search.</div>
+      ) : (
+        <div className="admin-table-wrap">
+          <table className="admin-table">
+            <thead>
+              <tr>
+                <th>Key ID</th>
+                <th>Description</th>
+                <th>Default Text</th>
+                <th>Overrides</th>
+                <th>Last Updated</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredKeys.map(k => {
+                const regionCount = Object.keys(k.regions || {}).length;
+                const portalCount = Object.keys(k.portals || {}).length;
+                return (
+                  <tr key={k._id}>
+                    <td><code style={{ fontSize: '11px', background: 'rgba(255,255,255,0.06)', padding: '2px 6px', borderRadius: '3px' }}>{k._id}</code></td>
+                    <td style={{ color: 'var(--mu)', fontStyle: 'italic', fontSize: '12px' }}>{k.description || 'No description'}</td>
+                    <td style={{ maxWidth: '240px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '12px' }}>
+                      {k.default || <span style={{ opacity: 0.3 }}>Empty</span>}
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', gap: '4px' }}>
+                        {regionCount > 0 && <Badge color="free">{regionCount} Region{regionCount > 1 ? 's' : ''}</Badge>}
+                        {portalCount > 0 && <Badge color="music">{portalCount} Portal{portalCount > 1 ? 's' : ''}</Badge>}
+                        {regionCount === 0 && portalCount === 0 && <span style={{ opacity: 0.3, fontSize: '11px' }}>None</span>}
+                      </div>
+                    </td>
+                    <td style={{ fontSize: '12px' }}>{k.updated_at ? new Date(k.updated_at).toLocaleDateString() : 'N/A'}</td>
+                    <td>
+                      <div className="admin-table-actions">
+                        <button className="admin-action-btn" title="Edit overrides" onClick={() => handleOpenEdit(k)}>
+                          <Edit2 size={13} />
+                        </button>
+                        <button className="admin-action-btn" title="Version history" onClick={() => handleOpenHistory(k._id)}>
+                          <Clock size={13} />
+                        </button>
+                        <button className="admin-action-btn delete" title="Delete key" onClick={() => setDeleteConfirmKey(k._id)}>
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {editKey && (
+        <Modal title={editKey.isNew ? 'Create CMS Key' : `Edit CMS Key: ${formKeyId}`} onClose={() => setEditKey(null)} width={640}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '12px' }}>
+              <div>
+                <label className="admin-settings-title" style={{ display: 'block', marginBottom: '6px' }}>Key ID</label>
+                <input
+                  className="admin-search"
+                  style={{ width: '100%' }}
+                  placeholder="e.g. footer_tagline"
+                  value={formKeyId}
+                  onChange={e => setFormKeyId(e.target.value)}
+                  disabled={!editKey.isNew}
+                />
+              </div>
+              <div>
+                <label className="admin-settings-title" style={{ display: 'block', marginBottom: '6px' }}>Admin Description</label>
+                <input
+                  className="admin-search"
+                  style={{ width: '100%' }}
+                  placeholder="Brief label for administrative reference"
+                  value={formDesc}
+                  onChange={e => setFormDesc(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="admin-settings-title" style={{ display: 'block', marginBottom: '6px' }}>Default Fallback Value</label>
+              <textarea
+                className="admin-search"
+                style={{ width: '100%', height: '80px', fontFamily: 'inherit', padding: '8px', resize: 'vertical' }}
+                placeholder="Fallback value if no regional or portal overrides match..."
+                value={formDefault}
+                onChange={e => setFormDefault(e.target.value)}
+              />
+            </div>
+
+            <div className="admin-settings-section" style={{ padding: '12px', margin: 0 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                <span className="admin-settings-title" style={{ margin: 0 }}>Geographic (Region) Overrides</span>
+                <button
+                  className="admin-btn-secondary"
+                  style={{ padding: '4px 8px', fontSize: '11px' }}
+                  onClick={() => setFormRegions([...formRegions, { code: '', value: '' }])}
+                >
+                  <Plus size={11} style={{ marginRight: 4 }} /> Add Region Override
+                </button>
+              </div>
+              {formRegions.length === 0 ? (
+                <div style={{ fontSize: '12px', color: 'var(--mu)', fontStyle: 'italic', textAlign: 'center', padding: '6px 0' }}>No regional overrides configured.</div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {formRegions.map((r, idx) => (
+                    <div key={idx} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <input
+                        className="admin-search"
+                        style={{ width: '80px', textTransform: 'uppercase' }}
+                        placeholder="e.g. US"
+                        value={r.code}
+                        onChange={e => {
+                          const updated = [...formRegions];
+                          updated[idx].code = e.target.value;
+                          setFormRegions(updated);
+                        }}
+                      />
+                      <input
+                        className="admin-search"
+                        style={{ flex: 1 }}
+                        placeholder="Override value..."
+                        value={r.value}
+                        onChange={e => {
+                          const updated = [...formRegions];
+                          updated[idx].value = e.target.value;
+                          setFormRegions(updated);
+                        }}
+                      />
+                      <button
+                        className="admin-action-btn delete"
+                        onClick={() => setFormRegions(formRegions.filter((_, i) => i !== idx))}
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="admin-settings-section" style={{ padding: '12px', margin: 0 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                <span className="admin-settings-title" style={{ margin: 0 }}>Portal Overrides</span>
+                <button
+                  className="admin-btn-secondary"
+                  style={{ padding: '4px 8px', fontSize: '11px' }}
+                  onClick={() => setFormPortals([...formPortals, { portal: 'music', default: '', regions: [] }])}
+                >
+                  <Plus size={11} style={{ marginRight: 4 }} /> Add Portal Override
+                </button>
+              </div>
+              {formPortals.length === 0 ? (
+                <div style={{ fontSize: '12px', color: 'var(--mu)', fontStyle: 'italic', textAlign: 'center', padding: '6px 0' }}>No portal-specific overrides configured.</div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {formPortals.map((p, idx) => (
+                    <div key={idx} style={{ padding: '12px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.04)', borderRadius: '4px' }}>
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '8px' }}>
+                        <select
+                          className="admin-search"
+                          style={{ width: '130px', padding: '4px 6px', background: 'var(--bg3)', border: '1px solid var(--b1)', color: 'var(--tx)' }}
+                          value={p.portal}
+                          onChange={e => {
+                            const updated = [...formPortals];
+                            updated[idx].portal = e.target.value;
+                            setFormPortals(updated);
+                          }}
+                        >
+                          <option value="music">music</option>
+                          <option value="business">business</option>
+                          <option value="djs">djs</option>
+                          <option value="labels">labels</option>
+                          <option value="producers">producers</option>
+                          <option value="mediahouses">mediahouses</option>
+                        </select>
+                        <span style={{ fontSize: '11px', color: 'var(--mu)' }}>Default:</span>
+                        <input
+                          className="admin-search"
+                          style={{ flex: 1 }}
+                          placeholder="Default value for this portal..."
+                          value={p.default}
+                          onChange={e => {
+                            const updated = [...formPortals];
+                            updated[idx].default = e.target.value;
+                            setFormPortals(updated);
+                          }}
+                        />
+                        <button
+                          className="admin-btn-secondary"
+                          style={{ padding: '4px 8px', fontSize: '10px' }}
+                          onClick={() => {
+                            const updated = [...formPortals];
+                            updated[idx].regions.push({ code: '', value: '' });
+                            setFormPortals(updated);
+                          }}
+                        >
+                          <Plus size={10} style={{ marginRight: 2 }} /> Region
+                        </button>
+                        <button
+                          className="admin-action-btn delete"
+                          onClick={() => setFormPortals(formPortals.filter((_, i) => i !== idx))}
+                        >
+                          <Trash2 size={13} />
+                        </button>
+                      </div>
+
+                      {p.regions.length > 0 && (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginLeft: '16px', borderLeft: '1px dashed rgba(255,255,255,0.08)', paddingLeft: '12px' }}>
+                          {p.regions.map((pr, sidx) => (
+                            <div key={sidx} style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                              <input
+                                className="admin-search"
+                                style={{ width: '60px', textTransform: 'uppercase', fontSize: '11px' }}
+                                placeholder="US"
+                                value={pr.code}
+                                onChange={e => {
+                                  const updated = [...formPortals];
+                                  updated[idx].regions[sidx].code = e.target.value;
+                                  setFormPortals(updated);
+                                }}
+                              />
+                              <input
+                                className="admin-search"
+                                style={{ flex: 1, fontSize: '11px' }}
+                                placeholder="Portal-specific regional value..."
+                                value={pr.value}
+                                onChange={e => {
+                                  const updated = [...formPortals];
+                                  updated[idx].regions[sidx].value = e.target.value;
+                                  setFormPortals(updated);
+                                }}
+                              />
+                              <button
+                                className="admin-action-btn delete"
+                                onClick={() => {
+                                  const updated = [...formPortals];
+                                  updated[idx].regions = updated[idx].regions.filter((_, i) => i !== sidx);
+                                  setFormPortals(updated);
+                                }}
+                              >
+                                <Trash2 size={11} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end', marginTop: '8px' }}>
+              <button className="admin-btn-secondary" onClick={() => setEditKey(null)}>Cancel</button>
+              <button className="admin-btn-primary" onClick={handleSaveKey}>Save Configuration</button>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {historyKey && (
+        <Modal title={`Revision History: ${historyKey}`} onClose={() => setHistoryKey(null)} width={580}>
+          {loadingHistory ? (
+            <div className="admin-loading"><RefreshCw className="spinner" size={16} /> Loading revisions...</div>
+          ) : history.length === 0 ? (
+            <div className="admin-empty">No history revisions recorded for this key.</div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', maxHeight: '420px', overflowY: 'auto', paddingRight: '6px' }}>
+              {history.slice().reverse().map((h, index) => (
+                <div key={h.revision_id || index} style={{ padding: '12px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '4px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <Clock size={13} style={{ color: 'var(--btn)' }} />
+                      <span style={{ fontSize: '12px', fontWeight: 600 }}>Revision #{history.length - index}</span>
+                    </div>
+                    <button
+                      className="admin-btn-secondary"
+                      style={{ padding: '3px 8px', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px' }}
+                      onClick={() => handleRollback(h.revision_id)}
+                    >
+                      <RotateCcw size={11} /> Rollback
+                    </button>
+                  </div>
+                  <div style={{ fontSize: '11px', color: 'var(--mu)', display: 'flex', gap: '12px', marginBottom: '8px' }}>
+                    <span>By: <strong>{h.by_name || 'System / Seed'}</strong></span>
+                    <span>Date: {h.at ? new Date(h.at).toLocaleString() : 'N/A'}</span>
+                  </div>
+                  {h.snapshot && (
+                    <div style={{ background: 'rgba(0,0,0,0.2)', padding: '8px', borderRadius: '3px', fontSize: '11px', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <div><span style={{ color: 'var(--mu)' }}>Default:</span> {h.snapshot.default || <span style={{ opacity: 0.3 }}>Empty</span>}</div>
+                      {Object.keys(h.snapshot.regions || {}).length > 0 && (
+                        <div>
+                          <span style={{ color: 'var(--mu)' }}>Regions:</span>{' '}
+                          {Object.entries(h.snapshot.regions).map(([code, val]) => `${code}=${val}`).join(', ')}
+                        </div>
+                      )}
+                      {Object.keys(h.snapshot.portals || {}).length > 0 && (
+                        <div>
+                          <span style={{ color: 'var(--mu)' }}>Portals:</span>{' '}
+                          {Object.entries(h.snapshot.portals).map(([pName, pObj]) => {
+                            const entries = Object.entries(pObj || {}).map(([c, v]) => `${c}=${v}`).join(', ');
+                            return `${pName}(${entries})`;
+                          }).join(', ')}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </Modal>
+      )}
+
+      {deleteConfirmKey && (
+        <Modal title="Confirm Key Deletion" onClose={() => setDeleteConfirmKey(null)} width={380}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', textAlign: 'center' }}>
+            <AlertCircle size={32} style={{ color: 'var(--red)', margin: '0 auto' }} />
+            <p style={{ fontSize: '13px' }}>
+              Are you sure you want to permanently delete the CMS key <strong>{deleteConfirmKey}</strong>? This action cannot be undone and may break layouts relying on this key.
+            </p>
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', marginTop: '4px' }}>
+              <button className="admin-btn-secondary" onClick={() => setDeleteConfirmKey(null)}>Cancel</button>
+              <button className="admin-btn-primary" style={{ background: 'var(--red)', borderColor: 'var(--red)' }} onClick={handleDeleteKey}>Delete Permanently</button>
+            </div>
+          </div>
+        </Modal>
+      )}
+    </div>
+  );
+}
+
 // ── Main AdminPanel ────────────────────────────────────────────────
 function AdminPanel({ user, onBack, addToast }) {
   const [tab, setTab] = useState('users');
@@ -1299,6 +1798,7 @@ function AdminPanel({ user, onBack, addToast }) {
   const tabs = [
     { id: 'users', label: 'Users', icon: Users },
     { id: 'analytics', label: 'Analytics', icon: BarChart2 },
+    { id: 'cms', label: 'CMS Manager', icon: FileText },
     { id: 'audit', label: 'Audit Log', icon: Shield },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
@@ -1349,6 +1849,7 @@ function AdminPanel({ user, onBack, addToast }) {
         <div className="admin-body">
           {tab === 'users' && <UsersPanel addToast={addToast} adminRole={adminRole} />}
           {tab === 'analytics' && <AnalyticsPanel addToast={addToast} />}
+          {tab === 'cms' && <CmsManagerPanel addToast={addToast} />}
           {tab === 'audit' && <AuditPanel addToast={addToast} />}
           {tab === 'settings' && <AdminSettingsPanel addToast={addToast} />}
         </div>
