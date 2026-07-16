@@ -1,10 +1,10 @@
 import os
 import boto3
+import bcrypt
 from botocore.exceptions import BotoCoreError, ClientError
 from bson import ObjectId
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, Request
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
@@ -20,7 +20,6 @@ from config import (
 )
 
 security = HTTPBearer()
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 ADMIN_ROLES = {"super_admin", "admin", "support", "finance"}
 
@@ -60,11 +59,15 @@ def build_storage_url(object_key: str) -> str:
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+    try:
+        return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
+    except Exception:
+        return False
 
 
 def get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(password.encode('utf-8'), salt).decode('utf-8')
 
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
@@ -75,23 +78,30 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None) -> s
 
 
 def get_current_user(request: Request) -> dict:
+    from config import logger
     token = request.cookies.get("access_token")
     if not token:
         auth_header = request.headers.get("Authorization")
         if auth_header and auth_header.startswith("Bearer "):
             token = auth_header.split(" ")[1]
     if not token:
+        logger.error("[SSO DEBUG] No token found in cookies or Auth header")
         raise HTTPException(status_code=401, detail="Not authenticated")
     try:
+        logger.info(f"[SSO DEBUG] Received token: {token[:20]}... secret used: {JWT_SECRET[:10]}...")
         payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
         user_id = payload.get("sub")
+        logger.info(f"[SSO DEBUG] Decoded user_id: {user_id}")
         if user_id is None:
             raise HTTPException(status_code=401, detail="Invalid token")
         user = db.users.find_one({"_id": ObjectId(user_id)})
         if user is None:
+            logger.error(f"[SSO DEBUG] User {user_id} not found in Atlas DB!")
             raise HTTPException(status_code=401, detail="User not found")
+        logger.info(f"[SSO DEBUG] User authenticated successfully: {user.get('email')}")
         return user
-    except JWTError:
+    except JWTError as e:
+        logger.error(f"[SSO DEBUG] JWT decode error: {e}")
         raise HTTPException(status_code=401, detail="Invalid token")
 
 

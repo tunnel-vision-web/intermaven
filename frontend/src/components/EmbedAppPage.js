@@ -1,31 +1,49 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useSearchParams } from 'react-router-dom';
-import { useAuth, api } from '../App';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
+import { useAuth, api, setInMemoryToken } from '../App';
 import SocialAI from './SocialAI';
 import CRMPanel from './CRMPanel';
 import EPKBuilder from './EPKBuilder';
 import FileManager from './FileManager';
+import POSPanel from './POSPanel';
+import DistroPanel from './DistroPanel';
+import HostingPanel from './HostingPanel';
+import StrategyPanel from './wizard/StrategyPanel';
+import CMSEditor from './CMSEditor';
 
 function EmbedAppPage() {
   const { appId } = useParams();
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const { updateUser } = useAuth();
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [businessProfile, setBusinessProfile] = useState(null);
   
   const token = searchParams.get('token');
 
   useEffect(() => {
     const initSession = async () => {
+      let activeToken = token;
+      
       if (token) {
-        localStorage.setItem('token', token);
+        setInMemoryToken(token);
+        try {
+          localStorage.setItem('token', token);
+        } catch (e) {
+          console.warn('Iframe localStorage write blocked:', e);
+        }
+      } else {
+        try {
+          activeToken = localStorage.getItem('token');
+        } catch (e) {
+          console.warn('Iframe localStorage read blocked:', e);
+        }
       }
       
-      const activeToken = localStorage.getItem('token');
       if (!activeToken) {
-        setError('Authorization token is missing. Access denied.');
-        setLoading(false);
+        navigate('/auth', { state: { redirect: window.location.pathname + window.location.search, mode: 'signin' } });
         return;
       }
       
@@ -33,16 +51,29 @@ function EmbedAppPage() {
         // Retrieve and sync user profile to context
         const response = await api.get('/api/auth/me');
         updateUser(response.data);
+        
+        // If we are loading the brand kit, pre-fetch the business profile
+        if (appId === 'brandkit') {
+          const bpResponse = await api.get('/api/business-profile');
+          setBusinessProfile(bpResponse.data);
+        }
+        
         setLoading(false);
       } catch (err) {
         console.error('Embed authorization failed:', err);
-        setError('Failed to authorize partner session. Invalid or expired token.');
-        setLoading(false);
+        try {
+          localStorage.removeItem('token');
+        } catch (e) {}
+        navigate('/auth', { state: { redirect: window.location.pathname + window.location.search, mode: 'signin' } });
       }
     };
     
     initSession();
-  }, [token, updateUser]);
+  }, [token, appId, updateUser, navigate]);
+
+  const handleStrategyChanged = (newStrategy) => {
+    setBusinessProfile(prev => prev ? { ...prev, strategy: newStrategy } : null);
+  };
 
   if (error) {
     return (
@@ -119,8 +150,18 @@ function EmbedAppPage() {
       {appId === 'crm' && <CRMPanel />}
       {appId === 'epk' && <EPKBuilder />}
       {appId === 'filemanager' && <FileManager />}
+      {appId === 'pos' && <POSPanel />}
+      {appId === 'distro' && <DistroPanel />}
+      {appId === 'hosting' && <HostingPanel />}
+      {appId === 'cms' && <CMSEditor />}
+      {appId === 'brandkit' && (
+        <StrategyPanel 
+          businessProfile={businessProfile} 
+          onStrategyChanged={handleStrategyChanged} 
+        />
+      )}
       
-      {!['social', 'crm', 'epk', 'filemanager'].includes(appId) && (
+      {!['social', 'crm', 'epk', 'filemanager', 'pos', 'distro', 'hosting', 'brandkit', 'cms'].includes(appId) && (
         <div style={{
           backgroundColor: '#1e2937',
           borderRadius: '3px',

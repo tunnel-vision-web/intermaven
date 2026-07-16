@@ -48,8 +48,12 @@ const api = axios.create({
   withCredentials: true
 });
 
+let _tokenInMemory = '';
+export const setInMemoryToken = (t) => { _tokenInMemory = t; };
+export const getInMemoryToken = () => _tokenInMemory;
+
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
+  const token = _tokenInMemory || localStorage.getItem('token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -263,6 +267,7 @@ function App() {
       fetch('http://127.0.0.1:7592/ingest/2b858072-d19e-40a8-b4df-586d28188f3b',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4d502b'},body:JSON.stringify({sessionId:'4d502b',runId:'pre-fix',hypothesisId:'H5',location:'frontend/src/App.js:login:success',message:'Login API succeeded',data:{hasToken:!!response?.data?.access_token,userId:response?.data?.user?.id||null},timestamp:Date.now()})}).catch(()=>{});
       // #endregion
       localStorage.setItem('token', response.data.access_token);
+      setInMemoryToken(response.data.access_token);
       setUser(response.data.user);
       addToast('Welcome back!', `Signed in as ${response.data.user.first_name}`, 'success');
       return { success: true };
@@ -288,6 +293,7 @@ function App() {
       // #endregion
       console.log('[App] register successful, user:', response.data.user);
       localStorage.setItem('token', response.data.access_token);
+      setInMemoryToken(response.data.access_token);
       setUser(response.data.user);
       addToast('Account Created!', `Welcome to Intermaven, ${response.data.user.first_name}!`, 'success');
       return { success: true };
@@ -320,6 +326,8 @@ function App() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        const activeToken = localStorage.getItem('token');
+        if (activeToken) setInMemoryToken(activeToken);
         const response = await api.get('/api/auth/me');
         setUser(response.data);
       } catch (error) {

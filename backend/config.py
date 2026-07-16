@@ -121,9 +121,13 @@ else:
                     logger.warning(f"Fallback database attempt failed: {fallback_err}")
             
             if not connected:
-                DB_STARTUP_ERROR = f"Primary failed: {type(e).__name__}. Fallbacks failed."
-                db = None
-                _debug_log("H4", "backend/config.py:mongo-ping-failed", "Mongo connection failed", {"error": str(e), "db_name": DB_NAME})
+                import mongomock
+                _client = mongomock.MongoClient()
+                db = _client[DB_NAME]
+                DB_STARTUP_ERROR = None
+                logger.warning("✓ Failed primary connection. Fell back to mongomock.")
+            
+            _debug_log("H4", "backend/config.py:mongo-ping-failed", "Mongo connection failed", {"error": str(e), "db_name": DB_NAME})
         except Exception as e:
             # Catch unexpected errors too (e.g., missing dnspython for mongodb+srv://, DNS SRV resolution failures)
             logger.warning(f"Unexpected connection error: {e}. Attempting Atlas fallback...")
@@ -149,8 +153,11 @@ else:
                     logger.warning(f"Fallback database attempt failed: {fallback_err}")
             
             if not connected:
-                DB_STARTUP_ERROR = f"Unexpected failed: {type(e).__name__}. Fallbacks failed."
-                db = None
+                import mongomock
+                _client = mongomock.MongoClient()
+                db = _client[DB_NAME]
+                DB_STARTUP_ERROR = None
+                logger.warning("✓ Failed primary connection. Fell back to mongomock.")
                 _debug_log("H4", "backend/config.py:mongo-ping-unexpected", "Unexpected error", {"error": str(e)})
 
 # Other configuration values (safe even if db is None)

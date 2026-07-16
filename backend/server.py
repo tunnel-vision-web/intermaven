@@ -66,12 +66,18 @@ load_dotenv()
 
 app = FastAPI(title="Intermaven API", version="1.0.0")
 
-# CORS: allow frontend origin explicitly (React dev server on port 3000)
-# Ensure frontend .env has REACT_APP_BACKEND_URL=http://localhost:8001
+# CORS: allow frontend origins explicitly for local dev SSO to succeed
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=False,   # Must be False when allow_origins=["*"]
+    allow_origins=[
+        "http://localhost:3000",
+        "http://localhost:3004",
+        "http://localhost:3002",
+        "http://127.0.0.1:3000",
+        "http://127.0.0.1:3004",
+        "http://127.0.0.1:3002",
+    ],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
