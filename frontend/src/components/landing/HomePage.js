@@ -5,6 +5,7 @@ import { Mail, Check } from 'lucide-react';
 import { FlatIcon } from '../FlatIcon';
 import LogoCarousel from './LogoCarousel';
 import { useRegion } from '../../RegionContext';
+import { useCms, CmsText } from '../../cms/CmsContext';
 
 // Portal configurations matching original data.js
 const PORTALS = {

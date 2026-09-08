@@ -13,3 +13,4 @@ export { default as TermsPage } from './TermsPage';
 export { default as PrivacyPage } from './PrivacyPage';
 export { default as HelpPage } from './HelpPage';
 export { default as BetaSignupCard, BETA_APPS } from './BetaSignupCard';
+export { default as CmsPage } from './CmsPage';

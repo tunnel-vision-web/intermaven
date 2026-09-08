@@ -35,7 +35,8 @@ class CmsKeyUpsert(BaseModel):
 # ============== HELPERS ==============
 
 def _require_admin(user: dict):
-    if not (user.get("is_admin") or user.get("role") == "admin"):
+    admin_roles = {"super_admin", "admin", "support", "finance"}
+    if not (user.get("is_admin") or user.get("role") == "admin" or user.get("admin_role") in admin_roles):
         raise HTTPException(status_code=403, detail="Admin only")
 
 
@@ -101,6 +102,89 @@ async def cms_bulk(
 
 
 # ============== ADMIN MANAGEMENT ==============
+
+class SiteMediaUpload(BaseModel):
+    name: str
+    data_url: str
+    file_type: Optional[str] = "image"
+    category: Optional[str] = "site-assets"
+
+
+BUILTIN_SITE_ASSETS = [
+    {"id": "builtin-hero-1", "name": "Hero Background 1 (Business)", "url": "/images/hero/intermaven/hero-1.jpg", "category": "hero", "file_type": "image"},
+    {"id": "builtin-hero-2", "name": "Hero Background 2 (Business)", "url": "/images/hero/intermaven/hero-2.jpg", "category": "hero", "file_type": "image"},
+    {"id": "builtin-hero-3", "name": "Hero Background 3 (Business)", "url": "/images/hero/intermaven/hero-3.jpg", "category": "hero", "file_type": "image"},
+    {"id": "builtin-music-hero-1", "name": "Hero Background 1 (Music)", "url": "/images/hero/intermavenmusic/hero-1.jpg", "category": "hero", "file_type": "image"},
+    {"id": "builtin-music-hero-2", "name": "Hero Background 2 (Music)", "url": "/images/hero/intermavenmusic/hero-2.jpg", "category": "hero", "file_type": "image"},
+    {"id": "builtin-music-hero-3", "name": "Hero Background 3 (Music)", "url": "/images/hero/intermavenmusic/hero-3.jpg", "category": "hero", "file_type": "image"},
+    {"id": "builtin-hdr-tools", "name": "Tools Page Header Banner", "url": "/images/headers/intermaven/header-tools.jpg", "category": "headers", "file_type": "image"},
+    {"id": "builtin-hdr-apps", "name": "Apps Page Header Banner", "url": "/images/headers/intermaven/header-apps.jpg", "category": "headers", "file_type": "image"},
+    {"id": "builtin-hdr-pricing", "name": "Pricing Page Header Banner", "url": "/images/headers/intermaven/header-pricing.jpg", "category": "headers", "file_type": "image"},
+    {"id": "builtin-hdr-about", "name": "About Page Header Banner", "url": "/images/headers/intermaven/header-about.jpg", "category": "headers", "file_type": "image"},
+    {"id": "builtin-hdr-help", "name": "Help Page Header Banner", "url": "/images/headers/intermaven/header-help.jpg", "category": "headers", "file_type": "image"},
+    {"id": "builtin-hdr-forum", "name": "Forum Page Header Banner", "url": "/images/headers/intermaven/header-forum.jpg", "category": "headers", "file_type": "image"},
+    {"id": "builtin-logo-web", "name": "Intermaven Primary Logo (Web)", "url": "/images/logos/intermaven/intermaven-logo-web.png", "category": "logos", "file_type": "image"},
+    {"id": "builtin-logo-footer", "name": "Intermaven Footer Logo", "url": "/images/logos/intermaven/intermaven-logo-footer.png", "category": "logos", "file_type": "image"},
+    {"id": "builtin-icon-brandkit", "name": "Brand Kit AI Icon", "url": "./icons/brandkit.png", "category": "icons", "file_type": "image"},
+    {"id": "builtin-icon-musicbio", "name": "Music Bio AI Icon", "url": "./icons/musicbio.png", "category": "icons", "file_type": "image"},
+    {"id": "builtin-icon-social", "name": "Social AI Icon", "url": "./icons/social.png", "category": "icons", "file_type": "image"},
+    {"id": "builtin-icon-epk", "name": "EPK Builder Icon", "url": "./icons/epk.png", "category": "icons", "file_type": "image"},
+    {"id": "builtin-icon-crm", "name": "Smart CRM Icon", "url": "./icons/crm.png", "category": "icons", "file_type": "image"},
+    {"id": "builtin-icon-pos", "name": "Intermaven POS Icon", "url": "./icons/pos.png", "category": "icons", "file_type": "image"}
+]
+
+
+@router.get("/api/admin/cms/media")
+async def cms_media_list(current_user: dict = Depends(get_current_user)):
+    _require_admin(current_user)
+    uploaded = []
+    if db is not None:
+        for d in db.site_media.find({}).sort("created_at", -1):
+            d["id"] = str(d["_id"])
+            del d["_id"]
+            if isinstance(d.get("created_at"), datetime):
+                d["created_at"] = d["created_at"].isoformat()
+            uploaded.append(d)
+    combined = uploaded + BUILTIN_SITE_ASSETS
+    return {"media": combined, "total": len(combined)}
+
+
+@router.post("/api/admin/cms/media")
+async def cms_media_upload(body: SiteMediaUpload, current_user: dict = Depends(get_current_user)):
+    _require_admin(current_user)
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database unavailable")
+
+    now = datetime.now(timezone.utc)
+    doc = {
+        "name": body.name,
+        "url": body.data_url,
+        "file_type": body.file_type or "image",
+        "category": body.category or "site-assets",
+        "created_at": now,
+        "created_by": str(current_user["_id"])
+    }
+    res = db.site_media.insert_one(doc)
+    doc["id"] = str(res.inserted_id)
+    del doc["_id"]
+    doc["created_at"] = doc["created_at"].isoformat()
+    return doc
+
+
+@router.delete("/api/admin/cms/media/{asset_id}")
+async def cms_media_delete(asset_id: str, current_user: dict = Depends(get_current_user)):
+    _require_admin(current_user)
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database unavailable")
+
+    from bson import ObjectId
+    try:
+        res = db.site_media.delete_one({"_id": ObjectId(asset_id)})
+    except Exception:
+        res = db.site_media.delete_one({"_id": asset_id})
+
+    return {"deleted": res.deleted_count > 0, "id": asset_id}
+
 
 @router.get("/api/admin/cms")
 async def cms_list(current_user: dict = Depends(get_current_user)):

@@ -99,6 +99,101 @@ class ContactCreate(BaseModel):
     notes_text: Optional[str] = None
 
 
+DEFAULT_SEEDED_CONTACTS = [
+    {
+        "first_name": "Alex",
+        "last_name": "Morgan",
+        "email": "alex@ventureco.com",
+        "phone": "+1 (404) 555-0141",
+        "company": "VentureCo Global",
+        "job_title": "CEO & Founder",
+        "tags": ["vip", "partner", "booker"],
+        "source": "Lead Booking (VentureCo Global)",
+        "notes": [{"text": "Interested in complete wordmark, brand system, and AI agency portal.", "created_at": datetime.now(timezone.utc)}],
+        "engagement": {"emails_sent": 4, "emails_opened": 3, "emails_clicked": 2, "whatsapp_messages": 5, "sms_messages": 1},
+        "status": "active"
+    },
+    {
+        "first_name": "Sophia",
+        "last_name": "Chen",
+        "email": "sophia@fintechplus.io",
+        "phone": "+1 (404) 555-0182",
+        "company": "Fintech Plus Inc",
+        "job_title": "VP of Product",
+        "tags": ["industry", "sponsor"],
+        "source": "AI Workflow Automation",
+        "notes": [{"text": "Automated lead distribution and customer support AI agent requirement.", "created_at": datetime.now(timezone.utc)}],
+        "engagement": {"emails_sent": 2, "emails_opened": 2, "emails_clicked": 1, "whatsapp_messages": 2, "sms_messages": 0},
+        "status": "active"
+    },
+    {
+        "first_name": "Marcus",
+        "last_name": "Brody",
+        "email": "brody@brodylaw.com",
+        "phone": "+1 (404) 555-0199",
+        "company": "Brody Law Group",
+        "job_title": "Managing Partner",
+        "tags": ["partner", "vip"],
+        "source": "Custom Ecosystem Build",
+        "notes": [{"text": "Client portal with custom document generation and automated invoicing.", "created_at": datetime.now(timezone.utc)}],
+        "engagement": {"emails_sent": 3, "emails_opened": 3, "emails_clicked": 2, "whatsapp_messages": 4, "sms_messages": 2},
+        "status": "active"
+    },
+    {
+        "first_name": "David",
+        "last_name": "Vance",
+        "email": "vance@juacapital.org",
+        "phone": "+1 (404) 555-0123",
+        "company": "Jua Capital",
+        "job_title": "Managing Director",
+        "tags": ["fan", "press"],
+        "source": "Interactive & Web Design",
+        "notes": [{"text": "Vite/React interactive portal refresh.", "created_at": datetime.now(timezone.utc)}],
+        "engagement": {"emails_sent": 1, "emails_opened": 1, "emails_clicked": 0, "whatsapp_messages": 1, "sms_messages": 0},
+        "status": "active"
+    },
+    {
+        "first_name": "Julian",
+        "last_name": "Vance",
+        "email": "founder@juacapital.org",
+        "phone": "+1 (404) 555-0100",
+        "company": "Jua Capital",
+        "job_title": "Founder",
+        "tags": ["fan", "vip"],
+        "source": "Landing Page Updates",
+        "notes": [{"text": "Double opt-in subscribed lead via agency portal.", "created_at": datetime.now(timezone.utc)}],
+        "engagement": {"emails_sent": 2, "emails_opened": 2, "emails_clicked": 1, "whatsapp_messages": 0, "sms_messages": 0},
+        "status": "active"
+    },
+    {
+        "first_name": "Sarah",
+        "last_name": "Kalu",
+        "email": "techlead@afyaplus.com",
+        "phone": "+254 712 345678",
+        "company": "AfyaPlus Health",
+        "job_title": "CTO & Co-Founder",
+        "tags": ["media", "industry"],
+        "source": "Newsletter Modal",
+        "notes": [{"text": "WhatsApp channel opt-in for agency tech insights.", "created_at": datetime.now(timezone.utc)}],
+        "engagement": {"emails_sent": 1, "emails_opened": 1, "emails_clicked": 1, "whatsapp_messages": 8, "sms_messages": 0},
+        "status": "active"
+    },
+    {
+        "first_name": "David",
+        "last_name": "Mwanga",
+        "email": "mwangalaw@legal.com",
+        "phone": "+254 722 987654",
+        "company": "Mwanga Legal Advocates",
+        "job_title": "Senior Advocate",
+        "tags": ["industry", "partner"],
+        "source": "Footer Signup",
+        "notes": [{"text": "Legal tech automation and brand identity consultation.", "created_at": datetime.now(timezone.utc)}],
+        "engagement": {"emails_sent": 2, "emails_opened": 1, "emails_clicked": 0, "whatsapp_messages": 3, "sms_messages": 0},
+        "status": "active"
+    }
+]
+
+
 @router.get("/api/crm/contacts")
 async def crm_list_contacts(
     page: int = 1, per_page: int = 25,
@@ -107,6 +202,16 @@ async def crm_list_contacts(
     current_user: dict = Depends(get_current_user)
 ):
     query = {"owner_id": current_user["_id"], "deleted": {"$ne": True}}
+
+    # Auto-seed agency leads if contacts database is empty
+    if db is not None and db.contacts.count_documents(query) == 0:
+        for seed_item in DEFAULT_SEEDED_CONTACTS:
+            item = dict(seed_item)
+            item["owner_id"] = current_user["_id"]
+            item["created_at"] = datetime.now(timezone.utc)
+            item["updated_at"] = datetime.now(timezone.utc)
+            db.contacts.insert_one(item)
+
     if search:
         query["$or"] = [
             {"first_name": {"$regex": search, "$options": "i"}},

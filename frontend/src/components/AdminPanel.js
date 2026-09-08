@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { api } from '../App';
+import CMSEditor from './CMSEditor';
+import { INTERMAVEN_LOGO } from '../imageRegistry';
 import {
   Users, BarChart2, Settings, LogOut, Search, Filter,
   ChevronDown, ChevronUp, Edit2, Trash2, Shield, CreditCard,
@@ -1973,8 +1975,8 @@ function CmsManagerPanel({ addToast }) {
 }
 
 // ── Main AdminPanel ────────────────────────────────────────────────
-function AdminPanel({ user, onBack, addToast }) {
-  const [tab, setTab] = useState('users');
+function AdminPanel({ user, onBack, addToast, initialTab = 'users' }) {
+  const [tab, setTab] = useState(initialTab || 'users');
   const adminRole = user?.admin_role;
 
   const tabs = [
@@ -1990,7 +1992,9 @@ function AdminPanel({ user, onBack, addToast }) {
       {/* Admin Sidebar */}
       <aside className="admin-sidebar">
         <div className="admin-sidebar-header">
-          <div className="admin-sidebar-logo">INTER<span>MAVEN</span></div>
+          <div className="admin-sidebar-logo" style={{ display: 'flex', alignItems: 'center' }}>
+            <img src={INTERMAVEN_LOGO} alt="Intermaven" style={{ height: '34px', objectFit: 'contain' }} />
+          </div>
           <div className="admin-sidebar-sub">Admin Console</div>
         </div>
 
@@ -2031,7 +2035,7 @@ function AdminPanel({ user, onBack, addToast }) {
         <div className="admin-body">
           {tab === 'users' && <UsersPanel addToast={addToast} adminRole={adminRole} />}
           {tab === 'analytics' && <AnalyticsPanel addToast={addToast} />}
-          {tab === 'cms' && <CmsManagerPanel addToast={addToast} />}
+          {tab === 'cms' && <CMSEditor addToast={addToast} />}
           {tab === 'audit' && <AuditPanel addToast={addToast} />}
           {tab === 'settings' && <AdminSettingsPanel addToast={addToast} />}
         </div>

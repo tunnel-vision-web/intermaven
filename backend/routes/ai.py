@@ -1,5 +1,6 @@
 import os
 from datetime import datetime, timezone, timedelta
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel
@@ -14,7 +15,6 @@ class AIGenerateRequest(BaseModel):
     tool_id: str
     inputs: dict
 
-    # Support legacy 'tool_id' and also accept as 'tool_id'
     class Config:
         extra = "allow"
 
@@ -99,12 +99,11 @@ async def generate_ai_content(request: AIGenerateRequest, current_user: dict = D
     if tool_id not in TOOL_COSTS:
         raise HTTPException(status_code=400, detail="Invalid tool ID")
 
-    # Load tool costs dynamically from database settings, falling back to static defaults
     settings = get_system_settings()
     cost_map = {
         "brandkit": settings.get("brandkit_cost", 10),
         "musicbio": settings.get("musicbio_cost", 15),
-        "social": 0,  # Always free
+        "social": 0,
         "syncpitch": settings.get("syncpitch_cost", 20),
         "bizpitch": settings.get("bizpitch_cost", 18)
     }
@@ -122,14 +121,12 @@ async def generate_ai_content(request: AIGenerateRequest, current_user: dict = D
             session_id="intermaven-{0}-{1}".format(str(current_user['_id']), tool_id)
         )
 
-        # Deduct credits
         if cost > 0:
             db.users.update_one(
                 {"_id": current_user["_id"]},
                 {"$inc": {"credits": -cost, "ai_runs": 1}}
             )
 
-        # Log AI run
         db.ai_runs.insert_one({
             "user_id": current_user["_id"],
             "tool_id": tool_id,
@@ -137,7 +134,6 @@ async def generate_ai_content(request: AIGenerateRequest, current_user: dict = D
             "created_at": datetime.now(timezone.utc)
         })
 
-        # Log activity
         db.activities.insert_one({
             "user_id": current_user["_id"],
             "type": "ai_generation",
@@ -158,9 +154,7 @@ async def generate_ai_content(request: AIGenerateRequest, current_user: dict = D
         raise HTTPException(status_code=500, detail=f"AI generation failed: {str(e)}")
 
 
-
 def _get_client_ip(request: Request) -> str:
-    """Resolve client IP behind ingress/proxies."""
     xff = request.headers.get("x-forwarded-for")
     if xff:
         return xff.split(",")[0].strip()
@@ -169,7 +163,6 @@ def _get_client_ip(request: Request) -> str:
 
 @router.get("/api/ai/try-social/status")
 async def try_social_status(request: Request):
-    """Return how many free demo runs the caller has left today."""
     ip = _get_client_ip(request)
     since = datetime.now(timezone.utc) - timedelta(hours=24)
     used = db.demo_runs.count_documents({"ip": ip, "tool_id": "social", "created_at": {"$gte": since}})
@@ -182,7 +175,6 @@ async def try_social_status(request: Request):
 
 @router.post("/api/ai/try-social")
 async def try_social_demo(payload: TrySocialRequest, request: Request):
-    """Un-gated free demo of Social AI. Rate-limited per IP."""
     ip = _get_client_ip(request)
     since = datetime.now(timezone.utc) - timedelta(hours=24)
     used = db.demo_runs.count_documents({"ip": ip, "tool_id": "social", "created_at": {"$gte": since}})
@@ -233,3 +225,52 @@ async def try_social_demo(payload: TrySocialRequest, request: Request):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Demo generation failed: {str(e)}")
+
+
+# ============== CMS AI COPYWRITING ASSISTANT ==============
+
+class CmsAiAssistRequest(BaseModel):
+    key_id: str
+    current_text: Optional[str] = ""
+    prompt: Optional[str] = ""
+    tone: Optional[str] = "hype"
+    target_portal: Optional[str] = "business"
+
+
+@router.post("/api/ai/cms-assist")
+async def cms_ai_assist(request: CmsAiAssistRequest, current_user: dict = Depends(get_current_user)):
+    admin_roles = {"super_admin", "admin", "support", "finance"}
+    if not (current_user.get("is_admin") or current_user.get("role") == "admin" or current_user.get("admin_role") in admin_roles):
+        raise HTTPException(status_code=403, detail="Admin only")
+
+    key_id = request.key_id
+    current_text = request.current_text or ""
+    user_prompt = request.prompt or ""
+    tone = request.tone or "hype"
+    portal = request.target_portal or "business"
+
+    system_instruction = (
+        f"You are Intermaven's expert AI Copywriter & Marketing Strategist for the {portal.upper()} portal. "
+        f"Generate or rewrite punchy, conversion-focused website copy for CMS key '{key_id}'. "
+        f"Keep formatting clean. If HTML markup like <b>, <em>, or <br/> is appropriate, use it tastefully."
+    )
+
+    user_message = (
+        f"CMS Key: {key_id}\n"
+        f"Current Copy: '{current_text}'\n"
+        f"Desired Tone/Style: {tone}\n"
+        f"Custom Instruction: '{user_prompt}'\n\n"
+        f"Provide ONLY the refined final copy string ready for insertion:"
+    )
+
+    try:
+        from llm_fallback import run_llm_completion
+        result = await run_llm_completion(
+            prompt=user_message,
+            system_message=system_instruction,
+            session_id=f"cms-assist-{key_id}"
+        )
+        clean_result = (result or "").strip().strip('"').strip("'")
+        return {"success": True, "key_id": key_id, "suggestion": clean_result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"AI assistance failed: {str(e)}")

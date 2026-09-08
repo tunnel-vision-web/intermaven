@@ -7,7 +7,7 @@ import { useRegion } from '../RegionContext';
 
 
 function AuthModal({ onClose }) {
-  const { login, register } = useAuth();
+  const { login, register, sandboxLogin } = useAuth();
   const region = useRegion();
   const country = region ? region.country : 'KE';
   const isWestern = ['US', 'CA', 'GB', 'IE', 'AU', 'NZ', 'FR', 'DE', 'IT', 'ES', 'NL', 'BE', 'SE', 'NO', 'FI', 'DK', 'AT', 'CH', 'PT', 'PL', 'CZ', 'HU', 'GR'].includes(country?.toUpperCase());
@@ -17,6 +17,17 @@ function AuthModal({ onClose }) {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const handleSandboxLogin = async (role) => {
+    setLoading(true);
+    const res = await sandboxLogin(role);
+    setLoading(false);
+    if (res?.success) {
+      const redirect = location.state?.redirect || '/dashboard';
+      navigate(redirect);
+      if (onClose) onClose();
+    }
+  };
   const [logoLoaded, setLogoLoaded] = useState(true);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [passwordError, setPasswordError] = useState('');
@@ -249,6 +260,78 @@ function AuthModal({ onClose }) {
             >
               Create Account
             </button>
+          </div>
+
+          {/* BUILD PHASE SANDBOX QUICK LOGIN CARD */}
+          <div style={{
+            marginBottom: '20px',
+            padding: '12px 14px',
+            background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(59, 130, 246, 0.12))',
+            border: '1px solid rgba(16, 185, 129, 0.35)',
+            borderRadius: 'var(--r, 3px)'
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '8px' }}>
+              <span style={{ fontSize: '11px', fontWeight: '700', color: '#10b981', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                ⚡ Sandbox Build Login
+              </span>
+              <span style={{ fontSize: '10px', color: 'rgba(255, 255, 255, 0.5)' }}>1-Click Instant Access</span>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
+              <button
+                type="button"
+                onClick={() => handleSandboxLogin('admin')}
+                disabled={loading}
+                style={{
+                  padding: '8px 4px',
+                  fontSize: '11px',
+                  fontWeight: '600',
+                  background: '#10b981',
+                  color: '#000000',
+                  border: 'none',
+                  borderRadius: 'var(--r, 3px)',
+                  cursor: 'pointer',
+                  textAlign: 'center'
+                }}
+              >
+                👑 Admin
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSandboxLogin('music')}
+                disabled={loading}
+                style={{
+                  padding: '8px 4px',
+                  fontSize: '11px',
+                  fontWeight: '600',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  color: '#ffffff',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: 'var(--r, 3px)',
+                  cursor: 'pointer',
+                  textAlign: 'center'
+                }}
+              >
+                🎵 Music
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSandboxLogin('business')}
+                disabled={loading}
+                style={{
+                  padding: '8px 4px',
+                  fontSize: '11px',
+                  fontWeight: '600',
+                  background: 'rgba(255, 255, 255, 0.08)',
+                  color: '#ffffff',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                  borderRadius: 'var(--r, 3px)',
+                  cursor: 'pointer',
+                  textAlign: 'center'
+                }}
+              >
+                💼 Business
+              </button>
+            </div>
           </div>
 
           {formError && (

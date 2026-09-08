@@ -13,6 +13,7 @@ import PricingPage from './PricingPage';
 import AboutPage from './AboutPage';
 import ForumPage from './ForumPage';
 import HelpPage from './HelpPage';
+import CmsPage from './CmsPage';
 
 const pageComponents = {
   home: HomePage,
@@ -22,6 +23,7 @@ const pageComponents = {
   about: AboutPage,
   forum: ForumPage,
   help: HelpPage,
+  cms: CmsPage,
 };
 
 function LandingLayout({ page = 'home', onOpenAuth, onOpenSignIn, addToast }) {

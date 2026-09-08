@@ -26,6 +26,13 @@ ALLOWED_CLIENTS = {
             "http://127.0.0.1:8090/api/oauth2-callback/intermaven",
             "https://atltvmountpro.com/api/oauth2-callback/intermaven"
         ]
+    },
+    "intermaven_agency": {
+        "client_secret": "agency_super_secret_2026",
+        "redirect_uris": [
+            "http://localhost:8080/api/auth/sso/callback",
+            "http://127.0.0.1:8080/api/auth/sso/callback"
+        ]
     }
 }
 

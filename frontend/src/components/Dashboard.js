@@ -6,7 +6,7 @@ import {
   Palette, Music, Share2, Film, Presentation, Bell,
   TrendingUp, Download, Upload, BarChart3, DollarSign, UserPlus,
   BookOpen, Sparkles, Library, ShoppingBag, Plug, Smartphone, Receipt,
-  Activity, Globe
+  Activity, Globe, Shield
 } from 'lucide-react';
 import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
@@ -20,6 +20,7 @@ import Channels from './Channels';
 import POSPanel from './POSPanel';
 import DistroPanel from './DistroPanel';
 import HostingPanel from './HostingPanel';
+import AdminPanel from './AdminPanel';
 import BusinessDiscoveryModal from './wizard/BusinessDiscoveryModal';
 import WizardShell from './wizard/WizardShell';
 import HOW_TO_GUIDES from './wizard/howto-content';
@@ -638,6 +639,32 @@ function Dashboard() {
               {!collapsed && <span>Settings</span>}
             </button>
 
+            {(user?.admin_role || user?.is_admin || user?.role === 'admin') && (
+              <>
+                <div style={{ padding: collapsed ? '12px 16px' : '12px 24px', fontSize: '13px', color: '#10b981', fontWeight: 600, marginTop: '16px' }}>
+                  {!collapsed && 'ADMIN & CMS'}
+                </div>
+
+                <button
+                  onClick={() => setActivePanel('cms')}
+                  data-testid="sidebar-cms-btn"
+                  style={{ width: '100%', padding: collapsed ? '16px' : '16px 24px', display: 'flex', alignItems: 'center', gap: '16px', background: activePanel === 'cms' ? '#334155' : 'transparent', border: 'none', color: '#10b981', textAlign: 'left', cursor: 'pointer', fontWeight: 600 }}
+                >
+                  <Globe size={24} color="#10b981" />
+                  {!collapsed && <span>Mother-CMS</span>}
+                </button>
+
+                <button
+                  onClick={() => setActivePanel('admin')}
+                  data-testid="sidebar-admin-btn"
+                  style={{ width: '100%', padding: collapsed ? '16px' : '16px 24px', display: 'flex', alignItems: 'center', gap: '16px', background: activePanel === 'admin' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer' }}
+                >
+                  <Shield size={24} color="#f59e0b" />
+                  {!collapsed && <span>Admin Console</span>}
+                </button>
+              </>
+            )}
+
             <div style={{ marginTop: 'auto', padding: '20px 24px' }}>
               <button onClick={logout} style={{ width: '100%', padding: '12px 0', display: 'flex', alignItems: 'center', gap: '16px', background: 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer' }}>
                 <LogOut size={24} color="#22d3ee" />
@@ -1235,6 +1262,11 @@ function Dashboard() {
           {activePanel === 'pos' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><POSPanel /></div>}
           {activePanel === 'distro' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><DistroPanel /></div>}
           {activePanel === 'hosting' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><HostingPanel /></div>}
+          {(activePanel === 'admin' || activePanel === 'cms') && (
+            <div style={{ flex: 1, height: '100%', overflow: 'auto' }}>
+              <AdminPanel user={user} onBack={() => setActivePanel('overview')} initialTab={activePanel === 'cms' ? 'cms' : 'users'} />
+            </div>
+          )}
 
           {APPS[activePanel] && !['social','crm','epk','filemanager','settings','channels','pos','distro','hosting'].includes(activePanel) && (
             <div style={{ flex: 1, height: '100%', overflow: 'auto' }}>

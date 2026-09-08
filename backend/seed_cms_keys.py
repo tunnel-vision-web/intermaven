@@ -208,8 +208,75 @@ DEFAULT_CMS_KEYS = [
             "djs": {"default": "Sign up and turn every set into a branded experience for promoters, venues, and fans."},
             "labels": {"default": "Create an account and get label-ready assets for press, sync, and promotion."},
             "producers": {"default": "Sign up to generate polished producer profiles, sync pitches, and social assets."},
-            "mediahouses": {"default": "Sign up to access tools built for licensing, campaigns, and creative operations."},
+    {
+        "_id": "homepage.hero.title",
+        "description": "Main hero headline title on the Homepage.",
+        "default": "Build your brand. Grow your career.",
+        "regions": {
+            "US": "Build your brand. Scale globally.",
+            "KE": "Build your brand. Grow your career."
         },
+        "portals": {
+            "business": {"default": "Run your business. Smarter every day."}
+        }
+    },
+    {
+        "_id": "homepage.hero.subtitle",
+        "description": "Main hero subtitle paragraph on the Homepage.",
+        "default": "Intermaven gives musicians, creators, and entrepreneurs the AI tools to brand, market, and scale — without an agency budget.",
+        "regions": {},
+        "portals": {
+            "business": {"default": "Intermaven Business gives entrepreneurs AI and operational tools to manage, market, and scale."}
+        }
+    },
+    {
+        "_id": "homepage.hero.badge",
+        "description": "Badge text at top of Homepage hero.",
+        "default": "Now live — AI tools for Africa & Beyond",
+        "regions": {"US": "Now live — Global AI OS for Creatives"},
+        "portals": {"business": {"default": "Business tools for SMEs & Creators"}}
+    },
+    {
+        "_id": "apps.header",
+        "description": "Header title of Apps Marketplace page.",
+        "default": "App Marketplace",
+        "regions": {},
+        "portals": {}
+    },
+    {
+        "_id": "apps.subtitle",
+        "description": "Subtitle description of Apps Marketplace page.",
+        "default": "Modular applications designed for music creators, managers, and business owners.",
+        "regions": {},
+        "portals": {}
+    },
+    {
+        "_id": "pricing.header",
+        "description": "Header title of Pricing page.",
+        "default": "Simple, Transparent Pricing",
+        "regions": {},
+        "portals": {}
+    },
+    {
+        "_id": "pricing.subtitle",
+        "description": "Subtitle of Pricing page.",
+        "default": "Choose the plan that fits your stage of growth. Upgrade or downgrade anytime.",
+        "regions": {},
+        "portals": {}
+    },
+    {
+        "_id": "help.header",
+        "description": "Header title of Help Center page.",
+        "default": "How can we help you?",
+        "regions": {},
+        "portals": {}
+    },
+    {
+        "_id": "forum.header",
+        "description": "Header title of Community Forum page.",
+        "default": "Community Forum",
+        "regions": {},
+        "portals": {}
     },
 ]
 

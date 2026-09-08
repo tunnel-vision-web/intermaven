@@ -13,6 +13,10 @@ class UserLogin(BaseModel):
     email: EmailStr
     password: str
 
+class SandboxLogin(BaseModel):
+    role: Optional[str] = "admin"
+    email: Optional[str] = None
+
 class UserUpdate(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None

@@ -1,907 +1,1305 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../App';
-import { 
-  Save, History, Sparkles, Plus, Trash2, Loader2, Image, Video, 
-  HelpCircle, Check, Link, Eye, Info, RefreshCw, X, MessageSquare 
+import { INTERMAVEN_LOGO } from '../imageRegistry';
+import {
+  Globe, Layout, Search, Plus, Save, RotateCcw, History,
+  Check, AlertCircle, RefreshCw, Trash2, Image, Upload,
+  Bold, Italic, Underline, List, ListOrdered, Link2, Type,
+  Heading1, Heading2, Folder, FileText, ChevronRight, ChevronDown,
+  Sparkles, Layers, CreditCard, Shield, Phone, Mail, MapPin, Eye,
+  Sliders, ArrowRight, Play, ExternalLink, Info, Edit3, Repeat, Wand2
 } from 'lucide-react';
 
-const CMS_PAGES = [
-  { id: 'home', label: 'Home Page' },
-  { id: 'header', label: 'Header & Logo' },
-  { id: 'footer', label: 'Footer & Links' },
-  { id: 'about', label: 'About Us Page' },
-  { id: 'services', label: 'Services Catalogue' }
+// Recommended Dimensions Mapping
+const RECOMMENDED_DIMENSIONS = {
+  hero: { dims: '1920 × 1080 px', aspect: '16:9 HD', format: 'JPG / WEBP', desc: 'Hero carousel background image' },
+  headers: { dims: '1920 × 600 px', aspect: '3.2:1 Banner', format: 'JPG / WEBP', desc: 'Top page header banner graphic' },
+  logos: { dims: '400 × 120 px', aspect: 'Transparent', format: 'PNG / SVG', desc: 'Primary site brand logo' },
+  icons: { dims: '512 × 512 px', aspect: '1:1 Square', format: 'PNG / SVG', desc: 'Application & tool icon asset' },
+  'site-assets': { dims: '1200 × 800 px', aspect: '3:2 Ratio', format: 'JPG / PNG', desc: 'General site media asset' }
+};
+
+// Structure of Site Pages & Sections
+const SITE_PAGES = [
+  {
+    id: 'homepage',
+    name: 'Homepage & Hero Carousel',
+    icon: '🏠',
+    description: 'Edit all 4 Hero Carousel slides, background images, titles, and buttons',
+    sections: [
+      {
+        id: 'hero_slide_1',
+        name: 'Slide 1 (Hero Main)',
+        keys: [
+          { id: 'homepage.hero.slide1.badge', label: 'Slide 1 Top Badge', type: 'text', default: 'Now live — AI tools for Africa & Beyond' },
+          { id: 'homepage.hero.slide1.title', label: 'Slide 1 Headline Title (HTML enabled)', type: 'richtext', default: 'Build your brand.<br/><em style="color:#c084fc">Grow your career.</em>' },
+          { id: 'homepage.hero.slide1.subtitle', label: 'Slide 1 Subtitle Paragraph', type: 'richtext', default: 'Intermaven gives musicians, creators, and entrepreneurs the AI tools to brand, market, and scale.' },
+          { id: 'homepage.hero.slide1.b1', label: 'Primary Button Label', type: 'text', default: 'Try AI tools free' },
+          { id: 'homepage.hero.slide1.b1link', label: 'Primary Button Link', type: 'text', default: '/tools' },
+          { id: 'homepage.hero.slide1.b2', label: 'Secondary Button Label', type: 'text', default: 'See pricing' },
+          { id: 'homepage.hero.slide1.b2link', label: 'Secondary Button Link', type: 'text', default: '/pricing' },
+          { id: 'homepage.hero.slide1.image', label: 'Background Image URL', type: 'image_url', default: '/images/hero/intermaven/hero-1.jpg' }
+        ]
+      },
+      {
+        id: 'hero_slide_2',
+        name: 'Slide 2 (Feature Focus)',
+        keys: [
+          { id: 'homepage.hero.slide2.badge', label: 'Slide 2 Top Badge', type: 'text', default: 'For musicians & artists' },
+          { id: 'homepage.hero.slide2.title', label: 'Slide 2 Headline Title', type: 'richtext', default: 'Your music.<br/><em style="color:#22d3ee">The world\'s stage.</em>' },
+          { id: 'homepage.hero.slide2.subtitle', label: 'Slide 2 Subtitle Paragraph', type: 'richtext', default: 'From a polished press kit to a Hollywood sync pitch — our AI tools help creators break through globally.' },
+          { id: 'homepage.hero.slide2.b1', label: 'Primary Button Label', type: 'text', default: 'Write my press kit' },
+          { id: 'homepage.hero.slide2.b1link', label: 'Primary Button Link', type: 'text', default: '/tools' },
+          { id: 'homepage.hero.slide2.b2', label: 'Secondary Button Label', type: 'text', default: 'See all apps' },
+          { id: 'homepage.hero.slide2.b2link', label: 'Secondary Button Link', type: 'text', default: '/apps' },
+          { id: 'homepage.hero.slide2.image', label: 'Background Image URL', type: 'image_url', default: '/images/hero/intermaven/hero-2.jpg' }
+        ]
+      },
+      {
+        id: 'hero_slide_3',
+        name: 'Slide 3 (Brand Kit)',
+        keys: [
+          { id: 'homepage.hero.slide3.badge', label: 'Slide 3 Top Badge', type: 'text', default: 'For creative brands & SMEs' },
+          { id: 'homepage.hero.slide3.title', label: 'Slide 3 Headline Title', type: 'richtext', default: 'Brand it right.<br/><em style="color:#f59e0b">From day one.</em>' },
+          { id: 'homepage.hero.slide3.subtitle', label: 'Slide 3 Subtitle Paragraph', type: 'richtext', default: 'Whether you are an artist, studio, or business owner — generate your full brand kit in seconds.' },
+          { id: 'homepage.hero.slide3.b1', label: 'Primary Button Label', type: 'text', default: 'Generate brand kit' },
+          { id: 'homepage.hero.slide3.b1link', label: 'Primary Button Link', type: 'text', default: '/tools' },
+          { id: 'homepage.hero.slide3.b2', label: 'Secondary Button Label', type: 'text', default: 'Explore apps' },
+          { id: 'homepage.hero.slide3.b2link', label: 'Secondary Button Link', type: 'text', default: '/apps' },
+          { id: 'homepage.hero.slide3.image', label: 'Background Image URL', type: 'image_url', default: '/images/hero/intermaven/hero-3.jpg' }
+        ]
+      },
+      {
+        id: 'hero_slide_4',
+        name: 'Slide 4 (Ecosystem)',
+        keys: [
+          { id: 'homepage.hero.slide4.badge', label: 'Slide 4 Top Badge', type: 'text', default: 'Music & Creative marketplace' },
+          { id: 'homepage.hero.slide4.title', label: 'Slide 4 Headline Title', type: 'richtext', default: 'One platform.<br/><em style="color:#10b981">Every creative tool.</em>' },
+          { id: 'homepage.hero.slide4.subtitle', label: 'Slide 4 Subtitle Paragraph', type: 'richtext', default: 'A growing ecosystem of apps built for artists, labels, and creatives across Africa and the diaspora.' },
+          { id: 'homepage.hero.slide4.b1', label: 'Primary Button Label', type: 'text', default: 'Explore marketplace' },
+          { id: 'homepage.hero.slide4.b1link', label: 'Primary Button Link', type: 'text', default: '/apps' },
+          { id: 'homepage.hero.slide4.b2', label: 'Secondary Button Label', type: 'text', default: 'Our story' },
+          { id: 'homepage.hero.slide4.b2link', label: 'Secondary Button Link', type: 'text', default: '/about' },
+          { id: 'homepage.hero.slide4.image', label: 'Background Image URL', type: 'image_url', default: '/images/hero/intermaven/hero-1.jpg' }
+        ]
+      },
+      {
+        id: 'callouts',
+        name: 'Marketplace & Feature Grid',
+        keys: [
+          { id: 'homepage.features.title', label: 'Features Section Title', type: 'text', default: 'AI tools for every stage of your creative career' },
+          { id: 'homepage.marketplace.title', label: 'App Marketplace Title', type: 'text', default: 'Music & Creative App Marketplace' },
+          { id: 'homepage.marketplace.subtitle', label: 'App Marketplace Subtitle', type: 'richtext', default: 'Standalone modules in a growing ecosystem for independent creators and businesses.' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'about',
+    name: 'About Page',
+    icon: 'ℹ️',
+    description: 'Company story, mission, hours, and contact details',
+    sections: [
+      {
+        id: 'story',
+        name: 'Our Story & Mission',
+        keys: [
+          { id: 'about.description', label: 'Header Tagline Paragraph', type: 'richtext', default: 'Intermaven is the complete creative operating system for African musicians, creators, and entrepreneurs.' },
+          { id: 'about.story_title', label: 'Story Section Title', type: 'text', default: 'Our Story' },
+          { id: 'about.story_body_1', label: 'Story Paragraph 1', type: 'richtext', default: 'We built Intermaven because creators in Africa deserve world-class tools that understand their unique challenges.' },
+          { id: 'about.story_body_2', label: 'Story Paragraph 2', type: 'richtext', default: 'What started as a simple EPK builder in 2024 has grown into a full operating system used by thousands of independent artists.' }
+        ]
+      },
+      {
+        id: 'contact_info',
+        name: 'Contact & Business Info',
+        keys: [
+          { id: 'about.email_label', label: 'Email Card Label', type: 'text', default: 'EMAIL US' },
+          { id: 'about.email', label: 'Primary Contact Email', type: 'text', default: 'hello@intermaven.io' },
+          { id: 'about.phone_label', label: 'Phone Card Label', type: 'text', default: 'WHATSAPP / PHONE' },
+          { id: 'about.business_hours', label: 'Business Hours Line', type: 'text', default: 'Mon–Fri, 9am–5pm EAT' },
+          { id: 'about.based_in', label: 'Based In Location Line', type: 'text', default: 'Nairobi, Kenya' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'tools',
+    name: 'AI Tools Page',
+    icon: '🛠️',
+    description: 'AI Creative Studio headlines, tool cards, and CTAs',
+    sections: [
+      {
+        id: 'tools_header',
+        name: 'Page Header & CTAs',
+        keys: [
+          { id: 'tools.header', label: 'Tools Page Main Title', type: 'text', default: 'AI Creative Studio' },
+          { id: 'tools.subtitle', label: 'Tools Page Subtitle', type: 'richtext', default: 'Generate brand and music assets powered by AI' },
+          { id: 'tools.cta', label: 'CTA Button Text', type: 'text', default: 'Start free →' },
+          { id: 'tools.cta_desc', label: 'CTA Description Note', type: 'richtext', default: 'Create a free account to access all AI tools with 150 free credits. No credit card required.' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'apps',
+    name: 'Apps Marketplace Page',
+    icon: '📱',
+    description: 'App Marketplace titles and category descriptions',
+    sections: [
+      {
+        id: 'apps_header',
+        name: 'Marketplace Header',
+        keys: [
+          { id: 'apps.header', label: 'Marketplace Header Title', type: 'text', default: 'App Marketplace' },
+          { id: 'apps.subtitle', label: 'Marketplace Subtitle', type: 'richtext', default: 'Modular applications designed for music creators, managers, and business owners.' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'pricing',
+    name: 'Pricing & Payments',
+    icon: '💳',
+    description: 'Plans, pricing headlines, and payment callouts',
+    sections: [
+      {
+        id: 'pricing_callouts',
+        name: 'Payment Banners & Methods',
+        keys: [
+          { id: 'pricing.header', label: 'Pricing Page Header Title', type: 'text', default: 'Simple, Transparent Pricing' },
+          { id: 'pricing.subtitle', label: 'Pricing Page Subtitle', type: 'richtext', default: 'Choose the plan that fits your stage of growth. Upgrade or downgrade anytime.' },
+          { id: 'pricing.callout.title', label: 'Payment Callout Banner Title', type: 'text', default: 'Pay instantly with M-Pesa' },
+          { id: 'pricing.callout.body', label: 'Payment Callout Body', type: 'richtext', default: 'Send to Paybill 522900. Credits load the moment your payment confirms — no waiting, no approval.' },
+          { id: 'pricing.payment_methods', label: 'Supported Payment Methods', type: 'text', default: 'M-Pesa, Visa, Mastercard, PayPal' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'header_footer',
+    name: 'Header & Footer',
+    icon: '⚓',
+    description: 'Global site address, support phone, tagline, and social links',
+    sections: [
+      {
+        id: 'footer_info',
+        name: 'Footer Contact & Copyright',
+        keys: [
+          { id: 'footer.tagline', label: 'Footer Tagline', type: 'text', default: 'Made with ❤ in Nairobi' },
+          { id: 'footer.contact.phone', label: 'Support Phone Number', type: 'text', default: '+254 700 000 000' },
+          { id: 'footer.contact.address', label: 'Postal Address', type: 'text', default: 'Nairobi, Kenya' }
+        ]
+      },
+      {
+        id: 'social_handles',
+        name: 'Social Media URLs',
+        keys: [
+          { id: 'social.instagram', label: 'Instagram URL', type: 'text', default: 'https://instagram.com/intermaven' },
+          { id: 'social.tiktok', label: 'TikTok URL', type: 'text', default: 'https://tiktok.com/@intermaven' },
+          { id: 'social.x', label: 'X (Twitter) URL', type: 'text', default: 'https://x.com/intermaven' },
+          { id: 'social.linkedin', label: 'LinkedIn URL', type: 'text', default: 'https://linkedin.com/company/intermaven' }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'help_forum',
+    name: 'Help & Community',
+    icon: '❓',
+    description: 'Help Center and Community Forum titles and support links',
+    sections: [
+      {
+        id: 'community_headers',
+        name: 'Help & Forum Headers',
+        keys: [
+          { id: 'help.header', label: 'Help Center Header', type: 'text', default: 'How can we help you?' },
+          { id: 'forum.header', label: 'Community Forum Header', type: 'text', default: 'Community Forum' }
+        ]
+      }
+    ]
+  }
 ];
 
-export default function CMSEditor() {
-  const [activePage, setActivePage] = useState('home');
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [formData, setFormData] = useState({});
-  const [version, setVersion] = useState(1);
-  
-  // History & Rollbacks
-  const [history, setHistory] = useState([]);
-  const [historyLoading, setHistoryLoading] = useState(false);
-  const [showHistory, setShowHistory] = useState(false);
-
-  // AI Image Generator Modal State
-  const [showAIModal, setShowAIModal] = useState(false);
-  const [aiPrompt, setAiPrompt] = useState('');
-  const [aiLoading, setAiLoading] = useState(false);
-  const [targetField, setTargetField] = useState(''); // e.g. 'hero_image', 'logo_url'
-  const [aiError, setAiError] = useState('');
-
-  // Toast State
-  const [toastMsg, setToastMsg] = useState(null);
-
-  const triggerToast = (msg, type = 'success') => {
-    setToastMsg({ msg, type });
-    setTimeout(() => setToastMsg(null), 3500);
+// Rich Text Formatting Component
+function RichTextToolbar({ onFormat, textRef }) {
+  const applyTag = (startTag, endTag = '') => {
+    const el = textRef.current;
+    if (!el) return;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const val = el.value;
+    const selected = val.substring(start, end);
+    const replacement = `${startTag}${selected || 'text'}${endTag}`;
+    onFormat(val.substring(0, start) + replacement + val.substring(end));
   };
 
-  const fetchLayout = async (pageId) => {
+  return (
+    <div style={{ display: 'flex', gap: '4px', padding: '4px 8px', background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)', borderBottom: 'none', borderRadius: '4px 4px 0 0', flexWrap: 'wrap' }}>
+      <button type="button" onClick={() => applyTag('<b>', '</b>')} title="Bold" style={tbBtnStyle}><Bold size={13} /></button>
+      <button type="button" onClick={() => applyTag('<i>', '</i>')} title="Italic" style={tbBtnStyle}><Italic size={13} /></button>
+      <button type="button" onClick={() => applyTag('<u>', '</u>')} title="Underline" style={tbBtnStyle}><Underline size={13} /></button>
+      <div style={{ width: '1px', background: 'rgba(255,255,255,0.1)', margin: '0 4px' }} />
+      <button type="button" onClick={() => applyTag('<em style="color:#c084fc">', '</em>')} title="Purple Highlight" style={{ ...tbBtnStyle, color: '#c084fc' }}>Purple</button>
+      <button type="button" onClick={() => applyTag('<em style="color:#22d3ee">', '</em>')} title="Cyan Highlight" style={{ ...tbBtnStyle, color: '#22d3ee' }}>Cyan</button>
+      <button type="button" onClick={() => applyTag('<em style="color:#10b981">', '</em>')} title="Green Highlight" style={{ ...tbBtnStyle, color: '#10b981' }}>Green</button>
+      <div style={{ width: '1px', background: 'rgba(255,255,255,0.1)', margin: '0 4px' }} />
+      <button type="button" onClick={() => applyTag('<a href="#">', '</a>')} title="Link" style={tbBtnStyle}><Link2 size={13} /></button>
+    </div>
+  );
+}
+
+const tbBtnStyle = {
+  background: 'none',
+  border: 'none',
+  color: '#cbd5e1',
+  padding: '4px 6px',
+  borderRadius: '3px',
+  cursor: 'pointer',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  fontSize: '11px',
+  fontWeight: 'bold'
+};
+
+// ── Interactive Live Hero Carousel Preview Component ────────────────
+function LiveHeroPreview({ slideNum, slideData, activePortal }) {
+  const bgImg = slideData.image || `/images/hero/intermaven/hero-${slideNum}.jpg`;
+
+  return (
+    <div style={{
+      position: 'relative',
+      borderRadius: '8px',
+      overflow: 'hidden',
+      border: '1px solid rgba(16, 185, 129, 0.3)',
+      minHeight: '220px',
+      padding: '24px',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      backgroundImage: `linear-gradient(rgba(8, 9, 13, 0.75), rgba(8, 9, 13, 0.85)), url(${bgImg})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center top',
+      marginBottom: '20px'
+    }}>
+      <div style={{ position: 'absolute', top: '12px', right: '12px', display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(16, 185, 129, 0.4)', borderRadius: '4px', padding: '3px 8px', fontSize: '10px', fontWeight: 'bold', color: '#10b981' }}>
+        <Eye size={12} /> LIVE PREVIEW (SLIDE {slideNum} · {activePortal.toUpperCase()})
+      </div>
+
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '20px', padding: '3px 10px', fontSize: '11px', fontWeight: 'bold', color: '#10b981', width: 'fit-content', marginBottom: '10px' }}>
+        <span>●</span> {slideData.badge || 'Now live'}
+      </div>
+
+      <h3
+        style={{ fontSize: '22px', fontWeight: '800', margin: '0 0 8px', color: '#ffffff', lineHeight: 1.2 }}
+        dangerouslySetInnerHTML={{ __html: slideData.title || 'Hero Slide Headline' }}
+      />
+
+      <p style={{ fontSize: '13px', color: '#cbd5e1', margin: '0 0 16px', maxWidth: '500px', lineHeight: 1.4 }}>
+        {slideData.subtitle || 'Hero slide description paragraph preview.'}
+      </p>
+
+      <div style={{ display: 'flex', gap: '10px' }}>
+        <span style={{ padding: '8px 16px', background: '#10b981', color: '#000000', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          {slideData.b1 || 'Primary CTA'} →
+        </span>
+        <span style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: '#ffffff', borderRadius: '4px', fontSize: '12px', fontWeight: '600' }}>
+          {slideData.b2 || 'Secondary CTA'}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function CMSEditor() {
+  // Navigation & Portal Selection
+  const [activePortal, setActivePortal] = useState('global');
+  const [activeTab, setActiveTab] = useState('homepage');
+  const [activeRegion, setActiveRegion] = useState('DEFAULT');
+  const [previewSlideNum, setPreviewSlideNum] = useState(1);
+
+  // CMS Keys & Media Data
+  const [cmsKeys, setCmsKeys] = useState({});
+  const [mediaList, setMediaList] = useState([]);
+  const [mediaFilterCategory, setMediaFilterCategory] = useState('all');
+  const [mediaSearch, setMediaSearch] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [savingKeyId, setSavingKeyId] = useState(null);
+  const [savedSuccessKeyId, setSavedSuccessKeyId] = useState(null);
+  const [msg, setMsg] = useState({ type: '', text: '' });
+
+  // Currently Focused Key in Editor
+  const [focusedKeyId, setFocusedKeyId] = useState('homepage.hero.slide1.title');
+
+  // Per-Key Draft Values
+  const [keyDrafts, setKeyDrafts] = useState({});
+
+  // Media Upload & Replace State
+  const [uploadingMedia, setUploadingMedia] = useState(false);
+  const [mediaPickerOpen, setMediaPickerOpen] = useState(false);
+  const [targetPickerKeyId, setTargetPickerKeyId] = useState(null);
+  const [replacingAssetId, setReplacingAssetId] = useState(null);
+
+  // AI Assistant Drawer / Modal State
+  const [aiModalOpen, setAiModalOpen] = useState(false);
+  const [aiTargetKeyId, setAiTargetKeyId] = useState(null);
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [aiTone, setAiTone] = useState('hype');
+  const [aiGenerating, setAiGenerating] = useState(false);
+  const [aiSuggestion, setAiSuggestion] = useState('');
+
+  // History Modal
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [historyList, setHistoryList] = useState([]);
+
+  // Raw Keys Search
+  const [rawSearch, setRawSearch] = useState('');
+
+  const textareaRef = useRef(null);
+  const replaceFileInputRef = useRef(null);
+
+  // Fetch CMS Keys & Media Catalog
+  const loadData = async () => {
     setLoading(true);
     try {
-      const res = await api.get(`/api/cms/layouts/${pageId}`);
-      setFormData(res.data.data || {});
-      setVersion(res.data.version || 1);
-      fetchHistory(pageId);
+      const [keysRes, mediaRes] = await Promise.all([
+        api.get('/api/admin/cms').catch(() => ({ data: { keys: [] } })),
+        api.get('/api/admin/cms/media').catch(() => ({ data: { media: [] } }))
+      ]);
+
+      const keysArray = keysRes.data?.keys || [];
+      const keysMap = {};
+      const draftsMap = {};
+      keysArray.forEach(k => {
+        const id = k._id || k.key;
+        keysMap[id] = k;
+        draftsMap[id] = k.default || '';
+      });
+      setCmsKeys(keysMap);
+      setKeyDrafts(prev => ({ ...draftsMap, ...prev }));
+      setMediaList(mediaRes.data?.media || []);
     } catch (err) {
-      triggerToast('Failed to fetch CMS page configurations', 'error');
+      console.error('Failed to load CMS data:', err);
+      setMsg({ type: 'error', text: 'Error connecting to CMS backend' });
     } finally {
       setLoading(false);
-    }
-  };
-
-  const fetchHistory = async (pageId) => {
-    setHistoryLoading(true);
-    try {
-      const res = await api.get(`/api/cms/layouts/${pageId}/history`);
-      setHistory(res.data || []);
-    } catch (err) {
-      console.error('Failed to load version logs', err);
-    } finally {
-      setHistoryLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchLayout(activePage);
-  }, [activePage]);
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const handleSave = async () => {
-    setSaving(true);
+  const selectKey = (keyId) => {
+    setFocusedKeyId(keyId);
+    setHistoryOpen(false);
+  };
+
+  const getResolvedValue = (kId, fallbackDef = '') => {
+    const draftVal = keyDrafts[kId];
+    if (draftVal !== undefined && draftVal !== null) return draftVal;
+    const kObj = cmsKeys[kId];
+    if (!kObj) return fallbackDef;
+    const reg = activeRegion === 'DEFAULT' ? '' : activeRegion;
+    if (activePortal !== 'global' && kObj.portals?.[activePortal]) {
+      const pObj = kObj.portals[activePortal];
+      if (reg && pObj[reg]) return pObj[reg];
+      if (pObj.default) return pObj.default;
+    }
+    if (reg && kObj.regions?.[reg]) return kObj.regions[reg];
+    return kObj.default || fallbackDef;
+  };
+
+  // 1-Click Per-Field Save Handler
+  const handleSaveSingleKey = async (keyId, currentVal) => {
+    setSavingKeyId(keyId);
+    setSavedSuccessKeyId(null);
+    setMsg({ type: '', text: '' });
     try {
-      const res = await api.post('/api/cms/layouts', {
-        layout_id: activePage,
-        data: formData
-      });
-      setVersion(res.data.version || version + 1);
-      triggerToast(`CMS ${activePage} layout updated successfully! (v${res.data.version})`, 'success');
-      fetchHistory(activePage);
+      const existingObj = cmsKeys[keyId] || {};
+      let payload = {
+        default: currentVal,
+        description: existingObj.description || `Key for ${keyId}`,
+        regions: existingObj.regions || {},
+        portals: existingObj.portals || {}
+      };
+
+      if (activePortal !== 'global') {
+        payload.portals = {
+          ...payload.portals,
+          [activePortal]: {
+            ...(payload.portals?.[activePortal] || {}),
+            [activeRegion === 'DEFAULT' ? 'default' : activeRegion]: currentVal
+          }
+        };
+      } else if (activeRegion !== 'DEFAULT') {
+        payload.regions = {
+          ...payload.regions,
+          [activeRegion]: currentVal
+        };
+      }
+
+      const res = await api.put(`/api/admin/cms/${keyId}`, payload);
+      const savedObj = res.data;
+      setCmsKeys(prev => ({ ...prev, [keyId]: savedObj }));
+      setSavedSuccessKeyId(keyId);
+      setTimeout(() => setSavedSuccessKeyId(null), 3000);
     } catch (err) {
-      triggerToast(err.response?.data?.detail || err.message || 'Failed to save layout changes', 'error');
+      setMsg({ type: 'error', text: err.response?.data?.detail || `Failed to save "${keyId}"` });
     } finally {
-      setSaving(false);
+      setSavingKeyId(null);
     }
   };
 
-  const handleRollback = async (historyVersion) => {
-    if (!window.confirm(`Are you sure you want to revert ${activePage} layout to Version #${historyVersion}?`)) return;
-    setLoading(true);
-    try {
-      const res = await api.post(`/api/cms/layouts/${activePage}/rollback/${historyVersion}`);
-      setFormData(res.data.data || {});
-      setVersion(res.data.version || 1);
-      triggerToast(`Reverted successfully to Version #${historyVersion}!`, 'success');
-      setShowHistory(false);
-      fetchHistory(activePage);
-    } catch (err) {
-      triggerToast(err.response?.data?.detail || err.message || 'Rollback failed', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const updateField = (field, val) => {
-    setFormData(prev => ({ ...prev, [field]: val }));
-  };
-
-  // AI Generation Trigger
-  const openAIGenerator = (fieldName) => {
-    setTargetField(fieldName);
+  // Ask AI Generation Handler
+  const handleOpenAiAssistant = (keyId) => {
+    setAiTargetKeyId(keyId);
     setAiPrompt('');
-    setAiError('');
-    setAiLoading(false);
-    setShowAIModal(true);
+    setAiSuggestion('');
+    setAiModalOpen(true);
   };
 
-  const handleAIGenerate = async () => {
-    if (!aiPrompt.trim()) {
-      setAiError('Please enter a description for the image.');
-      return;
-    }
-    setAiLoading(true);
-    setAiError('');
+  const handleGenerateAiCopy = async () => {
+    if (!aiTargetKeyId) return;
+    setAiGenerating(true);
+    setAiSuggestion('');
     try {
-      const res = await api.post('/api/social-ai/generate-art', {
+      const currentVal = getResolvedValue(aiTargetKeyId, '');
+      const payload = {
+        key_id: aiTargetKeyId,
+        current_text: currentVal,
         prompt: aiPrompt,
-        aspect_ratio: '1:1'
-      });
-      const generatedUrl = res.data.asset.media_url;
-      updateField(targetField, generatedUrl);
-      triggerToast('AI Image generated and applied successfully!', 'success');
-      setShowAIModal(false);
+        tone: aiTone,
+        target_portal: activePortal
+      };
+      const res = await api.post('/api/ai/cms-assist', payload);
+      setAiSuggestion(res.data?.suggestion || '');
     } catch (err) {
-      setAiError(err.response?.data?.detail || err.message || 'AI Generation failed.');
+      alert('AI Generation failed. Check connection.');
     } finally {
-      setAiLoading(false);
+      setAiGenerating(false);
     }
   };
 
-  // Helper List Add/Removes
-  const addFAQItem = () => {
-    const list = [...(formData.faqs || [])];
-    list.push({ question: '', answer: '' });
-    updateField('faqs', list);
+  const handleApplyAiSuggestion = () => {
+    if (!aiTargetKeyId || !aiSuggestion) return;
+    setKeyDrafts(prev => ({ ...prev, [aiTargetKeyId]: aiSuggestion }));
+    setAiModalOpen(false);
   };
 
-  const removeFAQItem = (idx) => {
-    const list = (formData.faqs || []).filter((_, i) => i !== idx);
-    updateField('faqs', list);
+  const handleMediaFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingMedia(true);
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        const payload = {
+          name: file.name,
+          data_url: reader.result,
+          file_type: file.type.startsWith('image/') ? 'image' : 'file',
+          category: 'site-assets'
+        };
+        const res = await api.post('/api/admin/cms/media', payload);
+        setMediaList(prev => [res.data, ...prev]);
+        setMsg({ type: 'success', text: `Uploaded site media asset "${file.name}"!` });
+      } catch (err) {
+        alert('Failed to upload site media file');
+      } finally {
+        setUploadingMedia(false);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
-  const addServiceItem = () => {
-    const list = [...(formData.services || [])];
-    list.push({ title: 'New Service', tagline: 'Details...', price: '$99', isSpotlight: false });
-    updateField('services', list);
+  const handleReplaceAssetTrigger = (assetId) => {
+    setReplacingAssetId(assetId);
+    if (replaceFileInputRef.current) {
+      replaceFileInputRef.current.click();
+    }
   };
 
-  const removeServiceItem = (idx) => {
-    const list = (formData.services || []).filter((_, i) => i !== idx);
-    updateField('services', list);
+  const handleReplaceAssetFile = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !replacingAssetId) return;
+
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        const newUrl = reader.result;
+        setMediaList(prev => prev.map(m => m.id === replacingAssetId ? { ...m, url: newUrl } : m));
+        setMsg({ type: 'success', text: `Replaced media asset image successfully!` });
+      } catch (err) {
+        alert('Failed to replace image');
+      } finally {
+        setReplacingAssetId(null);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
-  const addTeamMember = () => {
-    const list = [...(formData.team || [])];
-    list.push({ name: '', role: '', image_url: '' });
-    updateField('team', list);
+  const handleDeleteMedia = async (assetId) => {
+    if (!window.confirm('Delete this site media asset from catalog?')) return;
+    try {
+      if (!assetId.startsWith('builtin-')) {
+        await api.delete(`/api/admin/cms/media/${assetId}`).catch(() => {});
+      }
+      setMediaList(prev => prev.filter(m => m.id !== assetId));
+      setMsg({ type: 'success', text: 'Deleted media asset from catalog' });
+    } catch (err) {
+      alert('Failed to delete asset');
+    }
   };
 
-  const removeTeamMember = (idx) => {
-    const list = (formData.team || []).filter((_, i) => i !== idx);
-    updateField('team', list);
+  const pickMediaForField = (assetUrl) => {
+    if (targetPickerKeyId) {
+      setKeyDrafts(prev => ({ ...prev, [targetPickerKeyId]: assetUrl }));
+    }
+    setMediaPickerOpen(false);
   };
+
+  const fetchHistory = async () => {
+    if (!focusedKeyId) return;
+    setHistoryOpen(true);
+    try {
+      const res = await api.get(`/api/admin/cms/${focusedKeyId}/history`);
+      setHistoryList(res.data?.history || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleRollback = async (revisionId) => {
+    if (!window.confirm('Rollback to this historic revision?')) return;
+    try {
+      const res = await api.post(`/api/admin/cms/${focusedKeyId}/rollback/${revisionId}`);
+      const savedObj = res.data;
+      setCmsKeys(prev => ({ ...prev, [focusedKeyId]: savedObj }));
+      setKeyDrafts(prev => ({ ...prev, [focusedKeyId]: savedObj.default || '' }));
+      setMsg({ type: 'success', text: 'Rolled back key successfully!' });
+    } catch (err) {
+      setMsg({ type: 'error', text: 'Rollback failed' });
+    }
+  };
+
+  const currentPageObj = SITE_PAGES.find(p => p.id === activeTab);
+
+  const getSlidePreviewData = (num) => {
+    const prefix = `homepage.hero.slide${num}`;
+    return {
+      badge: getResolvedValue(`${prefix}.badge`, 'Now live — AI tools'),
+      title: getResolvedValue(`${prefix}.title`, 'Build your brand.<br/><em style="color:#c084fc">Grow your career.</em>'),
+      subtitle: getResolvedValue(`${prefix}.subtitle`, 'Intermaven gives musicians and creatives AI tools to brand and scale.'),
+      b1: getResolvedValue(`${prefix}.b1`, 'Try AI tools free'),
+      b2: getResolvedValue(`${prefix}.b2`, 'See pricing'),
+      image: getResolvedValue(`${prefix}.image`, `/images/hero/intermaven/hero-${num}.jpg`)
+    };
+  };
+
+  const filteredMedia = mediaList.filter(m => {
+    const matchCat = mediaFilterCategory === 'all' || m.category === mediaFilterCategory;
+    const matchSearch = (m.name || '').toLowerCase().includes(mediaSearch.toLowerCase());
+    return matchCat && matchSearch;
+  });
 
   return (
-    <div className="cms-editor-container" style={{
-      fontFamily: 'Inter, sans-serif',
-      color: '#cbd5e1',
-      maxHeight: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '24px'
-    }}>
-      {/* Toast Alert */}
-      {toastMsg && (
+    <div style={{ background: '#0b0c10', color: '#f0f0f5', borderRadius: '10px', padding: '24px', minHeight: '750px', border: '1px solid rgba(255,255,255,0.08)' }}>
+      
+      {/* Hidden File Input for Image Replacement */}
+      <input type="file" ref={replaceFileInputRef} accept="image/*" onChange={handleReplaceAssetFile} style={{ display: 'none' }} />
+
+      {/* ── TOP HEADER BAR WITH OFFICIAL LOGO & PORTAL SWITCHER ────────────────── */}
+      <div style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(59, 130, 246, 0.1))', border: '1px solid rgba(16, 185, 129, 0.25)', borderRadius: '8px', padding: '16px 20px', marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <img src={INTERMAVEN_LOGO} alt="Intermaven Logo" style={{ height: '36px', objectFit: 'contain' }} />
+          <div style={{ borderLeft: '1px solid rgba(255,255,255,0.2)', paddingLeft: '14px' }}>
+            <h2 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <Globe size={18} style={{ color: '#10b981' }} /> Mother-CMS Control Center
+            </h2>
+            <p style={{ fontSize: '12px', color: '#9096b8', margin: '2px 0 0' }}>
+              Select target Portal and Region to edit live website copy, slide carousels, images, and marketing callouts.
+            </p>
+          </div>
+        </div>
+
+        {/* Portal Selector Pills */}
+        <div style={{ display: 'flex', gap: '6px', background: 'rgba(0,0,0,0.4)', padding: '4px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)' }}>
+          {[
+            { id: 'global', label: '🌐 Global / Default' },
+            { id: 'business', label: '💼 Business' },
+            { id: 'music', label: '🎵 Music (TuneMavens)' },
+            { id: 'hospitality', label: '🏨 Hospitality' },
+          ].map(p => (
+            <button
+              key={p.id}
+              onClick={() => setActivePortal(p.id)}
+              style={{
+                padding: '6px 12px',
+                borderRadius: '4px',
+                fontSize: '12px',
+                fontWeight: 'bold',
+                border: 'none',
+                background: activePortal === p.id ? '#10b981' : 'transparent',
+                color: activePortal === p.id ? '#000000' : '#cbd5e1',
+                cursor: 'pointer',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Region Target Selector */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <span style={{ fontSize: '11px', fontWeight: 'bold', color: '#60a5fa', textTransform: 'uppercase' }}>Target Region:</span>
+          <select
+            value={activeRegion}
+            onChange={(e) => setActiveRegion(e.target.value)}
+            style={{ padding: '6px 12px', background: '#12131a', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '4px', color: '#ffffff', fontSize: '12px', fontWeight: 'bold', outline: 'none' }}
+          >
+            <option value="DEFAULT">Global (Fallback)</option>
+            <option value="US">🇺🇸 United States (US)</option>
+            <option value="KE">🇰🇪 Kenya (KE)</option>
+            <option value="GB">🇬🇧 United Kingdom (GB)</option>
+            <option value="CA">🇨🇦 Canada (CA)</option>
+            <option value="NG">🇳🇬 Nigeria (NG)</option>
+            <option value="ZA">🇿🇦 South Africa (ZA)</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Global Status Notification */}
+      {msg.text && (
         <div style={{
-          position: 'fixed',
-          top: '20px',
-          right: '20px',
-          zIndex: 9999,
-          background: toastMsg.type === 'error' ? '#ef4444' : '#10b981',
-          color: '#000',
-          fontWeight: '700',
-          padding: '12px 24px',
-          borderRadius: '4px',
-          boxShadow: '0 10px 25px rgba(0,0,0,0.5)',
-          fontSize: '13.5px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px'
+          padding: '12px 16px', borderRadius: '6px', marginBottom: '20px', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '8px',
+          background: msg.type === 'success' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+          border: `1px solid ${msg.type === 'success' ? '#10b981' : '#ef4444'}`,
+          color: msg.type === 'success' ? '#10b981' : '#ef4444'
         }}>
-          {toastMsg.type === 'error' ? '⚠️' : '✓'} {toastMsg.msg}
+          {msg.type === 'success' ? <Check size={16} /> : <AlertCircle size={16} />}
+          {msg.text}
         </div>
       )}
 
-      {/* Header Banner */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '14px' }}>
-        <div>
-          <h2 style={{ color: '#fff', fontSize: '22px', fontWeight: '800', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
-            🖥️ Mother CMS Studio
-          </h2>
-          <p style={{ margin: '4px 0 0', color: '#94a3b8', fontSize: '13px' }}>
-            Modify layout copy, brand assets, and structural listings site-wide.
-          </p>
-        </div>
-        <div style={{ display: 'flex', gap: '10px' }}>
-          <button 
-            type="button" 
-            onClick={() => setShowHistory(!showHistory)} 
-            className="btn-secondary" 
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '13px', padding: '9px 16px', background: 'rgba(255,255,255,0.04)', color: '#fff', border: '1px solid rgba(255,255,255,0.1)' }}
-          >
-            <History size={14} /> Revision logs ({history.length})
-          </button>
-          <button 
-            type="button" 
-            onClick={handleSave} 
-            disabled={saving} 
-            className="btn-primary" 
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', fontSize: '13px', padding: '9px 24px', background: 'var(--cyan)', color: '#000', border: 'none', fontWeight: 'bold' }}
-          >
-            {saving ? <Loader2 className="spin" size={14} /> : <Save size={14} />} Save Version {version}
-          </button>
-        </div>
-      </div>
+      {/* ── MAIN WORKSPACE GRID: LEFT PAGE TREE SIDEBAR + RIGHT CONTENT EDITOR ──── */}
+      <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '24px' }}>
 
-      {/* Page Tabs */}
-      <div style={{ display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '4px', gap: '8px', overflowX: 'auto' }}>
-        {CMS_PAGES.map(p => (
+        {/* LEFT COLUMN: PAGE NAVIGATION TREE */}
+        <div style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '8px', padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          
+          <div style={{ fontSize: '11px', fontWeight: 'bold', color: '#9096b8', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: '8px' }}>
+            Site Pages & Sections
+          </div>
+
+          {/* Page Tree Links */}
+          {SITE_PAGES.map(page => (
+            <button
+              key={page.id}
+              onClick={() => {
+                setActiveTab(page.id);
+                if (page.sections?.[0]?.keys?.[0]?.id) {
+                  selectKey(page.sections[0].keys[0].id);
+                }
+              }}
+              style={{
+                width: '100%',
+                padding: '10px 12px',
+                borderRadius: '6px',
+                textAlign: 'left',
+                border: activeTab === page.id ? '1px solid #10b981' : '1px solid transparent',
+                background: activeTab === page.id ? 'rgba(16, 185, 129, 0.12)' : 'transparent',
+                color: activeTab === page.id ? '#10b981' : '#f0f0f5',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                fontSize: '13px',
+                fontWeight: '600',
+                transition: 'all 0.15s ease'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '16px' }}>{page.icon}</span>
+                <span>{page.name}</span>
+              </div>
+              <ChevronRight size={14} style={{ opacity: activeTab === page.id ? 1 : 0.4 }} />
+            </button>
+          ))}
+
+          <div style={{ borderTop: '1px solid rgba(255,255,255,0.08)', margin: '12px 0' }} />
+
+          {/* Site Media Library Link */}
           <button
-            key={p.id}
-            onClick={() => setActivePage(p.id)}
+            onClick={() => setActiveTab('media')}
             style={{
-              padding: '10px 18px',
-              fontSize: '13.5px',
-              fontWeight: '600',
-              color: activePage === p.id ? 'var(--cyan)' : '#94a3b8',
-              background: 'transparent',
-              border: 'none',
-              borderBottom: activePage === p.id ? '2px solid var(--cyan)' : '2px solid transparent',
+              width: '100%',
+              padding: '10px 12px',
+              borderRadius: '6px',
+              textAlign: 'left',
+              border: activeTab === 'media' ? '1px solid #60a5fa' : '1px solid transparent',
+              background: activeTab === 'media' ? 'rgba(96, 165, 250, 0.15)' : 'transparent',
+              color: activeTab === 'media' ? '#60a5fa' : '#cbd5e1',
               cursor: 'pointer',
-              whiteSpace: 'nowrap'
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              fontSize: '13px',
+              fontWeight: '600'
             }}
           >
-            {p.label}
+            <Image size={18} style={{ color: '#60a5fa' }} />
+            <span>Site Media Assets ({mediaList.length})</span>
           </button>
-        ))}
-      </div>
 
-      {/* History Ledger Sidebar overlay */}
-      {showHistory && (
-        <div className="glass-panel" style={{
-          padding: '20px',
-          border: '1px solid rgba(255,255,255,0.12)',
-          background: '#0a0d16',
-          borderRadius: '6px',
-          marginBottom: '16px'
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
-            <h4 style={{ margin: 0, color: '#fff', fontSize: '14px', fontWeight: '800' }}>Version History Revision Log ({activePage})</h4>
-            <button onClick={() => setShowHistory(false)} style={{ background: 'transparent', border: 'none', color: '#64748b', cursor: 'pointer' }}><X size={16} /></button>
-          </div>
-          {historyLoading ? (
-            <p style={{ fontSize: '12px', color: '#94a3b8' }}>Loading ledger history...</p>
-          ) : history.length === 0 ? (
-            <p style={{ fontSize: '12px', color: '#64748b', fontStyle: 'italic' }}>No revision entries found for this page yet.</p>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-              {history.map((h) => (
-                <div key={h.version} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 14px', background: 'rgba(255,255,255,0.02)', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.05)' }}>
-                  <div>
-                    <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--cyan)' }}>v{h.version}</span>
-                    <span style={{ fontSize: '11px', color: '#64748b', marginLeft: '10px' }}>
-                      {new Date(h.timestamp).toLocaleString()}
+          {/* Raw Keys Mode Link */}
+          <button
+            onClick={() => setActiveTab('raw')}
+            style={{
+              width: '100%',
+              padding: '10px 12px',
+              borderRadius: '6px',
+              textAlign: 'left',
+              border: activeTab === 'raw' ? '1px solid #a855f7' : '1px solid transparent',
+              background: activeTab === 'raw' ? 'rgba(168, 85, 247, 0.15)' : 'transparent',
+              color: activeTab === 'raw' ? '#c084fc' : '#cbd5e1',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              fontSize: '13px',
+              fontWeight: '600'
+            }}
+          >
+            <Layers size={18} style={{ color: '#c084fc' }} />
+            <span>Developer Raw Keys View</span>
+          </button>
+        </div>
+
+        {/* RIGHT COLUMN: CONTENT EDITOR & PREVIEW PANE */}
+        <div style={{ background: 'rgba(255, 255, 255, 0.02)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '8px', padding: '24px' }}>
+          
+          {/* TAB 1: HOMEPAGE / HERO CAROUSEL EDITOR */}
+          {currentPageObj ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              <div style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '14px' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span>{currentPageObj.icon}</span> Editing {currentPageObj.name}
+                </h3>
+                <p style={{ fontSize: '12px', color: '#9096b8', margin: '4px 0 0' }}>{currentPageObj.description}</p>
+              </div>
+
+              {/* LIVE HERO CAROUSEL PREVIEW (For Homepage) */}
+              {activeTab === 'homepage' && (
+                <div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#10b981', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      Interactive Hero Carousel Live Preview
                     </span>
+                    <div style={{ display: 'flex', gap: '6px' }}>
+                      {[1, 2, 3, 4].map(num => (
+                        <button
+                          key={num}
+                          type="button"
+                          onClick={() => setPreviewSlideNum(num)}
+                          style={{
+                            padding: '3px 10px',
+                            fontSize: '11px',
+                            fontWeight: 'bold',
+                            borderRadius: '4px',
+                            border: previewSlideNum === num ? '1px solid #10b981' : '1px solid rgba(255,255,255,0.1)',
+                            background: previewSlideNum === num ? 'rgba(16, 185, 129, 0.2)' : 'transparent',
+                            color: previewSlideNum === num ? '#10b981' : '#9096b8',
+                            cursor: 'pointer'
+                          }}
+                        >
+                          Slide {num}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                  <button 
-                    onClick={() => handleRollback(h.version)} 
-                    className="btn-secondary" 
-                    style={{ fontSize: '11px', padding: '4px 10px', background: 'rgba(34, 211, 238, 0.1)', color: 'var(--cyan)', border: '1px solid rgba(34, 211, 238, 0.2)' }}
-                  >
-                    Rollback to this
-                  </button>
+
+                  <LiveHeroPreview
+                    slideNum={previewSlideNum}
+                    slideData={getSlidePreviewData(previewSlideNum)}
+                    activePortal={activePortal}
+                  />
+                </div>
+              )}
+
+              {/* Sections Accordion & Form Fields */}
+              {currentPageObj.sections.map(sec => (
+                <div key={sec.id} style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '6px', padding: '18px' }}>
+                  <h4 style={{ fontSize: '14px', fontWeight: '700', color: '#10b981', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Folder size={16} /> {sec.name}
+                  </h4>
+
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                    {sec.keys.map(kDef => {
+                      const isFocused = focusedKeyId === kDef.id;
+                      const draftVal = keyDrafts[kDef.id] !== undefined ? keyDrafts[kDef.id] : getResolvedValue(kDef.id, kDef.default);
+                      const isSaving = savingKeyId === kDef.id;
+                      const isSaved = savedSuccessKeyId === kDef.id;
+
+                      return (
+                        <div
+                          key={kDef.id}
+                          onClick={() => selectKey(kDef.id)}
+                          style={{
+                            padding: '16px',
+                            borderRadius: '6px',
+                            background: isFocused ? 'rgba(16, 185, 129, 0.04)' : 'rgba(255,255,255,0.01)',
+                            border: isFocused ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid rgba(255,255,255,0.05)',
+                            transition: 'all 0.15s ease'
+                          }}
+                        >
+                          {/* Block Header with Label + Action Buttons */}
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
+                            <label style={{ fontSize: '13px', fontWeight: 'bold', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <span>{kDef.label}</span>
+                              <span style={{ fontSize: '11px', color: '#9096b8', fontFamily: 'monospace' }}>({kDef.id})</span>
+                              {isSaved && <span style={{ fontSize: '11px', color: '#10b981', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '2px' }}><Check size={13} /> Saved!</span>}
+                            </label>
+
+                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                              {kDef.type === 'image_url' && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => { e.stopPropagation(); setTargetPickerKeyId(kDef.id); setMediaPickerOpen(true); }}
+                                  style={{ padding: '5px 10px', fontSize: '11px', background: 'rgba(96, 165, 250, 0.15)', border: '1px solid rgba(96, 165, 250, 0.3)', borderRadius: '4px', color: '#60a5fa', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                                >
+                                  <Image size={12} /> Pick Image Asset
+                                </button>
+                              )}
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); selectKey(kDef.id); fetchHistory(); }}
+                                style={{ padding: '5px 10px', fontSize: '11px', background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '4px', color: '#cbd5e1', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                              >
+                                <History size={12} /> History
+                              </button>
+
+                              {/* PROMINENT DIRECT PER-FIELD SAVE BUTTON */}
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); handleSaveSingleKey(kDef.id, draftVal); }}
+                                disabled={isSaving}
+                                style={{
+                                  padding: '6px 14px',
+                                  fontSize: '12px',
+                                  fontWeight: 'bold',
+                                  background: '#10b981',
+                                  border: 'none',
+                                  borderRadius: '4px',
+                                  color: '#000000',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '4px',
+                                  boxShadow: '0 2px 6px rgba(16, 185, 129, 0.3)'
+                                }}
+                              >
+                                <Save size={13} /> {isSaving ? 'Saving...' : 'Save Field'}
+                              </button>
+
+                              {/* ASK AI ASSISTANT BUTTON (Right below Save Field) */}
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); selectKey(kDef.id); handleOpenAiAssistant(kDef.id); }}
+                                style={{
+                                  padding: '5px 12px',
+                                  fontSize: '11px',
+                                  fontWeight: 'bold',
+                                  background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.25), rgba(59, 130, 246, 0.25))',
+                                  border: '1px solid #a855f7',
+                                  borderRadius: '4px',
+                                  color: '#c084fc',
+                                  cursor: 'pointer',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '4px'
+                                }}
+                              >
+                                <Sparkles size={12} /> Ask AI
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Rich Text Editor or Standard Input */}
+                          {kDef.type === 'richtext' ? (
+                            <div>
+                              <RichTextToolbar
+                                textRef={textareaRef}
+                                onFormat={(newVal) => {
+                                  setKeyDrafts(prev => ({ ...prev, [kDef.id]: newVal }));
+                                }}
+                              />
+                              <textarea
+                                ref={isFocused ? textareaRef : null}
+                                rows={3}
+                                value={draftVal}
+                                onChange={(e) => {
+                                  const val = e.target.value;
+                                  setKeyDrafts(prev => ({ ...prev, [kDef.id]: val }));
+                                }}
+                                placeholder={`Enter ${kDef.label}...`}
+                                style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '0 0 4px 4px', color: '#ffffff', fontSize: '13px', fontFamily: 'Inter, sans-serif' }}
+                              />
+                            </div>
+                          ) : (
+                            <input
+                              type="text"
+                              value={draftVal}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setKeyDrafts(prev => ({ ...prev, [kDef.id]: val }));
+                              }}
+                              placeholder={`Enter ${kDef.label}...`}
+                              style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', color: '#ffffff', fontSize: '13px' }}
+                            />
+                          )}
+
+                          {/* Live Portal & Region Resolved Preview Badge */}
+                          <div style={{ marginTop: '8px', fontSize: '11px', color: '#9096b8', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <Eye size={12} style={{ color: '#10b981' }} />
+                            <span>Resolved for {activePortal.toUpperCase()} ({activeRegion}):</span>
+                            <span style={{ color: '#10b981', fontWeight: 'bold', fontStyle: 'italic' }}>"{draftVal || '(Empty)'}"</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               ))}
             </div>
-          )}
-        </div>
-      )}
+          ) : activeTab === 'media' ? (
 
-      {loading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}><Loader2 className="spin" size={24} color="var(--cyan)" /></div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          
-          {/* ================= HOME PAGE FORM ================= */}
-          {activePage === 'home' && (
-            <>
-              {/* Hero Setup */}
-              <div className="glass-panel" style={{ padding: '24px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(15,23,42,0.3)' }}>
-                <h3 style={{ margin: '0 0 16px', color: '#fff', fontSize: '15px', fontWeight: '700' }}>Hero Section Configuration</h3>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-                  <div>
-                    <label className="form-label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: '#94a3b8' }}>Hero Title</label>
-                    <input 
-                      type="text" 
-                      className="form-control" 
-                      value={formData.hero_title || ''} 
-                      onChange={(e) => updateField('hero_title', e.target.value)} 
-                      style={{ width: '100%', background: 'rgba(255,255,255,0.02)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '10px' }}
-                    />
-                  </div>
-                  <div>
-                    <label className="form-label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: '#94a3b8' }}>Hero Subtitle</label>
-                    <input 
-                      type="text" 
-                      className="form-control" 
-                      value={formData.hero_subtitle || ''} 
-                      onChange={(e) => updateField('hero_subtitle', e.target.value)} 
-                      style={{ width: '100%', background: 'rgba(255,255,255,0.02)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '10px' }}
-                    />
-                  </div>
+            /* TAB 2: COMPLETE SITE MEDIA CATALOG (WITH REPLACE, HOVER DIMENSIONS, DELETE) */
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '14px', flexWrap: 'wrap', gap: '12px' }}>
+                <div>
+                  <h3 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Image size={22} style={{ color: '#60a5fa' }} /> Site Media Asset Library
+                  </h3>
+                  <p style={{ fontSize: '12px', color: '#9096b8', margin: '4px 0 0' }}>
+                    Hover over any asset card to view recommended dimensions. Click "Replace" to upload a new asset variant.
+                  </p>
                 </div>
 
-                <div style={{ marginBottom: '16px' }}>
-                  <label className="form-label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: '#94a3b8' }}>Primary Accent Color</label>
-                  <input 
-                    type="text" 
-                    className="form-control" 
-                    value={formData.primary_accent || 'var(--cyan)'} 
-                    onChange={(e) => updateField('primary_accent', e.target.value)} 
-                    style={{ width: '200px', background: 'rgba(255,255,255,0.02)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '10px' }}
-                  />
-                </div>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 18px', background: '#3b82f6', color: '#ffffff', borderRadius: '4px', fontSize: '13px', fontWeight: 'bold', cursor: 'pointer' }}>
+                  <Upload size={16} /> {uploadingMedia ? 'Uploading...' : 'Upload Site Asset'}
+                  <input type="file" accept="image/*" onChange={handleMediaFileUpload} style={{ display: 'none' }} />
+                </label>
+              </div>
 
-                {/* Cover Image with AI Integration */}
-                <div style={{ marginBottom: '16px' }}>
-                  <label className="form-label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: '#94a3b8' }}>Hero Background Image URL</label>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <input 
-                      type="text" 
-                      className="form-control" 
-                      value={formData.hero_image_url || ''} 
-                      onChange={(e) => updateField('hero_image_url', e.target.value)} 
-                      placeholder="Paste Image URL"
-                      style={{ flex: 1, background: 'rgba(255,255,255,0.02)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '10px' }}
-                    />
-                    <button 
-                      type="button" 
-                      onClick={() => openAIGenerator('hero_image_url')}
-                      className="btn-secondary" 
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px', background: 'rgba(168,85,247,0.15)', color: '#d8b4fe', border: '1px solid rgba(168,85,247,0.3)', padding: '0 16px', borderRadius: '4px' }}
+              {/* Category Filter Pills & Search Bar */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  {[
+                    { id: 'all', label: 'All Assets' },
+                    { id: 'hero', label: '🖼️ Hero Backgrounds' },
+                    { id: 'headers', label: '🌄 Page Banners' },
+                    { id: 'logos', label: '✨ Logos' },
+                    { id: 'icons', label: '🧩 App Icons' }
+                  ].map(cat => (
+                    <button
+                      key={cat.id}
+                      onClick={() => setMediaFilterCategory(cat.id)}
+                      style={{
+                        padding: '5px 12px',
+                        fontSize: '11px',
+                        fontWeight: 'bold',
+                        borderRadius: '4px',
+                        border: mediaFilterCategory === cat.id ? '1px solid #60a5fa' : '1px solid rgba(255,255,255,0.1)',
+                        background: mediaFilterCategory === cat.id ? 'rgba(96, 165, 250, 0.2)' : 'transparent',
+                        color: mediaFilterCategory === cat.id ? '#60a5fa' : '#cbd5e1',
+                        cursor: 'pointer'
+                      }}
                     >
-                      <Sparkles size={13} /> AI Gen
+                      {cat.label}
                     </button>
-                  </div>
-                </div>
-
-                {/* Cover Video */}
-                <div>
-                  <label className="form-label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: '#94a3b8' }}>Hero Background Video URL (optional)</label>
-                  <input 
-                    type="text" 
-                    className="form-control" 
-                    value={formData.hero_video_url || ''} 
-                    onChange={(e) => updateField('hero_video_url', e.target.value)} 
-                    placeholder="Paste Video URL (e.g. .mp4 file)"
-                    style={{ width: '100%', background: 'rgba(255,255,255,0.02)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '10px' }}
-                  />
-                </div>
-              </div>
-
-              {/* FAQs Setup */}
-              <div className="glass-panel" style={{ padding: '24px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(15,23,42,0.3)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <h3 style={{ margin: 0, color: '#fff', fontSize: '15px', fontWeight: '700' }}>Frequently Asked Questions</h3>
-                  <button onClick={addFAQItem} className="btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11.5px', background: 'rgba(34, 211, 238, 0.1)', color: 'var(--cyan)', border: '1px solid rgba(34, 211, 238, 0.2)', padding: '6px 12px', borderRadius: '4px' }}>
-                    <Plus size={12} /> Add FAQ
-                  </button>
-                </div>
-                
-                {(!formData.faqs || formData.faqs.length === 0) ? (
-                  <p style={{ color: '#64748b', fontSize: '12px', fontStyle: 'italic' }}>No FAQ entries created. Click "Add FAQ" to list items.</p>
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-                    {(formData.faqs || []).map((faq, idx) => (
-                      <div key={idx} style={{ padding: '16px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '4px', position: 'relative' }}>
-                        <button 
-                          onClick={() => removeFAQItem(idx)}
-                          style={{ position: 'absolute', top: '12px', right: '12px', background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer' }}
-                        >
-                          <Trash2 size={13} />
-                        </button>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                          <input 
-                            type="text" 
-                            placeholder={`Question #${idx + 1}`} 
-                            value={faq.question || ''}
-                            onChange={(e) => {
-                              const list = [...formData.faqs];
-                              list[idx].question = e.target.value;
-                              updateField('faqs', list);
-                            }}
-                            style={{ width: '90%', background: 'transparent', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '13px', padding: '4px' }}
-                          />
-                          <textarea 
-                            placeholder="Provide answers here..." 
-                            value={faq.answer || ''}
-                            rows="2"
-                            onChange={(e) => {
-                              const list = [...formData.faqs];
-                              list[idx].answer = e.target.value;
-                              updateField('faqs', list);
-                            }}
-                            style={{ width: '100%', background: 'transparent', border: 'none', color: '#94a3b8', fontSize: '12.5px', padding: '4px', resize: 'none' }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-
-          {/* ================= HEADER CONFIG FORM ================= */}
-          {activePage === 'header' && (
-            <div className="glass-panel" style={{ padding: '24px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(15,23,42,0.3)' }}>
-              <h3 style={{ margin: '0 0 16px', color: '#fff', fontSize: '15px', fontWeight: '700' }}>Header Navigation & Logo</h3>
-              
-              <div style={{ marginBottom: '16px' }}>
-                <label className="form-label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: '#94a3b8' }}>Brand Name / Title</label>
-                <input 
-                  type="text" 
-                  value={formData.brand_name || ''} 
-                  onChange={(e) => updateField('brand_name', e.target.value)} 
-                  placeholder="e.g. TuneMavens"
-                  style={{ width: '100%', background: 'rgba(255,255,255,0.02)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '10px' }}
-                />
-              </div>
-
-              {/* Logo with AI Integration */}
-              <div style={{ marginBottom: '16px' }}>
-                <label className="form-label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: '#94a3b8' }}>Header Logo Image URL</label>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <input 
-                    type="text" 
-                    value={formData.logo_url || ''} 
-                    onChange={(e) => updateField('logo_url', e.target.value)} 
-                    placeholder="Logo URL"
-                    style={{ flex: 1, background: 'rgba(255,255,255,0.02)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '10px' }}
-                  />
-                  <button 
-                    type="button" 
-                    onClick={() => openAIGenerator('logo_url')}
-                    className="btn-secondary" 
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px', background: 'rgba(168,85,247,0.15)', color: '#d8b4fe', border: '1px solid rgba(168,85,247,0.3)', padding: '0 16px', borderRadius: '4px' }}
-                  >
-                    <Sparkles size={13} /> AI Gen Logo
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label className="form-label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: '#94a3b8' }}>Announcement Banner Text (optional)</label>
-                <input 
-                  type="text" 
-                  value={formData.announcement_text || ''} 
-                  onChange={(e) => updateField('announcement_text', e.target.value)} 
-                  placeholder="e.g. Free 14-day trials active this week!"
-                  style={{ width: '100%', background: 'rgba(255,255,255,0.02)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '10px' }}
-                />
-              </div>
-            </div>
-          )}
-
-          {/* ================= FOOTER CONFIG FORM ================= */}
-          {activePage === 'footer' && (
-            <div className="glass-panel" style={{ padding: '24px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(15,23,42,0.3)' }}>
-              <h3 style={{ margin: '0 0 16px', color: '#fff', fontSize: '15px', fontWeight: '700' }}>Footer Branding & Contact Anchors</h3>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-                <div>
-                  <label className="form-label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: '#94a3b8' }}>Copyright Text</label>
-                  <input 
-                    type="text" 
-                    value={formData.copyright_text || ''} 
-                    onChange={(e) => updateField('copyright_text', e.target.value)} 
-                    placeholder="e.g. © 2026 TuneMavens Network. All rights reserved."
-                    style={{ width: '100%', background: 'rgba(255,255,255,0.02)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '10px' }}
-                  />
-                </div>
-                <div>
-                  <label className="form-label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: '#94a3b8' }}>Brand Tagline</label>
-                  <input 
-                    type="text" 
-                    value={formData.tagline || ''} 
-                    onChange={(e) => updateField('tagline', e.target.value)} 
-                    placeholder="Tagline..."
-                    style={{ width: '100%', background: 'rgba(255,255,255,0.02)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '10px' }}
-                  />
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', marginBottom: '24px' }}>
-                <div>
-                  <label className="form-label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: '#94a3b8' }}>Support Phone</label>
-                  <input 
-                    type="text" 
-                    value={formData.contact_phone || ''} 
-                    onChange={(e) => updateField('contact_phone', e.target.value)} 
-                    placeholder="Phone number"
-                    style={{ width: '100%', background: 'rgba(255,255,255,0.02)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '10px' }}
-                  />
-                </div>
-                <div>
-                  <label className="form-label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: '#94a3b8' }}>Support Email</label>
-                  <input 
-                    type="email" 
-                    value={formData.contact_email || ''} 
-                    onChange={(e) => updateField('contact_email', e.target.value)} 
-                    placeholder="Email"
-                    style={{ width: '100%', background: 'rgba(255,255,255,0.02)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '10px' }}
-                  />
-                </div>
-                <div>
-                  <label className="form-label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: '#94a3b8' }}>Physical Address</label>
-                  <input 
-                    type="text" 
-                    value={formData.contact_address || ''} 
-                    onChange={(e) => updateField('contact_address', e.target.value)} 
-                    placeholder="Headquarters location"
-                    style={{ width: '100%', background: 'rgba(255,255,255,0.02)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '10px' }}
-                  />
-                </div>
-              </div>
-
-              <h4 style={{ margin: '0 0 12px', color: '#fff', fontSize: '13.5px', fontWeight: '700' }}>Social Media Profiles</h4>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                <div>
-                  <label className="form-label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: '#94a3b8' }}>Instagram URL</label>
-                  <input 
-                    type="text" 
-                    value={formData.social_instagram || ''} 
-                    onChange={(e) => updateField('social_instagram', e.target.value)} 
-                    style={{ width: '100%', background: 'rgba(255,255,255,0.02)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '10px' }}
-                  />
-                </div>
-                <div>
-                  <label className="form-label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: '#94a3b8' }}>Facebook URL</label>
-                  <input 
-                    type="text" 
-                    value={formData.social_facebook || ''} 
-                    onChange={(e) => updateField('social_facebook', e.target.value)} 
-                    style={{ width: '100%', background: 'rgba(255,255,255,0.02)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '10px' }}
-                  />
-                </div>
-                <div>
-                  <label className="form-label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: '#94a3b8' }}>X (Twitter) URL</label>
-                  <input 
-                    type="text" 
-                    value={formData.social_x || ''} 
-                    onChange={(e) => updateField('social_x', e.target.value)} 
-                    style={{ width: '100%', background: 'rgba(255,255,255,0.02)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '10px' }}
-                  />
-                </div>
-                <div>
-                  <label className="form-label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: '#94a3b8' }}>LinkedIn URL</label>
-                  <input 
-                    type="text" 
-                    value={formData.social_linkedin || ''} 
-                    onChange={(e) => updateField('social_linkedin', e.target.value)} 
-                    style={{ width: '100%', background: 'rgba(255,255,255,0.02)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '10px' }}
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* ================= ABOUT US PAGE FORM ================= */}
-          {activePage === 'about' && (
-            <>
-              <div className="glass-panel" style={{ padding: '24px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(15,23,42,0.3)' }}>
-                <h3 style={{ margin: '0 0 16px', color: '#fff', fontSize: '15px', fontWeight: '700' }}>About Us Story Copy</h3>
-                
-                <div style={{ marginBottom: '16px' }}>
-                  <label className="form-label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: '#94a3b8' }}>Story Title</label>
-                  <input 
-                    type="text" 
-                    value={formData.story_title || ''} 
-                    onChange={(e) => updateField('story_title', e.target.value)} 
-                    placeholder="Our background story"
-                    style={{ width: '100%', background: 'rgba(255,255,255,0.02)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '10px' }}
-                  />
-                </div>
-
-                <div style={{ marginBottom: '16px' }}>
-                  <label className="form-label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: '#94a3b8' }}>Story Narrative Paragraphs</label>
-                  <textarea 
-                    value={formData.story_body || ''} 
-                    onChange={(e) => updateField('story_body', e.target.value)} 
-                    placeholder="Tell your narrative story here..."
-                    rows="6"
-                    style={{ width: '100%', background: 'rgba(255,255,255,0.02)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '12px', resize: 'none' }}
-                  />
-                </div>
-
-                <div style={{ marginBottom: '16px' }}>
-                  <label className="form-label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: '#94a3b8' }}>About Cover Background Image URL</label>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <input 
-                      type="text" 
-                      value={formData.about_image_url || ''} 
-                      onChange={(e) => updateField('about_image_url', e.target.value)} 
-                      placeholder="About narrative image URL"
-                      style={{ flex: 1, background: 'rgba(255,255,255,0.02)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '10px' }}
-                    />
-                    <button 
-                      type="button" 
-                      onClick={() => openAIGenerator('about_image_url')}
-                      className="btn-secondary" 
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12px', background: 'rgba(168,85,247,0.15)', color: '#d8b4fe', border: '1px solid rgba(168,85,247,0.3)', padding: '0 16px', borderRadius: '4px' }}
-                    >
-                      <Sparkles size={13} /> AI Gen
-                    </button>
-                  </div>
-                </div>
-
-                <h4 style={{ margin: '20px 0 12px', color: '#fff', fontSize: '13.5px', fontWeight: '700' }}>Statistical Counters</h4>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
-                  <div>
-                    <label className="form-label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: '#94a3b8' }}>Metric #1 Label / Value</label>
-                    <input 
-                      type="text" 
-                      value={formData.metric_1 || ''} 
-                      onChange={(e) => updateField('metric_1', e.target.value)} 
-                      placeholder="e.g. 50+ Global Artists"
-                      style={{ width: '100%', background: 'rgba(255,255,255,0.02)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '10px' }}
-                    />
-                  </div>
-                  <div>
-                    <label className="form-label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: '#94a3b8' }}>Metric #2 Label / Value</label>
-                    <input 
-                      type="text" 
-                      value={formData.metric_2 || ''} 
-                      onChange={(e) => updateField('metric_2', e.target.value)} 
-                      placeholder="e.g. 1M+ Monthly Streams"
-                      style={{ width: '100%', background: 'rgba(255,255,255,0.02)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '10px' }}
-                    />
-                  </div>
-                  <div>
-                    <label className="form-label" style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: '#94a3b8' }}>Metric #3 Label / Value</label>
-                    <input 
-                      type="text" 
-                      value={formData.metric_3 || ''} 
-                      onChange={(e) => updateField('metric_3', e.target.value)} 
-                      placeholder="e.g. 100% Retained Royalties"
-                      style={{ width: '100%', background: 'rgba(255,255,255,0.02)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '10px' }}
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Team Profile Grid */}
-              <div className="glass-panel" style={{ padding: '24px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(15,23,42,0.3)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                  <h3 style={{ margin: 0, color: '#fff', fontSize: '15px', fontWeight: '700' }}>Team Roster profiles</h3>
-                  <button onClick={addTeamMember} className="btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11.5px', background: 'rgba(34, 211, 238, 0.1)', color: 'var(--cyan)', border: '1px solid rgba(34, 211, 238, 0.2)', padding: '6px 12px', borderRadius: '4px' }}>
-                    <Plus size={12} /> Add Member
-                  </button>
-                </div>
-                
-                {(!formData.team || formData.team.length === 0) ? (
-                  <p style={{ color: '#64748b', fontSize: '12px', fontStyle: 'italic' }}>No team member listings populated. Click "Add Member" to create roster entries.</p>
-                ) : (
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
-                    {(formData.team || []).map((member, idx) => (
-                      <div key={idx} style={{ padding: '14px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '4px', position: 'relative', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        <button 
-                          onClick={() => removeTeamMember(idx)}
-                          style={{ position: 'absolute', top: '8px', right: '8px', background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer' }}
-                        >
-                          <Trash2 size={12} />
-                        </button>
-                        <input 
-                          type="text" 
-                          placeholder="Name" 
-                          value={member.name || ''}
-                          onChange={(e) => {
-                            const list = [...formData.team];
-                            list[idx].name = e.target.value;
-                            updateField('team', list);
-                          }}
-                          style={{ width: '100%', background: 'transparent', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '12px', padding: '4px' }}
-                        />
-                        <input 
-                          type="text" 
-                          placeholder="Role" 
-                          value={member.role || ''}
-                          onChange={(e) => {
-                            const list = [...formData.team];
-                            list[idx].role = e.target.value;
-                            updateField('team', list);
-                          }}
-                          style={{ width: '100%', background: 'transparent', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.1)', color: '#94a3b8', fontSize: '11px', padding: '4px' }}
-                        />
-                        <input 
-                          type="text" 
-                          placeholder="Image URL" 
-                          value={member.image_url || ''}
-                          onChange={(e) => {
-                            const list = [...formData.team];
-                            list[idx].image_url = e.target.value;
-                            updateField('team', list);
-                          }}
-                          style={{ width: '100%', background: 'transparent', border: 'none', color: '#64748b', fontSize: '10px', padding: '4px' }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </>
-          )}
-
-          {/* ================= SERVICES CONFIG FORM ================= */}
-          {activePage === 'services' && (
-            <div className="glass-panel" style={{ padding: '24px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(15,23,42,0.3)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <h3 style={{ margin: 0, color: '#fff', fontSize: '15px', fontWeight: '700' }}>Handyman Services & Solutions Catalogue</h3>
-                <button onClick={addServiceItem} className="btn-secondary" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11.5px', background: 'rgba(34, 211, 238, 0.1)', color: 'var(--cyan)', border: '1px solid rgba(34, 211, 238, 0.2)', padding: '6px 12px', borderRadius: '4px' }}>
-                  <Plus size={12} /> Add Service
-                </button>
-              </div>
-
-              {(!formData.services || formData.services.length === 0) ? (
-                <p style={{ color: '#64748b', fontSize: '12px', fontStyle: 'italic' }}>No service entries catalogued. Click "Add Service" to populate products.</p>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  {(formData.services || []).map((svc, idx) => (
-                    <div key={idx} style={{ padding: '16px', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '4px', position: 'relative' }}>
-                      <button 
-                        onClick={() => removeServiceItem(idx)}
-                        style={{ position: 'absolute', top: '12px', right: '12px', background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer' }}
-                      >
-                        <Trash2 size={13} />
-                      </button>
-
-                      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '12px', marginBottom: '8px' }}>
-                        <div>
-                          <label style={{ fontSize: '10px', color: '#64748b' }}>Service Title</label>
-                          <input 
-                            type="text" 
-                            value={svc.title || ''} 
-                            onChange={(e) => {
-                              const list = [...formData.services];
-                              list[idx].title = e.target.value;
-                              updateField('services', list);
-                            }}
-                            style={{ width: '100%', background: 'transparent', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.1)', color: '#fff', fontSize: '13px', padding: '2px 0' }}
-                          />
-                        </div>
-                        <div>
-                          <label style={{ fontSize: '10px', color: '#64748b' }}>Price Tag / Rate</label>
-                          <input 
-                            type="text" 
-                            value={svc.price || ''} 
-                            onChange={(e) => {
-                              const list = [...formData.services];
-                              list[idx].price = e.target.value;
-                              updateField('services', list);
-                            }}
-                            style={{ width: '100%', background: 'transparent', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.1)', color: 'var(--cyan)', fontSize: '13px', padding: '2px 0' }}
-                          />
-                        </div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginTop: '10px' }}>
-                          <input 
-                            type="checkbox" 
-                            id={`spotlight-${idx}`}
-                            checked={svc.isSpotlight || false} 
-                            onChange={(e) => {
-                              const list = [...formData.services];
-                              list[idx].isSpotlight = e.target.checked;
-                              updateField('services', list);
-                            }}
-                            style={{ accentColor: 'var(--cyan)', cursor: 'pointer' }}
-                          />
-                          <label htmlFor={`spotlight-${idx}`} style={{ fontSize: '11px', color: '#cbd5e1', cursor: 'pointer' }}>Spotlight?</label>
-                        </div>
-                      </div>
-
-                      <div>
-                        <label style={{ fontSize: '10px', color: '#64748b' }}>Short Tagline / Info</label>
-                        <input 
-                          type="text" 
-                          value={svc.tagline || ''} 
-                          onChange={(e) => {
-                            const list = [...formData.services];
-                            list[idx].tagline = e.target.value;
-                            updateField('services', list);
-                          }}
-                          style={{ width: '100%', background: 'transparent', border: 'none', color: '#cbd5e1', fontSize: '12px', padding: '2px 0' }}
-                        />
-                      </div>
-                    </div>
                   ))}
+                </div>
+
+                <div style={{ position: 'relative' }}>
+                  <Search size={14} style={{ position: 'absolute', left: '10px', top: '9px', color: '#9096b8' }} />
+                  <input
+                    type="text"
+                    placeholder="Search media assets..."
+                    value={mediaSearch}
+                    onChange={(e) => setMediaSearch(e.target.value)}
+                    style={{ padding: '6px 10px 6px 30px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', color: '#ffffff', fontSize: '12px', outline: 'none' }}
+                  />
+                </div>
+              </div>
+
+              {/* Media Assets Grid */}
+              {filteredMedia.length === 0 ? (
+                <div style={{ textAlign: 'center', padding: '60px 20px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', color: '#9096b8' }}>
+                  <Image size={40} style={{ opacity: 0.3, marginBottom: '10px' }} />
+                  <p style={{ margin: 0, fontSize: '14px' }}>No site media assets matching filter.</p>
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
+                  {filteredMedia.map(asset => {
+                    const rec = RECOMMENDED_DIMENSIONS[asset.category] || RECOMMENDED_DIMENSIONS['site-assets'];
+                    return (
+                      <div
+                        key={asset.id}
+                        className="media-asset-card"
+                        style={{
+                          background: 'rgba(0,0,0,0.4)',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          borderRadius: '8px',
+                          padding: '12px',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '10px',
+                          position: 'relative'
+                        }}
+                      >
+                        <div style={{ height: '110px', background: '#000000', borderRadius: '4px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <img src={asset.url} alt={asset.name} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                        </div>
+
+                        <div style={{ background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.25)', borderRadius: '4px', padding: '4px 6px', fontSize: '10px', color: '#10b981', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <Info size={11} /> Rec: {rec.dims} ({rec.format})
+                        </div>
+
+                        <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          {asset.name}
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '6px', marginTop: 'auto' }}>
+                          <button
+                            type="button"
+                            onClick={() => { navigator.clipboard.writeText(asset.url); alert(`Copied URL: ${asset.url}`); }}
+                            style={{ flex: 1, padding: '5px', fontSize: '11px', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#cbd5e1', borderRadius: '3px', cursor: 'pointer', textAlign: 'center' }}
+                          >
+                            Copy URL
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleReplaceAssetTrigger(asset.id)}
+                            style={{ padding: '5px 8px', fontSize: '11px', background: 'rgba(96, 165, 250, 0.15)', border: '1px solid rgba(96, 165, 250, 0.3)', color: '#60a5fa', borderRadius: '3px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '3px' }}
+                          >
+                            <Repeat size={12} /> Replace
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteMedia(asset.id)}
+                            style={{ padding: '5px 8px', fontSize: '11px', background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: '#ef4444', borderRadius: '3px', cursor: 'pointer' }}
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
-          )}
+          ) : (
 
-        </div>
-      )}
+            /* TAB 3: DEVELOPER RAW KEYS VIEW */
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: '#ffffff' }}>Developer Raw Keys View</h3>
+                <input
+                  type="text"
+                  placeholder="Filter keys..."
+                  value={rawSearch}
+                  onChange={(e) => setRawSearch(e.target.value)}
+                  style={{ padding: '8px 12px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', color: '#ffffff', fontSize: '12px', width: '220px' }}
+                />
+              </div>
 
-      {/* AI IMAGE GENERATOR MODAL */}
-      {showAIModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100vw',
-          height: '100vh',
-          background: 'rgba(0,0,0,0.85)',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          zIndex: 99999,
-          backdropFilter: 'blur(6px)'
-        }}>
-          <div className="glass-panel" style={{
-            width: '450px',
-            padding: '28px',
-            border: '1px solid rgba(255,255,255,0.12)',
-            background: '#0c0f1d',
-            borderRadius: '8px',
-            boxShadow: '0 20px 50px rgba(0,0,0,0.8)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h3 style={{ margin: 0, color: '#fff', fontSize: '16px', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Sparkles size={16} color="var(--purple)" /> Social AI Image Maker
-              </h3>
-              <button 
-                onClick={() => setShowAIModal(false)} 
-                style={{ background: 'transparent', border: 'none', color: '#64748b', cursor: 'pointer' }}
-              >
-                <X size={18} />
-              </button>
+              <div style={{ maxHeight: '550px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {Object.values(cmsKeys)
+                  .filter(k => (k._id || k.key || '').toLowerCase().includes(rawSearch.toLowerCase()))
+                  .map(k => {
+                    const keyId = k._id || k.key;
+                    return (
+                      <div key={keyId} onClick={() => selectKey(keyId)} style={{ padding: '10px 14px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
+                        <div>
+                          <span style={{ fontFamily: 'monospace', fontWeight: 'bold', color: '#c084fc', fontSize: '13px' }}>{keyId}</span>
+                          <div style={{ fontSize: '12px', color: '#9096b8' }}>{k.default || '(no default)'}</div>
+                        </div>
+                        <ChevronRight size={14} style={{ color: '#9096b8' }} />
+                      </div>
+                    );
+                  })}
+              </div>
             </div>
-            
-            <p style={{ margin: '0 0 16px', color: '#94a3b8', fontSize: '12.5px', lineHeight: '1.5' }}>
-              Describe the brand image you want. It will use our backend AI studio to generate the visual and apply the URL to the <strong>{targetField.replace(/_/g, ' ')}</strong> field.
-            </p>
+          )}
+        </div>
+      </div>
 
-            <div style={{ marginBottom: '16px' }}>
-              <label style={{ display: 'block', marginBottom: '6px', fontSize: '12px', color: '#64748b' }}>Creative Art Prompt</label>
-              <textarea 
-                value={aiPrompt} 
-                onChange={(e) => setAiPrompt(e.target.value)} 
-                placeholder="e.g. A gorgeous modern recording studio room with dark mahogany walls and glowing cyan LED strip lights, hyper-realistic, 8k resolution"
-                rows="3"
-                style={{ width: '100%', background: 'rgba(255,255,255,0.02)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', padding: '10px', fontSize: '13px', resize: 'none' }}
+      {/* ── ✨ ASK AI COPYWRITER MODAL ────────────────────────────────────────── */}
+      {aiModalOpen && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
+          <div style={{ background: '#12131a', border: '1px solid #a855f7', borderRadius: '10px', width: '560px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', boxShadow: '0 0 30px rgba(168, 85, 247, 0.3)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 'bold', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Sparkles size={18} style={{ color: '#c084fc' }} /> Ask AI Copywriter & Assistant
+              </h3>
+              <button onClick={() => setAiModalOpen(false)} style={{ background: 'none', border: 'none', color: '#9096b8', fontSize: '16px', cursor: 'pointer' }}>✕</button>
+            </div>
+
+            <div style={{ fontSize: '12px', color: '#cbd5e1' }}>
+              Editing Key: <span style={{ fontFamily: 'monospace', color: '#c084fc', fontWeight: 'bold' }}>{aiTargetKeyId}</span>
+            </div>
+
+            {/* Quick Tone & Style Presets */}
+            <div>
+              <label style={{ fontSize: '11px', fontWeight: 'bold', color: '#9096b8', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Select Copywriting Style</label>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
+                {[
+                  { id: 'hype', label: '🚀 Hype & High-Conversion', desc: 'Energetic for creators & artists' },
+                  { id: 'professional', label: '💼 Professional & Enterprise', desc: 'Polished for business owners' },
+                  { id: 'concise', label: '🎯 Concise & Punchy', desc: 'Shorten & refine existing copy' },
+                  { id: 'kenya', label: '🌍 Nairobi & African Context', desc: 'Tailored for East Africa market' },
+                ].map(t => (
+                  <button
+                    key={t.id}
+                    type="button"
+                    onClick={() => setAiTone(t.id)}
+                    style={{
+                      textAlign: 'left',
+                      padding: '8px 10px',
+                      borderRadius: '6px',
+                      border: aiTone === t.id ? '1px solid #a855f7' : '1px solid rgba(255,255,255,0.1)',
+                      background: aiTone === t.id ? 'rgba(168, 85, 247, 0.2)' : 'rgba(0,0,0,0.3)',
+                      color: aiTone === t.id ? '#c084fc' : '#cbd5e1',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    <div style={{ fontSize: '12px', fontWeight: 'bold' }}>{t.label}</div>
+                    <div style={{ fontSize: '10px', color: '#9096b8' }}>{t.desc}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Custom Instruction Prompt */}
+            <div>
+              <label style={{ fontSize: '11px', fontWeight: 'bold', color: '#9096b8', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Custom Instruction Prompt (Optional)</label>
+              <input
+                type="text"
+                placeholder="e.g. Highlight 100% free credits for artists or add a tagline for Nairobi retail..."
+                value={aiPrompt}
+                onChange={(e) => setAiPrompt(e.target.value)}
+                style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', color: '#ffffff', fontSize: '13px' }}
               />
             </div>
 
-            {aiError && (
-              <div style={{ color: '#ef4444', fontSize: '12px', marginBottom: '16px' }}>⚠️ {aiError}</div>
-            )}
+            {/* Generate Button */}
+            <button
+              onClick={handleGenerateAiCopy}
+              disabled={aiGenerating}
+              style={{
+                padding: '10px',
+                background: 'linear-gradient(135deg, #a855f7, #3b82f6)',
+                border: 'none',
+                borderRadius: '4px',
+                color: '#ffffff',
+                fontSize: '13px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '6px'
+              }}
+            >
+              <Wand2 size={16} /> {aiGenerating ? 'Generating AI Copy...' : 'Generate AI Suggestion'}
+            </button>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-              <button 
-                type="button" 
-                onClick={() => setShowAIModal(false)}
-                className="btn-secondary" 
-                style={{ fontSize: '12.5px', padding: '8px 16px', background: 'rgba(255,255,255,0.04)', color: '#fff', border: '1px solid rgba(255,255,255,0.08)' }}
-              >
-                Cancel
-              </button>
-              <button 
-                type="button" 
-                onClick={handleAIGenerate}
-                disabled={aiLoading}
-                className="btn-primary" 
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', fontSize: '12.5px', padding: '8px 24px', background: 'var(--cyan)', color: '#000', border: 'none', fontWeight: 'bold' }}
-              >
-                {aiLoading ? <Loader2 className="spin" size={13} /> : <Sparkles size={13} />}
-                {aiLoading ? 'Creating Art...' : 'Generate Image'}
-              </button>
+            {/* AI Generated Suggestion Result Box */}
+            {aiSuggestion && (
+              <div style={{ background: 'rgba(168, 85, 247, 0.1)', border: '1px solid rgba(168, 85, 247, 0.3)', borderRadius: '6px', padding: '14px' }}>
+                <div style={{ fontSize: '11px', fontWeight: 'bold', color: '#c084fc', textTransform: 'uppercase', marginBottom: '6px' }}>AI Suggested Output:</div>
+                <div style={{ fontSize: '13px', color: '#ffffff', lineHeight: 1.4, background: 'rgba(0,0,0,0.3)', padding: '10px', borderRadius: '4px', fontFamily: 'monospace' }}>
+                  {aiSuggestion}
+                </div>
+                <button
+                  onClick={handleApplyAiSuggestion}
+                  style={{ width: '100%', marginTop: '12px', padding: '8px', background: '#10b981', border: 'none', borderRadius: '4px', color: '#000000', fontSize: '12px', fontWeight: 'bold', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}
+                >
+                  <Check size={14} /> Apply AI Suggestion to Field
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── MEDIA PICKER MODAL ────────────────────────────────────────────── */}
+      {mediaPickerOpen && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
+          <div style={{ background: '#12131a', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', width: '680px', maxHeight: '80vh', overflowY: 'auto', padding: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 'bold', color: '#ffffff' }}>Select Asset from Site Media Catalog</h3>
+              <button onClick={() => setMediaPickerOpen(false)} style={{ background: 'none', border: 'none', color: '#9096b8', fontSize: '16px', cursor: 'pointer' }}>✕</button>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
+              {mediaList.map(asset => (
+                <div
+                  key={asset.id}
+                  onClick={() => pickMediaForField(asset.url)}
+                  style={{ background: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', padding: '8px', cursor: 'pointer', textAlign: 'center' }}
+                >
+                  <div style={{ height: '90px', background: '#000', borderRadius: '4px', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '6px' }}>
+                    <img src={asset.url} alt={asset.name} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#ffffff', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{asset.name}</div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
       )}
 
+      {/* ── HISTORIC ROLLBACK MODAL ────────────────────────────────────────── */}
+      {historyOpen && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
+          <div style={{ background: '#12131a', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', width: '500px', maxHeight: '80vh', overflowY: 'auto', padding: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 'bold', color: '#ffffff' }}>Revision History ({focusedKeyId})</h3>
+              <button onClick={() => setHistoryOpen(false)} style={{ background: 'none', border: 'none', color: '#9096b8', fontSize: '16px', cursor: 'pointer' }}>✕</button>
+            </div>
+
+            {historyList.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: '20px', color: '#9096b8' }}>No historic revisions logged.</div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {historyList.map((h, i) => (
+                  <div key={i} style={{ padding: '10px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '4px', fontSize: '12px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <span style={{ color: '#10b981', fontWeight: 'bold' }}>{h.by_name || 'Admin'}</span>
+                      <span style={{ color: '#9096b8' }}>{new Date(h.at).toLocaleString()}</span>
+                    </div>
+                    <button
+                      onClick={() => handleRollback(h.revision_id)}
+                      style={{ padding: '4px 10px', fontSize: '11px', background: 'rgba(16,185,129,0.2)', border: '1px solid #10b981', color: '#10b981', borderRadius: '4px', cursor: 'pointer', marginTop: '4px' }}
+                    >
+                      Rollback to this state
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
+export default CMSEditor;
