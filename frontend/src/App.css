@@ -3113,13 +3113,13 @@
 .ph {
   position: relative;
   overflow: hidden;
-  min-height: 215px;
+  min-height: 165px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: -110px;
+  margin-top: -170px;
   padding-top: 110px;
-  padding-bottom: 24px;
+  padding-bottom: 20px;
 }
 .phi,
 .pho {

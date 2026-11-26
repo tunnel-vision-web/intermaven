@@ -29,14 +29,14 @@ export default function PerfectForPage({ onOpenAuth, onOpenSignIn }) {
       <section style={{ padding: '28px 0 64px' }}>
         <div className="cn" style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
           {/* Themed Intro Content Box */}
-          <div style={{ background: 'var(--ca)', border: '1px solid var(--b1)', borderRadius: 'var(--r)', padding: '24px' }}>
+          <div style={{ background: 'var(--bg2)', border: '1px solid var(--b2)', boxShadow: '0 8px 24px rgba(0,0,0,0.3)', borderRadius: 'var(--r)', padding: '24px' }}>
             <div className="sl2" style={{ marginBottom: '8px' }}>Choose Your Seat Across Business &amp; Creative</div>
             <p style={{ margin: 0, color: 'var(--mu)', fontSize: '14px', lineHeight: 1.65 }}>
               Every seat unlocks a tailored workspace, persona-specific AI onboarding with Maven, and unified Single Sign-On across Intermaven, TuneMavens, TuneStream, and SyncMavens.
             </p>
           </div>
 
-          <hr style={{ border: 'none', borderTop: '1px solid var(--b1)', margin: 0 }} />
+          <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.15)', margin: 0 }} />
 
           {/* Filter Pills */}
           <div className="apf" style={{ justifyContent: 'center', margin: 0 }}>
@@ -77,7 +77,7 @@ export default function PerfectForPage({ onOpenAuth, onOpenSignIn }) {
                 <h3>{p.label}</h3>
                 <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--mu)', marginBottom: '8px' }}>{p.subtitle}</div>
                 <p style={{ flex: 1 }}>{p.tagline}</p>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '14px', paddingTop: '12px', borderTop: '1px solid var(--b1)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '14px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.15)' }}>
                   {p.recommendedApps.slice(0, 4).map((appId, idx) => (
                     <FlatIcon key={`${appId}-${idx}`} name={appId} size={22} />
                   ))}

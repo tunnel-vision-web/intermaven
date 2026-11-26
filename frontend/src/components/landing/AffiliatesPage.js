@@ -32,6 +32,13 @@ export default function AffiliatesPage({ onOpenAuth, onOpenSignIn }) {
   const [submitting, setSubmitting] = useState(false);
   const [submittedRef, setSubmittedRef] = useState('');
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   useEffect(() => {
     api.get('/api/affiliates/matrix')
@@ -76,7 +83,7 @@ export default function AffiliatesPage({ onOpenAuth, onOpenSignIn }) {
   const estimatedMonthly = Math.round(monthlyReferrals * avgSpendUsd * 0.10);
 
   return (
-    <div className="landing-wrapper">
+    <div className={`landing-wrapper ${scrolled ? 'scrolled' : ''}`}>
       <SEO
         title="Affiliate & Partner Program"
         description="Earn 3% to 12% recurring revenue share across Intermaven, TuneMavens, TuneStream, and SyncMavens with M-Pesa & global payouts."
@@ -96,14 +103,14 @@ export default function AffiliatesPage({ onOpenAuth, onOpenSignIn }) {
       <main style={{ padding: '28px 0 64px' }}>
         <div className="cn" style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
           {/* Program Overview Content Box */}
-          <div style={{ background: 'var(--ca)', border: '1px solid var(--b1)', borderRadius: 'var(--r)', padding: '24px' }}>
+          <div style={{ background: 'var(--bg2)', border: '1px solid var(--b2)', boxShadow: '0 8px 24px rgba(0,0,0,0.3)', borderRadius: 'var(--r)', padding: '24px' }}>
             <div className="sl2" style={{ marginBottom: '8px' }}>How the Partner Network Works</div>
             <p style={{ margin: 0, color: 'var(--mu)', fontSize: '14px', lineHeight: 1.65 }}>
               Share your unique referral link across creator communities, labels, startups, and events. Every signup is tracked with a 90-day attribution window and synced across Intermaven and TuneMavens.
             </p>
           </div>
 
-          <hr style={{ border: 'none', borderTop: '1px solid var(--b1)', margin: 0 }} />
+          <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.15)', margin: 0 }} />
 
           {/* Active Partner Dashboard */}
           {myAffiliate && (
@@ -130,15 +137,15 @@ export default function AffiliatesPage({ onOpenAuth, onOpenSignIn }) {
                 </button>
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '12px' }}>
-                <div style={{ background: 'var(--ca)', border: '1px solid var(--b1)', padding: '14px', borderRadius: 'var(--r)' }}>
+                <div style={{ background: 'var(--bg2)', border: '1px solid var(--b2)', boxShadow: '0 8px 24px rgba(0,0,0,0.3)', padding: '14px', borderRadius: 'var(--r)' }}>
                   <div style={{ fontSize: '11px', color: 'var(--mu)' }}>Total Clicks</div>
                   <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--a2)' }}>{myAffiliate.clicks || 0}</div>
                 </div>
-                <div style={{ background: 'var(--ca)', border: '1px solid var(--b1)', padding: '14px', borderRadius: 'var(--r)' }}>
+                <div style={{ background: 'var(--bg2)', border: '1px solid var(--b2)', boxShadow: '0 8px 24px rgba(0,0,0,0.3)', padding: '14px', borderRadius: 'var(--r)' }}>
                   <div style={{ fontSize: '11px', color: 'var(--mu)' }}>Onboarded Users</div>
                   <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--gr)' }}>{myAffiliate.conversions || 0}</div>
                 </div>
-                <div style={{ background: 'var(--ca)', border: '1px solid var(--b1)', padding: '14px', borderRadius: 'var(--r)' }}>
+                <div style={{ background: 'var(--bg2)', border: '1px solid var(--b2)', boxShadow: '0 8px 24px rgba(0,0,0,0.3)', padding: '14px', borderRadius: 'var(--r)' }}>
                   <div style={{ fontSize: '11px', color: 'var(--mu)' }}>Available Earnings</div>
                   <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--am)' }}>${(myAffiliate.balance_usd || 0).toFixed(2)}</div>
                 </div>
@@ -148,7 +155,7 @@ export default function AffiliatesPage({ onOpenAuth, onOpenSignIn }) {
 
           {/* Calculator + Partner Form */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(310px, 1fr))', gap: '24px' }}>
-            <div style={{ background: 'var(--ca)', border: '1px solid var(--b1)', borderRadius: 'var(--r)', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ background: 'var(--bg2)', border: '1px solid var(--b2)', boxShadow: '0 8px 24px rgba(0,0,0,0.3)', borderRadius: 'var(--r)', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <h3 style={{ margin: 0, fontSize: '18px', color: 'var(--tx)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <DollarSign size={18} color="#22d3ee" /> Earnings Estimator
               </h3>
@@ -172,7 +179,7 @@ export default function AffiliatesPage({ onOpenAuth, onOpenSignIn }) {
               </div>
             </div>
 
-            <form onSubmit={handleApply} style={{ background: 'var(--ca)', border: '1px solid var(--b1)', borderRadius: 'var(--r)', padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <form onSubmit={handleApply} style={{ background: 'var(--bg2)', border: '1px solid var(--b2)', boxShadow: '0 8px 24px rgba(0,0,0,0.3)', borderRadius: 'var(--r)', padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <h3 style={{ margin: 0, fontSize: '18px', color: 'var(--tx)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Users size={18} color="#10b981" /> Become an Affiliate Partner
               </h3>
@@ -200,7 +207,7 @@ export default function AffiliatesPage({ onOpenAuth, onOpenSignIn }) {
           </div>
 
           {/* Commission Matrix */}
-          <div style={{ background: 'var(--ca)', border: '1px solid var(--b1)', borderRadius: 'var(--r)', padding: '24px' }}>
+          <div style={{ background: 'var(--bg2)', border: '1px solid var(--b2)', boxShadow: '0 8px 24px rgba(0,0,0,0.3)', borderRadius: 'var(--r)', padding: '24px' }}>
             <div className="sl2" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Sparkles size={18} color="#f59e0b" /> Ecosystem Commission Matrix (Synced with TuneMavens)
             </div>

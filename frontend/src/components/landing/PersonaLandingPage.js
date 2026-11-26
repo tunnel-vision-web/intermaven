@@ -105,17 +105,17 @@ export default function PersonaLandingPage({ onOpenAuth, onOpenSignIn }) {
       <section style={{ padding: '28px 0 64px' }}>
         <div className="cn" style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
           {/* Persona Overview Content Box */}
-          <div style={{ background: 'var(--ca)', border: '1px solid var(--b1)', borderRadius: 'var(--r)', padding: '24px' }}>
+          <div style={{ background: 'var(--bg2)', border: '1px solid var(--b2)', boxShadow: '0 8px 24px rgba(0,0,0,0.3)', borderRadius: 'var(--r)', padding: '24px' }}>
             <div className="sl2" style={{ marginBottom: '8px' }}>Seat Overview · {meta.subtitle}</div>
             <p style={{ margin: 0, color: 'var(--mu)', fontSize: '14px', lineHeight: 1.65 }}>
               {meta.tagline} All tools below sync under a single login and are free to test during our Beta phase.
             </p>
           </div>
 
-          <hr style={{ border: 'none', borderTop: '1px solid var(--b1)', margin: 0 }} />
+          <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.15)', margin: 0 }} />
 
           {/* Recommended Apps */}
-          <div style={{ background: 'var(--ca)', border: '1px solid var(--b1)', borderRadius: 'var(--r)', padding: '24px' }}>
+          <div style={{ background: 'var(--bg2)', border: '1px solid var(--b2)', boxShadow: '0 8px 24px rgba(0,0,0,0.3)', borderRadius: 'var(--r)', padding: '24px' }}>
             <div className="sl2">Your {meta.shortLabel} App Stack</div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '14px' }}>
               {meta.recommendedApps.map((appId, idx) => {
@@ -144,10 +144,10 @@ export default function PersonaLandingPage({ onOpenAuth, onOpenSignIn }) {
             </div>
           </div>
 
-          <hr style={{ border: 'none', borderTop: '1px solid var(--b1)', margin: 0 }} />
+          <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.15)', margin: 0 }} />
 
           {/* Persona-Specific Onboarding Checklist */}
-          <div style={{ background: 'var(--ca)', border: '1px solid var(--b1)', borderRadius: 'var(--r)', padding: '28px' }}>
+          <div style={{ background: 'var(--bg2)', border: '1px solid var(--b2)', boxShadow: '0 8px 24px rgba(0,0,0,0.3)', borderRadius: 'var(--r)', padding: '28px' }}>
             <div className="sl2" style={{ marginBottom: '6px' }}>{meta.shortLabel} Onboarding Checklist</div>
             <p style={{ color: 'var(--mu)', fontSize: '14px', margin: '0 0 20px' }}>
               Follow these tailored steps to activate your {meta.label} workspace across Intermaven &amp; TuneMavens.
@@ -187,10 +187,10 @@ export default function PersonaLandingPage({ onOpenAuth, onOpenSignIn }) {
             </div>
           </div>
 
-          <hr style={{ border: 'none', borderTop: '1px solid var(--b1)', margin: 0 }} />
+          <hr style={{ border: 'none', borderTop: '1px solid rgba(255,255,255,0.15)', margin: 0 }} />
 
           {/* Recommended Reading */}
-          <div style={{ background: 'var(--ca)', border: '1px solid var(--b1)', borderRadius: 'var(--r)', padding: '24px' }}>
+          <div style={{ background: 'var(--bg2)', border: '1px solid var(--b2)', boxShadow: '0 8px 24px rgba(0,0,0,0.3)', borderRadius: 'var(--r)', padding: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
               <div className="sl2" style={{ margin: 0 }}>Recommended Reading for {meta.label}</div>
               <Link to="/help" style={{ color: 'var(--a2)', fontSize: '13px', fontWeight: 600, textDecoration: 'none' }}>
