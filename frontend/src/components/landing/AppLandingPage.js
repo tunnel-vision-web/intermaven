@@ -268,9 +268,9 @@ const APP_CONFIGS = {
       { dot: '#14b8a6', badge: 'Dual Notifications & Attribution', h: 'Real-time analytics across In-App Inbox & Email', s: "Track sent, delivered, opened, clicked, and replied telemetry across both Intermaven and TuneMavens.", b1: 'Open dashboard', b1link: '#', b2: 'Pricing', b2link: '#pricing' }
     ],
     backgrounds: [
-      'linear-gradient(180deg, #14b8a622 0%, #14b8a644 50%, #08090d 100%)',
-      'linear-gradient(180deg, #14b8a633 0%, #14b8a655 50%, #08090d 100%)',
-      'linear-gradient(180deg, #14b8a644 0%, #14b8a666 50%, #08090d 100%)'
+      "linear-gradient(180deg, rgba(6,8,19,0.45) 0%, rgba(20,184,166,0.22) 50%, #08090d 100%), url('/images/hero/crm/hero-1.jpg')",
+      "linear-gradient(180deg, rgba(6,8,19,0.45) 0%, rgba(20,184,166,0.28) 50%, #08090d 100%), url('/images/hero/crm/hero-2.jpg')",
+      "linear-gradient(180deg, rgba(6,8,19,0.45) 0%, rgba(20,184,166,0.32) 50%, #08090d 100%), url('/images/hero/crm/hero-3.jpg')"
     ],
     social: {
       twitter: 'https://twitter.com/intermaven_crm',
@@ -402,7 +402,7 @@ function AppLandingPage({ appId, onOpenAuth, onOpenSignIn }) {
   const { name, color, cost, features, steps, testimonials, faqs, social } = config;
 
   return (
-    <div className="landing-page app-landing">
+    <div className={`landing-wrapper app-landing ${scrolled ? 'scrolled' : ''}`}>
       <Netbar portal="business" />
       <Navbar onOpenAuth={onOpenAuth} onOpenSignIn={onOpenSignIn} portal="business" />
 
