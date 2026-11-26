@@ -1,30 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { api } from '../App';
+import { api, useAuth, useToast } from '../App';
 import { useWizard } from './wizard/WizardContext';
+import FlatIcon from './FlatIcon';
+import AppHelpAiControls from './AppHelpAiControls';
+import { getPersonaMeta } from '../data/personasCatalog';
 import {
-  Copy, Download, Zap, ChevronDown, ChevronUp,
-  Instagram, Facebook, Twitter, Linkedin, Video,
-  Hash, Clock, Target, Repeat, Sparkles, RefreshCw,
-  Image, Play, AlignLeft, Grid, MessageCircle, Users,
-  TrendingUp, Calendar, Globe, BarChart2, Heart, Share2
+  Copy, Download, Zap, Instagram, Facebook, Twitter, Linkedin, Video,
+  Hash, Target, Repeat, Sparkles, Image, Play, AlignLeft, Grid,
+  MessageCircle, Users, Calendar, Trash2, Check, ArrowRight, ArrowLeft, Plus
 } from 'lucide-react';
 
-// ── Platform config ─────────────────────────────────────────────
+// ── 7 Platforms, 23 Formats (per DOCUMENTATION.md) ────────────────────────
 const PLATFORMS = [
   {
-    id: 'instagram', label: 'Instagram', color: '#E1306C',
-    icon: Instagram,
+    id: 'instagram', label: 'Instagram', color: '#E1306C', icon: Instagram,
     formats: [
       { id: 'feed_post', label: 'Feed Post', icon: Image },
       { id: 'reel', label: 'Reel', icon: Play },
       { id: 'story', label: 'Story', icon: Repeat },
       { id: 'carousel', label: 'Carousel', icon: Grid },
       { id: 'ig_live', label: 'Live Announcement', icon: Video },
-    ]
+    ],
   },
   {
-    id: 'facebook', label: 'Facebook', color: '#1877F2',
-    icon: Facebook,
+    id: 'facebook', label: 'Facebook', color: '#1877F2', icon: Facebook,
     formats: [
       { id: 'fb_post', label: 'Post', icon: AlignLeft },
       { id: 'fb_reel', label: 'Reel', icon: Play },
@@ -32,661 +31,800 @@ const PLATFORMS = [
       { id: 'fb_event', label: 'Event Description', icon: Calendar },
       { id: 'fb_group', label: 'Group Post', icon: Users },
       { id: 'fb_ad', label: 'Ad Copy', icon: Target },
-    ]
+    ],
   },
   {
-    id: 'threads', label: 'Threads', color: '#000000',
-    icon: MessageCircle,
+    id: 'threads', label: 'Threads', color: '#a855f7', icon: MessageCircle,
     formats: [
       { id: 'threads_post', label: 'Thread Post', icon: AlignLeft },
       { id: 'threads_reply', label: 'Conversation Starter', icon: MessageCircle },
-    ]
+    ],
   },
   {
-    id: 'tiktok', label: 'TikTok', color: '#010101',
-    icon: Video,
+    id: 'tiktok', label: 'TikTok', color: '#22d3ee', icon: Video,
     formats: [
       { id: 'tiktok_video', label: 'Video Caption', icon: Video },
       { id: 'tiktok_stitch', label: 'Stitch/Duet Prompt', icon: Repeat },
       { id: 'tiktok_bio', label: 'Profile Bio', icon: AlignLeft },
-    ]
+    ],
   },
   {
-    id: 'x', label: 'X (Twitter)', color: '#000000',
-    icon: Twitter,
+    id: 'x', label: 'X (Twitter)', color: '#94a3b8', icon: Twitter,
     formats: [
       { id: 'tweet', label: 'Tweet', icon: AlignLeft },
       { id: 'thread', label: 'Thread', icon: Hash },
       { id: 'x_space', label: 'Space Announcement', icon: Video },
-    ]
+    ],
   },
   {
-    id: 'linkedin', label: 'LinkedIn', color: '#0A66C2',
-    icon: Linkedin,
+    id: 'linkedin', label: 'LinkedIn', color: '#0A66C2', icon: Linkedin,
     formats: [
       { id: 'li_post', label: 'Post', icon: AlignLeft },
       { id: 'li_article', label: 'Article Intro', icon: AlignLeft },
       { id: 'li_event', label: 'Event Post', icon: Calendar },
-    ]
+    ],
   },
   {
-    id: 'youtube', label: 'YouTube', color: '#FF0000',
-    icon: Play,
+    id: 'youtube', label: 'YouTube', color: '#FF0000', icon: Play,
     formats: [
       { id: 'yt_title', label: 'Video Title + Description', icon: AlignLeft },
       { id: 'yt_short', label: 'Shorts Caption', icon: Play },
       { id: 'yt_community', label: 'Community Post', icon: Users },
-    ]
+    ],
   },
 ];
 
 const CONTENT_GOALS = [
-  { id: 'announce_release', label: 'Announce a Release', icon: '🎵' },
-  { id: 'drive_streams', label: 'Drive Streams', icon: '▶️' },
-  { id: 'event_promo', label: 'Promote an Event', icon: '🎤' },
-  { id: 'build_hype', label: 'Build Hype / Teaser', icon: '🔥' },
-  { id: 'behind_scenes', label: 'Behind the Scenes', icon: '🎬' },
-  { id: 'fan_engagement', label: 'Fan Engagement', icon: '❤️' },
-  { id: 'collab_announce', label: 'Collaboration Drop', icon: '🤝' },
-  { id: 'brand_awareness', label: 'Brand Awareness', icon: '✨' },
-  { id: 'merch_sale', label: 'Merch / Product Launch', icon: '👕' },
-  { id: 'throwback', label: 'Throwback / Archive', icon: '📸' },
-  { id: 'milestone', label: 'Milestone / Achievement', icon: '🏆' },
-  { id: 'call_to_action', label: 'Direct Call to Action', icon: '📢' },
+  { id: 'announce_release', label: 'Announce a Release', accent: '#22d3ee' },
+  { id: 'drive_streams', label: 'Drive Streams / Traffic', accent: '#10b981' },
+  { id: 'event_promo', label: 'Promote an Event', accent: '#f59e0b' },
+  { id: 'build_hype', label: 'Build Hype / Teaser', accent: '#f43f5e' },
+  { id: 'behind_scenes', label: 'Behind the Scenes', accent: '#a78bfa' },
+  { id: 'fan_engagement', label: 'Audience Engagement', accent: '#ec4899' },
+  { id: 'collab_announce', label: 'Collaboration Drop', accent: '#14b8a6' },
+  { id: 'brand_awareness', label: 'Brand Awareness', accent: '#3b82f6' },
+  { id: 'merch_sale', label: 'Merch / Product Launch', accent: '#0ea5e9' },
+  { id: 'milestone', label: 'Milestone / Win', accent: '#eab308' },
 ];
 
 const TONES = [
   { id: 'hype', label: 'Hype & Bold' },
   { id: 'warm', label: 'Warm & Personal' },
-  { id: 'professional', label: 'Professional' },
-  { id: 'casual', label: 'Fun & Casual' },
-  { id: 'storytelling', label: 'Storytelling' },
-  { id: 'raw', label: 'Raw & Authentic' },
-  { id: 'luxury', label: 'Luxe & Aspirational' },
-  { id: 'afrocentric', label: 'Afrocentric & Cultural' },
+  { id: 'pro', label: 'Professional' },
+  { id: 'story', label: 'Storytelling' },
+  { id: 'witty', label: 'Witty & Playful' },
+  { id: 'urgent', label: 'Urgent / FOMO' },
 ];
 
-const AUDIENCES = [
-  { id: 'gen_z', label: 'Gen Z (18–25)' },
-  { id: 'millennials', label: 'Millennials (25–35)' },
-  { id: 'nairobi', label: 'Nairobi / Kenya' },
-  { id: 'east_africa', label: 'East Africa' },
-  { id: 'pan_africa', label: 'Pan-Africa' },
-  { id: 'diaspora', label: 'African Diaspora' },
-  { id: 'global', label: 'Global Audience' },
-  { id: 'industry', label: 'Music Industry Pros' },
-];
-
-const CAPTION_LENGTHS = [
-  { id: 'micro', label: 'Micro (1–2 lines)' },
-  { id: 'short', label: 'Short (3–5 lines)' },
-  { id: 'medium', label: 'Medium (1 paragraph)' },
-  { id: 'long', label: 'Long (storytelling)' },
-];
-
-// ── Helpers ───────────────────────────────────────────────────────
-function MultiSelect({ options, value = [], onChange, maxSelect }) {
-  const toggle = (id) => {
-    if (value.includes(id)) {
-      onChange(value.filter(v => v !== id));
-    } else {
-      if (maxSelect && value.length >= maxSelect) return;
-      onChange([...value, id]);
-    }
-  };
-  return (
-    <div className="social-chips">
-      {options.map(opt => (
-        <button
-          key={opt.id}
-          type="button"
-          className={`social-chip ${value.includes(opt.id) ? 'active' : ''}`}
-          onClick={() => toggle(opt.id)}
-        >
-          {opt.icon && <span>{opt.icon}</span>}
-          {opt.label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-function Section({ title, icon: Icon, children, collapsible = false, defaultOpen = true }) {
-  const [open, setOpen] = useState(defaultOpen);
-  return (
-    <div className="social-section">
-      <div
-        className={`social-section-header ${collapsible ? 'clickable' : ''}`}
-        onClick={collapsible ? () => setOpen(o => !o) : undefined}
-      >
-        <div className="social-section-title">
-          {Icon && <Icon size={15} />}
-          <span>{title}</span>
-        </div>
-        {collapsible && (open ? <ChevronUp size={14} /> : <ChevronDown size={14} />)}
-      </div>
-      {open && <div className="social-section-body">{children}</div>}
-    </div>
-  );
-}
-
-function OutputBlock({ platform, format, content, onCopy }) {
+function SocialOutputBlock({ platformId, formatId, content, onCopy, onSchedule }) {
   const [copied, setCopied] = useState(false);
-  const plat = PLATFORMS.find(p => p.id === platform);
-  const fmt = plat?.formats.find(f => f.id === format);
+  const plat = PLATFORMS.find((p) => p.id === platformId);
+  const fmt = plat?.formats.find((f) => f.id === formatId);
 
   const handleCopy = () => {
     navigator.clipboard.writeText(content);
     setCopied(true);
-    onCopy();
-    setTimeout(() => setCopied(false), 2000);
+    if (onCopy) onCopy();
+    setTimeout(() => setCopied(false), 1800);
   };
 
   return (
-    <div className="social-output-block">
-      <div className="social-output-block-header">
-        <div className="social-output-platform" style={{ color: plat?.color }}>
-          {plat?.label}{fmt ? ` · ${fmt.label}` : ''}
+    <div style={{ background: 'rgba(13,17,23,0.9)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '16px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', gap: '8px', flexWrap: 'wrap' }}>
+        <div style={{ fontWeight: 700, fontSize: '13px', color: plat?.color || '#22d3ee' }}>
+          {plat?.label || platformId}{fmt ? ` · ${fmt.label}` : ''}
         </div>
-        <button className="social-copy-btn" onClick={handleCopy}>
-          <Copy size={12} />
-          {copied ? 'Copied!' : 'Copy'}
-        </button>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button
+            type="button"
+            onClick={() => onSchedule(platformId, formatId, content)}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '5px 10px', borderRadius: '6px', border: '1px solid rgba(34,211,238,0.35)', background: 'rgba(34,211,238,0.12)', color: '#67e8f9', fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}
+          >
+            <Calendar size={12} /> Schedule
+          </button>
+          <button
+            type="button"
+            onClick={handleCopy}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '5px 10px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}
+          >
+            {copied ? <Check size={12} /> : <Copy size={12} />}
+            {copied ? 'Copied' : 'Copy'}
+          </button>
+        </div>
       </div>
-      <pre className="social-output-pre">{content}</pre>
+      <pre style={{ margin: 0, whiteSpace: 'pre-wrap', fontFamily: 'inherit', fontSize: '13px', lineHeight: 1.55, color: '#cbd5e1' }}>
+        {content}
+      </pre>
     </div>
   );
 }
 
-// ── Main Component ────────────────────────────────────────────────
-function SocialAI({ user, updateUser, addToast, fetchStats, fetchActivities }) {
-  const [step, setStep] = useState(1); // 1 = configure, 2 = output
-  const [loading, setLoading] = useState(false);
-  const [outputs, setOutputs] = useState(null);
+export default function SocialAI(props) {
+  const auth = useAuth();
+  const toast = useToast();
+  const user = props.user || auth?.user;
+  const updateUser = props.updateUser || auth?.updateUser;
+  const addToast = props.addToast || toast?.addToast || (() => {});
+  const personaMeta = getPersonaMeta(user?.persona);
 
-  // Form state
-  const [selectedPlatforms, setSelectedPlatforms] = useState([]);
-  const [selectedFormats, setSelectedFormats] = useState({}); // { instagram: ['reel', 'story'], ... }
-  const [goal, setGoal] = useState('');
-  const [tones, setTones] = useState([]);
-  const [audiences, setAudiences] = useState([]);
+  // Supplementary Studio Tabs
+  const [studioTab, setStudioTab] = useState('wizard'); // wizard | visuals | calendar | assets | insights
+  const [wizardStep, setWizardStep] = useState(1); // 1: Platforms & Formats, 2: Goal & Topic, 3: Output
+
+  // Wizard state
+  const [selectedPlatforms, setSelectedPlatforms] = useState(['instagram', 'tiktok']);
+  const [selectedFormats, setSelectedFormats] = useState({ instagram: ['feed_post', 'reel'], tiktok: ['tiktok_video'] });
+  const [goal, setGoal] = useState('announce_release');
+  const [tones, setTones] = useState(['hype']);
   const [captionLength, setCaptionLength] = useState('short');
   const [variations, setVariations] = useState('3');
   const [includeHashtags, setIncludeHashtags] = useState(true);
-  const [includeEmojis, setIncludeEmojis] = useState(true);
-  const [includeCTA, setIncludeCTA] = useState(true);
   const [includeTiming, setIncludeTiming] = useState(true);
   const [includeHooks, setIncludeHooks] = useState(true);
   const [topic, setTopic] = useState('');
   const [context, setContext] = useState('');
-  const [brandVoice, setBrandVoice] = useState('');
-  const [mentions, setMentions] = useState('');
   const [links, setLinks] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [outputs, setOutputs] = useState(null);
 
-  // Pre-populate from wizard answers when user is in Advanced mode after finishing wizard
+  // Visuals Studio & Styles state
+  const [artPrompt, setArtPrompt] = useState('');
+  const [aspectRatio, setAspectRatio] = useState('1:1');
+  const [artLoading, setArtLoading] = useState(false);
+  const [generatedArt, setGeneratedArt] = useState(null);
+  const [assets, setAssets] = useState([]);
+  const [styles, setStyles] = useState([]);
+  const [newStyleName, setNewStyleName] = useState('');
+  const [newStylePrompt, setNewStylePrompt] = useState('');
+
+  // Calendar / Scheduled Posts state
+  const [scheduledPosts, setScheduledPosts] = useState([]);
+  const [schedForm, setSchedForm] = useState({
+    platform: 'instagram',
+    format: 'feed_post',
+    title: '',
+    caption: '',
+    scheduled_for: new Date(Date.now() + 86400000).toISOString().slice(0, 16),
+  });
+
+  // Recommendations & Channels
+  const [recommendations, setRecommendations] = useState([]);
+
+  // Pre-populate from WizardContext if applied
   const wizard = useWizard();
   useEffect(() => {
     if (!wizard?.appliedFromWizard || !wizard?.state) return;
     const s = wizard.state;
-    const platformKey = s.platform || s.primary_platform || s.channel;
-    if (platformKey && typeof platformKey === 'string') {
-      const pid = platformKey.toLowerCase().replace(/\s/g, '');
-      const known = ['instagram', 'facebook', 'threads', 'tiktok', 'twitter', 'linkedin', 'youtube'];
-      const match = known.find(k => pid.includes(k));
-      if (match) setSelectedPlatforms(p => Array.from(new Set([...p, match])));
-    }
-    const goalKey = s.goal || s.content_goal || s.objective;
-    if (goalKey && typeof goalKey === 'string' && !goal) setGoal(goalKey);
-    const toneKey = s.tone || s.brand_voice || s.voice;
-    if (toneKey && typeof toneKey === 'string') setTones(t => t.length === 0 ? [toneKey] : t);
-    const topicKey = s.topic || s.post_topic;
-    if (topicKey && !topic) setTopic(topicKey);
-    const postTypeKey = s.post_type || s.format;
-    if (postTypeKey && platformKey) {
-      const pid = (platformKey || '').toLowerCase();
-      const known = ['instagram', 'facebook', 'threads', 'tiktok', 'twitter', 'linkedin', 'youtube'];
-      const platformMatch = known.find(k => pid.includes(k));
-      if (platformMatch) {
-        setSelectedFormats(prev => ({ ...prev, [platformMatch]: [postTypeKey.toLowerCase()] }));
-      }
-    }
+    if (s.topic && !topic) setTopic(s.topic);
+    if (s.goal) setGoal(s.goal);
   }, [wizard?.appliedFromWizard]); // eslint-disable-line
 
+  const loadStudioData = async () => {
+    try {
+      const [assetRes, styleRes, schedRes] = await Promise.all([
+        api.get('/api/social-ai/assets').catch(() => ({ data: { assets: [] } })),
+        api.get('/api/social-ai/styles').catch(() => ({ data: { styles: [] } })),
+        api.get('/api/social-ai/scheduled').catch(() => ({ data: { posts: [] } })),
+      ]);
+      setAssets(assetRes.data?.assets || []);
+      setStyles(styleRes.data?.styles || []);
+      setScheduledPosts(schedRes.data?.posts || []);
+    } catch (e) {
+      // ignore
+    }
+  };
+
+  useEffect(() => {
+    loadStudioData();
+  }, []);
 
   const togglePlatform = (platId) => {
     if (selectedPlatforms.includes(platId)) {
-      setSelectedPlatforms(p => p.filter(x => x !== platId));
-      const newFormats = { ...selectedFormats };
-      delete newFormats[platId];
-      setSelectedFormats(newFormats);
+      setSelectedPlatforms((p) => p.filter((x) => x !== platId));
+      const next = { ...selectedFormats };
+      delete next[platId];
+      setSelectedFormats(next);
     } else {
-      setSelectedPlatforms(p => [...p, platId]);
+      const plat = PLATFORMS.find((p) => p.id === platId);
+      setSelectedPlatforms((p) => [...p, platId]);
+      setSelectedFormats((prev) => ({
+        ...prev,
+        [platId]: prev[platId]?.length ? prev[platId] : [plat?.formats[0]?.id].filter(Boolean),
+      }));
     }
   };
 
   const toggleFormat = (platId, fmtId) => {
-    const current = selectedFormats[platId] || [];
-    if (current.includes(fmtId)) {
-      setSelectedFormats({ ...selectedFormats, [platId]: current.filter(x => x !== fmtId) });
-    } else {
-      setSelectedFormats({ ...selectedFormats, [platId]: [...current, fmtId] });
+    const cur = selectedFormats[platId] || [];
+    const next = cur.includes(fmtId) ? cur.filter((x) => x !== fmtId) : [...cur, fmtId];
+    setSelectedFormats({ ...selectedFormats, [platId]: next });
+  };
+
+  const applyPreset = (preset) => {
+    if (preset === 'meta') {
+      setSelectedPlatforms(['instagram', 'facebook', 'threads']);
+      setSelectedFormats({ instagram: ['feed_post', 'reel', 'story'], facebook: ['fb_post', 'fb_reel'], threads: ['threads_post'] });
+    } else if (preset === 'video') {
+      setSelectedPlatforms(['tiktok', 'instagram', 'youtube']);
+      setSelectedFormats({ tiktok: ['tiktok_video'], instagram: ['reel'], youtube: ['yt_short'] });
+    } else if (preset === 'persona') {
+      if (personaMeta.side === 'business') {
+        setSelectedPlatforms(['linkedin', 'instagram', 'x']);
+        setSelectedFormats({ linkedin: ['li_post'], instagram: ['feed_post', 'carousel'], x: ['tweet', 'thread'] });
+      } else {
+        setSelectedPlatforms(['instagram', 'tiktok', 'youtube']);
+        setSelectedFormats({ instagram: ['reel', 'story'], tiktok: ['tiktok_video'], youtube: ['yt_short', 'yt_community'] });
+      }
     }
+    addToast('Preset applied', `Tailored for ${personaMeta.shortLabel}`, 'success');
   };
 
-  const allFormatsSelected = () => {
-    return selectedPlatforms.every(p => (selectedFormats[p] || []).length > 0);
-  };
-
-  const canGenerate = topic.trim() && goal && selectedPlatforms.length > 0 && allFormatsSelected();
-
-  const buildPrompt = () => {
-    const platformDetails = selectedPlatforms.map(platId => {
-      const plat = PLATFORMS.find(p => p.id === platId);
-      const formats = (selectedFormats[platId] || []).map(fId => {
-        const fmt = plat?.formats.find(f => f.id === fId);
-        return fmt?.label;
-      }).join(', ');
-      return `${plat?.label} (${formats})`;
-    }).join(' | ');
-
-    const toneLabels = tones.map(t => TONES.find(x => x.id === t)?.label).join(', ') || 'Balanced';
-    const audienceLabels = audiences.map(a => AUDIENCES.find(x => x.id === a)?.label).join(', ') || 'General African creative audience';
-    const goalLabel = CONTENT_GOALS.find(g => g.id === goal)?.label || goal;
-    const lengthLabel = CAPTION_LENGTHS.find(l => l.id === captionLength)?.label || 'Short';
-
-    return `You are a world-class social media strategist specializing in African creative industries — music, fashion, art, and entertainment. You understand platform algorithms deeply, especially Meta's systems (Instagram and Facebook), and how to maximize organic reach for African creators.
-
-BRIEF:
-- Topic/Content: ${topic}
-- Goal: ${goalLabel}
-- Platforms & Formats: ${platformDetails}
-- Tone: ${toneLabels}
-- Target Audience: ${audienceLabels}
-- Caption Length: ${lengthLabel}
-- Number of Variations per format: ${variations}
-${context ? `- Additional Context: ${context}` : ''}
-${brandVoice ? `- Brand Voice Notes: ${brandVoice}` : ''}
-${mentions ? `- Tags/Mentions to include: ${mentions}` : ''}
-${links ? `- Link(s) to include: ${links}` : ''}
-
-DELIVERABLES — For EACH platform and format combination, provide:
-
-1. CAPTION VARIATIONS (${variations} options, clearly numbered)
-   - Each variation optimized for that specific format's algorithm behavior
-   - ${includeEmojis ? 'Include strategic emojis.' : 'No emojis.'}
-   - ${includeCTA ? 'Include a clear Call to Action.' : 'No explicit CTA.'}
-   - ${includeHooks ? 'Open with a strong hook (first line must stop the scroll).' : ''}
-
-2. ${includeHashtags ? `HASHTAG STRATEGY
-   - 3–5 high-volume tags (1M+ posts)
-   - 3–5 mid-range tags (100K–1M posts)
-   - 3–5 niche tags (<100K, highly targeted)
-   - 2–3 branded/African-specific tags
-   - Total: 20–25 hashtags for maximum reach` : ''}
-
-3. ${includeTiming ? `OPTIMAL POSTING TIME
-   - Best day(s) for Nairobi / East Africa audience
-   - Best time window (include UTC+3 timezone)
-   - Frequency recommendation` : ''}
-
-4. PLATFORM-SPECIFIC TIPS (2–3 tactical notes per format)
-   - What the algorithm rewards for this specific format
-   - Any Meta-specific feature to leverage (Collab posts, Remix, Add Yours stickers, Polls, etc.)
-   - Engagement tactic to boost early interactions (critical in first 30 minutes)
-
-5. VISUAL DIRECTION (brief art direction note for the accompanying media)
-
-${selectedPlatforms.includes('facebook') ? `
-FACEBOOK-SPECIFIC: For all Facebook formats, also include:
-- Whether to boost as paid ad (yes/no + rationale)
-- Audience targeting suggestion for Facebook Ads Manager
-- Best Facebook placement (Feed, Reels, Stories, Marketplace)
-` : ''}
-
-${selectedPlatforms.includes('instagram') ? `
-INSTAGRAM-SPECIFIC: For all Instagram formats, also include:
-- Reel audio strategy (trending sound vs original audio)
-- Cover image/thumbnail direction
-- Story sequence (if story format selected): 3-frame story arc
-- Collab post opportunity (who to collab with + rationale)
-` : ''}
-
-Format your response with clear headers for each platform, then each format. Make every caption genuinely creative, specific to African creative culture, and ready to copy-paste. No generic filler.`;
-  };
-
-  const handleGenerate = async () => {
-    if (!canGenerate) return;
-
+  const handleGenerateCaptions = async () => {
+    if (!topic.trim()) {
+      addToast('Topic required', 'Tell Maven AI what you are posting about.', 'error');
+      return;
+    }
     setLoading(true);
-    setOutputs(null);
-
     try {
-      const response = await api.post('/api/ai/generate', {
+      const platformsDesc = selectedPlatforms
+        .map((pid) => {
+          const p = PLATFORMS.find((x) => x.id === pid);
+          const fmts = (selectedFormats[pid] || []).map((fid) => p?.formats.find((f) => f.id === fid)?.label || fid);
+          return `${p?.label}: ${fmts.join(', ')}`;
+        })
+        .join(' | ');
+
+      const prompt = `Persona: ${personaMeta.label}. Goal: ${goal}. Tones: ${tones.join(', ')}. Length: ${captionLength}. Variations: ${variations}. Include Hashtags: ${includeHashtags}. Include Timing: ${includeTiming}. Include Hooks: ${includeHooks}. Topic: ${topic}. Context: ${context}. Links: ${links}. Platforms & Formats: ${platformsDesc}`;
+
+      const res = await api.post('/api/ai/generate', {
         tool_id: 'social',
-        inputs: {
-          prompt_override: buildPrompt(),
-          platforms: selectedPlatforms,
-          formats: selectedFormats,
-          goal,
-          topic,
-        }
+        inputs: { topic, goal, tones, platforms: selectedPlatforms, formats: selectedFormats, prompt_override: prompt },
       });
 
-      setOutputs(response.data.content);
-      updateUser({ ...user, credits: response.data.credits_remaining });
-      addToast('Generated!', 'Your social content is ready.', 'success');
-      fetchStats();
-      fetchActivities();
-      setStep(2);
-    } catch (error) {
-      const message = error.response?.data?.detail || 'Generation failed.';
-      addToast('Generation failed', message, 'error');
+      const rawText = res.data?.output || res.data?.result || '';
+      const blocks = [];
+      selectedPlatforms.forEach((pid) => {
+        (selectedFormats[pid] || ['feed_post']).forEach((fid) => {
+          blocks.push({
+            platformId: pid,
+            formatId: fid,
+            content: rawText || `[${pid.toUpperCase()} · ${fid}]\n\n${topic}\n\n${context ? context + '\n' : ''}${links ? 'Link: ' + links + '\n' : ''}${includeHashtags ? '#Intermaven #TuneMavens #' + personaMeta.key : ''}`,
+          });
+        });
+      });
+
+      setOutputs({ raw: rawText, blocks });
+      if (res.data?.remaining_credits !== undefined && updateUser && user) {
+        updateUser({ ...user, credits: res.data.remaining_credits });
+      }
+      setWizardStep(3);
+      if (props.fetchStats) props.fetchStats();
+      if (props.fetchActivities) props.fetchActivities();
+    } catch (err) {
+      addToast('Generation failed', err.response?.data?.detail || 'Could not generate social copy', 'error');
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
-  const downloadAll = () => {
-    if (!outputs) return;
-    const blob = new Blob([outputs], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `social-content-${Date.now()}.txt`;
-    a.click();
-    URL.revokeObjectURL(url);
-    addToast('Downloaded!', '', 'success');
+  const handleScheduleFromOutput = async (platformId, formatId, content) => {
+    try {
+      const tomorrow = new Date(Date.now() + 86400000).toISOString().slice(0, 16);
+      await api.post('/api/social-ai/scheduled', {
+        platform: platformId,
+        format: formatId,
+        title: topic || `${platformId} campaign`,
+        caption: content.slice(0, 600),
+        scheduled_for: tomorrow,
+        persona: user?.persona || 'creator',
+      });
+      addToast('Scheduled!', `Added ${platformId} post to your Content Calendar.`, 'success');
+      await loadStudioData();
+    } catch (err) {
+      addToast('Schedule failed', err.response?.data?.detail || 'Could not schedule post', 'error');
+    }
   };
 
-  const copyAll = () => {
-    if (!outputs) return;
-    navigator.clipboard.writeText(outputs);
-    addToast('All content copied!', '', 'success');
+  const handleGenerateArt = async (e) => {
+    e.preventDefault();
+    if (!artPrompt.trim()) return;
+    setArtLoading(true);
+    try {
+      const res = await api.post('/api/social-ai/generate-art', {
+        prompt: `${artPrompt} (for ${personaMeta.label} social campaign)`,
+        aspect_ratio: aspectRatio,
+      });
+      setGeneratedArt(res.data?.asset || res.data);
+      addToast('Visual generated', 'Saved to your Social AI Asset Library.', 'success');
+      await loadStudioData();
+    } catch (err) {
+      addToast('Visual generation failed', err.response?.data?.detail || 'Try a different prompt', 'error');
+    } finally {
+      setArtLoading(false);
+    }
+  };
+
+  const handleCreateSchedule = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post('/api/social-ai/scheduled', { ...schedForm, persona: user?.persona || 'creator' });
+      addToast('Post scheduled', 'Added to Content Calendar.', 'success');
+      setSchedForm({ ...schedForm, title: '', caption: '' });
+      await loadStudioData();
+    } catch (err) {
+      addToast('Failed', err.response?.data?.detail || 'Could not schedule post', 'error');
+    }
+  };
+
+  const handleDeleteSchedule = async (id) => {
+    await api.delete(`/api/social-ai/scheduled/${id}`);
+    await loadStudioData();
+  };
+
+  const handleSaveStyle = async (e) => {
+    e.preventDefault();
+    if (!newStyleName.trim()) return;
+    try {
+      await api.post('/api/social-ai/styles', { name: newStyleName, prompt_suffix: newStylePrompt });
+      setNewStyleName('');
+      setNewStylePrompt('');
+      addToast('Style saved', 'Added to your Brand Style Presets.', 'success');
+      await loadStudioData();
+    } catch (err) {
+      addToast('Error', 'Could not save style', 'error');
+    }
+  };
+
+  const handleLoadRecommendations = async () => {
+    try {
+      const res = await api.post('/api/social-ai/recommendations', {
+        persona: user?.persona || 'creator',
+        goal,
+        platforms: selectedPlatforms,
+      });
+      setRecommendations(res.data?.recommendations || [res.data?.recommendation || 'Post 3x/week with short-form hooks and clear CTAs.']);
+    } catch {
+      setRecommendations([`For ${personaMeta.label}, post 3–4 short-form clips weekly and pair with Smart CRM email drops.`]);
+    }
   };
 
   return (
-    <div className="panel active tool-panel social-ai-panel" data-testid="tool-panel-social">
-
-      {/* Header */}
-      <div className="tool-header">
-        <span className="tool-icon">
-          <Share2 size={26} color="#f43f5e" />
-        </span>
-        <div className="tool-info">
-          <h2>Social AI</h2>
-          <p>Full-stack content engine — Meta, TikTok, X, LinkedIn, YouTube</p>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* Studio Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <FlatIcon name="social" size={42} />
+          <div>
+            <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: '#f8fafc' }}>Social AI Studio</h2>
+            <p style={{ margin: '2px 0 0', fontSize: '13px', color: '#94a3b8' }}>
+              7 Platforms · 23 Formats · AI Visuals · Content Calendar · Tailored for {personaMeta.label}
+            </p>
+          </div>
         </div>
-        <div className="tool-credits">
-          <Zap size={14} />
-          Free
-        </div>
+        <AppHelpAiControls appId="social" persona={user?.persona || 'creator'} compact />
       </div>
 
-      {/* Step tabs */}
-      <div className="social-steps">
-        <button
-          className={`social-step-btn ${step === 1 ? 'active' : ''}`}
-          onClick={() => setStep(1)}
-        >
-          <span className="social-step-num">1</span> Configure
-        </button>
-        <div className="social-step-divider" />
-        <button
-          className={`social-step-btn ${step === 2 ? 'active' : ''} ${!outputs ? 'disabled' : ''}`}
-          onClick={() => outputs && setStep(2)}
-        >
-          <span className="social-step-num">2</span> Output
-        </button>
+      {/* Supplementary Studio Menu */}
+      <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '12px' }}>
+        {[
+          { id: 'wizard', label: '1. Campaign Wizard' },
+          { id: 'visuals', label: '2. AI Visuals Studio' },
+          { id: 'calendar', label: `3. Content Calendar (${scheduledPosts.length})` },
+          { id: 'assets', label: `4. Assets & Styles (${assets.length})` },
+          { id: 'insights', label: '5. AI Recommendations' },
+        ].map((t) => {
+          const active = studioTab === t.id;
+          return (
+            <button
+              key={t.id}
+              type="button"
+              onClick={() => {
+                setStudioTab(t.id);
+                if (t.id === 'insights' && recommendations.length === 0) handleLoadRecommendations();
+              }}
+              style={{
+                padding: '8px 14px',
+                borderRadius: '8px',
+                border: active ? '1px solid #f43f5e' : '1px solid rgba(255,255,255,0.12)',
+                background: active ? 'rgba(244,63,94,0.16)' : 'rgba(255,255,255,0.04)',
+                color: active ? '#fda4af' : '#cbd5e1',
+                fontSize: '12px',
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              {t.label}
+            </button>
+          );
+        })}
       </div>
 
-      {step === 1 && (
-        <div className="social-configure">
+      {/* TAB 1: GUIDED 3-STEP WIZARD */}
+      {studioTab === 'wizard' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+          {/* Wizard Progress Bar */}
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            {[
+              { n: 1, title: 'Step 1: Platforms & Formats' },
+              { n: 2, title: 'Step 2: Goal, Tone & Topic' },
+              { n: 3, title: 'Step 3: Generated Posts & Schedule' },
+            ].map((s) => (
+              <button
+                key={s.n}
+                type="button"
+                onClick={() => setWizardStep(s.n)}
+                style={{
+                  flex: 1,
+                  minWidth: '180px',
+                  padding: '10px 14px',
+                  borderRadius: '10px',
+                  border: wizardStep === s.n ? '1px solid #22d3ee' : '1px solid rgba(255,255,255,0.08)',
+                  background: wizardStep === s.n ? 'rgba(34,211,238,0.12)' : 'rgba(13,17,23,0.6)',
+                  color: wizardStep === s.n ? '#67e8f9' : '#94a3b8',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  textAlign: 'left',
+                }}
+              >
+                {s.title}
+              </button>
+            ))}
+          </div>
 
-          {/* PLATFORM SELECTION */}
-          <Section title="Platforms" icon={Globe} defaultOpen={true}>
-            <p className="social-hint">Select all platforms you&apos;re posting to. Choose formats for each.</p>
-            <div className="social-platform-grid">
-              {PLATFORMS.map(plat => {
-                const PlatIcon = plat.icon;
-                const isSelected = selectedPlatforms.includes(plat.id);
-                return (
-                  <div key={plat.id} className={`social-platform-card ${isSelected ? 'active' : ''}`}>
-                    <div
-                      className="social-platform-header"
-                      onClick={() => togglePlatform(plat.id)}
-                    >
-                      <div className="social-platform-name">
-                        <PlatIcon size={15} style={{ color: plat.color }} />
-                        <span>{plat.label}</span>
-                      </div>
-                      <div className={`social-platform-toggle ${isSelected ? 'on' : ''}`} />
-                    </div>
-                    {isSelected && (
-                      <div className="social-format-list">
-                        {plat.formats.map(fmt => {
-                          const FmtIcon = fmt.icon;
-                          const isFmtSelected = (selectedFormats[plat.id] || []).includes(fmt.id);
-                          return (
-                            <button
-                              key={fmt.id}
-                              type="button"
-                              className={`social-format-btn ${isFmtSelected ? 'active' : ''}`}
-                              onClick={() => toggleFormat(plat.id, fmt.id)}
-                            >
-                              <FmtIcon size={12} />
-                              {fmt.label}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          </Section>
-
-          {/* CONTENT BRIEF */}
-          <Section title="Content Brief" icon={AlignLeft} defaultOpen={true}>
-            <div className="form-group">
-              <label className="form-label">What are you posting about? <span className="required">*</span></label>
-              <textarea
-                className="form-textarea"
-                placeholder="e.g. New single 'Golden Hour' dropping Friday — Afro-soul, features Savara, produced by Cedo. We want people streaming on Spotify and sharing the link."
-                value={topic}
-                onChange={e => setTopic(e.target.value)}
-                rows={3}
-              />
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Goal <span className="required">*</span></label>
-              <div className="social-goal-grid">
-                {CONTENT_GOALS.map(g => (
-                  <button
-                    key={g.id}
-                    type="button"
-                    className={`social-goal-btn ${goal === g.id ? 'active' : ''}`}
-                    onClick={() => setGoal(g.id)}
-                  >
-                    <span>{g.icon}</span>
-                    <span>{g.label}</span>
+          {wizardStep === 1 && (
+            <div style={{ background: 'rgba(13,17,23,0.85)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '16px', color: '#f8fafc' }}>Choose Platforms & Formats</h3>
+                  <p style={{ margin: '2px 0 0', fontSize: '12px', color: '#94a3b8' }}>Pick a 1-click preset or select individual platforms below.</p>
+                </div>
+                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                  <button type="button" onClick={() => applyPreset('persona')} style={{ padding: '6px 11px', borderRadius: '6px', border: '1px solid rgba(34,211,238,0.4)', background: 'rgba(34,211,238,0.12)', color: '#67e8f9', fontSize: '11px', fontWeight: 700, cursor: 'pointer' }}>
+                    Recommended for {personaMeta.shortLabel}
                   </button>
-                ))}
+                  <button type="button" onClick={() => applyPreset('meta')} style={{ padding: '6px 11px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}>
+                    Meta-Max (IG + FB + Threads)
+                  </button>
+                  <button type="button" onClick={() => applyPreset('video')} style={{ padding: '6px 11px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.14)', background: 'rgba(255,255,255,0.05)', color: '#e2e8f0', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}>
+                    Short-Form Video Pack
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <div className="form-group">
-              <label className="form-label">Additional context (optional)</label>
-              <textarea
-                className="form-textarea"
-                placeholder="Links, streaming URLs, ticket info, promo codes, collab details, visual description..."
-                value={context}
-                onChange={e => setContext(e.target.value)}
-                rows={2}
-              />
-            </div>
-          </Section>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(230px, 1fr))', gap: '12px' }}>
+                {PLATFORMS.map((p) => {
+                  const Icon = p.icon;
+                  const active = selectedPlatforms.includes(p.id);
+                  return (
+                    <div key={p.id} style={{ padding: '14px', borderRadius: '10px', border: active ? `1px solid ${p.color}` : '1px solid rgba(255,255,255,0.08)', background: active ? `${p.color}14` : 'rgba(255,255,255,0.02)' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px', cursor: 'pointer' }} onClick={() => togglePlatform(p.id)}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, fontSize: '14px', color: '#f8fafc' }}>
+                          <Icon size={16} color={p.color} /> {p.label}
+                        </div>
+                        <input type="checkbox" checked={active} readOnly />
+                      </div>
+                      {active && (
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+                          {p.formats.map((f) => {
+                            const fActive = (selectedFormats[p.id] || []).includes(f.id);
+                            return (
+                              <button
+                                key={f.id}
+                                type="button"
+                                onClick={() => toggleFormat(p.id, f.id)}
+                                style={{
+                                  padding: '4px 8px',
+                                  borderRadius: '999px',
+                                  fontSize: '11px',
+                                  border: fActive ? `1px solid ${p.color}` : '1px solid rgba(255,255,255,0.12)',
+                                  background: fActive ? `${p.color}28` : 'transparent',
+                                  color: fActive ? '#f8fafc' : '#94a3b8',
+                                  cursor: 'pointer',
+                                }}
+                              >
+                                {f.label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
 
-          {/* AUDIENCE & TONE */}
-          <Section title="Audience & Tone" icon={Target} defaultOpen={true}>
-            <div className="form-group">
-              <label className="form-label">Target Audience (select all that apply)</label>
-              <MultiSelect options={AUDIENCES} value={audiences} onChange={setAudiences} />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Tone (select up to 2)</label>
-              <MultiSelect options={TONES} value={tones} onChange={setTones} maxSelect={2} />
-            </div>
-          </Section>
-
-          {/* CONTENT SETTINGS */}
-          <Section title="Content Settings" icon={BarChart2} collapsible defaultOpen={true}>
-            <div className="social-settings-grid">
-              <div className="form-group">
-                <label className="form-label">Caption Length</label>
-                <select
-                  className="form-select"
-                  value={captionLength}
-                  onChange={e => setCaptionLength(e.target.value)}
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <button
+                  type="button"
+                  disabled={selectedPlatforms.length === 0}
+                  onClick={() => setWizardStep(2)}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '10px 18px', borderRadius: '8px', border: 'none', background: '#22d3ee', color: '#061224', fontWeight: 700, fontSize: '13px', cursor: 'pointer' }}
                 >
-                  {CAPTION_LENGTHS.map(l => (
-                    <option key={l.id} value={l.id}>{l.label}</option>
-                  ))}
-                </select>
-              </div>
-              <div className="form-group">
-                <label className="form-label">Variations per format</label>
-                <select
-                  className="form-select"
-                  value={variations}
-                  onChange={e => setVariations(e.target.value)}
-                >
-                  <option value="1">1 variation</option>
-                  <option value="2">2 variations</option>
-                  <option value="3">3 variations</option>
-                  <option value="5">5 variations</option>
-                </select>
+                  Next: Goal &amp; Topic <ArrowRight size={15} />
+                </button>
               </div>
             </div>
+          )}
 
-            <div className="social-toggles">
-              {[
-                { key: 'hashtags', label: 'Hashtag strategy', val: includeHashtags, set: setIncludeHashtags, icon: Hash },
-                { key: 'emojis', label: 'Include emojis', val: includeEmojis, set: setIncludeEmojis, icon: Heart },
-                { key: 'cta', label: 'Call to Action', val: includeCTA, set: setIncludeCTA, icon: Target },
-                { key: 'timing', label: 'Optimal posting time', val: includeTiming, set: setIncludeTiming, icon: Clock },
-                { key: 'hooks', label: 'Scroll-stopping hooks', val: includeHooks, set: setIncludeHooks, icon: TrendingUp },
-              ].map(({ key, label, val, set, icon: Icon }) => (
-                <div key={key} className="social-toggle-row">
-                  <div className="social-toggle-label">
-                    <Icon size={14} />
-                    <span>{label}</span>
-                  </div>
-                  <button
-                    type="button"
-                    className={`toggle-switch ${val ? 'on' : ''}`}
-                    onClick={() => set(v => !v)}
+          {wizardStep === 2 && (
+            <div style={{ background: 'rgba(13,17,23,0.85)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <h3 style={{ margin: 0, fontSize: '16px', color: '#f8fafc' }}>Campaign Goal, Tone &amp; Topic</h3>
+
+              <div>
+                <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '8px' }}>1. What is your goal?</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                  {CONTENT_GOALS.map((g) => {
+                    const active = goal === g.id;
+                    return (
+                      <button
+                        key={g.id}
+                        type="button"
+                        onClick={() => setGoal(g.id)}
+                        style={{
+                          padding: '7px 12px',
+                          borderRadius: '8px',
+                          fontSize: '12px',
+                          fontWeight: 600,
+                          border: active ? `1px solid ${g.accent}` : '1px solid rgba(255,255,255,0.12)',
+                          background: active ? `${g.accent}22` : 'rgba(255,255,255,0.03)',
+                          color: active ? '#f8fafc' : '#cbd5e1',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {g.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div>
+                <div style={{ fontSize: '12px', color: '#94a3b8', marginBottom: '8px' }}>2. Pick tone(s)</div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                  {TONES.map((t) => {
+                    const active = tones.includes(t.id);
+                    return (
+                      <button
+                        key={t.id}
+                        type="button"
+                        onClick={() => setTones(active ? tones.filter((x) => x !== t.id) : [...tones, t.id])}
+                        style={{
+                          padding: '6px 12px',
+                          borderRadius: '999px',
+                          fontSize: '12px',
+                          border: active ? '1px solid #f43f5e' : '1px solid rgba(255,255,255,0.12)',
+                          background: active ? 'rgba(244,63,94,0.18)' : 'transparent',
+                          color: active ? '#fda4af' : '#cbd5e1',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {t.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '12px' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', marginBottom: '6px' }}>Topic / Announcement *</label>
+                  <input
+                    value={topic}
+                    onChange={(e) => setTopic(e.target.value)}
+                    placeholder="e.g., New single 'Midnight Drifter' out Friday on all DSPs"
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.14)', background: '#161b22', color: '#fff' }}
                   />
                 </div>
-              ))}
-            </div>
-          </Section>
+                <div>
+                  <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', marginBottom: '6px' }}>Key Link / CTA URL</label>
+                  <input
+                    value={links}
+                    onChange={(e) => setLinks(e.target.value)}
+                    placeholder="https://intermaven.io/... or pre-save link"
+                    style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.14)', background: '#161b22', color: '#fff' }}
+                  />
+                </div>
+              </div>
 
-          {/* BRAND DETAILS */}
-          <Section title="Brand Details" icon={Users} collapsible defaultOpen={false}>
-            <div className="form-group">
-              <label className="form-label">Brand voice / style notes</label>
-              <input
-                type="text"
-                className="form-input"
-                placeholder="e.g. We always say 'the culture' not 'the community'. Never use corporate speak."
-                value={brandVoice}
-                onChange={e => setBrandVoice(e.target.value)}
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Tags & mentions to include</label>
-              <input
-                type="text"
-                className="form-input"
-                placeholder="e.g. @savara @cedoproducer @universalmusicafrica"
-                value={mentions}
-                onChange={e => setMentions(e.target.value)}
-              />
-            </div>
-            <div className="form-group">
-              <label className="form-label">Links to include</label>
-              <input
-                type="text"
-                className="form-input"
-                placeholder="e.g. Spotify link, Ticketsasa, linktr.ee"
-                value={links}
-                onChange={e => setLinks(e.target.value)}
-              />
-            </div>
-          </Section>
+              <div>
+                <label style={{ display: 'block', fontSize: '12px', color: '#94a3b8', marginBottom: '6px' }}>Extra Context / Offer Details</label>
+                <textarea
+                  rows={3}
+                  value={context}
+                  onChange={(e) => setContext(e.target.value)}
+                  placeholder="Add release story, event venue, discount code, or target audience notes..."
+                  style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.14)', background: '#161b22', color: '#fff' }}
+                />
+              </div>
 
-          {/* GENERATE */}
-          <div className="social-generate-bar">
-            {!canGenerate && (
-              <p className="social-generate-hint">
-                {!topic.trim() && '· Add your topic  '}
-                {!goal && '· Select a goal  '}
-                {selectedPlatforms.length === 0 && '· Choose at least one platform  '}
-                {selectedPlatforms.length > 0 && !allFormatsSelected() && '· Select format(s) for each platform'}
-              </p>
-            )}
-            <button
-              className="btn btn-primary social-generate-btn"
-              onClick={handleGenerate}
-              disabled={loading || !canGenerate}
-              data-testid="generate-button"
-            >
-              {loading ? (
-                <><span className="spinner" /> Generating...</>
+              <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', fontSize: '12px', color: '#cbd5e1' }}>
+                <label><input type="checkbox" checked={includeHashtags} onChange={(e) => setIncludeHashtags(e.target.checked)} /> Include Hashtag Strategy</label>
+                <label><input type="checkbox" checked={includeHooks} onChange={(e) => setIncludeHooks(e.target.checked)} /> Include Scroll-Stopping Hooks</label>
+                <label><input type="checkbox" checked={includeTiming} onChange={(e) => setIncludeTiming(e.target.checked)} /> Include Best Posting Times</label>
+                <select value={captionLength} onChange={(e) => setCaptionLength(e.target.value)} style={{ background: '#161b22', color: '#fff', border: '1px solid rgba(255,255,255,0.14)', borderRadius: '6px', padding: '3px 8px' }}>
+                  <option value="short">Short &amp; Punchy</option>
+                  <option value="medium">Medium</option>
+                  <option value="long">Long Storytelling</option>
+                </select>
+                <select value={variations} onChange={(e) => setVariations(e.target.value)} style={{ background: '#161b22', color: '#fff', border: '1px solid rgba(255,255,255,0.14)', borderRadius: '6px', padding: '3px 8px' }}>
+                  <option value="1">1 Variation</option>
+                  <option value="3">3 Variations</option>
+                  <option value="5">5 Variations</option>
+                </select>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: '10px' }}>
+                <button type="button" onClick={() => setWizardStep(1)} style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '10px 14px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.14)', background: 'transparent', color: '#cbd5e1', cursor: 'pointer' }}>
+                  <ArrowLeft size={15} /> Back
+                </button>
+                <button
+                  type="button"
+                  disabled={loading}
+                  onClick={handleGenerateCaptions}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '8px', border: 'none', background: 'linear-gradient(135deg, #f43f5e, #a855f7)', color: '#fff', fontWeight: 700, fontSize: '13px', cursor: 'pointer' }}
+                >
+                  <Zap size={15} /> {loading ? 'Generating with Maven AI...' : 'Generate Campaign Copy'}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {wizardStep === 3 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
+                <h3 style={{ margin: 0, fontSize: '16px', color: '#f8fafc' }}>Generated Campaign Copy</h3>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button type="button" onClick={() => setWizardStep(2)} style={{ padding: '7px 12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.14)', background: 'transparent', color: '#cbd5e1', fontSize: '12px', cursor: 'pointer' }}>
+                    ← Edit Prompt
+                  </button>
+                  {outputs?.raw && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const blob = new Blob([outputs.raw], { type: 'text/plain' });
+                        const a = document.createElement('a');
+                        a.href = URL.createObjectURL(blob);
+                        a.download = `social-ai-${Date.now()}.txt`;
+                        a.click();
+                      }}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '7px 12px', borderRadius: '8px', border: 'none', background: '#10b981', color: '#061224', fontWeight: 700, fontSize: '12px', cursor: 'pointer' }}
+                    >
+                      <Download size={13} /> Export .txt
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {!outputs ? (
+                <div style={{ padding: '32px', textAlign: 'center', background: 'rgba(13,17,23,0.85)', borderRadius: '12px', color: '#94a3b8' }}>
+                  Complete Steps 1 and 2 to generate tailored social copy.
+                </div>
               ) : (
-                <><Sparkles size={16} /> Generate Content</>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '14px' }}>
+                  {outputs.blocks.map((b, i) => (
+                    <SocialOutputBlock
+                      key={i}
+                      platformId={b.platformId}
+                      formatId={b.formatId}
+                      content={b.content}
+                      onCopy={() => addToast('Copied', 'Caption copied to clipboard.', 'success')}
+                      onSchedule={handleScheduleFromOutput}
+                    />
+                  ))}
+                </div>
               )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* TAB 2: AI VISUALS STUDIO */}
+      {studioTab === 'visuals' && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '18px' }}>
+          <form onSubmit={handleGenerateArt} style={{ background: 'rgba(13,17,23,0.85)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <h3 style={{ margin: 0, fontSize: '16px', color: '#f8fafc' }}>Generate Campaign Artwork</h3>
+            <textarea required rows={4} placeholder="Describe the visual (e.g., Neon Nairobi rooftop DJ set at dusk, afrofuturist cyan & magenta lighting)..." value={artPrompt} onChange={(e) => setArtPrompt(e.target.value)} style={{ padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.14)', background: '#161b22', color: '#fff' }} />
+            <select value={aspectRatio} onChange={(e) => setAspectRatio(e.target.value)} style={{ padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.14)', background: '#161b22', color: '#fff' }}>
+              <option value="1:1">1:1 Square (Instagram Feed)</option>
+              <option value="9:16">9:16 Vertical (Reels / TikTok / Shorts)</option>
+              <option value="16:9">16:9 Landscape (YouTube / LinkedIn)</option>
+            </select>
+            <button type="submit" disabled={artLoading} style={{ padding: '10px 16px', borderRadius: '8px', border: 'none', background: '#a855f7', color: '#fff', fontWeight: 700, cursor: 'pointer' }}>
+              {artLoading ? 'Generating Visual...' : 'Generate Visual'}
             </button>
+          </form>
+
+          <div style={{ background: 'rgba(13,17,23,0.85)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px', padding: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '240px' }}>
+            {generatedArt?.media_url ? (
+              <img src={generatedArt.media_url} alt={generatedArt.prompt} style={{ maxWidth: '100%', maxHeight: '320px', borderRadius: '10px' }} />
+            ) : (
+              <span style={{ color: '#64748b', fontSize: '13px' }}>Your generated campaign artwork will appear here.</span>
+            )}
           </div>
         </div>
       )}
 
-      {step === 2 && outputs && (
-        <div className="social-output">
-          <div className="social-output-toolbar">
-            <div className="social-output-meta">
-              <span className="social-output-badge">
-                {selectedPlatforms.length} platform{selectedPlatforms.length > 1 ? 's' : ''}
-              </span>
-              <span className="social-output-badge">
-                {Object.values(selectedFormats).flat().length} format{Object.values(selectedFormats).flat().length > 1 ? 's' : ''}
-              </span>
-              <span className="social-output-badge">
-                {variations} variation{variations > 1 ? 's' : ''} each
-              </span>
-            </div>
-            <div className="social-output-actions">
-              <button className="btn btn-secondary btn-sm" onClick={() => setStep(1)}>
-                <RefreshCw size={13} /> Edit Brief
-              </button>
-              <button className="btn btn-secondary btn-sm" onClick={copyAll}>
-                <Copy size={13} /> Copy All
-              </button>
-              <button className="btn btn-secondary btn-sm" onClick={downloadAll}>
-                <Download size={13} /> Download
-              </button>
-            </div>
+      {/* TAB 3: CONTENT CALENDAR / SCHEDULER */}
+      {studioTab === 'calendar' && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '18px' }}>
+          <form onSubmit={handleCreateSchedule} style={{ background: 'rgba(13,17,23,0.85)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <h3 style={{ margin: 0, fontSize: '16px', color: '#f8fafc' }}>Schedule a Post</h3>
+            <select value={schedForm.platform} onChange={(e) => setSchedForm({ ...schedForm, platform: e.target.value })} style={{ padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.14)', background: '#161b22', color: '#fff' }}>
+              {PLATFORMS.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
+            </select>
+            <input required placeholder="Campaign Title" value={schedForm.title} onChange={(e) => setSchedForm({ ...schedForm, title: e.target.value })} style={{ padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.14)', background: '#161b22', color: '#fff' }} />
+            <textarea required rows={3} placeholder="Post Caption..." value={schedForm.caption} onChange={(e) => setSchedForm({ ...schedForm, caption: e.target.value })} style={{ padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.14)', background: '#161b22', color: '#fff' }} />
+            <input type="datetime-local" value={schedForm.scheduled_for} onChange={(e) => setSchedForm({ ...schedForm, scheduled_for: e.target.value })} style={{ padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.14)', background: '#161b22', color: '#fff' }} />
+            <button type="submit" style={{ padding: '10px 16px', borderRadius: '8px', border: 'none', background: '#22d3ee', color: '#061224', fontWeight: 700, cursor: 'pointer' }}>Add to Calendar</button>
+          </form>
+
+          <div style={{ background: 'rgba(13,17,23,0.85)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <h3 style={{ margin: 0, fontSize: '16px', color: '#f8fafc' }}>Upcoming Scheduled Posts</h3>
+            {scheduledPosts.length === 0 ? (
+              <p style={{ color: '#94a3b8', fontSize: '13px' }}>No posts scheduled yet.</p>
+            ) : (
+              scheduledPosts.map((p) => (
+                <div key={p.id} style={{ padding: '12px', borderRadius: '10px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'space-between', gap: '10px' }}>
+                  <div>
+                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#f8fafc' }}>{p.title}</div>
+                    <div style={{ fontSize: '11px', color: '#22d3ee', textTransform: 'uppercase' }}>{p.platform} · {p.scheduled_for}</div>
+                    <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>{p.caption?.slice(0, 120)}</div>
+                  </div>
+                  <button type="button" onClick={() => handleDeleteSchedule(p.id)} style={{ background: 'none', border: 'none', color: '#f87171', cursor: 'pointer' }}><Trash2 size={15} /></button>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: ASSETS & STYLE PRESETS */}
+      {studioTab === 'assets' && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '18px' }}>
+          <div style={{ background: 'rgba(13,17,23,0.85)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px', padding: '20px' }}>
+            <h3 style={{ margin: '0 0 12px', fontSize: '16px', color: '#f8fafc' }}>Saved Visual Assets ({assets.length})</h3>
+            {assets.length === 0 ? (
+              <p style={{ color: '#94a3b8', fontSize: '13px' }}>Generate visuals in Tab 2 to populate your library.</p>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '10px' }}>
+                {assets.map((a) => (
+                  <div key={a.id || a._id} style={{ borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.08)' }}>
+                    <img src={a.media_url} alt={a.prompt} style={{ width: '100%', height: '100px', objectFit: 'cover' }} />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
-          <div className="social-output-content" data-testid="tool-output">
-            <pre className="social-output-full">{outputs}</pre>
+          <form onSubmit={handleSaveStyle} style={{ background: 'rgba(13,17,23,0.85)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <h3 style={{ margin: 0, fontSize: '16px', color: '#f8fafc' }}>Brand Style Presets ({styles.length})</h3>
+            <input required placeholder="Style Name (e.g., Afro-Futurist Neon)" value={newStyleName} onChange={(e) => setNewStyleName(e.target.value)} style={{ padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.14)', background: '#161b22', color: '#fff' }} />
+            <input placeholder="Prompt Modifiers / Color Palette" value={newStylePrompt} onChange={(e) => setNewStylePrompt(e.target.value)} style={{ padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.14)', background: '#161b22', color: '#fff' }} />
+            <button type="submit" style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '10px', borderRadius: '8px', border: 'none', background: '#10b981', color: '#061224', fontWeight: 700, cursor: 'pointer' }}>
+              <Plus size={14} /> Save Style Preset
+            </button>
+          </form>
+        </div>
+      )}
+
+      {/* TAB 5: AI RECOMMENDATIONS */}
+      {studioTab === 'insights' && (
+        <div style={{ background: 'rgba(13,17,23,0.85)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px', padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3 style={{ margin: 0, fontSize: '16px', color: '#f8fafc' }}>Smart Recommendations for {personaMeta.label}</h3>
+            <button type="button" onClick={handleLoadRecommendations} style={{ padding: '6px 12px', borderRadius: '6px', border: '1px solid rgba(34,211,238,0.4)', background: 'rgba(34,211,238,0.12)', color: '#67e8f9', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}>
+              Refresh
+            </button>
           </div>
+          {recommendations.map((rec, i) => (
+            <div key={i} style={{ padding: '12px 14px', borderRadius: '10px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', color: '#cbd5e1', fontSize: '13px', lineHeight: 1.5 }}>
+              <Sparkles size={14} color="#22d3ee" style={{ marginRight: '8px', verticalAlign: 'middle' }} />
+              {typeof rec === 'string' ? rec : rec.text || rec.title || JSON.stringify(rec)}
+            </div>
+          ))}
         </div>
       )}
     </div>
   );
 }
-
-export default SocialAI;

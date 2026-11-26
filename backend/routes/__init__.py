@@ -22,6 +22,7 @@ from .hosting import router as hosting_router
 from .crm_smart import router as crm_smart_router
 from .personas import router as personas_router
 from .support import router as support_router
+from .social_ai import router as social_ai_router
 
 __all__ = [
     "auth_router",
@@ -49,4 +50,5 @@ __all__ = [
     "hosting_router",
     "personas_router",
     "support_router",
+    "social_ai_router",
 ]

@@ -135,19 +135,23 @@ export const HELP_ARTICLES = [
   {
     slug: 'social-ai-guide',
     appId: 'social',
-    appTitle: 'Social AI',
+    appTitle: 'Social AI Studio',
     category: 'AI Tools',
-    readTime: '4 min read',
-    title: 'Automating Multi-Platform Social Campaigns with Social AI',
-    summary: 'Draft platform-specific captions, hashtags, and content calendars for releases, launches, and events.',
-    content: `Social AI helps creators, founders, and agencies maintain consistent momentum across Instagram, TikTok, X, and LinkedIn.
+    readTime: '5 min read',
+    title: 'Using Social AI Studio: 3-Step Wizard, AI Visuals & Content Calendar',
+    summary: 'Generate multi-platform copy across 7 platforms & 23 formats, create AI campaign artwork, and schedule posts to your Content Calendar.',
+    content: `Social AI Studio combines a guided 3-step Campaign Wizard with AI Visuals, a Content Calendar, and Brand Style Presets.
 
-1. Pick Your Goal & Persona: Select a product launch, music release, or event promo.
-2. Generate Captions & Hooks: Get platform-tailored copy and hashtag sets in seconds.
-3. Schedule & Track: Queue posts and coordinate with your Smart CRM email drops.`,
+1. Guided 3-Step Campaign Wizard:
+   - Step 1 (Platforms & Formats): Pick from 7 platforms (Instagram, Facebook, Threads, TikTok, X, LinkedIn, YouTube) and 23 formats, or apply 1-click presets ("Recommended for My Persona", "Meta-Max", "Short-Form Video Pack").
+   - Step 2 (Goal, Tone & Topic): Choose your campaign goal, tone(s), hooks, hashtags, and best posting times.
+   - Step 3 (Output & Schedule): Copy individual platform blocks, export .txt, or click Schedule to send directly to your Content Calendar.
+2. AI Visuals Studio & Style Presets: Generate 1:1, 9:16, or 16:9 campaign artwork and save reusable brand style presets.
+3. Content Calendar & Recommendations: Manage scheduled posts and get persona-specific growth recommendations.`,
     suggestedQuestions: [
-      'How do I generate captions for multiple platforms at once?',
-      'Can Social AI adapt tone for business vs music personas?',
+      'How do the 1-click Persona & Meta-Max presets work in Social AI?',
+      'How do I schedule generated posts to the Content Calendar?',
+      'How do I generate campaign artwork and save Brand Style Presets?',
     ],
   },
   {
