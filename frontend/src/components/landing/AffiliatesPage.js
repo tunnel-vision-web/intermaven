@@ -4,6 +4,7 @@ import { useRegion } from '../../RegionContext';
 import Navbar from './Navbar';
 import Netbar from './Netbar';
 import Footer from './Footer';
+import PageHeader from './PageHeader';
 import SEO from '../SEO';
 import FlatIcon from '../FlatIcon';
 import { Copy, Check, ArrowRight, Sparkles, Users, DollarSign } from 'lucide-react';
@@ -79,138 +80,123 @@ export default function AffiliatesPage({ onOpenAuth, onOpenSignIn }) {
       <Netbar portal="business" />
       <Navbar onOpenAuth={onOpenAuth} onOpenSignIn={onOpenSignIn} portal="business" />
 
-      <main style={{ maxWidth: '1140px', margin: '0 auto', padding: '56px 24px 80px', color: '#e2e8f0' }}>
-        {/* Hero */}
-        <div style={{ textAlign: 'center', marginBottom: '44px' }}>
-          <span style={{ display: 'inline-block', padding: '5px 14px', borderRadius: '999px', background: 'rgba(34,211,238,0.14)', border: '1px solid rgba(34,211,238,0.35)', color: '#67e8f9', fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '14px' }}>
-            Intermaven &amp; TuneMavens Partner Network · 90-Day Attribution
-          </span>
-          <h1 style={{ fontSize: 'clamp(1.75rem, 3.2vw, 2.5rem)', fontWeight: 800, color: '#f8fafc', margin: '0 0 12px', lineHeight: 1.15 }}>
-            Turn Your Network Into Recurring Revenue
-          </h1>
-          <p style={{ fontSize: '16px', color: '#94a3b8', maxWidth: '700px', margin: '0 auto 24px', lineHeight: 1.6 }}>
-            Earn 3% to 12% revenue share across Intermaven, TuneMavens, TuneStream, and SyncMavens — with direct M-Pesa mobile money and global card/bank payouts.
-          </p>
-        </div>
+      <PageHeader
+        pageKey="pricing"
+        portal="business"
+        breadcrumb="Intermaven › Community › Affiliate Program"
+        title="Turn Your Network Into Recurring Revenue"
+        subtitle="Earn 3% to 12% revenue share across Intermaven, TuneMavens, TuneStream, and SyncMavens — with 90-day attribution, M-Pesa mobile money, and global payouts."
+      />
 
-        {/* My Affiliate Dashboard (if enrolled) */}
-        {myAffiliate && (
-          <div style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.35)', borderRadius: '16px', padding: '24px', marginBottom: '36px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <FlatIcon name="invoicing" size={34} />
-                <div>
-                  <div style={{ fontSize: '12px', color: '#34d399', fontWeight: 700, textTransform: 'uppercase' }}>Active Partner · {myAffiliate.tier || 'Tier 1'}</div>
-                  <h2 style={{ margin: 0, fontSize: '18px', color: '#f8fafc' }}>Code: {myAffiliate.ref_code}</h2>
+      <main style={{ padding: '44px 0 72px' }}>
+        <div className="cn" style={{ display: 'flex', flexDirection: 'column', gap: '36px' }}>
+          {/* Active Partner Dashboard */}
+          {myAffiliate && (
+            <div style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.35)', borderRadius: 'var(--r)', padding: '24px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <FlatIcon name="invoicing" size={34} />
+                  <div>
+                    <div style={{ fontSize: '12px', color: '#34d399', fontWeight: 700, textTransform: 'uppercase' }}>Active Partner · {myAffiliate.tier || 'Tier 1'}</div>
+                    <h2 style={{ margin: 0, fontSize: '18px', color: 'var(--tx)' }}>Code: {myAffiliate.ref_code}</h2>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="hbp"
+                  onClick={() => {
+                    navigator.clipboard.writeText(referralUrl);
+                    setCopiedRef(true);
+                    setTimeout(() => setCopiedRef(false), 1800);
+                  }}
+                >
+                  {copiedRef ? <Check size={14} /> : <Copy size={14} />}
+                  {copiedRef ? 'Link Copied!' : 'Copy Referral Link'}
+                </button>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '12px' }}>
+                <div style={{ background: 'var(--ca)', border: '1px solid var(--b1)', padding: '14px', borderRadius: 'var(--r)' }}>
+                  <div style={{ fontSize: '11px', color: 'var(--mu)' }}>Total Clicks</div>
+                  <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--a2)' }}>{myAffiliate.clicks || 0}</div>
+                </div>
+                <div style={{ background: 'var(--ca)', border: '1px solid var(--b1)', padding: '14px', borderRadius: 'var(--r)' }}>
+                  <div style={{ fontSize: '11px', color: 'var(--mu)' }}>Onboarded Users</div>
+                  <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--gr)' }}>{myAffiliate.conversions || 0}</div>
+                </div>
+                <div style={{ background: 'var(--ca)', border: '1px solid var(--b1)', padding: '14px', borderRadius: 'var(--r)' }}>
+                  <div style={{ fontSize: '11px', color: 'var(--mu)' }}>Available Earnings</div>
+                  <div style={{ fontSize: '22px', fontWeight: 800, color: 'var(--am)' }}>${(myAffiliate.balance_usd || 0).toFixed(2)}</div>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={() => {
-                  navigator.clipboard.writeText(referralUrl);
-                  setCopiedRef(true);
-                  setTimeout(() => setCopiedRef(false), 1800);
-                }}
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '9px 16px', borderRadius: '8px', border: 'none', background: '#10b981', color: '#061224', fontWeight: 700, fontSize: '13px', cursor: 'pointer' }}
-              >
-                {copiedRef ? <Check size={14} /> : <Copy size={14} />}
-                {copiedRef ? 'Link Copied!' : 'Copy Referral Link'}
+            </div>
+          )}
+
+          {/* Calculator + Partner Form */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(310px, 1fr))', gap: '24px' }}>
+            <div style={{ background: 'var(--ca)', border: '1px solid var(--b1)', borderRadius: 'var(--r)', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <h3 style={{ margin: 0, fontSize: '18px', color: 'var(--tx)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <DollarSign size={18} color="#22d3ee" /> Earnings Estimator
+              </h3>
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '6px' }}>
+                  <span>Monthly Referrals</span>
+                  <strong style={{ color: 'var(--a2)' }}>{monthlyReferrals} users/mo</strong>
+                </div>
+                <input type="range" min={5} max={250} value={monthlyReferrals} onChange={(e) => setMonthlyReferrals(Number(e.target.value))} style={{ width: '100%' }} />
+              </div>
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '6px' }}>
+                  <span>Avg. Monthly Platform Spend</span>
+                  <strong style={{ color: 'var(--gr)' }}>${avgSpendUsd}/mo</strong>
+                </div>
+                <input type="range" min={10} max={200} value={avgSpendUsd} onChange={(e) => setAvgSpendUsd(Number(e.target.value))} style={{ width: '100%' }} />
+              </div>
+              <div style={{ marginTop: 'auto', padding: '18px', borderRadius: 'var(--r)', background: 'rgba(34,211,238,0.08)', border: '1px solid rgba(34,211,238,0.25)', textAlign: 'center' }}>
+                <div style={{ fontSize: '12px', color: 'var(--mu)' }}>Estimated Recurring Monthly Payout (10% avg)</div>
+                <div style={{ fontSize: '30px', fontWeight: 800, color: 'var(--a2)', marginTop: '4px' }}>${estimatedMonthly.toLocaleString()}/mo</div>
+              </div>
+            </div>
+
+            <form onSubmit={handleApply} style={{ background: 'var(--ca)', border: '1px solid var(--b1)', borderRadius: 'var(--r)', padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <h3 style={{ margin: 0, fontSize: '18px', color: 'var(--tx)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Users size={18} color="#10b981" /> Become an Affiliate Partner
+              </h3>
+              <input required className="form-input" placeholder="Full Name" value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} />
+              <input required type="email" className="form-input" placeholder="Email Address" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
+              <input className="form-input" placeholder="Phone (M-Pesa / WhatsApp)" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+              <select className="form-input" value={form.payout_method} onChange={(e) => setForm({ ...form, payout_method: e.target.value })} style={{ background: '#0d1117', color: '#e6edf3' }}>
+                <option value="mpesa">M-Pesa Mobile Money</option>
+                <option value="pesapal">PesaPal / Bank</option>
+                <option value="stripe">Card / Stripe Connect</option>
+              </select>
+              <button type="submit" disabled={submitting} className="hbp" style={{ justifyContent: 'center' }}>
+                {submitting ? 'Submitting...' : 'Activate Partner Link'} <ArrowRight size={15} />
               </button>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '12px' }}>
-              <div style={{ background: 'rgba(13,17,23,0.8)', padding: '14px', borderRadius: '10px' }}>
-                <div style={{ fontSize: '11px', color: '#94a3b8' }}>Total Clicks</div>
-                <div style={{ fontSize: '22px', fontWeight: 800, color: '#22d3ee' }}>{myAffiliate.clicks || 0}</div>
-              </div>
-              <div style={{ background: 'rgba(13,17,23,0.8)', padding: '14px', borderRadius: '10px' }}>
-                <div style={{ fontSize: '11px', color: '#94a3b8' }}>Onboarded Users</div>
-                <div style={{ fontSize: '22px', fontWeight: 800, color: '#10b981' }}>{myAffiliate.conversions || 0}</div>
-              </div>
-              <div style={{ background: 'rgba(13,17,23,0.8)', padding: '14px', borderRadius: '10px' }}>
-                <div style={{ fontSize: '11px', color: '#94a3b8' }}>Available Earnings</div>
-                <div style={{ fontSize: '22px', fontWeight: 800, color: '#f59e0b' }}>${(myAffiliate.balance_usd || 0).toFixed(2)}</div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Earnings Calculator + Application Form */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(310px, 1fr))', gap: '24px', marginBottom: '44px' }}>
-          {/* Calculator */}
-          <div style={{ background: 'rgba(13,17,23,0.85)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <h3 style={{ margin: 0, fontSize: '18px', color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <DollarSign size={18} color="#22d3ee" /> Earnings Estimator
-            </h3>
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '6px' }}>
-                <span>Monthly Referrals</span>
-                <strong style={{ color: '#22d3ee' }}>{monthlyReferrals} users/mo</strong>
-              </div>
-              <input type="range" min={5} max={250} value={monthlyReferrals} onChange={(e) => setMonthlyReferrals(Number(e.target.value))} style={{ width: '100%' }} />
-            </div>
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '6px' }}>
-                <span>Avg. Monthly Platform Spend</span>
-                <strong style={{ color: '#10b981' }}>${avgSpendUsd}/mo</strong>
-              </div>
-              <input type="range" min={10} max={200} value={avgSpendUsd} onChange={(e) => setAvgSpendUsd(Number(e.target.value))} style={{ width: '100%' }} />
-            </div>
-            <div style={{ marginTop: 'auto', padding: '18px', borderRadius: '12px', background: 'rgba(34,211,238,0.08)', border: '1px solid rgba(34,211,238,0.25)', textAlign: 'center' }}>
-              <div style={{ fontSize: '12px', color: '#94a3b8' }}>Estimated Recurring Monthly Payout (10% avg)</div>
-              <div style={{ fontSize: '32px', fontWeight: 800, color: '#22d3ee', marginTop: '4px' }}>${estimatedMonthly.toLocaleString()}/mo</div>
-            </div>
+            </form>
           </div>
 
-          {/* Application Form */}
-          <form onSubmit={handleApply} style={{ background: 'rgba(13,17,23,0.85)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <h3 style={{ margin: 0, fontSize: '18px', color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Users size={18} color="#10b981" /> Become an Affiliate Partner
-            </h3>
-            <input required placeholder="Full Name" value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} style={{ padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.14)', background: '#161b22', color: '#fff' }} />
-            <input required type="email" placeholder="Email Address" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} style={{ padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.14)', background: '#161b22', color: '#fff' }} />
-            <input placeholder="Phone (M-Pesa / WhatsApp)" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} style={{ padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.14)', background: '#161b22', color: '#fff' }} />
-            <select value={form.payout_method} onChange={(e) => setForm({ ...form, payout_method: e.target.value })} style={{ padding: '10px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.14)', background: '#161b22', color: '#fff' }}>
-              <option value="mpesa">M-Pesa Mobile Money</option>
-              <option value="pesapal">PesaPal / Bank</option>
-              <option value="stripe">Card / Stripe Connect</option>
-            </select>
-            <button type="submit" disabled={submitting} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', borderRadius: '8px', border: 'none', background: '#22d3ee', color: '#061224', fontWeight: 800, fontSize: '14px', cursor: 'pointer' }}>
-              {submitting ? 'Submitting...' : 'Activate Partner Link'} <ArrowRight size={15} />
-            </button>
-          </form>
-        </div>
-
-        {/* Commission Matrix */}
-        <div style={{ background: 'rgba(13,17,23,0.85)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', padding: '24px' }}>
-          <h3 style={{ margin: '0 0 14px', fontSize: '18px', color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Sparkles size={18} color="#f59e0b" /> Ecosystem Commission Matrix (Synced with TuneMavens)
-          </h3>
-          {matrix.length === 0 ? (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
-              {[
+          {/* Commission Matrix */}
+          <div style={{ background: 'var(--ca)', border: '1px solid var(--b1)', borderRadius: 'var(--r)', padding: '24px' }}>
+            <div className="sl2" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Sparkles size={18} color="#f59e0b" /> Ecosystem Commission Matrix (Synced with TuneMavens)
+            </div>
+            <div className="apg">
+              {(matrix.length > 0 ? matrix : [
                 { name: 'Creator & Label Onboarding', rate: '10% Recurring', desc: 'Subscription & distro packages' },
                 { name: 'TuneStream & Merch Sales', rate: '5% - 8%', desc: 'Lossless streams, tips & tickets' },
                 { name: 'Sync & Enterprise Deals', rate: '12% Bounty', desc: 'Supervisor & corporate placements' },
                 { name: 'Smart CRM Reachout Leads', rate: '90-Day Cookie', desc: 'Full-funnel attribution tracking' },
-              ].map((m, i) => (
-                <div key={i} style={{ padding: '14px', borderRadius: '10px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                  <div style={{ fontSize: '12px', color: '#22d3ee', fontWeight: 700 }}>{m.rate}</div>
-                  <div style={{ fontSize: '14px', fontWeight: 700, color: '#f8fafc', marginTop: '4px' }}>{m.name}</div>
-                  <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>{m.desc}</div>
+              ]).map((m, i) => (
+                <div key={i} className="apc">
+                  <div style={{ fontSize: '12px', color: 'var(--a2)', fontWeight: 700, marginBottom: '6px' }}>
+                    {m.rate || (m.commission_pct ? `${m.commission_pct}%` : 'Active')}
+                  </div>
+                  <h3>{m.label || m.category || m.name}</h3>
+                  <p>{m.description || m.notes || m.desc || 'Synced ecosystem rate'}</p>
                 </div>
               ))}
             </div>
-          ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px' }}>
-              {matrix.map((m, i) => (
-                <div key={i} style={{ padding: '14px', borderRadius: '10px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
-                  <div style={{ fontSize: '12px', color: '#22d3ee', fontWeight: 700 }}>{m.rate || m.commission_pct ? `${m.commission_pct}%` : 'Active'}</div>
-                  <div style={{ fontSize: '14px', fontWeight: 700, color: '#f8fafc', marginTop: '4px' }}>{m.label || m.category || m.name}</div>
-                  <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>{m.description || m.notes || 'Synced ecosystem rate'}</div>
-                </div>
-              ))}
-            </div>
-          )}
+          </div>
         </div>
       </main>
 
