@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../App';
 import { INTERMAVEN_LOGO } from '../imageRegistry';
 import {
@@ -12,11 +12,11 @@ import {
 
 // Recommended Dimensions Mapping
 const RECOMMENDED_DIMENSIONS = {
-  hero: { dims: '1920 × 1080 px', aspect: '16:9 HD', format: 'JPG / WEBP', desc: 'Hero carousel background image' },
-  headers: { dims: '1920 × 600 px', aspect: '3.2:1 Banner', format: 'JPG / WEBP', desc: 'Top page header banner graphic' },
-  logos: { dims: '400 × 120 px', aspect: 'Transparent', format: 'PNG / SVG', desc: 'Primary site brand logo' },
-  icons: { dims: '512 × 512 px', aspect: '1:1 Square', format: 'PNG / SVG', desc: 'Application & tool icon asset' },
-  'site-assets': { dims: '1200 × 800 px', aspect: '3:2 Ratio', format: 'JPG / PNG', desc: 'General site media asset' }
+  hero: { dims: '1920 Ã— 1080 px', aspect: '16:9 HD', format: 'JPG / WEBP', desc: 'Hero carousel background image' },
+  headers: { dims: '1920 Ã— 600 px', aspect: '3.2:1 Banner', format: 'JPG / WEBP', desc: 'Top page header banner graphic' },
+  logos: { dims: '400 Ã— 120 px', aspect: 'Transparent', format: 'PNG / SVG', desc: 'Primary site brand logo' },
+  icons: { dims: '512 Ã— 512 px', aspect: '1:1 Square', format: 'PNG / SVG', desc: 'Application & tool icon asset' },
+  'site-assets': { dims: '1200 Ã— 800 px', aspect: '3:2 Ratio', format: 'JPG / PNG', desc: 'General site media asset' }
 };
 
 // Structure of Site Pages & Sections
@@ -24,14 +24,14 @@ const SITE_PAGES = [
   {
     id: 'homepage',
     name: 'Homepage & Hero Carousel',
-    icon: '🏠',
+    icon: 'ðŸ ',
     description: 'Edit all 4 Hero Carousel slides, background images, titles, and buttons',
     sections: [
       {
         id: 'hero_slide_1',
         name: 'Slide 1 (Hero Main)',
         keys: [
-          { id: 'homepage.hero.slide1.badge', label: 'Slide 1 Top Badge', type: 'text', default: 'Now live — AI tools for Africa & Beyond' },
+          { id: 'homepage.hero.slide1.badge', label: 'Slide 1 Top Badge', type: 'text', default: 'Now live â€” AI tools for Africa & Beyond' },
           { id: 'homepage.hero.slide1.title', label: 'Slide 1 Headline Title (HTML enabled)', type: 'richtext', default: 'Build your brand.<br/><em style="color:#c084fc">Grow your career.</em>' },
           { id: 'homepage.hero.slide1.subtitle', label: 'Slide 1 Subtitle Paragraph', type: 'richtext', default: 'Intermaven gives musicians, creators, and entrepreneurs the AI tools to brand, market, and scale.' },
           { id: 'homepage.hero.slide1.b1', label: 'Primary Button Label', type: 'text', default: 'Try AI tools free' },
@@ -47,7 +47,7 @@ const SITE_PAGES = [
         keys: [
           { id: 'homepage.hero.slide2.badge', label: 'Slide 2 Top Badge', type: 'text', default: 'For musicians & artists' },
           { id: 'homepage.hero.slide2.title', label: 'Slide 2 Headline Title', type: 'richtext', default: 'Your music.<br/><em style="color:#22d3ee">The world\'s stage.</em>' },
-          { id: 'homepage.hero.slide2.subtitle', label: 'Slide 2 Subtitle Paragraph', type: 'richtext', default: 'From a polished press kit to a Hollywood sync pitch — our AI tools help creators break through globally.' },
+          { id: 'homepage.hero.slide2.subtitle', label: 'Slide 2 Subtitle Paragraph', type: 'richtext', default: 'From a polished press kit to a Hollywood sync pitch â€” our AI tools help creators break through globally.' },
           { id: 'homepage.hero.slide2.b1', label: 'Primary Button Label', type: 'text', default: 'Write my press kit' },
           { id: 'homepage.hero.slide2.b1link', label: 'Primary Button Link', type: 'text', default: '/tools' },
           { id: 'homepage.hero.slide2.b2', label: 'Secondary Button Label', type: 'text', default: 'See all apps' },
@@ -61,7 +61,7 @@ const SITE_PAGES = [
         keys: [
           { id: 'homepage.hero.slide3.badge', label: 'Slide 3 Top Badge', type: 'text', default: 'For creative brands & SMEs' },
           { id: 'homepage.hero.slide3.title', label: 'Slide 3 Headline Title', type: 'richtext', default: 'Brand it right.<br/><em style="color:#f59e0b">From day one.</em>' },
-          { id: 'homepage.hero.slide3.subtitle', label: 'Slide 3 Subtitle Paragraph', type: 'richtext', default: 'Whether you are an artist, studio, or business owner — generate your full brand kit in seconds.' },
+          { id: 'homepage.hero.slide3.subtitle', label: 'Slide 3 Subtitle Paragraph', type: 'richtext', default: 'Whether you are an artist, studio, or business owner â€” generate your full brand kit in seconds.' },
           { id: 'homepage.hero.slide3.b1', label: 'Primary Button Label', type: 'text', default: 'Generate brand kit' },
           { id: 'homepage.hero.slide3.b1link', label: 'Primary Button Link', type: 'text', default: '/tools' },
           { id: 'homepage.hero.slide3.b2', label: 'Secondary Button Label', type: 'text', default: 'Explore apps' },
@@ -97,7 +97,7 @@ const SITE_PAGES = [
   {
     id: 'about',
     name: 'About Page',
-    icon: 'ℹ️',
+    icon: 'â„¹ï¸',
     description: 'Company story, mission, hours, and contact details',
     sections: [
       {
@@ -117,7 +117,7 @@ const SITE_PAGES = [
           { id: 'about.email_label', label: 'Email Card Label', type: 'text', default: 'EMAIL US' },
           { id: 'about.email', label: 'Primary Contact Email', type: 'text', default: 'hello@intermaven.io' },
           { id: 'about.phone_label', label: 'Phone Card Label', type: 'text', default: 'WHATSAPP / PHONE' },
-          { id: 'about.business_hours', label: 'Business Hours Line', type: 'text', default: 'Mon–Fri, 9am–5pm EAT' },
+          { id: 'about.business_hours', label: 'Business Hours Line', type: 'text', default: 'Monâ€“Fri, 9amâ€“5pm EAT' },
           { id: 'about.based_in', label: 'Based In Location Line', type: 'text', default: 'Nairobi, Kenya' }
         ]
       }
@@ -126,7 +126,7 @@ const SITE_PAGES = [
   {
     id: 'tools',
     name: 'AI Tools Page',
-    icon: '🛠️',
+    icon: 'ðŸ› ï¸',
     description: 'AI Creative Studio headlines, tool cards, and CTAs',
     sections: [
       {
@@ -135,7 +135,7 @@ const SITE_PAGES = [
         keys: [
           { id: 'tools.header', label: 'Tools Page Main Title', type: 'text', default: 'AI Creative Studio' },
           { id: 'tools.subtitle', label: 'Tools Page Subtitle', type: 'richtext', default: 'Generate brand and music assets powered by AI' },
-          { id: 'tools.cta', label: 'CTA Button Text', type: 'text', default: 'Start free →' },
+          { id: 'tools.cta', label: 'CTA Button Text', type: 'text', default: 'Start free â†’' },
           { id: 'tools.cta_desc', label: 'CTA Description Note', type: 'richtext', default: 'Create a free account to access all AI tools with 150 free credits. No credit card required.' }
         ]
       }
@@ -144,7 +144,7 @@ const SITE_PAGES = [
   {
     id: 'apps',
     name: 'Apps Marketplace Page',
-    icon: '📱',
+    icon: 'ðŸ“±',
     description: 'App Marketplace titles and category descriptions',
     sections: [
       {
@@ -160,7 +160,7 @@ const SITE_PAGES = [
   {
     id: 'pricing',
     name: 'Pricing & Payments',
-    icon: '💳',
+    icon: 'ðŸ’³',
     description: 'Plans, pricing headlines, and payment callouts',
     sections: [
       {
@@ -170,7 +170,7 @@ const SITE_PAGES = [
           { id: 'pricing.header', label: 'Pricing Page Header Title', type: 'text', default: 'Simple, Transparent Pricing' },
           { id: 'pricing.subtitle', label: 'Pricing Page Subtitle', type: 'richtext', default: 'Choose the plan that fits your stage of growth. Upgrade or downgrade anytime.' },
           { id: 'pricing.callout.title', label: 'Payment Callout Banner Title', type: 'text', default: 'Pay instantly with M-Pesa' },
-          { id: 'pricing.callout.body', label: 'Payment Callout Body', type: 'richtext', default: 'Send to Paybill 522900. Credits load the moment your payment confirms — no waiting, no approval.' },
+          { id: 'pricing.callout.body', label: 'Payment Callout Body', type: 'richtext', default: 'Send to Paybill 522900. Credits load the moment your payment confirms â€” no waiting, no approval.' },
           { id: 'pricing.payment_methods', label: 'Supported Payment Methods', type: 'text', default: 'M-Pesa, Visa, Mastercard, PayPal' }
         ]
       }
@@ -179,14 +179,14 @@ const SITE_PAGES = [
   {
     id: 'header_footer',
     name: 'Header & Footer',
-    icon: '⚓',
+    icon: 'âš“',
     description: 'Global site address, support phone, tagline, and social links',
     sections: [
       {
         id: 'footer_info',
         name: 'Footer Contact & Copyright',
         keys: [
-          { id: 'footer.tagline', label: 'Footer Tagline', type: 'text', default: 'Made with ❤ in Nairobi' },
+          { id: 'footer.tagline', label: 'Footer Tagline', type: 'text', default: 'Made with â¤ in Nairobi' },
           { id: 'footer.contact.phone', label: 'Support Phone Number', type: 'text', default: '+254 700 000 000' },
           { id: 'footer.contact.address', label: 'Postal Address', type: 'text', default: 'Nairobi, Kenya' }
         ]
@@ -206,7 +206,7 @@ const SITE_PAGES = [
   {
     id: 'help_forum',
     name: 'Help & Community',
-    icon: '❓',
+    icon: 'â“',
     description: 'Help Center and Community Forum titles and support links',
     sections: [
       {
@@ -263,7 +263,7 @@ const tbBtnStyle = {
   fontWeight: 'bold'
 };
 
-// ── Interactive Live Hero Carousel Preview Component ────────────────
+// â”€â”€ Interactive Live Hero Carousel Preview Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function LiveHeroPreview({ slideNum, slideData, activePortal }) {
   const bgImg = slideData.image || `/images/hero/intermaven/hero-${slideNum}.jpg`;
 
@@ -284,11 +284,11 @@ function LiveHeroPreview({ slideNum, slideData, activePortal }) {
       marginBottom: '20px'
     }}>
       <div style={{ position: 'absolute', top: '12px', right: '12px', display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(16, 185, 129, 0.4)', borderRadius: '4px', padding: '3px 8px', fontSize: '10px', fontWeight: 'bold', color: '#10b981' }}>
-        <Eye size={12} /> LIVE PREVIEW (SLIDE {slideNum} · {activePortal.toUpperCase()})
+        <Eye size={12} /> LIVE PREVIEW (SLIDE {slideNum} Â· {activePortal.toUpperCase()})
       </div>
 
       <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '20px', padding: '3px 10px', fontSize: '11px', fontWeight: 'bold', color: '#10b981', width: 'fit-content', marginBottom: '10px' }}>
-        <span>●</span> {slideData.badge || 'Now live'}
+        <span>â—</span> {slideData.badge || 'Now live'}
       </div>
 
       <h3
@@ -302,7 +302,7 @@ function LiveHeroPreview({ slideNum, slideData, activePortal }) {
 
       <div style={{ display: 'flex', gap: '10px' }}>
         <span style={{ padding: '8px 16px', background: '#10b981', color: '#000000', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}>
-          {slideData.b1 || 'Primary CTA'} →
+          {slideData.b1 || 'Primary CTA'} â†’
         </span>
         <span style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: '#ffffff', borderRadius: '4px', fontSize: '12px', fontWeight: '600' }}>
           {slideData.b2 || 'Secondary CTA'}
@@ -590,7 +590,7 @@ function CMSEditor() {
   const getSlidePreviewData = (num) => {
     const prefix = `homepage.hero.slide${num}`;
     return {
-      badge: getResolvedValue(`${prefix}.badge`, 'Now live — AI tools'),
+      badge: getResolvedValue(`${prefix}.badge`, 'Now live â€” AI tools'),
       title: getResolvedValue(`${prefix}.title`, 'Build your brand.<br/><em style="color:#c084fc">Grow your career.</em>'),
       subtitle: getResolvedValue(`${prefix}.subtitle`, 'Intermaven gives musicians and creatives AI tools to brand and scale.'),
       b1: getResolvedValue(`${prefix}.b1`, 'Try AI tools free'),
@@ -611,7 +611,7 @@ function CMSEditor() {
       {/* Hidden File Input for Image Replacement */}
       <input type="file" ref={replaceFileInputRef} accept="image/*" onChange={handleReplaceAssetFile} style={{ display: 'none' }} />
 
-      {/* ── TOP HEADER BAR WITH OFFICIAL LOGO & PORTAL SWITCHER ────────────────── */}
+      {/* â”€â”€ TOP HEADER BAR WITH OFFICIAL LOGO & PORTAL SWITCHER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       <div style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(59, 130, 246, 0.1))', border: '1px solid rgba(16, 185, 129, 0.25)', borderRadius: '8px', padding: '16px 20px', marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <img src={INTERMAVEN_LOGO} alt="Intermaven Logo" style={{ height: '36px', objectFit: 'contain' }} />
@@ -628,10 +628,10 @@ function CMSEditor() {
         {/* Portal Selector Pills */}
         <div style={{ display: 'flex', gap: '6px', background: 'rgba(0,0,0,0.4)', padding: '4px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)' }}>
           {[
-            { id: 'global', label: '🌐 Global / Default' },
-            { id: 'business', label: '💼 Business' },
-            { id: 'music', label: '🎵 Music (TuneMavens)' },
-            { id: 'hospitality', label: '🏨 Hospitality' },
+            { id: 'global', label: 'ðŸŒ Global / Default' },
+            { id: 'business', label: 'ðŸ’¼ Business' },
+            { id: 'music', label: 'ðŸŽµ Music (TuneMavens)' },
+            { id: 'hospitality', label: 'ðŸ¨ Hospitality' },
           ].map(p => (
             <button
               key={p.id}
@@ -662,12 +662,12 @@ function CMSEditor() {
             style={{ padding: '6px 12px', background: '#12131a', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '4px', color: '#ffffff', fontSize: '12px', fontWeight: 'bold', outline: 'none' }}
           >
             <option value="DEFAULT">Global (Fallback)</option>
-            <option value="US">🇺🇸 United States (US)</option>
-            <option value="KE">🇰🇪 Kenya (KE)</option>
-            <option value="GB">🇬🇧 United Kingdom (GB)</option>
-            <option value="CA">🇨🇦 Canada (CA)</option>
-            <option value="NG">🇳🇬 Nigeria (NG)</option>
-            <option value="ZA">🇿🇦 South Africa (ZA)</option>
+            <option value="US">ðŸ‡ºðŸ‡¸ United States (US)</option>
+            <option value="KE">ðŸ‡°ðŸ‡ª Kenya (KE)</option>
+            <option value="GB">ðŸ‡¬ðŸ‡§ United Kingdom (GB)</option>
+            <option value="CA">ðŸ‡¨ðŸ‡¦ Canada (CA)</option>
+            <option value="NG">ðŸ‡³ðŸ‡¬ Nigeria (NG)</option>
+            <option value="ZA">ðŸ‡¿ðŸ‡¦ South Africa (ZA)</option>
           </select>
         </div>
       </div>
@@ -685,7 +685,7 @@ function CMSEditor() {
         </div>
       )}
 
-      {/* ── MAIN WORKSPACE GRID: LEFT PAGE TREE SIDEBAR + RIGHT CONTENT EDITOR ──── */}
+      {/* â”€â”€ MAIN WORKSPACE GRID: LEFT PAGE TREE SIDEBAR + RIGHT CONTENT EDITOR â”€â”€â”€â”€ */}
       <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '24px' }}>
 
         {/* LEFT COLUMN: PAGE NAVIGATION TREE */}
@@ -1000,10 +1000,10 @@ function CMSEditor() {
                 <div style={{ display: 'flex', gap: '6px' }}>
                   {[
                     { id: 'all', label: 'All Assets' },
-                    { id: 'hero', label: '🖼️ Hero Backgrounds' },
-                    { id: 'headers', label: '🌄 Page Banners' },
-                    { id: 'logos', label: '✨ Logos' },
-                    { id: 'icons', label: '🧩 App Icons' }
+                    { id: 'hero', label: 'ðŸ–¼ï¸ Hero Backgrounds' },
+                    { id: 'headers', label: 'ðŸŒ„ Page Banners' },
+                    { id: 'logos', label: 'âœ¨ Logos' },
+                    { id: 'icons', label: 'ðŸ§© App Icons' }
                   ].map(cat => (
                     <button
                       key={cat.id}
@@ -1140,7 +1140,7 @@ function CMSEditor() {
         </div>
       </div>
 
-      {/* ── ✨ ASK AI COPYWRITER MODAL ────────────────────────────────────────── */}
+      {/* â”€â”€ âœ¨ ASK AI COPYWRITER MODAL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {aiModalOpen && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
           <div style={{ background: '#12131a', border: '1px solid #a855f7', borderRadius: '10px', width: '560px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', boxShadow: '0 0 30px rgba(168, 85, 247, 0.3)' }}>
@@ -1148,7 +1148,7 @@ function CMSEditor() {
               <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 'bold', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Sparkles size={18} style={{ color: '#c084fc' }} /> Ask AI Copywriter & Assistant
               </h3>
-              <button onClick={() => setAiModalOpen(false)} style={{ background: 'none', border: 'none', color: '#9096b8', fontSize: '16px', cursor: 'pointer' }}>✕</button>
+              <button onClick={() => setAiModalOpen(false)} style={{ background: 'none', border: 'none', color: '#9096b8', fontSize: '16px', cursor: 'pointer' }}>âœ•</button>
             </div>
 
             <div style={{ fontSize: '12px', color: '#cbd5e1' }}>
@@ -1160,10 +1160,10 @@ function CMSEditor() {
               <label style={{ fontSize: '11px', fontWeight: 'bold', color: '#9096b8', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Select Copywriting Style</label>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
                 {[
-                  { id: 'hype', label: '🚀 Hype & High-Conversion', desc: 'Energetic for creators & artists' },
-                  { id: 'professional', label: '💼 Professional & Enterprise', desc: 'Polished for business owners' },
-                  { id: 'concise', label: '🎯 Concise & Punchy', desc: 'Shorten & refine existing copy' },
-                  { id: 'kenya', label: '🌍 Nairobi & African Context', desc: 'Tailored for East Africa market' },
+                  { id: 'hype', label: 'ðŸš€ Hype & High-Conversion', desc: 'Energetic for creators & artists' },
+                  { id: 'professional', label: 'ðŸ’¼ Professional & Enterprise', desc: 'Polished for business owners' },
+                  { id: 'concise', label: 'ðŸŽ¯ Concise & Punchy', desc: 'Shorten & refine existing copy' },
+                  { id: 'kenya', label: 'ðŸŒ Nairobi & African Context', desc: 'Tailored for East Africa market' },
                 ].map(t => (
                   <button
                     key={t.id}
@@ -1239,13 +1239,13 @@ function CMSEditor() {
         </div>
       )}
 
-      {/* ── MEDIA PICKER MODAL ────────────────────────────────────────────── */}
+      {/* â”€â”€ MEDIA PICKER MODAL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {mediaPickerOpen && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
           <div style={{ background: '#12131a', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', width: '680px', maxHeight: '80vh', overflowY: 'auto', padding: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 'bold', color: '#ffffff' }}>Select Asset from Site Media Catalog</h3>
-              <button onClick={() => setMediaPickerOpen(false)} style={{ background: 'none', border: 'none', color: '#9096b8', fontSize: '16px', cursor: 'pointer' }}>✕</button>
+              <button onClick={() => setMediaPickerOpen(false)} style={{ background: 'none', border: 'none', color: '#9096b8', fontSize: '16px', cursor: 'pointer' }}>âœ•</button>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
@@ -1266,13 +1266,13 @@ function CMSEditor() {
         </div>
       )}
 
-      {/* ── HISTORIC ROLLBACK MODAL ────────────────────────────────────────── */}
+      {/* â”€â”€ HISTORIC ROLLBACK MODAL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
       {historyOpen && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
           <div style={{ background: '#12131a', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', width: '500px', maxHeight: '80vh', overflowY: 'auto', padding: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 'bold', color: '#ffffff' }}>Revision History ({focusedKeyId})</h3>
-              <button onClick={() => setHistoryOpen(false)} style={{ background: 'none', border: 'none', color: '#9096b8', fontSize: '16px', cursor: 'pointer' }}>✕</button>
+              <button onClick={() => setHistoryOpen(false)} style={{ background: 'none', border: 'none', color: '#9096b8', fontSize: '16px', cursor: 'pointer' }}>âœ•</button>
             </div>
 
             {historyList.length === 0 ? (
@@ -1303,3 +1303,4 @@ function CMSEditor() {
 }
 
 export default CMSEditor;
+

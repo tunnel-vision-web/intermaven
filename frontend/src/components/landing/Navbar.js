@@ -11,6 +11,8 @@ function Navbar({ onOpenAuth, onOpenSignIn, portal = 'music', onToast }) {
   const currentPath = location.pathname;
   const [communityOpen, setCommunityOpen] = useState(false);
   const communityTimer = useRef(null);
+  const [aboutOpen, setAboutOpen] = useState(false);
+  const aboutTimer = useRef(null);
 
   const openCommunity = () => {
     if (communityTimer.current) clearTimeout(communityTimer.current);
@@ -19,6 +21,14 @@ function Navbar({ onOpenAuth, onOpenSignIn, portal = 'music', onToast }) {
   const closeCommunity = () => {
     if (communityTimer.current) clearTimeout(communityTimer.current);
     communityTimer.current = setTimeout(() => setCommunityOpen(false), 220);
+  };
+  const openAbout = () => {
+    if (aboutTimer.current) clearTimeout(aboutTimer.current);
+    setAboutOpen(true);
+  };
+  const closeAbout = () => {
+    if (aboutTimer.current) clearTimeout(aboutTimer.current);
+    aboutTimer.current = setTimeout(() => setAboutOpen(false), 220);
   };
   const [logoLoaded, setLogoLoaded] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -47,7 +57,8 @@ function Navbar({ onOpenAuth, onOpenSignIn, portal = 'music', onToast }) {
     { to: '/tools', label: 'AI Tools' },
     { to: '/apps', label: 'Apps' },
     { to: '/pricing', label: 'Pricing' },
-    { to: '/about', label: 'About' },
+    { to: '/about', label: 'About Us' },
+    { to: '/for', label: 'Perfect For' },
   ];
 
   return (
@@ -139,13 +150,41 @@ function Navbar({ onOpenAuth, onOpenSignIn, portal = 'music', onToast }) {
               )}
             </div>
 
-            <Link 
-              to="/about" 
-              className={`nl ${isActive('/about') ? 'on' : ''}`}
+            {/* About Dropdown */}
+            <div
+              className="nav-dropdown"
+              onMouseEnter={openAbout}
+              onMouseLeave={closeAbout}
               data-testid="nav-about"
             >
-              About
-            </Link>
+              <button
+                type="button"
+                onClick={() => setAboutOpen((o) => !o)}
+                className={`nl nav-dropdown-trigger ${isActive('/about') || isActive('/for') || isActive('/perfect-for') ? 'on' : ''}`}
+              >
+                About <ChevronDown size={14} className={`dropdown-chevron ${aboutOpen ? 'open' : ''}`} />
+              </button>
+              {aboutOpen && (
+                <div className="nav-dropdown-menu" data-testid="about-dropdown">
+                  <Link
+                    to="/about"
+                    className="nav-dropdown-item"
+                    data-testid="nav-about-us"
+                    onClick={() => setAboutOpen(false)}
+                  >
+                    About Us
+                  </Link>
+                  <Link
+                    to="/for"
+                    className="nav-dropdown-item"
+                    data-testid="nav-perfect-for"
+                    onClick={() => setAboutOpen(false)}
+                  >
+                    Perfect For
+                  </Link>
+                </div>
+              )}
+            </div>
             <RegionSwitcher />
             {user ? (
               <Link to="/dashboard" className="ncta" data-testid="nav-dashboard">

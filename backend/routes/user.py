@@ -32,6 +32,28 @@ async def update_profile(update_data: UserUpdate, current_user: dict = Depends(g
     return UserResponse(**serialize_user(updated_user))
 
 
+class PersonaUpdate(BaseModel):
+    persona: str
+    secondary_personas: list[str] | None = None
+    portal: str | None = None
+
+
+@router.put("/persona", response_model=UserResponse)
+async def update_persona(data: PersonaUpdate, current_user: dict = Depends(get_current_user)):
+    creative_personas = {"creator", "label", "supervisor", "dj", "podcaster", "media-house", "consumer"}
+    inferred_portal = data.portal or ("music" if data.persona in creative_personas else "business")
+    update_fields = {
+        "persona": data.persona,
+        "role": data.persona,
+        "portal": inferred_portal,
+    }
+    if data.secondary_personas is not None:
+        update_fields["secondary_personas"] = data.secondary_personas
+    db.users.update_one({"_id": current_user["_id"]}, {"$set": update_fields})
+    updated_user = db.users.find_one({"_id": current_user["_id"]})
+    return UserResponse(**serialize_user(updated_user))
+
+
 @router.post("/apps/toggle", response_model=UserResponse)
 async def toggle_app(app_data: AppToggle, current_user: dict = Depends(get_current_user)):
     apps = current_user.get("apps", [])

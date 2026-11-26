@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+﻿from datetime import datetime, timezone
 from typing import Optional, List
 from bson import ObjectId
 
@@ -123,12 +123,12 @@ def generate_ai_ticket_response(subject: str, message: str, category: str) -> st
 
 **Common solutions:**
 - Credits are added instantly after payment confirmation
-- Check your transaction history in Dashboard → Settings → Billing
+- Check your transaction history in Dashboard â†’ Settings â†’ Billing
 - If payment failed, try again or use a different payment method
 
 I'll investigate your specific case and respond within 24 hours via your preferred channel. If this is urgent, please reply with "URGENT" and I'll escalate immediately.
 
-— Ayo, AI Support"""
+â€” Maven, AI Support"""
 
     if category == "technical" or any(word in message_lower for word in ['error', 'bug', 'broken', 'not working', "doesn't work", 'issue']):
         return """I see you're experiencing a technical issue. Let me help troubleshoot.
@@ -146,7 +146,7 @@ Please share:
 
 I'm analyzing the system logs now and will follow up shortly.
 
-— Ayo, AI Support"""
+â€” Maven, AI Support"""
 
     if category == "ai-tools" or any(word in message_lower for word in ['brand kit', 'music bio', 'social ai', 'sync pitch', 'generate']):
         return """Thanks for your question about our AI tools!
@@ -165,7 +165,7 @@ I'm analyzing the system logs now and will follow up shortly.
 
 Let me know which specific tool you need help with, and I'll provide detailed guidance.
 
-— Ayo, AI Support"""
+â€” Maven, AI Support"""
 
     return """Thank you for contacting Intermaven support. I've received your message and am reviewing it now.
 
@@ -177,7 +177,7 @@ In the meantime, you might find answers in:
 - Our Help Center: /help
 - Community Forum: /forum
 
-— Ayo, AI Support"""
+â€” Maven, AI Support"""
 
 
 @router.post("/api/support/tickets")
@@ -457,3 +457,4 @@ async def get_forum_post(slug: str):
     if isinstance(post.get("created_at"), datetime):
         post["created_at"] = post["created_at"].isoformat()
     return post
+

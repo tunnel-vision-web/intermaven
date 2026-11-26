@@ -1,10 +1,11 @@
 import PageHeader from './PageHeader';
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { ALL_APPS } from './AppInfoModal';
 import BetaSignupCard, { BETA_APPS } from './BetaSignupCard';
 import { FlatIcon } from '../FlatIcon';
 
-const LIVE_APPS = ['brandkit', 'musicbio', 'syncpitch', 'social', 'bizpitch'];
+const LIVE_APPS = ['smartcrm', 'brandkit', 'social', 'musicbio', 'syncpitch', 'distro'];
 
 const APP_PAGE_COPY = {
   default: {
@@ -34,7 +35,8 @@ const APP_PAGE_COPY = {
   }
 };
 
-function AppsPage({ portal = 'music', subdomainPage = null, onOpenAppModal, onToast }) {
+function AppsPage({ portal = 'music', subdomainPage = null, onOpenAppModal, onOpenAuth, onToast }) {
+  const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState('all');
   const pageCopy = APP_PAGE_COPY[subdomainPage] || APP_PAGE_COPY.default;
 
@@ -47,7 +49,7 @@ function AppsPage({ portal = 'music', subdomainPage = null, onOpenAppModal, onTo
   const filteredApps = portalApps.filter(app => {
     if (activeFilter === 'all') return true;
     if (activeFilter === 'live') return LIVE_APPS.includes(app.id);
-    if (activeFilter === 'ai') return ['brandkit', 'musicbio', 'syncpitch', 'social', 'bizpitch'].includes(app.id);
+    if (activeFilter === 'ai') return ['smartcrm', 'brandkit', 'musicbio', 'syncpitch', 'social'].includes(app.id);
     if (activeFilter === 'music') return app.p === 'music' || app.p === 'both';
     if (activeFilter === 'business') return app.p === 'business' || app.p === 'both';
     if (activeFilter === 'brand') return ['brandkit'].includes(app.id);
@@ -158,9 +160,25 @@ function AppsPage({ portal = 'music', subdomainPage = null, onOpenAppModal, onTo
                   </div>
                   <h3>{app.n}</h3>
                   <p>{app.d}</p>
-                  <button className="apa">
-                    {isLive ? 'Open app' : 'Learn more'} →
-                  </button>
+                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: 'auto' }} onClick={(e) => e.stopPropagation()}>
+                    {app.page ? (
+                      <Link to={app.page} className="apa" style={{ textDecoration: 'none' }}>
+                        Learn more →
+                      </Link>
+                    ) : (
+                      <button type="button" className="apa" onClick={() => onOpenAppModal(app.id)}>
+                        {isLive ? 'Open app' : 'Learn more'} →
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      className="apa"
+                      style={{ color: '#22d3ee' }}
+                      onClick={() => (onOpenAuth ? onOpenAuth(app.id) : navigate('/auth?mode=register'))}
+                    >
+                      Start free →
+                    </button>
+                  </div>
                 </div>
               );
             })}

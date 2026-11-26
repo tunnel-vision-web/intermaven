@@ -51,17 +51,17 @@ const APP_INFO = {
     ],
     credits: 'Free to use • Credits only required for advanced features'
   },
-  bizpitch: {
-    badge: 'Free • 18 credits per run',
-    badgeCol: 'rgba(139,92,246,.2)',
-    badgeTx: '#a78bfa',
-    pitch: 'Pitch Deck AI writes your problem statement, solution copy, market opportunity, traction framing, and call to action — calibrated for the East African investment landscape.',
+  smartcrm: {
+    badge: 'Live • Free Beta Credits',
+    badgeCol: 'rgba(59,130,246,.2)',
+    badgeTx: '#60a5fa',
+    pitch: 'Smart CRM & Reachout is your single source of truth with TuneMavens — build email-only target groups, import CSVs, preview HTML campaigns, and track full-funnel attribution.',
     steps: [
-      { n: '1', t: 'Describe your business', d: 'Name, sector, problem you solve, and who you are pitching to.', c: 'var(--btn)' },
-      { n: '2', t: 'Select your audience', d: 'Angel investor, bank, government grant, corporate partner, or accelerator.', c: 'var(--a2)' },
-      { n: '3', t: 'Get 5 slide sections', d: 'Problem, solution, market opportunity, traction, and call to action.', c: 'var(--gr)' }
+      { n: '1', t: 'Build email-only target groups', d: 'Paste contacts or import CSVs with automatic email validation and deduplication.', c: 'var(--btn)' },
+      { n: '2', t: 'Preview persona-adaptive emails', d: 'Tailor campaign copy for Creators, Labels, Founders, Merchants, or Sponsors.', c: 'var(--a2)' },
+      { n: '3', t: 'Dispatch & track attribution', d: 'Monitor sent, opened, clicked, and replied metrics across Intermaven & TuneMavens.', c: 'var(--gr)' }
     ],
-    credits: '18 credits per run • Included in all plans'
+    credits: 'Included in Free Beta Credits • Live Sync with TuneMavens'
   },
   pos: {
     badge: 'Coming soon',
@@ -102,14 +102,14 @@ const APP_INFO = {
 };
 
 const ALL_APPS = [
-  { id: 'brandkit', n: 'Brand Kit AI', icon: 'brandkit', col: '#10b981', d: 'Brand names, taglines, tone of voice', p: 'both' },
-  { id: 'musicbio', n: 'Music Bio & Press Kit', icon: 'musicbio', col: '#22d3ee', d: 'Artist bios and press materials', p: 'music' },
-  { id: 'syncpitch', n: 'Sync Pitch AI', icon: 'syncpitch', col: '#f59e0b', d: 'Film, TV and advertising pitches', p: 'music' },
-  { id: 'social', n: 'Social AI', icon: 'social', col: '#f43f5e', d: 'Multi-platform social management', p: 'both' },
-  { id: 'bizpitch', n: 'Pitch Deck AI', icon: 'pitchdeck', col: '#8b5cf6', d: 'Investor and grant pitch decks', p: 'business' },
-  { id: 'pos', n: 'Intermaven POS', icon: 'pos', col: '#0e9499', d: 'M-Pesa native point of sale', p: 'business' },
+  { id: 'smartcrm', n: 'Smart CRM & Reachout', icon: 'crm', col: '#3b82f6', d: 'Email target groups, persona playbooks & tracked reachout', p: 'both', page: '/smartcrm' },
+  { id: 'brandkit', n: 'Brand Kit AI', icon: 'brandkit', col: '#10b981', d: 'Brand names, taglines, tone of voice', p: 'both', page: '/brandkit' },
+  { id: 'social', n: 'Social AI', icon: 'social', col: '#f43f5e', d: 'Multi-platform social management', p: 'both', page: '/social' },
+  { id: 'musicbio', n: 'Music Bio & Press Kit', icon: 'musicbio', col: '#22d3ee', d: 'Artist bios and press materials', p: 'music', page: '/musicbio' },
+  { id: 'syncpitch', n: 'Sync Pitch AI', icon: 'syncpitch', col: '#f59e0b', d: 'Film, TV and advertising pitches', p: 'music', page: '/syncpitch' },
+  { id: 'pos', n: 'Intermaven POS', icon: 'pos', col: '#0e9499', d: 'Mobile money & card point of sale', p: 'business' },
   { id: 'epk', n: 'Electronic Press Kit', icon: 'epk', col: '#ec4899', d: 'Hosted EPK pages for artists', p: 'music' },
-  { id: 'distro', n: 'Distribution Tracker', icon: 'distro', col: '#0ea5e9', d: 'Track music across platforms', p: 'music' }
+  { id: 'distro', n: 'Distribution Tracker', icon: 'distro', col: '#0ea5e9', d: '150+ DSPs & DDEX 3.8 tracking', p: 'music' }
 ];
 
 function AppInfoModal({ isOpen, appId, onClose, onGetStarted, onToast }) {
@@ -122,7 +122,7 @@ function AppInfoModal({ isOpen, appId, onClose, onGetStarted, onToast }) {
     return null;
   }
 
-  const isLive = ['brandkit', 'musicbio', 'syncpitch', 'social', 'bizpitch'].includes(appId);
+  const isLive = ['smartcrm', 'brandkit', 'musicbio', 'syncpitch', 'social', 'distro'].includes(appId);
 
   const handleCTA = () => {
     onClose();

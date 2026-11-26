@@ -124,6 +124,9 @@ def get_current_user(request: Request) -> dict:
 
 
 def serialize_user(user: dict) -> dict:
+    portal = user.get("portal", "music")
+    default_persona = "founder" if portal == "business" else "creator"
+    persona = user.get("persona") or user.get("role") or default_persona
     return {
         "id": str(user["_id"]),
         "email": user.get("email", ""),
@@ -133,20 +136,36 @@ def serialize_user(user: dict) -> dict:
         "plan": user.get("plan", "free"),
         "credits": user.get("credits", 150),
         "apps": user.get("apps", []),
-        "portal": user.get("portal", "music"),
+        "portal": portal,
         "brand_name": user.get("brand_name", ""),
         "bio": user.get("bio", ""),
         "avatar": user.get("avatar", ""),
         "preferred_channel": user.get("preferred_channel", "email"),
         "admin_role": user.get("admin_role", ""),
+        "persona": persona,
+        "secondary_personas": user.get("secondary_personas", []),
+        "role": user.get("role") or persona,
         "created_at": user.get("created_at", datetime.now(timezone.utc)).isoformat() if isinstance(user.get("created_at"), datetime) else str(user.get("created_at", ""))
     }
 
 
+def get_optional_user(request: Request) -> dict | None:
+    try:
+        return get_current_user(request)
+    except HTTPException:
+        return None
+
+
 def get_admin_user(current_user: dict = Depends(get_current_user)) -> dict:
-    if not current_user.get("admin_role") or current_user["admin_role"] not in ADMIN_ROLES:
-        raise HTTPException(status_code=403, detail="Admin access required")
-    return current_user
+    is_admin_flag = bool(current_user.get("is_admin"))
+    admin_role = (current_user.get("admin_role") or "").lower()
+    user_role = (current_user.get("role") or "").lower()
+    if is_admin_flag or admin_role in ADMIN_ROLES or user_role in ADMIN_ROLES:
+        return current_user
+    raise HTTPException(status_code=403, detail="Admin access required")
+
+
+require_admin = get_admin_user
 
 
 def log_audit(admin_id, admin_name: str, action: str, target_user_id=None, target_user_name: str = "", details: dict = None):

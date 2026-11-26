@@ -3,6 +3,9 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Zap, ChevronDown, ChevronUp, ArrowRight, Star } from 'lucide-react';
 import { INTERMAVEN_LOGO } from '../../imageRegistry';
 import { useRegion } from '../../RegionContext';
+import Navbar from './Navbar';
+import Netbar from './Netbar';
+import Footer from './Footer';
 
 // Geo-aware text scrubber — strips Africa/Nairobi/M-Pesa for Western visitors
 function localizeForWest(text) {
@@ -253,16 +256,16 @@ const APP_CONFIGS = {
     ],
   },
   smartcrm: {
-    name: 'Smart CRM',
-    tagline: 'Turn contacts into bookings, fans, and revenue',
-    description: 'A music-first CRM for artists, managers, and creative teams — manage relationships, live shows, sponsorships, and follow-up in one dashboard.',
+    name: 'Smart CRM & Reachout',
+    tagline: 'Email-Only Target Groups, Persona Playbooks & Tracked Reachout',
+    description: 'Shared single-source-of-truth CRM & Reachout engine across Intermaven and TuneMavens — import email-only target groups, generate persona-adaptive campaign copy, preview event flyers, and track full-funnel attribution.',
     color: '#14b8a6',
-    cost: 12,
-    icon: '📇',
+    cost: 0,
+    icon: 'crm',
     slides: [
-      { dot: '#14b8a6', badge: 'Smart CRM', h: 'Turn contacts into bookings, fans, and revenue', s: "A music-first CRM for artists, managers, and creative teams — manage relationships in one dashboard.", b1: 'Try free', b1link: '#', b2: 'See features', b2link: '#features' },
-      { dot: '#14b8a6', badge: 'Booking Workflow', h: 'Track inquiries, proposals, and payments', s: "Streamline your booking process from initial contact to confirmed shows.", b1: 'Start tracking', b1link: '#', b2: 'View examples', b2link: '#examples' },
-      { dot: '#14b8a6', badge: 'Insights Dashboard', h: 'See pipeline health and revenue outlook', s: "Monitor sponsorships, sync opportunities, and relationship momentum.", b1: 'View dashboard', b1link: '#', b2: 'Pricing', b2link: '#pricing' }
+      { dot: '#14b8a6', badge: 'Smart CRM & Reachout · Beta Free Credits', h: 'Email-only target groups, persona playbooks & tracked reachout', s: "Single source of truth with TuneMavens — segment audiences by persona, preview HTML campaigns, and track clicks, RSVPs, and conversions.", b1: 'Try free (150 Beta Credits)', b1link: '#', b2: 'See features', b2link: '#features' },
+      { dot: '#14b8a6', badge: 'CSV Import & Validation', h: 'Clean email-only target groups in seconds', s: "Paste emails or import CSV lists with automatic validation, deduplication, and zero phone/SMS spam.", b1: 'Build target group', b1link: '#', b2: 'View features', b2link: '#features' },
+      { dot: '#14b8a6', badge: 'Dual Notifications & Attribution', h: 'Real-time analytics across In-App Inbox & Email', s: "Track sent, delivered, opened, clicked, and replied telemetry across both Intermaven and TuneMavens.", b1: 'Open dashboard', b1link: '#', b2: 'Pricing', b2link: '#pricing' }
     ],
     backgrounds: [
       'linear-gradient(180deg, #14b8a622 0%, #14b8a644 50%, #08090d 100%)',
@@ -275,26 +278,26 @@ const APP_CONFIGS = {
       linkedin: 'https://linkedin.com/company/intermaven-crm'
     },
     features: [
-      { label: 'Contact management', desc: 'Organise artists, promoters, brands, and media contacts in one place' },
-      { label: 'Booking workflow', desc: 'Track inquiries, proposals, confirmations, and payments' },
-      { label: 'Fan and partner tags', desc: 'Segment audiences by genre, location, and engagement' },
-      { label: 'Automated follow-ups', desc: 'Save templated messages for outreach and event reminders' },
-      { label: 'Deal tracking', desc: 'Monitor sponsorships, sync opportunities, and label discussions' },
-      { label: 'Insights dashboard', desc: 'See pipeline health, revenue outlook, and relationship momentum' },
+      { label: 'Email-Only Target Groups', desc: 'Create segmented outreach lists or import CSVs with automatic email validation and deduplication' },
+      { label: 'Persona-Adaptive Playbooks', desc: 'Tailor campaign tone and CTAs for Creators, Labels, Supervisors, Founders, Merchants, or Sponsors' },
+      { label: 'HTML Preview & Event Flyers', desc: 'Preview rendered campaign emails, event flyers, and RSVP/Ticket CTAs before dispatching' },
+      { label: 'Tracked Reachout & Attribution', desc: 'Monitor per-recipient clicks, RSVPs, onboarding conversions, and affiliate attribution' },
+      { label: 'Unified Contacts & Waitlists', desc: 'Manage 1-to-1 CRM leads, deal stages, and inbound waitlist signups in one workspace' },
+      { label: 'Live Sync with TuneMavens', desc: 'Backed by a single shared database — changes in Intermaven or TuneMavens update immediately' },
     ],
     steps: [
-      { title: 'Add your contacts', desc: 'Enter artists, partners, venues, or media contacts' },
-      { title: 'Track interactions', desc: 'Record calls, emails, shows, and tasks in one place' },
-      { title: 'Close more opportunities', desc: 'Follow every lead with reminders and smart next steps' },
+      { title: 'Build or import Target Groups', desc: 'Add email-only contacts manually or via CSV import' },
+      { title: 'Compose with Persona Playbooks', desc: 'Select your target persona, preview the HTML email, and attach CTAs' },
+      { title: 'Dispatch & track attribution', desc: 'Send campaigns and monitor opens, clicks, and conversions in real time' },
     ],
     testimonials: [
-      { quote: "Smart CRM helped me keep track of every booking conversation without drowning in email.", name: 'Nia K.', role: 'Tour manager, Accra' },
-      { quote: "We closed 4 new sponsor meetings in one month after using the pipeline dashboard.", name: 'Isaac M.', role: 'Music label operations lead, Lagos' },
+      { quote: "Importing our promoter CSV and previewing persona-tailored emails cut our tour outreach time by 80%.", name: 'Nia K.', role: 'Tour manager, Accra' },
+      { quote: "Because Intermaven and TuneMavens share the exact same CRM database, our label team never duplicates contacts.", name: 'Isaac M.', role: 'Label operations lead, Lagos' },
     ],
     faqs: [
-      { q: 'Can I use Smart CRM for both artists and events?', a: 'Yes — it is designed to manage people, partners, and show schedules together.' },
-      { q: 'Is it only for music teams?', a: 'It works for brands, studios, and creative businesses that need relationship workflows.' },
-      { q: 'How many contacts can I store?', a: 'The Free plan supports up to 1,500 contacts. Higher plans increase capacity.' },
+      { q: 'Does Smart CRM sync with TuneMavens?', a: 'Yes — Intermaven and TuneMavens share the exact same Smart CRM & Reachout backend and database. Any change in one updates the other immediately.' },
+      { q: 'What channels does Smart CRM Reachout use?', a: 'Target Groups are strictly email-only (with CSV import & validation) paired with In-App Inbox notifications.' },
+      { q: 'How do Beta Free Credits work?', a: 'During our beta phase, every new account receives 150 Free Beta Credits to test Smart CRM, AI tools, and Distribution Tracker.' },
     ],
   },
 };
@@ -400,31 +403,8 @@ function AppLandingPage({ appId, onOpenAuth, onOpenSignIn }) {
 
   return (
     <div className="app-landing">
-      {/* Nav */}
-      <nav className={`app-landing-nav ${scrolled ? 'scrolled' : ''}`}>
-        <div className="app-landing-nav-inner">
-          <div className={`app-landing-logo ${logoLoaded ? 'has-image' : ''}`} onClick={() => navigate('/')}>
-            {logoLoaded ? (
-              <img
-                src={INTERMAVEN_LOGO}
-                alt="Intermaven"
-                className="logo-image"
-                onError={() => setLogoLoaded(false)}
-              />
-            ) : null}
-            <span className="logo-text">INTER<span>MAVEN</span></span>
-          </div>
-          <div className="app-nav-menu">
-            <Link to="/tools" className="app-nav-link">AI Tools</Link>
-            <Link to="/forum" className="app-nav-link">Community</Link>
-            <Link to="/help" className="app-nav-link">Help</Link>
-          </div>
-          <div className="app-landing-nav-actions">
-            <button className="app-nav-btn" onClick={() => (onOpenSignIn ? onOpenSignIn() : onOpenAuth())}>Sign in</button>
-            <button className="app-nav-btn primary" onClick={() => onOpenAuth()}>Get free →</button>
-          </div>
-        </div>
-      </nav>
+      <Netbar portal="business" />
+      <Navbar onOpenAuth={onOpenAuth} onOpenSignIn={onOpenSignIn} portal="business" />
 
       {/* Hero */}
       <div className="hw" data-testid="hero-section">

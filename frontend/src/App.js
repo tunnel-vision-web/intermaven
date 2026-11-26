@@ -1,4 +1,4 @@
-import React, { useState, useEffect, createContext, useContext } from 'react';
+﻿import React, { useState, useEffect, createContext, useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './App.css';
@@ -7,7 +7,7 @@ import './App.css';
 import AuthModal from './components/AuthModal';
 import Dashboard from './components/Dashboard';
 import Toast from './components/Toast';
-import AyoChat from './components/AyoChat';
+import MavenChat from './components/MavenChat';
 import { LandingLayout } from './components/landing';
 import TermsPage from './components/landing/TermsPage';
 import PrivacyPage from './components/landing/PrivacyPage';
@@ -20,6 +20,8 @@ import BlogPage from './components/landing/BlogPage';
 import CareersPage from './components/landing/CareersPage';
 import DevelopersPage from './components/landing/DevelopersPage';
 import AppLandingPage from './components/landing/AppLandingPage';
+import PerfectForPage from './components/landing/PerfectForPage';
+import PersonaLandingPage from './components/landing/PersonaLandingPage';
 import { RegionProvider } from './RegionContext';
 import { CmsProvider } from './cms/CmsContext';
 import GeoWelcomeToast from './components/landing/GeoWelcomeToast';
@@ -37,7 +39,7 @@ export const useToast = () => useContext(ToastContext);
 const FALLBACK_LOCAL_API =
   typeof window !== 'undefined' &&
   (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-    ? 'http://localhost:8001'   // ← Changed from 8002 to 8001
+    ? 'http://localhost:8001'   // â† Changed from 8002 to 8001
     : '';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || FALLBACK_LOCAL_API;
@@ -117,7 +119,7 @@ function LandingWithAuth({ page, addToast, user }) {
   );
 }
 
-// EPK Public Page — renders artist EPK by username
+// EPK Public Page â€” renders artist EPK by username
 function EPKPublicPage() {
   const { username } = require('react-router-dom').useParams();
   const [epk, setEpk] = React.useState(null);
@@ -141,7 +143,7 @@ function EPKPublicPage() {
       <div style={{ background: `linear-gradient(135deg, ${color}33, #0f1117)`, padding: '60px 24px 40px', textAlign: 'center', borderBottom: '1px solid #ffffff12' }}>
         <div style={{ fontSize: 36, fontWeight: 900, marginBottom: 8 }}>{epk.artist_name}</div>
         {epk.tagline && <div style={{ fontSize: 16, color: '#9096b8', marginBottom: 12 }}>{epk.tagline}</div>}
-        {epk.location && <div style={{ fontSize: 13, color: '#555870' }}>📍 {epk.location}</div>}
+        {epk.location && <div style={{ fontSize: 13, color: '#555870' }}>ðŸ“ {epk.location}</div>}
         {epk.genres?.length > 0 && (
           <div style={{ display: 'flex', gap: 6, justifyContent: 'center', flexWrap: 'wrap', marginTop: 12 }}>
             {epk.genres.map(g => <span key={g} style={{ padding: '3px 10px', background: `${color}22`, border: `1px solid ${color}44`, borderRadius: 20, fontSize: 12, color }}>{g}</span>)}
@@ -165,7 +167,7 @@ function EPKPublicPage() {
             {epk.press_quotes.map((q, i) => (
               <div key={i} style={{ borderLeft: `3px solid ${color}`, paddingLeft: 16, marginBottom: 16 }}>
                 <p style={{ fontSize: 14, fontStyle: 'italic', color: '#c8cce8', marginBottom: 4 }}>"{q.quote}"</p>
-                <span style={{ fontSize: 12, color: '#555870' }}>{q.source}{q.date ? ` · ${q.date}` : ''}</span>
+                <span style={{ fontSize: 12, color: '#555870' }}>{q.source}{q.date ? ` Â· ${q.date}` : ''}</span>
               </div>
             ))}
           </div>
@@ -183,7 +185,7 @@ function EPKPublicPage() {
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontSize: 13, color: '#9096b8' }}>{ev.date}</div>
-                  {ev.ticket_url && <a href={ev.ticket_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color }}> Tickets →</a>}
+                  {ev.ticket_url && <a href={ev.ticket_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color }}> Tickets â†’</a>}
                 </div>
               </div>
             ))}
@@ -197,7 +199,7 @@ function EPKPublicPage() {
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
               {Object.entries(epk.social_links || {}).filter(([, v]) => v).map(([k, v]) => (
                 <a key={k} href={v} target="_blank" rel="noopener noreferrer" style={{ padding: '6px 14px', background: `${color}22`, border: `1px solid ${color}44`, borderRadius: 20, fontSize: 12, color, textDecoration: 'none' }}>
-                  {k.charAt(0).toUpperCase() + k.slice(1)} ↗
+                  {k.charAt(0).toUpperCase() + k.slice(1)} â†—
                 </a>
               ))}
             </div>
@@ -209,8 +211,8 @@ function EPKPublicPage() {
           <div style={{ marginBottom: 32 }}>
             <h2 style={{ fontSize: 14, fontWeight: 700, color: '#9096b8', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12 }}>Contact</h2>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {epk.contact.booking_email && <div style={{ fontSize: 13 }}>📩 Booking: <a href={`mailto:${epk.contact.booking_email}`} style={{ color }}>{epk.contact.booking_email}</a></div>}
-              {epk.contact.press_email && <div style={{ fontSize: 13 }}>📰 Press: <a href={`mailto:${epk.contact.press_email}`} style={{ color }}>{epk.contact.press_email}</a></div>}
+              {epk.contact.booking_email && <div style={{ fontSize: 13 }}>ðŸ“© Booking: <a href={`mailto:${epk.contact.booking_email}`} style={{ color }}>{epk.contact.booking_email}</a></div>}
+              {epk.contact.press_email && <div style={{ fontSize: 13 }}>ðŸ“° Press: <a href={`mailto:${epk.contact.press_email}`} style={{ color }}>{epk.contact.press_email}</a></div>}
             </div>
           </div>
         )}
@@ -325,7 +327,7 @@ function App() {
       localStorage.setItem('token', response.data.access_token);
       setInMemoryToken(response.data.access_token);
       setUser(response.data.user);
-      addToast('⚡ Sandbox Login Active', `Signed in as ${response.data.user.first_name} (${response.data.user.email})`, 'success');
+      addToast('âš¡ Sandbox Login Active', `Signed in as ${response.data.user.first_name} (${response.data.user.email})`, 'success');
       return { success: true, user: response.data.user };
     } catch (error) {
       const message = error.response?.data?.detail || 'Sandbox login failed';
@@ -438,6 +440,9 @@ function App() {
               path="/about" 
               element={<LandingWithAuth page="about" addToast={addToast} user={user} />} 
             />
+            <Route path="/for" element={<PerfectForPage />} />
+            <Route path="/perfect-for" element={<PerfectForPage />} />
+            <Route path="/for/:persona" element={<PersonaLandingPage />} />
             <Route 
               path="/cms" 
               element={<LandingWithAuth page="cms" addToast={addToast} user={user} />} 
@@ -461,7 +466,7 @@ function App() {
             <Route path="/forum/article/:slug" element={<ArticlePage />} />
             
             {/* App Landing Pages */}
-            {['brandkit', 'musicbio', 'social', 'syncpitch', 'bizpitch', 'smartcrm'].map(appId => (
+            {['brandkit', 'musicbio', 'social', 'syncpitch', 'smartcrm'].map(appId => (
               <Route
                 key={appId}
                 path={`/${appId}`}
@@ -473,8 +478,8 @@ function App() {
             <Route path="/artist/:username" element={<EPKPublicPage />} />
           </Routes>
           
-          {/* Ayo Chat Assistant - shows on all pages */}
-          <AyoChat currentPage={window.location.pathname.split('/')[1] || 'homepage'} isLoggedIn={!!user} />
+          {/* Maven Chat Assistant - shows on all pages */}
+          <MavenChat currentPage={window.location.pathname.split('/')[1] || 'homepage'} isLoggedIn={!!user} />
         </Router>
         <Toast toasts={toasts} />
         <GeoWelcomeToast />
@@ -486,3 +491,4 @@ function App() {
 }
 
 export default App;
+

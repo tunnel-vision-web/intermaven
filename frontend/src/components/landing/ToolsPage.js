@@ -241,13 +241,13 @@ const TOOL_PAGE_COPY = {
   }
 };
 
-// Tool definitions for landing page
+// Tool definitions for landing page (Smart CRM featured on top row; Pitch Deck AI lives on TuneMavens)
 const TOOL_CARDS = [
-  { icon: 'brandkit', color: '#c084fc', n: 'Brand Kit AI', d: 'Name, taglines, tone of voice, colour direction', cost: '10 CREDITS', costColor: 'var(--a2)' },
-  { icon: 'musicbio', color: '#22d3ee', n: 'Music Bio & Press Kit', d: 'Bio, press narrative, media pitch, interview angles', cost: '15 CREDITS', costColor: 'var(--a2)' },
-  { icon: 'social', color: '#f43f5e', n: 'Social AI', d: 'Captions, hashtags, posting times for any platform', cost: 'FREE', costColor: 'var(--gr)' },
-  { icon: 'syncpitch', color: '#f59e0b', n: 'Sync Pitch AI', d: 'Pitches for film, TV and advertising supervisors', cost: '20 CREDITS', costColor: 'var(--a2)' },
-  { icon: 'pitchdeck', color: '#8b5cf6', n: 'Pitch Deck AI', d: 'Investor & grant pitch decks for East African markets', cost: '18 CREDITS', costColor: 'var(--a2)' }
+  { icon: 'crm', color: '#3b82f6', n: 'Smart CRM & Reachout', d: 'Email-only target groups, persona playbooks & tracked reachout', cost: 'BETA FREE CREDITS', costColor: 'var(--gr)', page: '/smartcrm' },
+  { icon: 'brandkit', color: '#10b981', n: 'Brand Kit AI', d: 'Name, taglines, tone of voice, colour direction', cost: '10 CREDITS · BETA FREE', costColor: 'var(--a2)', page: '/brandkit' },
+  { icon: 'social', color: '#f43f5e', n: 'Social AI', d: 'Captions, hashtags, posting times for any platform', cost: 'FREE', costColor: 'var(--gr)', page: '/social' },
+  { icon: 'musicbio', color: '#22d3ee', n: 'Music Bio & Press Kit', d: 'Bio, press narrative, media pitch, interview angles', cost: '15 CREDITS · BETA FREE', costColor: 'var(--a2)', page: '/musicbio' },
+  { icon: 'syncpitch', color: '#f59e0b', n: 'Sync Pitch AI', d: 'Pitches for film, TV and advertising supervisors', cost: '20 CREDITS · BETA FREE', costColor: 'var(--a2)', page: '/syncpitch' }
 ];
 
 function ToolsPage({ portal = 'music', subdomainPage = null, onOpenAuth, onToast }) {
@@ -372,6 +372,16 @@ function ToolsPage({ portal = 'music', subdomainPage = null, onOpenAuth, onToast
                   marginTop: '6px' 
                 }}>
                   {tool.cost}
+                </div>
+                <div style={{ display: 'flex', gap: '8px', marginTop: '10px', flexWrap: 'wrap', justifyContent: 'center' }} onClick={(e) => e.stopPropagation()}>
+                  {tool.page && (
+                    <Link to={tool.page} style={{ fontSize: '11px', fontWeight: 700, color: '#cbd5e1', textDecoration: 'none', padding: '4px 8px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.14)' }}>
+                      Explore →
+                    </Link>
+                  )}
+                  <button type="button" onClick={() => onOpenAuth()} style={{ fontSize: '11px', fontWeight: 700, color: '#061224', background: '#22d3ee', border: 'none', borderRadius: '6px', padding: '4px 9px', cursor: 'pointer' }}>
+                    Start free →
+                  </button>
                 </div>
               </div>
             ))}

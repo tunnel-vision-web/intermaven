@@ -19,6 +19,9 @@ from .avatar import router as avatar_router
 from .cms import router as cms_router
 from .distro import router as distro_router
 from .hosting import router as hosting_router
+from .crm_smart import router as crm_smart_router
+from .personas import router as personas_router
+from .support import router as support_router
 
 __all__ = [
     "auth_router",
@@ -32,6 +35,7 @@ __all__ = [
     "ai_router",
     "public_router",
     "crm_router",
+    "crm_smart_router",
     "admin_router",
     "geo_router",
     "pricing_router",
@@ -43,4 +47,6 @@ __all__ = [
     "cms_router",
     "distro_router",
     "hosting_router",
+    "personas_router",
+    "support_router",
 ]

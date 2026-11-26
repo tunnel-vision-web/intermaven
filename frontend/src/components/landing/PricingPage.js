@@ -225,6 +225,11 @@ function PricingPage({ portal = 'music', subdomainPage = null, onOpenAuth, onToa
             ))}
           </div>
 
+          {/* Beta Phase Free Credits Banner */}
+          <div style={{ background: 'rgba(34,211,238,0.1)', border: '1px solid rgba(34,211,238,0.35)', borderRadius: '10px', padding: '14px 18px', marginBottom: '20px', textAlign: 'center', fontSize: '13px', color: '#bae6fd' }}>
+            <strong style={{ color: '#22d3ee' }}>Beta Phase Free Credits:</strong> Every new account starts with <strong>150 Free Beta Credits</strong> to test all AI tools, Smart CRM &amp; Reachout, and Distribution Tracker — with <strong>Mobile Payments (M-Pesa)</strong> &amp; cards supported.
+          </div>
+
           {/* Currency note */}
           <div style={{ textAlign: 'center', fontSize: '12px', color: 'var(--mu)', marginBottom: '20px' }} data-testid="pricing-currency-note">
             Showing prices in <strong style={{ color: 'var(--tx)' }}>{pricing?.currency || currency}</strong>

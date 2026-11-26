@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+﻿import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { api } from '../App';
 import {
   Folder, FolderPlus, Upload, Download, Trash2, Search,
@@ -8,7 +8,7 @@ import {
   RefreshCw, Move, Edit2, Lock, Unlock, ExternalLink
 } from 'lucide-react';
 
-// ── Constants ─────────────────────────────────────────────────────
+// â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const PLAN_STORAGE = { free: 1073741824, creator: 5368709120, pro: 26843545600 };
 
 const FILE_ICONS = {
@@ -30,7 +30,7 @@ const getFileType = (mime = '') => {
 };
 
 const formatSize = (bytes) => {
-  if (!bytes) return '—';
+  if (!bytes) return 'â€”';
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)} KB`;
   if (bytes < 1073741824) return `${(bytes / 1048576).toFixed(1)} MB`;
@@ -42,14 +42,14 @@ const formatStorageBar = (used, total) => {
   return { pct, color: pct > 90 ? '#ef4444' : pct > 70 ? '#f59e0b' : '#10b981' };
 };
 
-// ── File Icon Component ───────────────────────────────────────────
+// â”€â”€ File Icon Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function FileIcon({ mime, size = 20 }) {
   const type = getFileType(mime);
   const { icon: Icon, color } = FILE_ICONS[type] || FILE_ICONS.default;
   return <Icon size={size} color={color} />;
 }
 
-// ── Breadcrumb ────────────────────────────────────────────────────
+// â”€â”€ Breadcrumb â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function Breadcrumb({ path, onNavigate }) {
   return (
     <div className="fm-breadcrumb">
@@ -67,7 +67,7 @@ function Breadcrumb({ path, onNavigate }) {
   );
 }
 
-// ── Folder Card ───────────────────────────────────────────────────
+// â”€â”€ Folder Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function FolderCard({ folder, onOpen, onDelete, onRename, viewMode }) {
   const [menu, setMenu] = useState(false);
   const [renaming, setRenaming] = useState(false);
@@ -88,7 +88,7 @@ function FolderCard({ folder, onOpen, onDelete, onRename, viewMode }) {
           <span className="fm-list-name" onDoubleClick={() => setRenaming(true)}>{folder.name}</span>
         )}
         <span className="fm-list-meta">Folder</span>
-        <span className="fm-list-date">{folder.created_at ? new Date(folder.created_at).toLocaleDateString() : '—'}</span>
+        <span className="fm-list-date">{folder.created_at ? new Date(folder.created_at).toLocaleDateString() : 'â€”'}</span>
         <button className="admin-action-btn" onClick={e => { e.stopPropagation(); setMenu(m => !m); }}><MoreHorizontal size={13} /></button>
         {menu && (
           <div className="fm-context-menu">
@@ -119,7 +119,7 @@ function FolderCard({ folder, onOpen, onDelete, onRename, viewMode }) {
   );
 }
 
-// ── File Card ─────────────────────────────────────────────────────
+// â”€â”€ File Card â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function FileCard({ file, selected, onSelect, onDownload, onDelete, onShare, onPreview, viewMode }) {
   const [menu, setMenu] = useState(false);
 
@@ -129,7 +129,7 @@ function FileCard({ file, selected, onSelect, onDownload, onDelete, onShare, onP
         <FileIcon mime={file.mime_type} size={16} />
         <span className="fm-list-name">{file.filename}</span>
         <span className="fm-list-meta">{formatSize(file.size)}</span>
-        <span className="fm-list-date">{file.created_at ? new Date(file.created_at).toLocaleDateString() : '—'}</span>
+        <span className="fm-list-date">{file.created_at ? new Date(file.created_at).toLocaleDateString() : 'â€”'}</span>
         <div style={{ display: 'flex', gap: 4 }}>
           <button className="admin-action-btn" onClick={e => { e.stopPropagation(); onPreview(file); }}><Eye size={12} /></button>
           <button className="admin-action-btn" onClick={e => { e.stopPropagation(); onDownload(file); }}><Download size={12} /></button>
@@ -171,7 +171,7 @@ function FileCard({ file, selected, onSelect, onDownload, onDelete, onShare, onP
   );
 }
 
-// ── Upload Zone ───────────────────────────────────────────────────
+// â”€â”€ Upload Zone â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function UploadZone({ folderId, onComplete, addToast, storageUsed, storagePlan }) {
   const [dragging, setDragging] = useState(false);
   const [uploads, setUploads] = useState([]);
@@ -237,7 +237,7 @@ function UploadZone({ folderId, onComplete, addToast, storageUsed, storagePlan }
   );
 }
 
-// ── Preview Modal ─────────────────────────────────────────────────
+// â”€â”€ Preview Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function PreviewModal({ file, onClose, onDownload }) {
   const type = getFileType(file.mime_type);
   return (
@@ -271,7 +271,7 @@ function PreviewModal({ file, onClose, onDownload }) {
   );
 }
 
-// ── Main File Manager ─────────────────────────────────────────────
+// â”€â”€ Main File Manager â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function FileManager({ user, addToast }) {
   const [files, setFiles] = useState([]);
   const [folders, setFolders] = useState([]);
@@ -498,3 +498,4 @@ function FileManager({ user, addToast }) {
 }
 
 export default FileManager;
+

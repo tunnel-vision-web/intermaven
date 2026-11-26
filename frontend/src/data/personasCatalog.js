@@ -1,0 +1,273 @@
+﻿// Single source of truth for all Business & Creative personas across Intermaven & TuneMavens.
+// Mirrors backend/routes/personas.py and TuneMavens role_tiers_router.py.
+
+export const PERSONAS = [
+  // Creative & Media Personas (aligned with TuneMavens)
+  {
+    key: 'creator',
+    side: 'creative',
+    portal: 'music',
+    label: 'Creators & Artists',
+    shortLabel: 'Creators',
+    subtitle: 'Artists, Songwriters & Producers',
+    tagline: 'Release music globally, build your EPK, and automate split sheets & social promotion.',
+    accent: '#22d3ee',
+    icon: 'musicbio',
+    recommendedApps: ['musicbio', 'distro', 'social', 'syncpitch', 'brandkit'],
+    onboardingSteps: [
+      { title: 'Complete your Creator Profile & Persona', desc: 'Set your artist/producer name, genre, and payout preferences.' },
+      { title: 'Launch your Live EPK', desc: 'Publish a verified press kit with bio, streaming links, and press photos.' },
+      { title: 'Submit your first release to Distribution Tracker', desc: 'Generate ISRC/UPC codes and deliver to 150+ global DSPs.' },
+      { title: 'Schedule a Social AI campaign', desc: 'Auto-generate release-day captions and visual assets.' },
+    ],
+    recommendedReading: [
+      { slug: 'distribution-tracker-guide', title: 'How to Launch a Global Release with Distribution Tracker', category: 'Distribution' },
+      { slug: 'epk-builder-guide', title: 'Building a Press-Ready EPK That Books Festivals & Sync', category: 'Creator Tools' },
+      { slug: 'split-sheets-royalties', title: 'Understanding Split Sheets & Publishing Royalties', category: 'Rights & Revenue' },
+    ],
+  },
+  {
+    key: 'podcaster',
+    side: 'creative',
+    portal: 'music',
+    label: 'Podcasters',
+    shortLabel: 'Podcasters',
+    subtitle: 'Shows, RSS & Brand Sponsorships',
+    tagline: 'Distribute episodes everywhere, pitch corporate sponsors, and manage guest reachout.',
+    accent: '#00f2fe',
+    icon: 'distro',
+    recommendedApps: ['distro', 'musicbio', 'social', 'crm', 'brandkit'],
+    onboardingSteps: [
+      { title: 'Set up your Show Identity', desc: 'Create your podcast cover palette and show bio in Brand Kit AI.' },
+      { title: 'Connect your RSS & Distribution', desc: 'Track Spotify, Apple Podcasts, and YouTube ingestion status.' },
+      { title: 'Build your Sponsor Media Kit (EPK)', desc: 'Showcase listener demographics and ad slot availability.' },
+      { title: 'Run Sponsor Outreach in Smart CRM', desc: 'Import sponsor leads and launch tracked email reachout.' },
+    ],
+    recommendedReading: [
+      { slug: 'podcast-monetization', title: 'Monetizing Your Podcast with Corporate Ad Flights', category: 'Monetization' },
+      { slug: 'smart-crm-reachout', title: 'Using Smart CRM to Book Guests & Sponsors', category: 'CRM & Growth' },
+    ],
+  },
+  {
+    key: 'label',
+    side: 'creative',
+    portal: 'music',
+    label: 'Record Labels',
+    shortLabel: 'Record Labels',
+    subtitle: 'Roster Catalog, DDEX & Split Cascades',
+    tagline: 'Manage multi-artist rosters, bulk DDEX deliveries, A&R pipelines, and royalty accounting.',
+    accent: '#a78bfa',
+    icon: 'distro',
+    recommendedApps: ['distro', 'crm', 'musicbio', 'syncpitch', 'social'],
+    onboardingSteps: [
+      { title: 'Configure your Label Workspace', desc: 'Set label imprint details and team member permissions.' },
+      { title: 'Onboard your Artist Roster', desc: 'Link artist profiles and EPKs under your label umbrella.' },
+      { title: 'Bulk Deliver Releases via DDEX', desc: 'Use Distribution Tracker bulk delivery and QC monitoring.' },
+      { title: 'Pitch Catalog to Sync Supervisors', desc: 'Package pre-cleared master/publishing rights for film & TV.' },
+    ],
+    recommendedReading: [
+      { slug: 'label-bulk-distro', title: 'Bulk DDEX Delivery & Catalog QC for Labels', category: 'Distribution' },
+      { slug: 'smart-crm-reachout', title: 'Managing Multi-Artist Smart CRM Campaigns', category: 'CRM & Reachout' },
+    ],
+  },
+  {
+    key: 'dj',
+    side: 'creative',
+    portal: 'music',
+    label: 'DJs & Curators',
+    shortLabel: 'DJs',
+    subtitle: 'DJ Pool, Live Sets & Event Bookings',
+    tagline: 'Access promo crates, promote live sets, manage bookings, and grow your listener base.',
+    accent: '#14b8a6',
+    icon: 'social',
+    recommendedApps: ['musicbio', 'social', 'crm', 'pos', 'distro'],
+    onboardingSteps: [
+      { title: 'Build your DJ Press Kit', desc: 'Add resident clubs, mix links, and technical rider.' },
+      { title: 'Connect Smart CRM for Promoter Bookings', desc: 'Track club promoters, festival buyers, and event RSVPs.' },
+      { title: 'Automate Event Promo with Social AI', desc: 'Generate flyer copy and countdown posts for upcoming gigs.' },
+    ],
+    recommendedReading: [
+      { slug: 'dj-bookings-crm', title: 'How DJs Use TuneMavens & Intermaven for Event Bookings', category: 'Live & Events' },
+      { slug: 'pos-quick-start', title: 'Accepting Direct Tips & Merch at Live Sets with POS', category: 'Payments' },
+    ],
+  },
+  {
+    key: 'supervisor',
+    side: 'creative',
+    portal: 'music',
+    label: 'Music Supervisors',
+    shortLabel: 'Supervisors',
+    subtitle: 'Sync Licensing, Film & Ad Briefs',
+    tagline: 'Discover pre-cleared, one-stop tracks and manage sync licensing briefs in one place.',
+    accent: '#f59e0b',
+    icon: 'syncpitch',
+    recommendedApps: ['syncpitch', 'crm', 'distro', 'musicbio'],
+    onboardingSteps: [
+      { title: 'Set your Studio / Production Company Profile', desc: 'Define your project types (Film, TV, Ads, Gaming).' },
+      { title: 'Post or Match a Sync Brief', desc: 'Use Sync Pitch AI to filter one-stop, cleared catalog.' },
+      { title: 'Manage Rights & Licensing Contacts', desc: 'Organize labels, publishers, and composers in Smart CRM.' },
+    ],
+    recommendedReading: [
+      { slug: 'sync-licensing-guide', title: 'One-Stop Sync Clearance & Licensing Workflows', category: 'Sync' },
+      { slug: 'sync-pitch-ai', title: 'Evaluating AI-Matched Catalog Submissions', category: 'AI Tools' },
+    ],
+  },
+  {
+    key: 'media-house',
+    side: 'creative',
+    portal: 'music',
+    label: 'Media Houses',
+    shortLabel: 'Media Houses',
+    subtitle: 'Broadcast, Radio & Ad Inventory',
+    tagline: 'Program broadcast rotations, manage ad rate cards, and clear music rights effortlessly.',
+    accent: '#3b82f6',
+    icon: 'hosting',
+    recommendedApps: ['crm', 'hosting', 'social', 'syncpitch', 'distro'],
+    onboardingSteps: [
+      { title: 'Set up your Station / Network Profile', desc: 'Configure broadcast regions and audience reach.' },
+      { title: 'Manage Advertisers & Sponsors in Smart CRM', desc: 'Run targeted ad-slot outreach campaigns.' },
+      { title: 'Streamline Music Submissions & Cue Sheets', desc: 'Track cleared tracks and broadcast logs.' },
+    ],
+    recommendedReading: [
+      { slug: 'media-house-ads', title: 'Broadcast Ad Rate Cards & Sponsor Reachout', category: 'Media & Ads' },
+      { slug: 'rights-compliance', title: 'Automating Cue Sheets & Rights Compliance', category: 'Licensing' },
+    ],
+  },
+  {
+    key: 'consumer',
+    side: 'creative',
+    portal: 'music',
+    label: 'Listeners & Fans',
+    shortLabel: 'Listeners',
+    subtitle: 'TuneStream, Events & Creator Support',
+    tagline: 'Stream lossless audio, grab event tickets, and support your favorite creators directly.',
+    accent: '#10b981',
+    icon: 'musicbio',
+    recommendedApps: ['musicbio', 'pos'],
+    onboardingSteps: [
+      { title: 'Personalize your Listening Taste', desc: 'Follow favorite genres, artists, and DJs across the ecosystem.' },
+      { title: 'Connect your Single Sign-On Account', desc: 'Use one login across Intermaven, TuneMavens, and TuneStream.' },
+    ],
+    recommendedReading: [
+      { slug: 'sso-ecosystem-guide', title: 'One Account Across Intermaven, TuneMavens & TuneStream', category: 'Account' },
+    ],
+  },
+  // Business & Enterprise Personas (Intermaven Core)
+  {
+    key: 'founder',
+    side: 'business',
+    portal: 'business',
+    label: 'Founders & SMEs',
+    shortLabel: 'Founders & SMEs',
+    subtitle: 'Startups, Brands & Growing Businesses',
+    tagline: 'Launch your brand identity, pitch investors, manage customers, and accept payments.',
+    accent: '#22d3ee',
+    icon: 'brandkit',
+    recommendedApps: ['brandkit', 'crm', 'crm', 'social', 'pos', 'hosting'],
+    onboardingSteps: [
+      { title: 'Run the Business Discovery Wizard', desc: 'Get an AI-tailored growth strategy and channel checklist.' },
+      { title: 'Generate your Brand Kit', desc: 'Create your logo direction, color palette, and brand voice.' },
+      { title: 'Build your Investor Pitch Deck', desc: 'Draft a structured deck with market sizing and financials.' },
+      { title: 'Set up Smart CRM & Lead Capture', desc: 'Import contacts and launch automated email reachout.' },
+    ],
+    recommendedReading: [
+      { slug: 'brand-kit-guide', title: 'From Idea to Brand Kit in 10 Minutes', category: 'AI Tools' },
+      { slug: 'smart-crm-reachout', title: 'Smart CRM & Automated Email Reachout', category: 'Fundraising' },
+      { slug: 'smart-crm-reachout', title: 'Smart CRM & Automated Email Reachout', category: 'CRM & Growth' },
+    ],
+  },
+  {
+    key: 'merchant',
+    side: 'business',
+    portal: 'business',
+    label: 'Retailers & Merchants',
+    shortLabel: 'Merchants (POS)',
+    subtitle: 'POS Terminals, Inventory & TunePay',
+    tagline: 'Run in-person & online sales, track inventory, and settle mobile money & card payments.',
+    accent: '#10b981',
+    icon: 'pos',
+    recommendedApps: ['pos', 'crm', 'social', 'brandkit', 'hosting'],
+    onboardingSteps: [
+      { title: 'Configure your Store & POS Terminal', desc: 'Add products, pricing, and tax settings in Intermaven POS.' },
+      { title: 'Enable Mobile Money & Card Checkout', desc: 'Connect M-Pesa, Stripe, or PesaPal settlement.' },
+      { title: 'Sync Customer Receipts to Smart CRM', desc: 'Turn walk-in buyers into repeat customers via email campaigns.' },
+    ],
+    recommendedReading: [
+      { slug: 'pos-quick-start', title: 'Getting Started with Intermaven POS & Inventory', category: 'POS & Payments' },
+      { slug: 'pos-settlement', title: 'Reconciling Daily Settlements & Staff Terminals', category: 'Operations' },
+    ],
+  },
+  {
+    key: 'agency',
+    side: 'business',
+    portal: 'business',
+    label: 'Agencies & Managers',
+    shortLabel: 'Agencies',
+    subtitle: 'Multi-Client CRM, Social & Talent',
+    tagline: 'Manage multiple client brands, social calendars, outreach campaigns, and hosting in one hub.',
+    accent: '#a78bfa',
+    icon: 'crm',
+    recommendedApps: ['crm', 'social', 'brandkit', 'hosting', 'crm', 'musicbio'],
+    onboardingSteps: [
+      { title: 'Set up your Agency Workspace', desc: 'Enable both Business and Creative portals for full client coverage.' },
+      { title: 'Segment Client Target Groups in Smart CRM', desc: 'Organize client outreach lists and track attribution.' },
+      { title: 'Schedule Multi-Brand Content with Social AI', desc: 'Keep every clientâ€™s social channels active from one console.' },
+    ],
+    recommendedReading: [
+      { slug: 'smart-crm-reachout', title: 'Managing Multi-Client Campaigns in Smart CRM', category: 'Agency Ops' },
+      { slug: 'sso-ecosystem-guide', title: 'Cross-Platform SSO for Agency Teams', category: 'Account' },
+    ],
+  },
+  {
+    key: 'corporate',
+    side: 'business',
+    portal: 'business',
+    label: 'Corporate & Brands',
+    shortLabel: 'Corporate',
+    subtitle: 'Sponsorships, Ads & Enterprise',
+    tagline: 'Sponsor tours, podcasts, and media flights with verified ROI attribution and brand safety.',
+    accent: '#ef4444',
+    icon: 'crm',
+    recommendedApps: ['crm', 'social', 'crm', 'hosting'],
+    onboardingSteps: [
+      { title: 'Define your Brand Sponsorship Objectives', desc: 'Select target regions, audiences, and media channels.' },
+      { title: 'Launch Brand Campaigns via Smart CRM', desc: 'Coordinate creator, podcaster, and media house placements.' },
+      { title: 'Track Impressions & Conversion Telemetry', desc: 'Monitor campaign performance in your analytics dashboard.' },
+    ],
+    recommendedReading: [
+      { slug: 'corporate-sponsorships', title: 'Corporate Sponsorships Across Music, Podcasts & Events', category: 'Enterprise' },
+      { slug: 'smart-crm-reachout', title: 'Measuring Reachout & Sponsorship Attribution', category: 'Analytics' },
+    ],
+  },
+  {
+    key: 'investor',
+    side: 'business',
+    portal: 'business',
+    label: 'Investors & VCs',
+    shortLabel: 'Investors / VC',
+    subtitle: 'Deal Flow, Tour Capital & Portfolio',
+    tagline: 'Evaluate vetted startups and touring/catalog opportunities with real-time platform telemetry.',
+    accent: '#f59e0b',
+    icon: 'crm',
+    recommendedApps: ['crm', 'crm', 'distro'],
+    onboardingSteps: [
+      { title: 'Set your Investment Thesis & Sectors', desc: 'Filter deal flow across tech SMEs, media, and creative catalog.' },
+      { title: 'Review AI-Structured Pitch Decks', desc: 'Access founder & label data rooms securely.' },
+      { title: 'Track Portfolio Milestones', desc: 'Monitor revenue, distribution, and growth metrics in one view.' },
+    ],
+    recommendedReading: [
+      { slug: 'investor-deal-flow', title: 'Evaluating Creative & Tech Deals on Intermaven', category: 'Capital' },
+      { slug: 'distribution-tracker-guide', title: 'How Distribution Telemetry De-Risks Music Financing', category: 'Analytics' },
+    ],
+  },
+];
+
+export const PERSONAS_BY_KEY = PERSONAS.reduce((acc, p) => {
+  acc[p.key] = p;
+  return acc;
+}, {});
+
+export function getPersonaMeta(key) {
+  return PERSONAS_BY_KEY[key] || PERSONAS_BY_KEY.creator;
+}
+

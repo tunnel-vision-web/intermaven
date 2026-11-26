@@ -4,6 +4,7 @@ import { useAuth } from '../App';
 import { Mail, Lock, User, Phone, X, Eye, EyeOff } from 'lucide-react';
 import { INTERMAVEN_LOGO } from '../imageRegistry';
 import { useRegion } from '../RegionContext';
+import { PERSONAS, getPersonaMeta } from '../data/personasCatalog';
 
 
 function AuthModal({ onClose }) {
@@ -32,6 +33,7 @@ function AuthModal({ onClose }) {
   const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [passwordError, setPasswordError] = useState('');
   const [formError, setFormError] = useState('');
+  const pendingPersona = (typeof window !== 'undefined' && (new URLSearchParams(location.search).get('persona') || localStorage.getItem('intermaven_pending_persona'))) || 'creator';
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -39,7 +41,8 @@ function AuthModal({ onClose }) {
     first_name: '',
     last_name: '',
     phone: '',
-    portal: 'music'
+    persona: pendingPersona,
+    portal: getPersonaMeta(pendingPersona).portal,
   });
 
   const [registerStep, setRegisterStep] = useState(1);
@@ -63,7 +66,12 @@ function AuthModal({ onClose }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    if (name === 'persona') {
+      const meta = getPersonaMeta(value);
+      setFormData({ ...formData, persona: value, portal: meta.portal });
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
     
     // Clear password error when typing
     if (name === 'password' || name === 'confirm_password') {
@@ -534,6 +542,29 @@ function AuthModal({ onClose }) {
                       <div className="form-hint" style={{ fontSize: '11px', color: 'rgba(255, 255, 255, 0.4)', marginTop: '4px' }}>
                         {isWestern ? 'Used for payment and WhatsApp notifications' : 'Used for M-Pesa payments and WhatsApp notifications'}
                       </div>
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">Your Seat / Persona</label>
+                      <select
+                        name="persona"
+                        className="form-input"
+                        value={formData.persona}
+                        onChange={handleChange}
+                        data-testid="persona-select"
+                        style={{ background: '#0d1117', color: '#e6edf3' }}
+                      >
+                        <optgroup label="Creative & Media (TuneMavens)">
+                          {PERSONAS.filter((p) => p.side === 'creative').map((p) => (
+                            <option key={p.key} value={p.key}>{p.label} — {p.subtitle}</option>
+                          ))}
+                        </optgroup>
+                        <optgroup label="Business & Enterprise (Intermaven)">
+                          {PERSONAS.filter((p) => p.side === 'business').map((p) => (
+                            <option key={p.key} value={p.key}>{p.label} — {p.subtitle}</option>
+                          ))}
+                        </optgroup>
+                      </select>
                     </div>
 
                     <button 

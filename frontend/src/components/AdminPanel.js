@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback } from 'react';
 import { api } from '../App';
 import CMSEditor from './CMSEditor';
 import { INTERMAVEN_LOGO } from '../imageRegistry';
@@ -13,7 +13,7 @@ import {
   FileText, Globe, RotateCcw
 } from 'lucide-react';
 
-// ── Constants ────────────────────────────────────────────────────
+// â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const PLANS = ['free', 'creator', 'pro'];
 const PORTALS = ['music', 'business'];
 const PLAN_CREDITS = { free: 150, creator: 600, pro: 2500 };
@@ -33,7 +33,7 @@ const ADMIN_ROLES = {
   finance: { label: 'Finance', color: '#10b981', perms: ['payments', 'analytics.revenue'] },
 };
 
-// ── Helpers ───────────────────────────────────────────────────────
+// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function Badge({ color, children }) {
   const colors = {
     free: '#9096b8', creator: '#10b981', pro: '#f59e0b',
@@ -95,7 +95,7 @@ function Pagination({ page, total, perPage, onChange }) {
   return (
     <div className="admin-pagination">
       <span className="admin-pagination-info">
-        {(page - 1) * perPage + 1}–{Math.min(page * perPage, total)} of {total}
+        {(page - 1) * perPage + 1}â€“{Math.min(page * perPage, total)} of {total}
       </span>
       <button disabled={page <= 1} onClick={() => onChange(page - 1)} className="admin-page-btn">
         <ChevronLeft size={14} />
@@ -122,7 +122,7 @@ function Pagination({ page, total, perPage, onChange }) {
   );
 }
 
-// ── Users Panel ───────────────────────────────────────────────────
+// â”€â”€ Users Panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function UsersPanel({ addToast, adminRole }) {
   const [users, setUsers] = useState([]);
   const [total, setTotal] = useState(0);
@@ -285,7 +285,7 @@ function UsersPanel({ addToast, adminRole }) {
                   </div>
                 </td>
                 <td><Badge color={u.portal}>{u.portal}</Badge></td>
-                <td className="admin-muted">{u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'}</td>
+                <td className="admin-muted">{u.created_at ? new Date(u.created_at).toLocaleDateString() : 'â€”'}</td>
                 <td>
                   <div className="admin-row-actions">
                     <button className="admin-action-btn" title="View" onClick={() => setViewUser(u)}><Eye size={13} /></button>
@@ -308,7 +308,7 @@ function UsersPanel({ addToast, adminRole }) {
   );
 }
 
-// ── User Detail Modal ─────────────────────────────────────────────
+// â”€â”€ User Detail Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function UserDetailModal({ user, onClose, onEdit, onCredit, addToast, onRefresh }) {
   const [tab, setTab] = useState('overview');
   const [activity, setActivity] = useState([]);
@@ -410,7 +410,7 @@ function UserDetailModal({ user, onClose, onEdit, onCredit, addToast, onRefresh 
             </div>
             <div className="admin-detail-card">
               <div className="admin-detail-card-title">Joined</div>
-              <div className="admin-detail-big">{user.created_at ? new Date(user.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}</div>
+              <div className="admin-detail-big">{user.created_at ? new Date(user.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'â€”'}</div>
             </div>
             <div className="admin-detail-card" style={{ gridColumn: '1 / -1' }}>
               <div className="admin-detail-card-title">Bio</div>
@@ -425,8 +425,8 @@ function UserDetailModal({ user, onClose, onEdit, onCredit, addToast, onRefresh 
               <div key={i} className="admin-activity-item">
                 <div className="admin-activity-dot" />
                 <div>
-                  <div className="admin-activity-text">{a.type?.replace('_', ' ') || 'Action'} — {a.tool_id || ''}</div>
-                  <div className="admin-activity-time">{a.created_at ? new Date(a.created_at).toLocaleString() : '—'}</div>
+                  <div className="admin-activity-text">{a.type?.replace('_', ' ') || 'Action'} â€” {a.tool_id || ''}</div>
+                  <div className="admin-activity-time">{a.created_at ? new Date(a.created_at).toLocaleString() : 'â€”'}</div>
                 </div>
               </div>
             ))}
@@ -439,7 +439,7 @@ function UserDetailModal({ user, onClose, onEdit, onCredit, addToast, onRefresh 
               <div key={i} className="admin-tx-row">
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 600 }}>{t.plan?.charAt(0).toUpperCase() + t.plan?.slice(1)} Plan</div>
-                  <div className="admin-muted" style={{ fontSize: 11 }}>{t.created_at ? new Date(t.created_at).toLocaleString() : '—'}</div>
+                  <div className="admin-muted" style={{ fontSize: 11 }}>{t.created_at ? new Date(t.created_at).toLocaleString() : 'â€”'}</div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontSize: 13, fontWeight: 600 }}>KES {t.amount?.toLocaleString()}</div>
@@ -479,7 +479,7 @@ function UserDetailModal({ user, onClose, onEdit, onCredit, addToast, onRefresh 
   );
 }
 
-// ── User Edit Modal ───────────────────────────────────────────────
+// â”€â”€ User Edit Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function UserEditModal({ user, onClose, addToast, onRefresh }) {
   const [form, setForm] = useState({
     first_name: user.first_name || '',
@@ -556,7 +556,7 @@ function UserEditModal({ user, onClose, addToast, onRefresh }) {
           <div className="form-group">
             <label className="form-label">Admin Role</label>
             <select className={`admin-select ${changes.admin_role ? 'changed' : ''}`} value={form.admin_role} onChange={e => handleChange('admin_role', e.target.value)}>
-              <option value="">— User (no admin) —</option>
+              <option value="">â€” User (no admin) â€”</option>
               {Object.entries(ADMIN_ROLES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
             </select>
           </div>
@@ -568,7 +568,7 @@ function UserEditModal({ user, onClose, addToast, onRefresh }) {
               <div key={k} className="admin-change-item">
                 <span className="admin-change-field">{k}</span>
                 <span className="admin-change-from">{String(from) || '(empty)'}</span>
-                <span>→</span>
+                <span>â†’</span>
                 <span className="admin-change-to">{String(to) || '(empty)'}</span>
               </div>
             ))}
@@ -585,7 +585,7 @@ function UserEditModal({ user, onClose, addToast, onRefresh }) {
   );
 }
 
-// ── Credit Modal ──────────────────────────────────────────────────
+// â”€â”€ Credit Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function CreditModal({ user, onClose, addToast, onRefresh }) {
   const [method, setMethod] = useState('preset');
   const [preset, setPreset] = useState(null);
@@ -613,7 +613,7 @@ function CreditModal({ user, onClose, addToast, onRefresh }) {
   };
 
   return (
-    <Modal title={`Grant Credits — ${user.first_name} ${user.last_name}`} onClose={onClose} width={480}>
+    <Modal title={`Grant Credits â€” ${user.first_name} ${user.last_name}`} onClose={onClose} width={480}>
       <div className="admin-credit-modal">
         <div className="admin-credit-current">
           <div className="admin-credit-current-label">Current balance</div>
@@ -688,25 +688,39 @@ function CreditModal({ user, onClose, addToast, onRefresh }) {
   );
 }
 
-// ── Analytics Panel ───────────────────────────────────────────────
+// â”€â”€ Analytics Panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function AnalyticsPanel({ addToast }) {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [range, setRange] = useState('30d');
 
   useEffect(() => { fetchStats(); }, [range]);
 
   const fetchStats = async () => {
     setLoading(true);
+    setError('');
     try {
       const res = await api.get(`/api/admin/analytics/overview?range=${range}`);
-      setStats(res.data);
-    } catch { addToast('Failed to load analytics', '', 'error'); }
-    setLoading(false);
+      setStats(res.data || {});
+    } catch (err) {
+      const msg = err?.response?.data?.detail || 'Failed to load analytics';
+      setError(msg);
+      addToast('Failed to load analytics', msg, 'error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (loading) return <div className="admin-loading"><span className="spinner" /> Loading analytics...</div>;
-  if (!stats) return null;
+  if (error || !stats) {
+    return (
+      <div className="admin-panel-content" style={{ padding: 24, textAlign: 'center' }}>
+        <p style={{ color: '#f87171', marginBottom: 12 }}>{error || 'No analytics data available.'}</p>
+        <button type="button" className="admin-btn-primary" onClick={fetchStats}>Retry</button>
+      </div>
+    );
+  }
 
   return (
     <div className="admin-panel-content">
@@ -796,7 +810,7 @@ function AnalyticsPanel({ addToast }) {
               </div>
               <Badge color={u.plan}>{u.plan}</Badge>
               <Badge color={u.portal}>{u.portal}</Badge>
-              <div className="admin-muted" style={{ fontSize: 11 }}>{u.created_at ? new Date(u.created_at).toLocaleDateString() : '—'}</div>
+              <div className="admin-muted" style={{ fontSize: 11 }}>{u.created_at ? new Date(u.created_at).toLocaleDateString() : 'â€”'}</div>
             </div>
           ))}
         </div>
@@ -805,7 +819,7 @@ function AnalyticsPanel({ addToast }) {
   );
 }
 
-// ── Audit Log Panel ───────────────────────────────────────────────
+// â”€â”€ Audit Log Panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function AuditPanel({ addToast }) {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -820,8 +834,11 @@ function AuditPanel({ addToast }) {
       const res = await api.get(`/api/admin/audit-log?page=${page}&per_page=50`);
       setLogs(res.data.logs || []);
       setTotal(res.data.total || 0);
-    } catch { addToast('Failed to load audit log', '', 'error'); }
-    setLoading(false);
+    } catch {
+      addToast('Failed to load audit log', '', 'error');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const ACTION_COLORS = {
@@ -844,17 +861,17 @@ function AuditPanel({ addToast }) {
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={5} className="admin-table-empty"><span className="spinner" /></td></tr>
+              <tr><td colSpan={5} className="admin-table-empty"><div style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}><span className="spinner" /> <span>Loading audit logs...</span></div></td></tr>
             ) : logs.length === 0 ? (
               <tr><td colSpan={5} className="admin-table-empty">No audit logs yet</td></tr>
             ) : logs.map((l, i) => (
               <tr key={i}>
-                <td className="admin-muted" style={{ fontSize: 11 }}>{l.created_at ? new Date(l.created_at).toLocaleString() : '—'}</td>
+                <td className="admin-muted" style={{ fontSize: 11 }}>{l.created_at ? new Date(l.created_at).toLocaleString() : 'â€”'}</td>
                 <td style={{ fontSize: 13 }}>{l.admin_name || l.admin_id}</td>
                 <td><Badge color={ACTION_COLORS[l.action] || '#9096b8'}>{l.action?.replace('_', ' ')}</Badge></td>
                 <td style={{ fontSize: 13 }}>{l.target_user_name || l.target_user_id}</td>
                 <td className="admin-muted" style={{ fontSize: 11 }}>
-                  {l.details ? JSON.stringify(l.details).slice(0, 80) : '—'}
+                  {l.details ? JSON.stringify(l.details).slice(0, 80) : 'â€”'}
                 </td>
               </tr>
             ))}
@@ -866,7 +883,7 @@ function AuditPanel({ addToast }) {
   );
 }
 
-// ── Settings Panel ────────────────────────────────────────────────
+// â”€â”€ Settings Panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function AdminSettingsPanel({ addToast }) {
   const [settings, setSettings] = useState(null);
   const [selectedHeroScope, setSelectedHeroScope] = useState('music');
@@ -1294,7 +1311,7 @@ function AdminSettingsPanel({ addToast }) {
   );
 }
 
-// ── CMS Asset Picker Modal ──────────────────────────────────────────
+// â”€â”€ CMS Asset Picker Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function AssetPickerModal({ onClose, onSelect, addToast }) {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -1390,7 +1407,7 @@ function AssetPickerModal({ onClose, onSelect, addToast }) {
   );
 }
 
-// ── CMS Rich Formatting Toolbar ─────────────────────────────────────
+// â”€â”€ CMS Rich Formatting Toolbar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function CmsToolbar({ textareaId, value, onChange, addToast }) {
   const [showPicker, setShowPicker] = useState(false);
 
@@ -1428,7 +1445,7 @@ function CmsToolbar({ textareaId, value, onChange, addToast }) {
       <button className="admin-action-btn" type="button" title="Heading 3" onClick={() => applyFormat('<h3>', '</h3>', 'Heading 3')} style={{ fontSize: '10px', width: '30px', height: '22px', padding: 0 }}>H3</button>
       <button className="admin-action-btn" type="button" title="List Item" onClick={() => applyFormat('<ul>\n  <li>', '</li>\n</ul>', 'list item')} style={{ fontSize: '10px', width: '32px', height: '22px', padding: 0 }}>List</button>
       <button className="admin-action-btn" type="button" title="Insert Media/Image" onClick={() => setShowPicker(true)} style={{ fontSize: '11px', height: '22px', padding: '0 6px', marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '3px', color: 'var(--cyan)' }}>
-        🖼️ Media
+        ðŸ–¼ï¸ Media
       </button>
 
       {showPicker && (
@@ -1442,7 +1459,7 @@ function CmsToolbar({ textareaId, value, onChange, addToast }) {
   );
 }
 
-// ── CMS Manager Panel ──────────────────────────────────────────────
+// â”€â”€ CMS Manager Panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function CmsManagerPanel({ addToast }) {
   const [keys, setKeys] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -1974,7 +1991,7 @@ function CmsManagerPanel({ addToast }) {
   );
 }
 
-// ── Main AdminPanel ────────────────────────────────────────────────
+// â”€â”€ Main AdminPanel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function AdminPanel({ user, onBack, addToast, initialTab = 'users' }) {
   const [tab, setTab] = useState(initialTab || 'users');
   const adminRole = user?.admin_role;
@@ -2045,3 +2062,4 @@ function AdminPanel({ user, onBack, addToast, initialTab = 'users' }) {
 }
 
 export default AdminPanel;
+

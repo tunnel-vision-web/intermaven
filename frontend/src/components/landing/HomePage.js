@@ -116,17 +116,17 @@ const PORTALS = {
     ],
     ftitle: 'AI and operational tools for Nairobi businesses',
     feats: [
-      { icon: 'brandkit', bg: 'rgba(14,148,153,.15)', t: 'Business Brand Kit AI', d: 'Brand foundation for SMEs and service businesses.', tag: 'Free · 10 credits', tc: '#22d3ee', tb: 'rgba(14,148,153,.15)', appId: 'brandkit' },
-      { icon: 'social', bg: 'rgba(244,63,94,.12)', t: 'Social AI', d: 'Multi-account social management and AI insights.', tag: 'Free · 2 accounts', tc: '#f43f5e', tb: 'rgba(244,63,94,.12)', appId: 'social' },
-      { icon: 'invoicing', bg: 'rgba(245,158,11,.15)', t: 'Invoicing & Payments', d: 'M-Pesa invoices, card payments, billing management.', tag: 'Beta', tc: '#f59e0b', tb: 'rgba(245,158,11,.15)', appId: 'invoicing' },
-      { icon: 'contracts', bg: 'rgba(100,116,139,.12)', t: 'Contract Templates', d: 'Kenya-law-compliant templates for all business types.', tag: 'Coming soon', tc: 'var(--mu)', tb: 'rgba(255,255,255,.06)', appId: null, dash: true }
+      { icon: 'crm', bg: 'rgba(59,130,246,.15)', t: 'Smart CRM & Reachout', d: 'Email-only target groups, persona playbooks & tracked reachout.', tag: 'Beta Free Credits', tc: '#60a5fa', tb: 'rgba(59,130,246,.15)', appId: 'smartcrm', page: '/smartcrm' },
+      { icon: 'brandkit', bg: 'rgba(14,148,153,.15)', t: 'Business Brand Kit AI', d: 'Brand foundation for SMEs and service businesses.', tag: 'Free · 10 credits', tc: '#22d3ee', tb: 'rgba(14,148,153,.15)', appId: 'brandkit', page: '/brandkit' },
+      { icon: 'social', bg: 'rgba(244,63,94,.12)', t: 'Social AI', d: 'Multi-account social management and AI insights.', tag: 'Free · 2 accounts', tc: '#f43f5e', tb: 'rgba(244,63,94,.12)', appId: 'social', page: '/social' },
+      { icon: 'invoicing', bg: 'rgba(245,158,11,.15)', t: 'Invoicing & Payments', d: 'M-Pesa invoices, card payments, billing management.', tag: 'Beta', tc: '#f59e0b', tb: 'rgba(245,158,11,.15)', appId: 'invoicing' }
     ],
     btitle: 'Business App Marketplace',
-    bsub: 'Operational and AI tools for Nairobi entrepreneurs.',
+    bsub: 'Operational and AI tools for entrepreneurs, agencies, and creators.',
     bpills: [
+      { l: 'Smart CRM & Reachout', lv: true },
       { l: 'Brand Kit AI', lv: true },
       { l: 'Social AI', lv: true },
-      { l: 'Pitch Deck AI', lv: true },
       { l: 'POS System', lv: false },
       { l: 'Contracts', lv: false }
     ]

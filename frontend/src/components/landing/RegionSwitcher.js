@@ -1,42 +1,107 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Globe, ChevronDown } from 'lucide-react';
-import { useRegion } from '../../RegionContext';
+import { useRegion, LANGUAGES_LIST } from '../../RegionContext';
 
 function RegionSwitcher() {
-  const { country, currency, currencyInfo, language, languages, options, changeCountry, changeCurrency, changeLanguage } = useRegion();
+  const {
+    country,
+    countryFlag,
+    currency,
+    currencyInfo,
+    language,
+    languages,
+    options,
+    changeCountry,
+    changeCurrency,
+    changeLanguage,
+  } = useRegion();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
   useEffect(() => {
-    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    const handler = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
+  useEffect(() => {
+    const openHandler = () => setOpen(true);
+    window.addEventListener('synergyOpenRegionSwitcher', openHandler);
+    return () => window.removeEventListener('synergyOpenRegionSwitcher', openHandler);
+  }, []);
+
+  const langList = Array.isArray(languages) && languages.length > 0 ? languages : LANGUAGES_LIST;
+  const activeIdx = Math.max(0, langList.findIndex((l) => l.code === language));
+  const activeLang = langList[activeIdx] || langList[0];
+  const nextLang = langList[(activeIdx + 1) % langList.length] || langList[0];
+
+  const toggleLanguageQuick = (e) => {
+    e.stopPropagation();
+    changeLanguage(nextLang.code);
+  };
+
   return (
-    <div className="region-switcher" ref={ref} data-testid="region-switcher">
-      <button
-        className="region-trigger"
-        onClick={() => setOpen((o) => !o)}
-        aria-label="Region and currency"
-        data-testid="region-switcher-trigger"
-      >
-        <Globe size={15} />
-        <span>{currencyInfo?.symbol || currency} {currency}</span>
-        <ChevronDown size={13} className={`region-chevron ${open ? 'open' : ''}`} />
-      </button>
+    <div className="region-switcher" ref={ref} data-testid="region-switcher" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', position: 'relative' }}>
+      <div className="region-trigger" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '5px 10px' }}>
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          aria-label="Region and currency"
+          data-testid="region-switcher-trigger"
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: 'inherit',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '5px',
+            cursor: 'pointer',
+            padding: 0,
+            font: 'inherit',
+          }}
+        >
+          <Globe size={14} style={{ color: '#22d3ee' }} />
+          <span style={{ fontWeight: 700 }}>{countryFlag || '🌍'} {currencyInfo?.symbol || currency} {currency}</span>
+          <ChevronDown size={13} className={`region-chevron ${open ? 'open' : ''}`} />
+        </button>
+
+        <span style={{ opacity: 0.3, padding: '0 2px', userSelect: 'none' }}>|</span>
+
+        <button
+          type="button"
+          onClick={toggleLanguageQuick}
+          title={`Language: ${activeLang.native} — Click to switch to ${nextLang.native}`}
+          data-testid="lang-quick-toggle"
+          style={{
+            background: language === 'en' ? 'rgba(34, 211, 238, 0.14)' : (activeLang.accent || '#10b981'),
+            color: language === 'en' ? '#22d3ee' : (activeLang.textDark || '#042f2e'),
+            border: language === 'en' ? '1px solid rgba(34, 211, 238, 0.35)' : `1px solid ${activeLang.accent || '#10b981'}`,
+            borderRadius: '3px',
+            padding: '2px 7px',
+            fontSize: '11px',
+            fontWeight: 800,
+            cursor: 'pointer',
+            letterSpacing: '0.4px',
+            lineHeight: 1.3,
+          }}
+        >
+          <span>{activeLang.flag} {activeLang.short || activeLang.code.toUpperCase()}</span>
+        </button>
+      </div>
 
       {open && (
-        <div className="region-panel" data-testid="region-panel">
+        <div className="region-panel" data-testid="region-panel" style={{ zIndex: 99999, minWidth: '250px' }}>
           <label className="region-field">
-            <span>Country / region</span>
+            <span>Country / Region</span>
             <select
               value={country}
               onChange={(e) => changeCountry(e.target.value)}
               data-testid="region-country-select"
             >
               {(options.countries || []).map((c) => (
-                <option key={c.code} value={c.code}>{c.name}</option>
+                <option key={c.code} value={c.code}>{c.name} ({c.currency})</option>
               ))}
             </select>
           </label>
@@ -61,13 +126,11 @@ function RegionSwitcher() {
               onChange={(e) => changeLanguage(e.target.value)}
               data-testid="region-language-select"
             >
-              {(languages || []).map((l) => (
-                <option key={l.code} value={l.code}>{l.native} ({l.name})</option>
+              {langList.map((l) => (
+                <option key={l.code} value={l.code}>{l.flag} {l.native} ({l.name})</option>
               ))}
             </select>
           </label>
-
-          <p className="region-note">Prices update live to your local currency.</p>
         </div>
       )}
     </div>

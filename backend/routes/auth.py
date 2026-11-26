@@ -65,6 +65,7 @@ async def register(user_data: UserCreate, request: Request, response: Response):
         raise HTTPException(status_code=400, detail="Email already registered")
 
     hashed_password = get_password_hash(user_data.password)
+    resolved_persona = user_data.persona or ("founder" if user_data.portal == "business" else "creator")
     new_user = {
         "email": user_data.email.lower(),
         "password": hashed_password,
@@ -75,6 +76,9 @@ async def register(user_data: UserCreate, request: Request, response: Response):
         "credits": get_plan_credits("free"),
         "apps": ["brandkit", "musicbio", "social", "syncpitch", "bizpitch"],
         "portal": user_data.portal,
+        "persona": resolved_persona,
+        "secondary_personas": user_data.secondary_personas or [],
+        "role": resolved_persona,
         "brand_name": "",
         "bio": "",
         "channels": {"email": True, "whatsapp": True, "sms": False, "push": False},

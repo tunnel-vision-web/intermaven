@@ -17,6 +17,42 @@ logger = logging.getLogger("intermaven.sso")
 
 # Pre-configured list of allowed partner clients (first-party/partner domains)
 ALLOWED_CLIENTS = {
+    "intermaven": {
+        "client_secret": "intermaven_parent_secret_2026",
+        "redirect_uris": [
+            "http://localhost:3005/callback",
+            "http://127.0.0.1:3005/callback",
+            "https://intermaven.io/callback",
+            "https://www.intermaven.io/callback",
+        ]
+    },
+    "tunemavens": {
+        "client_secret": "tunemavens_secret_2026",
+        "redirect_uris": [
+            "http://localhost:3000/callback",
+            "http://127.0.0.1:3000/callback",
+            "https://tunemavens.com/callback",
+            "https://www.tunemavens.com/callback",
+        ]
+    },
+    "tunestream": {
+        "client_secret": "tunestream_secret_2026",
+        "redirect_uris": [
+            "http://localhost:3001/callback",
+            "http://127.0.0.1:3001/callback",
+            "https://tunestream.co/callback",
+            "https://www.tunestream.co/callback",
+        ]
+    },
+    "syncmavens": {
+        "client_secret": "syncmavens_secret_2026",
+        "redirect_uris": [
+            "http://localhost:3002/callback",
+            "http://127.0.0.1:3002/callback",
+            "https://syncmavens.com/callback",
+            "https://www.syncmavens.com/callback",
+        ]
+    },
     "atltvmount": {
         "client_secret": "atltvmount_secret_secure_2026",
         "redirect_uris": [

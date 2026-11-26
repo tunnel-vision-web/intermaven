@@ -327,14 +327,26 @@ async def admin_analytics(range: str = "30d", admin: dict = Depends(get_admin_us
 
 @router.get("/api/admin/audit-log")
 async def admin_audit_log(page: int = 1, per_page: int = 50, admin: dict = Depends(get_admin_user)):
-    total = db.audit_log.count_documents({})
-    skip = (page - 1) * per_page
-    logs = list(db.audit_log.find({}).sort("created_at", -1).skip(skip).limit(per_page))
-    for l in logs:
+    logs_a = list(db.audit_log.find({}).sort("created_at", -1).limit(page * per_page))
+    logs_b = list(db.audit_logs.find({}).sort("created_at", -1).limit(page * per_page))
+    combined = logs_a + logs_b
+    for l in combined:
         l.pop("_id", None)
         if isinstance(l.get("created_at"), datetime):
             l["created_at"] = l["created_at"].isoformat()
-    return {"logs": logs, "total": total}
+        elif l.get("created_at") is None:
+            l["created_at"] = ""
+        else:
+            l["created_at"] = str(l["created_at"])
+        # Normalize TuneMavens audit_logs fields to Intermaven AuditPanel columns
+        if not l.get("admin_name") and l.get("actor_email"):
+            l["admin_name"] = l.get("actor_email")
+        if not l.get("target_user_name") and l.get("target_id"):
+            l["target_user_name"] = l.get("target_id")
+    combined.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+    total = db.audit_log.count_documents({}) + db.audit_logs.count_documents({})
+    skip = (page - 1) * per_page
+    return {"logs": combined[skip:skip + per_page], "total": total}
 
 
 # ============== ADMIN — SETTINGS ==============

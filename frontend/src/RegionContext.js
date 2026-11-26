@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+﻿import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import fallbackData from './fallbackData.json';
 
@@ -13,6 +13,26 @@ const RegionContext = createContext(null);
 export const useRegion = () => useContext(RegionContext);
 
 const STORAGE_KEY = 'intermaven_region';
+
+export const LANGUAGES_LIST = [
+  { code: 'en', short: 'EN', name: 'English', native: 'English', flag: 'ðŸ‡¬ðŸ‡§', accent: '#22d3ee', textDark: '#060813' },
+  { code: 'sw', short: 'SW', name: 'Swahili', native: 'Kiswahili', flag: 'ðŸ‡°ðŸ‡ª', accent: '#10b981', textDark: '#042f2e' },
+  { code: 'ki', short: 'KI', name: 'Kikuyu', native: 'GÄ©kÅ©yÅ©', flag: 'ðŸ‡°ðŸ‡ª', accent: '#f59e0b', textDark: '#1c1917' },
+  { code: 'es', short: 'ES', name: 'Spanish', native: 'EspaÃ±ol', flag: 'ðŸ‡ºðŸ‡¸', accent: '#a855f7', textDark: '#ffffff' }
+];
+
+export const COUNTRY_FLAGS = {
+  KE: 'ðŸ‡°ðŸ‡ª', UG: 'ðŸ‡ºðŸ‡¬', TZ: 'ðŸ‡¹ðŸ‡¿', RW: 'ðŸ‡·ðŸ‡¼', NG: 'ðŸ‡³ðŸ‡¬', GH: 'ðŸ‡¬ðŸ‡­', ZA: 'ðŸ‡¿ðŸ‡¦',
+  US: 'ðŸ‡ºðŸ‡¸', CA: 'ðŸ‡¨ðŸ‡¦', GB: 'ðŸ‡¬ðŸ‡§', EU: 'ðŸ‡ªðŸ‡º', FR: 'ðŸ‡«ðŸ‡·', DE: 'ðŸ‡©ðŸ‡ª', ES: 'ðŸ‡ªðŸ‡¸',
+  IN: 'ðŸ‡®ðŸ‡³', JP: 'ðŸ‡¯ðŸ‡µ', AU: 'ðŸ‡¦ðŸ‡º'
+};
+
+const TRANSLATIONS = {
+  en: { 'nav.home': 'Home', 'nav.tools': 'AI Tools', 'nav.apps': 'Apps', 'nav.pricing': 'Pricing', 'nav.about': 'About', 'nav.help': 'Help Center', 'nav.forum': 'Forum', 'nav.perfect_for': 'Perfect For' },
+  sw: { 'nav.home': 'Nyumbani', 'nav.tools': 'Zana za AI', 'nav.apps': 'Programu', 'nav.pricing': 'Bei', 'nav.about': 'Kuhusu', 'nav.help': 'Kituo cha Msaada', 'nav.forum': 'Jukwaa', 'nav.perfect_for': 'Inafaa Kwa' },
+  ki: { 'nav.home': 'MÅ©ciÄ©', 'nav.tools': 'Indo cia AI', 'nav.apps': 'App', 'nav.pricing': 'Thogora', 'nav.about': 'Å¨horo WitÅ©', 'nav.help': 'Å¨teithio', 'nav.forum': 'KÄ©ama', 'nav.perfect_for': 'YagÄ©rÄ©ire' },
+  es: { 'nav.home': 'Inicio', 'nav.tools': 'Herramientas IA', 'nav.apps': 'Apps', 'nav.pricing': 'Precios', 'nav.about': 'Nosotros', 'nav.help': 'Ayuda', 'nav.forum': 'Foro', 'nav.perfect_for': 'Ideal Para' },
+};
 
 // Helper to resolve region options locally if backend is down or on initial render
 const resolveRegionLocally = (countryCode) => {
@@ -97,7 +117,11 @@ export function RegionProvider({ children }) {
   const [hasSavedRegion, setHasSavedRegion] = useState(true);
 
   const persist = useCallback((data) => {
-    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch (e) { /* noop */ }
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      if (data?.language) localStorage.setItem('tunemavens_lang', data.language);
+      if (data?.country) localStorage.setItem('tunemavens_country', data.country);
+    } catch (e) { /* noop */ }
   }, []);
 
   // Load switcher options once.
@@ -222,12 +246,23 @@ export function RegionProvider({ children }) {
 
   const changeLanguage = useCallback((code) => {
     setLanguage(code);
+    if (typeof document !== 'undefined') document.documentElement.lang = code;
     persist({ country, currency, currencyInfo, language: code });
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('synergyLocaleChanged', { detail: { language: code, country, currency } }));
+    }
   }, [country, currency, currencyInfo, persist]);
+
+  const t = useCallback((key, fallback) => {
+    const dict = TRANSLATIONS[language] || TRANSLATIONS.en;
+    return dict[key] || fallback || key;
+  }, [language]);
+
+  const countryFlag = COUNTRY_FLAGS[(country || 'KE').toUpperCase()] || '🌍';
 
   return (
     <RegionContext.Provider value={{
-      country, countryName, currency, currencyInfo, language, languages, options, ready,
+      country, countryName, countryFlag, currency, currencyInfo, language, languages: LANGUAGES_LIST, options, ready, t,
       source, hasSavedRegion,
       changeCountry, changeCurrency, changeLanguage,
       // Derived helpers

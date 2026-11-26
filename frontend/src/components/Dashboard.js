@@ -26,13 +26,15 @@ import WizardShell from './wizard/WizardShell';
 import HOW_TO_GUIDES from './wizard/howto-content';
 import StrategyPanel from './wizard/StrategyPanel';
 import RequiredChannelsCard from './wizard/RequiredChannelsCard';
+import FlatIcon from './FlatIcon';
+import AppHelpAiControls from './AppHelpAiControls';
+import { PERSONAS, getPersonaMeta } from '../data/personasCatalog';
 
 const APPS = {
   brandkit: { id: 'brandkit', name: 'Brand Kit AI', color: '#10b981', icon: Palette, portals: ['business', 'music'] },
   musicbio: { id: 'musicbio', name: 'Music Bio & Press Kit', color: '#22d3ee', icon: Music, portals: ['music'] },
   social: { id: 'social', name: 'Social AI', color: '#f43f5e', icon: Share2, portals: ['business', 'music', 'hospitality'] },
   syncpitch: { id: 'syncpitch', name: 'Sync Pitch AI', color: '#f59e0b', icon: Film, portals: ['music'] },
-  bizpitch: { id: 'bizpitch', name: 'Pitch Deck AI', color: '#8b5cf6', icon: Presentation, portals: ['business'] },
   pos: { id: 'pos', name: 'Intermaven POS', color: '#0ea5e9', icon: Smartphone, portals: ['business', 'music'] },
   distro: { id: 'distro', name: 'Distribution Tracker', color: '#0ea5e9', icon: Activity, portals: ['music'] },
   hosting: { id: 'hosting', name: 'Hosting Manager', color: '#10b981', icon: Globe, portals: ['business', 'music'] }
@@ -62,10 +64,40 @@ function Dashboard() {
   const [collapsed, setCollapsed] = useState(false);
   const [settingsTab, setSettingsTab] = useState('profile');
 
-  // Notifications State
+  // Notifications & Top-Right Menu State
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [notifCategory, setNotifCategory] = useState('all');
+  const [notifUnreadOnly, setNotifUnreadOnly] = useState(false);
+  const [showAdminMenu, setShowAdminMenu] = useState(false);
+
+  const handlePersonaChange = async (newPersona) => {
+    try {
+      const res = await api.put('/api/user/persona', { persona: newPersona });
+      if (res.data && updateUser) updateUser(res.data);
+    } catch (err) {
+      console.error('Failed to switch persona:', err);
+    }
+  };
+
+  const handleMarkOneRead = async (notifId) => {
+    try {
+      await api.post(`/api/notifications/${notifId}/read`);
+      fetchNotifications();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleArchiveNotif = async (notifId) => {
+    try {
+      await api.delete(`/api/notifications/${notifId}`);
+      fetchNotifications();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   // Onboarding States
   const [hasEpk, setHasEpk] = useState(false);
@@ -428,15 +460,41 @@ function Dashboard() {
         </div>
 
         {/* Top-Right Header Elements */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', paddingRight: '24px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingRight: '20px', flexWrap: 'wrap' }}>
           
+          {/* Persona Switcher */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(255,255,255,0.04)', border: '1px solid #334155', borderRadius: '8px', padding: '4px 8px' }}>
+            <FlatIcon name={getPersonaMeta(user?.persona).icon} size={20} color={getPersonaMeta(user?.persona).accent} />
+            <select
+              value={user?.persona || 'creator'}
+              onChange={(e) => handlePersonaChange(e.target.value)}
+              aria-label="Active Persona"
+              data-testid="dashboard-persona-select"
+              style={{ background: 'transparent', border: 'none', color: '#e2e8f0', fontSize: '12px', fontWeight: 600, cursor: 'pointer', outline: 'none' }}
+            >
+              <optgroup label="Creative & Media" style={{ background: '#0f172a' }}>
+                {PERSONAS.filter((p) => p.side === 'creative').map((p) => (
+                  <option key={p.key} value={p.key} style={{ background: '#0f172a' }}>{p.shortLabel}</option>
+                ))}
+              </optgroup>
+              <optgroup label="Business & Enterprise" style={{ background: '#0f172a' }}>
+                {PERSONAS.filter((p) => p.side === 'business').map((p) => (
+                  <option key={p.key} value={p.key} style={{ background: '#0f172a' }}>{p.shortLabel}</option>
+                ))}
+              </optgroup>
+            </select>
+          </div>
+
+          {/* Get Help & Ask AI */}
+          <AppHelpAiControls appId={activePanel} persona={user?.persona || 'creator'} compact />
+
           {/* Account Type Badge */}
           <div style={{ 
             backgroundColor: getBadgeColor(), 
             color: '#ffffff', 
-            padding: '5px 14px', 
-            borderRadius: '3px', 
-            fontSize: '12px', 
+            padding: '5px 12px', 
+            borderRadius: '6px', 
+            fontSize: '11px', 
             fontWeight: 700,
             textTransform: 'uppercase',
             letterSpacing: '0.05em'
@@ -444,7 +502,7 @@ function Dashboard() {
             {getAccountTypeLabel()}
           </div>
 
-          {/* View Site link — lets logged-in users browse the public frontend */}
+          {/* View Site link */}
           <a
             href="/"
             target="_blank"
@@ -452,52 +510,53 @@ function Dashboard() {
             data-testid="view-site-link"
             style={{
               color: '#cbd5e1',
-              fontSize: '13px',
+              fontSize: '12px',
               fontWeight: 600,
               textDecoration: 'none',
-              padding: '6px 12px',
+              padding: '6px 10px',
               border: '1px solid #334155',
-              borderRadius: '3px',
+              borderRadius: '8px',
               transition: 'all 0.2s'
             }}
-            onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#22d3ee'; e.currentTarget.style.color = '#22d3ee'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#334155'; e.currentTarget.style.color = '#cbd5e1'; }}
           >
             View Site ↗
           </a>
 
-          {/* Notification bell and tray */}
+          {/* Expanded Notification Area (TuneMavens Protocol) */}
           <div style={{ position: 'relative' }}>
             <button 
-              onClick={handleBellClick} 
+              onClick={() => setShowNotifications((s) => !s)}
+              data-testid="notifications-bell-btn"
+              title="Notifications & Inbox"
               style={{ 
-                background: 'none', 
-                border: 'none', 
+                background: showNotifications ? 'rgba(34,211,238,0.14)' : 'rgba(255,255,255,0.04)', 
+                border: '1px solid #334155', 
                 color: '#cbd5e1', 
                 cursor: 'pointer', 
                 display: 'flex', 
                 alignItems: 'center', 
                 position: 'relative', 
-                padding: '8px',
-                borderRadius: '3px'
+                padding: '7px 9px',
+                borderRadius: '8px'
               }}
             >
-              <Bell size={20} />
+              <Bell size={18} />
               {unreadCount > 0 && (
                 <span style={{ 
                   position: 'absolute', 
-                  top: '2px', 
-                  right: '2px', 
+                  top: '-4px', 
+                  right: '-4px', 
                   backgroundColor: '#ef4444', 
                   color: 'white', 
                   borderRadius: '50%', 
-                  width: '16px', 
-                  height: '16px', 
+                  minWidth: '17px', 
+                  height: '17px', 
                   fontSize: '10px', 
                   display: 'flex', 
                   alignItems: 'center', 
                   justifyContent: 'center', 
-                  fontWeight: 'bold' 
+                  fontWeight: 'bold',
+                  padding: '0 4px'
                 }}>
                   {unreadCount}
                 </span>
@@ -507,50 +566,172 @@ function Dashboard() {
             {showNotifications && (
               <div style={{ 
                 position: 'absolute', 
-                top: '45px', 
+                top: '44px', 
                 right: '0', 
-                width: '320px', 
-                backgroundColor: '#1e2937', 
+                width: '400px', 
+                maxWidth: '92vw',
+                backgroundColor: '#0f172a', 
                 border: '1px solid #334155', 
-                borderRadius: '3px', 
-                boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)', 
-                zIndex: 100, 
-                padding: '12px' 
+                borderRadius: '12px', 
+                boxShadow: '0 20px 35px rgba(0, 0, 0, 0.65)', 
+                zIndex: 120, 
+                padding: '14px' 
               }}>
-                <div style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between', 
-                  alignItems: 'center', 
-                  borderBottom: '1px solid #334155', 
-                  paddingBottom: '8px', 
-                  marginBottom: '8px' 
-                }}>
-                  <h5 style={{ margin: 0, color: '#f1f5f9', fontSize: '14px' }}>Notifications</h5>
-                  <span style={{ fontSize: '11px', color: '#64748b' }}>{unreadCount} unread</span>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #1e293b', paddingBottom: '10px', marginBottom: '10px' }}>
+                  <div>
+                    <h5 style={{ margin: 0, color: '#f1f5f9', fontSize: '14px', fontWeight: 700 }}>Notifications & Inbox</h5>
+                    <span style={{ fontSize: '11px', color: '#94a3b8' }}>{unreadCount} unread</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <button
+                      type="button"
+                      onClick={() => setNotifUnreadOnly((u) => !u)}
+                      style={{ fontSize: '11px', padding: '4px 8px', borderRadius: '6px', border: '1px solid #334155', background: notifUnreadOnly ? 'rgba(34,211,238,0.16)' : 'transparent', color: notifUnreadOnly ? '#22d3ee' : '#94a3b8', cursor: 'pointer' }}
+                    >
+                      Unread only
+                    </button>
+                    <button
+                      type="button"
+                      onClick={async () => { await api.post('/api/notifications/mark-read'); fetchNotifications(); }}
+                      style={{ fontSize: '11px', padding: '4px 8px', borderRadius: '6px', border: 'none', background: 'rgba(16,185,129,0.16)', color: '#34d399', fontWeight: 600, cursor: 'pointer' }}
+                    >
+                      Mark all read
+                    </button>
+                  </div>
                 </div>
-                <div style={{ maxHeight: '240px', overflowY: 'auto' }}>
-                  {notifications.length === 0 ? (
-                    <div style={{ padding: '16px 0', textAlign: 'center', color: '#64748b', fontSize: '13px' }}>
-                      No new notifications
-                    </div>
-                  ) : (
-                    notifications.map((n, i) => (
-                      <div key={i} style={{ display: 'flex', gap: '10px', padding: '8px 0', borderBottom: i < notifications.length - 1 ? '1px solid #334155' : 'none' }}>
-                        <span style={{ fontSize: '16px' }}>{n.icon || '🔔'}</span>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: '12px', fontWeight: 600, color: '#e2e8f0' }}>{n.title}</div>
-                          <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px', lineHeight: '1.4' }}>{n.text}</div>
-                          <div style={{ fontSize: '9px', color: '#64748b', marginTop: '4px' }}>
-                            {new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+
+                {/* Category Tabs */}
+                <div style={{ display: 'flex', gap: '6px', marginBottom: '10px', flexWrap: 'wrap' }}>
+                  {['all', 'system', 'distro', 'crm', 'support'].map((cat) => (
+                    <button
+                      key={cat}
+                      type="button"
+                      onClick={() => setNotifCategory(cat)}
+                      style={{
+                        fontSize: '11px',
+                        padding: '4px 9px',
+                        borderRadius: '999px',
+                        border: notifCategory === cat ? '1px solid #22d3ee' : '1px solid #334155',
+                        background: notifCategory === cat ? 'rgba(34,211,238,0.16)' : 'transparent',
+                        color: notifCategory === cat ? '#67e8f9' : '#94a3b8',
+                        textTransform: 'capitalize',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {cat}
+                    </button>
+                  ))}
+                </div>
+
+                <div style={{ maxHeight: '300px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {(() => {
+                    const filtered = notifications.filter((n) => {
+                      if (notifUnreadOnly && n.read) return false;
+                      if (notifCategory !== 'all' && (n.category || 'system') !== notifCategory) return false;
+                      return true;
+                    });
+                    if (filtered.length === 0) {
+                      return <div style={{ padding: '20px 0', textAlign: 'center', color: '#64748b', fontSize: '13px' }}>No notifications in this view</div>;
+                    }
+                    return filtered.map((n, i) => (
+                      <div key={n.id || i} style={{ display: 'flex', gap: '10px', padding: '10px', borderRadius: '8px', background: n.read ? 'rgba(255,255,255,0.02)' : 'rgba(34,211,238,0.07)', border: n.read ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(34,211,238,0.22)' }}>
+                        <FlatIcon name={n.category === 'distro' ? 'distro' : n.category === 'crm' ? 'crm' : n.category === 'support' ? 'help' : 'maven'} size={26} />
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', gap: '6px' }}>
+                            <div style={{ fontSize: '12px', fontWeight: 700, color: '#e2e8f0' }}>{n.title}</div>
+                            <div style={{ display: 'flex', gap: '4px' }}>
+                              {!n.read && n.id && (
+                                <button type="button" onClick={() => handleMarkOneRead(n.id)} title="Mark read" style={{ background: 'none', border: 'none', color: '#22d3ee', fontSize: '11px', cursor: 'pointer' }}>✓</button>
+                              )}
+                              {n.id && (
+                                <button type="button" onClick={() => handleArchiveNotif(n.id)} title="Archive" style={{ background: 'none', border: 'none', color: '#64748b', fontSize: '12px', cursor: 'pointer' }}>×</button>
+                              )}
+                            </div>
+                          </div>
+                          <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '2px', lineHeight: '1.4' }}>{n.message || n.text}</div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px' }}>
+                            <span style={{ fontSize: '10px', color: '#64748b' }}>
+                              {n.created_at ? new Date(n.created_at).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : ''}
+                            </span>
+                            {n.action_url && (
+                              <button type="button" onClick={() => { setShowNotifications(false); navigate(n.action_url); }} style={{ fontSize: '11px', color: '#22d3ee', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
+                                {n.action_label || 'Open →'}
+                              </button>
+                            )}
                           </div>
                         </div>
                       </div>
-                    ))
-                  )}
+                    ));
+                  })()}
                 </div>
               </div>
             )}
           </div>
+
+          {/* Top-Right Admin Functions (for admins) */}
+          {user?.admin_role && (
+            <div style={{ position: 'relative' }}>
+              <button
+                type="button"
+                onClick={() => setShowAdminMenu((s) => !s)}
+                data-testid="top-admin-menu-btn"
+                title="Admin Functions"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  padding: '6px 10px',
+                  borderRadius: '8px',
+                  border: '1px solid rgba(239,68,68,0.4)',
+                  background: 'rgba(239,68,68,0.12)',
+                  color: '#fca5a5',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                }}
+              >
+                <FlatIcon name="admin" size={18} />
+                <span>Admin</span>
+              </button>
+              {showAdminMenu && (
+                <div style={{ position: 'absolute', top: '42px', right: 0, width: '220px', background: '#0f172a', border: '1px solid #334155', borderRadius: '10px', padding: '6px', zIndex: 120, boxShadow: '0 14px 28px rgba(0,0,0,0.6)' }}>
+                  <button type="button" onClick={() => { setActivePanel('admin'); setShowAdminMenu(false); }} style={{ width: '100%', textAlign: 'left', padding: '9px 12px', background: 'transparent', border: 'none', color: '#e2e8f0', fontSize: '12px', fontWeight: 600, cursor: 'pointer', borderRadius: '6px' }}>
+                    Admin Console & Users
+                  </button>
+                  <button type="button" onClick={() => { setActivePanel('cms'); setShowAdminMenu(false); }} style={{ width: '100%', textAlign: 'left', padding: '9px 12px', background: 'transparent', border: 'none', color: '#34d399', fontSize: '12px', fontWeight: 600, cursor: 'pointer', borderRadius: '6px' }}>
+                    Mother-CMS Studio
+                  </button>
+                  <button type="button" onClick={() => { setActivePanel('distro'); setShowAdminMenu(false); }} style={{ width: '100%', textAlign: 'left', padding: '9px 12px', background: 'transparent', border: 'none', color: '#5eead4', fontSize: '12px', fontWeight: 600, cursor: 'pointer', borderRadius: '6px' }}>
+                    Distro Pipeline
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Top-Right Settings Button */}
+          <button
+            type="button"
+            onClick={() => { setActivePanel('settings'); setSettingsTab('profile'); }}
+            data-testid="top-settings-btn"
+            title="Account & Persona Settings"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              padding: '6px 10px',
+              borderRadius: '8px',
+              border: '1px solid #334155',
+              background: activePanel === 'settings' ? 'rgba(34,211,238,0.16)' : 'rgba(255,255,255,0.04)',
+              color: '#e2e8f0',
+              fontSize: '12px',
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
+          >
+            <FlatIcon name="settings" size={18} />
+            <span>Settings</span>
+          </button>
 
         </div>
       </div>
@@ -605,7 +786,7 @@ function Dashboard() {
                 onClick={() => openApp(app.id)}
                 style={{ width: '100%', padding: collapsed ? '16px' : '16px 24px', display: 'flex', alignItems: 'center', gap: '16px', background: activePanel === app.id ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer' }}
               >
-                <app.icon size={24} color={app.color} />
+                <FlatIcon name={app.id} size={24} />
                 {!collapsed && <span>{app.name}</span>}
               </button>
             ))}
@@ -684,7 +865,7 @@ function Dashboard() {
                 <div data-testid="discovery-cta" style={{ backgroundColor: '#22d3ee11', borderRadius: '3px', padding: '18px 22px', marginBottom: '20px', border: '1px solid #22d3ee66', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 }}>
                   <div>
                     <div style={{ color: '#22d3ee', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Recommended · 2 min</div>
-                    <div style={{ color: '#f1f5f9', fontWeight: 600, fontSize: '16px', marginTop: '4px' }}>Tell Ayo about your business</div>
+                    <div style={{ color: '#f1f5f9', fontWeight: 600, fontSize: '16px', marginTop: '4px' }}>Tell Maven about your business</div>
                     <div style={{ color: '#94a3b8', fontSize: '13px', marginTop: '2px' }}>I&apos;ll generate a custom strategy &amp; personalize every app for you.</div>
                   </div>
                   <button
@@ -716,11 +897,39 @@ function Dashboard() {
                 </button>
               </div>
 
-              {/* Onboarding Checklist */}
-              <div style={{ backgroundColor: '#1e2937', borderRadius: '3px', padding: '24px', marginBottom: '28px', border: '1px solid #334155' }}>
-                <h4 style={{ margin: '0 0 8px 0', color: '#f1f5f9', fontSize: '16px', fontWeight: 600 }}>Onboarding Progress ({onboardingProgress}%)</h4>
-                <div style={{ height: '8px', backgroundColor: '#334155', borderRadius: '3px', marginBottom: '20px', overflow: 'hidden' }}>
+              {/* Persona-Specific AI-Assisted Onboarding Checklist */}
+              <div style={{ backgroundColor: '#1e2937', borderRadius: '8px', padding: '24px', marginBottom: '28px', border: '1px solid #334155' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', marginBottom: '8px' }}>
+                  <h4 style={{ margin: 0, color: '#f1f5f9', fontSize: '16px', fontWeight: 700 }}>
+                    {getPersonaMeta(user?.persona).shortLabel} Onboarding ({onboardingProgress}%)
+                  </h4>
+                  <button
+                    type="button"
+                    onClick={() => { sessionStorage.removeItem('discovery_skipped'); setShowDiscovery(true); }}
+                    style={{ background: 'rgba(34,211,238,0.14)', border: '1px solid rgba(34,211,238,0.35)', color: '#67e8f9', padding: '5px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
+                  >
+                    AI-Assisted Persona Setup →
+                  </button>
+                </div>
+                <div style={{ height: '8px', backgroundColor: '#334155', borderRadius: '4px', marginBottom: '16px', overflow: 'hidden' }}>
                   <div style={{ height: '100%', width: `${onboardingProgress}%`, backgroundColor: '#10b981', transition: 'width 0.5s ease' }} />
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '16px' }}>
+                  {getPersonaMeta(user?.persona).onboardingSteps.map((pStep, idx) => (
+                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', padding: '10px 14px', backgroundColor: 'rgba(34,211,238,0.06)', borderRadius: '6px', border: '1px solid rgba(34,211,238,0.18)', flexWrap: 'wrap' }}>
+                      <div>
+                        <div style={{ fontSize: '13px', fontWeight: 700, color: '#f1f5f9' }}>{idx + 1}. {pStep.title}</div>
+                        <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '2px' }}>{pStep.desc}</div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => { sessionStorage.removeItem('discovery_skipped'); setShowDiscovery(true); }}
+                        style={{ background: 'transparent', border: '1px solid rgba(168,85,247,0.45)', color: '#e9d5ff', padding: '5px 10px', borderRadius: '6px', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}
+                      >
+                        Assist with Maven AI
+                      </button>
+                    </div>
+                  ))}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {onboardingSteps.map(step => (
@@ -1240,13 +1449,32 @@ function Dashboard() {
                     </div>
                   </div>
                   <div style={{ marginBottom: '24px' }}>
-                    <h4>Payment Method</h4>
-                    <div style={{ backgroundColor: '#334155', borderRadius: '3px', padding: '20px', border: '1px solid #475569' }}>
-                      <p>Visa •••• 4242 (expires 12/28)</p>
-                      <button style={{ marginTop: '12px', background: 'transparent', border: '1px solid #64748b', color: '#e2e8f0', padding: '8px 20px', borderRadius: '3px', cursor: 'pointer' }}>
-                        Update Card
-                      </button>
+                    <h4 style={{ marginBottom: '12px', color: '#f1f5f9' }}>Payment Methods</h4>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '16px' }}>
+                      <div style={{ backgroundColor: '#334155', borderRadius: '8px', padding: '20px', border: '1px solid #475569' }}>
+                        <div style={{ fontSize: '12px', fontWeight: 700, color: '#22d3ee', textTransform: 'uppercase', marginBottom: '6px' }}>Card / Bank (Stripe & PesaPal)</div>
+                        <p style={{ margin: '0 0 12px', color: '#e2e8f0' }}>Visa •••• 4242 (expires 12/28)</p>
+                        <button type="button" style={{ background: 'transparent', border: '1px solid #64748b', color: '#e2e8f0', padding: '8px 18px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 600 }}>
+                          Update Card
+                        </button>
+                      </div>
+                      <div style={{ backgroundColor: '#334155', borderRadius: '8px', padding: '20px', border: '1px solid rgba(16,185,129,0.45)' }}>
+                        <div style={{ fontSize: '12px', fontWeight: 700, color: '#34d399', textTransform: 'uppercase', marginBottom: '6px' }}>Mobile Payments (M-Pesa / Mobile Money)</div>
+                        <p style={{ margin: '0 0 12px', color: '#e2e8f0' }}>
+                          {user?.phone ? `Linked: ${user.phone}` : 'No mobile money number linked yet'}
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => setSettingsTab('profile')}
+                          style={{ background: 'rgba(16,185,129,0.18)', border: '1px solid #10b981', color: '#34d399', padding: '8px 18px', borderRadius: '6px', cursor: 'pointer', fontSize: '13px', fontWeight: 600 }}
+                        >
+                          {user?.phone ? 'Change Mobile Number' : 'Link M-Pesa / Mobile Money'}
+                        </button>
+                      </div>
                     </div>
+                  </div>
+                  <div style={{ backgroundColor: 'rgba(34,211,238,0.08)', border: '1px solid rgba(34,211,238,0.3)', borderRadius: '8px', padding: '16px', color: '#bae6fd', fontSize: '13px' }}>
+                    <strong>Beta Phase Free Credits:</strong> Every account receives <strong>150 Free Beta Credits</strong> during the beta phase to test AI tools, Smart CRM reachout, and Distribution Tracker before upgrading.
                   </div>
                 </div>
               )}
@@ -1279,7 +1507,7 @@ function Dashboard() {
               >
                 <div style={{ textAlign: 'center', padding: 40 }}>
                   <h3 style={{ color: APPS[activePanel].color, fontSize: 20, marginBottom: 8 }}>{APPS[activePanel].name}</h3>
-                  <p style={{ color: '#94a3b8', fontSize: 14 }}>Full advanced interface for this app is being built. Use the Wizard tab above to generate content with Ayo.</p>
+                  <p style={{ color: '#94a3b8', fontSize: 14 }}>Full advanced interface for this app is being built. Use the Wizard tab above to generate content with Maven.</p>
                 </div>
               </WizardShell>
             </div>

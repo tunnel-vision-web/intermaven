@@ -1,5 +1,5 @@
-"""
-Strategies router — persistent strategy storage, public marketplace
+﻿"""
+Strategies router â€” persistent strategy storage, public marketplace
 ("Use this strategy"), and PDF Brand Playbook generation.
 
 Credit split model (configurable): 50% platform / 40% creator / 10% fees.
@@ -302,25 +302,25 @@ async def playbook_pdf(current_user: dict = Depends(get_current_user)):
     story.append(Spacer(1, 0.15*inch))
     story.append(Paragraph(profile.get("business_name") or "Your Business", ParagraphStyle("BizName", parent=h1, fontSize=34, leading=40, alignment=1)))
     story.append(Spacer(1, 0.05*inch))
-    story.append(Paragraph(f"{profile.get('industry') or '—'} · {profile.get('region') or '—'}", ParagraphStyle("Loc", parent=sub, alignment=1, fontSize=11)))
+    story.append(Paragraph(f"{profile.get('industry') or 'â€”'} Â· {profile.get('region') or 'â€”'}", ParagraphStyle("Loc", parent=sub, alignment=1, fontSize=11)))
     story.append(Spacer(1, 0.4*inch))
     story.append(Paragraph(strategy.get("headline") or "Your custom go-to-market strategy", ParagraphStyle("Headline", parent=body, fontSize=14, leading=20, alignment=1, textColor=ink)))
     story.append(Spacer(1, 1.0*inch))
     story.append(Paragraph(f"Prepared for: {profile.get('business_name') or 'You'}", sub))
     story.append(Paragraph(f"Date: {datetime.now(timezone.utc).strftime('%B %d, %Y')}", sub))
-    story.append(Paragraph("Crafted by Ayo · Intermaven", sub))
+    story.append(Paragraph("Crafted by Maven Â· Intermaven", sub))
     story.append(PageBreak())
 
     # Section: Business Snapshot
     story.append(Paragraph("BUSINESS SNAPSHOT", h2))
     snapshot_rows = [
-        ["Business name", profile.get("business_name") or "—"],
-        ["Industry", profile.get("industry") or "—"],
-        ["Role", profile.get("role") or "—"],
-        ["Audience", profile.get("audience") or "—"],
-        ["Region", profile.get("region") or "—"],
-        ["Brand voice", profile.get("brand_voice") or "—"],
-        ["Budget", profile.get("budget_band") or "—"],
+        ["Business name", profile.get("business_name") or "â€”"],
+        ["Industry", profile.get("industry") or "â€”"],
+        ["Role", profile.get("role") or "â€”"],
+        ["Audience", profile.get("audience") or "â€”"],
+        ["Region", profile.get("region") or "â€”"],
+        ["Brand voice", profile.get("brand_voice") or "â€”"],
+        ["Budget", profile.get("budget_band") or "â€”"],
     ]
     snap = Table(snapshot_rows, colWidths=[1.6*inch, 4.3*inch])
     snap.setStyle(TableStyle([
@@ -342,7 +342,7 @@ async def playbook_pdf(current_user: dict = Depends(get_current_user)):
     if goals:
         story.append(Paragraph("YOUR 90-DAY GOALS", h2))
         for g in goals:
-            story.append(Paragraph(f"• {g}", body))
+            story.append(Paragraph(f"â€¢ {g}", body))
 
     # Section: Channels
     channels = strategy.get("channels") or []
@@ -350,7 +350,7 @@ async def playbook_pdf(current_user: dict = Depends(get_current_user)):
         story.append(Paragraph("RECOMMENDED CHANNELS", h2))
         ch_rows = [["Channel", "Priority", "Why"]]
         for c in channels:
-            ch_rows.append([c.get("name", "—"), (c.get("priority") or "—").title(), c.get("why", "—")])
+            ch_rows.append([c.get("name", "â€”"), (c.get("priority") or "â€”").title(), c.get("why", "â€”")])
         ch = Table(ch_rows, colWidths=[1.4*inch, 1.1*inch, 3.4*inch])
         ch.setStyle(TableStyle([
             ("FONT", (0, 0), (-1, -1), "Helvetica", 10),
@@ -371,7 +371,7 @@ async def playbook_pdf(current_user: dict = Depends(get_current_user)):
         story.append(Paragraph("POSTING CADENCE", h2))
         cad_rows = [["Channel", "Frequency"]]
         for c in cadence:
-            cad_rows.append([c.get("channel", "—"), c.get("frequency", "—")])
+            cad_rows.append([c.get("channel", "â€”"), c.get("frequency", "â€”")])
         cad = Table(cad_rows, colWidths=[3*inch, 2.9*inch])
         cad.setStyle(TableStyle([
             ("FONT", (0, 0), (-1, -1), "Helvetica", 10),
@@ -390,7 +390,7 @@ async def playbook_pdf(current_user: dict = Depends(get_current_user)):
     pillars = strategy.get("content_pillars") or []
     if pillars:
         story.append(Paragraph("CONTENT PILLARS", h2))
-        story.append(Paragraph(" · ".join(pillars), ParagraphStyle("Pillars", parent=body, fontSize=12, leading=20, textColor=ink)))
+        story.append(Paragraph(" Â· ".join(pillars), ParagraphStyle("Pillars", parent=body, fontSize=12, leading=20, textColor=ink)))
 
     # Section: KPIs
     kpis = strategy.get("kpis") or []
@@ -398,7 +398,7 @@ async def playbook_pdf(current_user: dict = Depends(get_current_user)):
         story.append(Paragraph("90-DAY KPIs", h2))
         kpi_rows = [["Metric", "90-day target"]]
         for k in kpis:
-            kpi_rows.append([k.get("metric", "—"), k.get("target_90d", "—")])
+            kpi_rows.append([k.get("metric", "â€”"), k.get("target_90d", "â€”")])
         kp = Table(kpi_rows, colWidths=[3*inch, 2.9*inch])
         kp.setStyle(TableStyle([
             ("FONT", (0, 0), (-1, -1), "Helvetica", 10),
@@ -416,13 +416,13 @@ async def playbook_pdf(current_user: dict = Depends(get_current_user)):
     # Section: First 30 days
     first30 = strategy.get("first_30_days") or []
     if first30:
-        story.append(Paragraph("FIRST 30 DAYS — ACTION PLAN", h2))
+        story.append(Paragraph("FIRST 30 DAYS â€” ACTION PLAN", h2))
         for i, s in enumerate(first30, 1):
             story.append(Paragraph(f"{i}. {s}", body))
 
     # Footer
     story.append(Spacer(1, 0.4*inch))
-    story.append(Paragraph("— Ayo, your Intermaven strategist", ParagraphStyle("Sign", parent=body, fontSize=11, textColor=accent)))
+    story.append(Paragraph("â€” Maven, your Intermaven strategist", ParagraphStyle("Sign", parent=body, fontSize=11, textColor=accent)))
     story.append(Paragraph("intermaven.io", sub))
 
     doc.build(story)
@@ -433,3 +433,4 @@ async def playbook_pdf(current_user: dict = Depends(get_current_user)):
         media_type="application/pdf",
         headers={"Content-Disposition": f'attachment; filename="{fname}"'},
     )
+

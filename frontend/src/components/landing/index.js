@@ -14,3 +14,5 @@ export { default as PrivacyPage } from './PrivacyPage';
 export { default as HelpPage } from './HelpPage';
 export { default as BetaSignupCard, BETA_APPS } from './BetaSignupCard';
 export { default as CmsPage } from './CmsPage';
+export { default as PerfectForPage } from './PerfectForPage';
+export { default as PersonaLandingPage } from './PersonaLandingPage';

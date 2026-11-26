@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { api } from '../App';
 import {
   Music, Globe, Image, Video, FileText, Mail, Phone,
@@ -9,7 +9,7 @@ import {
   Play, Share2, Sparkles, AlertCircle, Clock
 } from 'lucide-react';
 
-// ── Constants ─────────────────────────────────────────────────────
+// â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const TEMPLATES = [
   { id: 'bold', label: 'Bold', desc: 'Dark, high-impact layout', preview: '#1a0a30' },
   { id: 'minimal', label: 'Minimal', desc: 'Clean, editorial feel', preview: '#0f1117' },
@@ -31,7 +31,7 @@ const SOCIAL_PLATFORMS = [
   { key: 'spotify', label: 'Spotify', icon: Music, placeholder: 'https://open.spotify.com/artist/...' },
 ];
 
-// ── Helpers ───────────────────────────────────────────────────────
+// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function Section({ title, icon: Icon, children, collapsible = false, defaultOpen = true }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
@@ -65,7 +65,7 @@ function SaveBar({ saving, saved, onSave, onPreview, epk }) {
   );
 }
 
-// ── EPK Builder Main ──────────────────────────────────────────────
+// â”€â”€ EPK Builder Main â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function EPKBuilder({ user, addToast, updateUser }) {
   const [epk, setEpk] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -239,7 +239,7 @@ function EPKBuilder({ user, addToast, updateUser }) {
         <span className="tool-icon"><FileText size={26} color="#ec4899" /></span>
         <div className="tool-info">
           <h2>EPK Builder</h2>
-          <p>Electronic Press Kit — build, publish, and host your artist profile</p>
+          <p>Electronic Press Kit â€” build, publish, and host your artist profile</p>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           {epk?.id && (
@@ -265,7 +265,7 @@ function EPKBuilder({ user, addToast, updateUser }) {
           <div className={`epk-status-dot ${form.is_published ? 'live' : ''}`} />
           {form.is_published
             ? <>Live at <a href={`https://intermaven.io/artist/${form.username}`} target="_blank" rel="noopener noreferrer">intermaven.io/artist/{form.username}</a></>
-            : 'Draft — not publicly visible'}
+            : 'Draft â€” not publicly visible'}
         </div>
       )}
 
@@ -280,7 +280,7 @@ function EPKBuilder({ user, addToast, updateUser }) {
         ))}
       </div>
 
-      {/* ── PROFILE TAB ── */}
+      {/* â”€â”€ PROFILE TAB â”€â”€ */}
       {activeTab === 'profile' && (
         <div className="epk-tab-content">
           <Section title="Identity" icon={User}>
@@ -294,8 +294,8 @@ function EPKBuilder({ user, addToast, updateUser }) {
                   EPK Username
                   <span className={`epk-username-status ${usernameStatus}`}>
                     {usernameStatus === 'checking' && ' checking...'}
-                    {usernameStatus === 'available' && ' ✓ available'}
-                    {usernameStatus === 'taken' && ' ✗ taken'}
+                    {usernameStatus === 'available' && ' âœ“ available'}
+                    {usernameStatus === 'taken' && ' âœ— taken'}
                   </span>
                 </label>
                 <div style={{ position: 'relative' }}>
@@ -346,7 +346,7 @@ function EPKBuilder({ user, addToast, updateUser }) {
                 <label className="form-label" style={{ margin: 0 }}>Full Bio</label>
                 <button className="admin-btn-sm" onClick={() => handleAutoGenerate('bio_full')}><Sparkles size={11} /> AI Generate</button>
               </div>
-              <textarea className="admin-textarea" rows={6} placeholder="Your full story — career highlights, collaborations, achievements..." value={form.bio_full} onChange={e => handleChange('bio_full', e.target.value)} />
+              <textarea className="admin-textarea" rows={6} placeholder="Your full story â€” career highlights, collaborations, achievements..." value={form.bio_full} onChange={e => handleChange('bio_full', e.target.value)} />
             </div>
             <div className="form-group">
               <label className="form-label">Career Highlights / Timeline</label>
@@ -372,11 +372,11 @@ function EPKBuilder({ user, addToast, updateUser }) {
         </div>
       )}
 
-      {/* ── MUSIC TAB ── */}
+      {/* â”€â”€ MUSIC TAB â”€â”€ */}
       {activeTab === 'music' && (
         <div className="epk-tab-content">
           <Section title="Streaming Platforms" icon={Music}>
-            <p className="social-hint">Add your profile links — these will embed your music directly on your EPK.</p>
+            <p className="social-hint">Add your profile links â€” these will embed your music directly on your EPK.</p>
             {[
               ['spotify_artist_id', 'Spotify Artist URL', 'https://open.spotify.com/artist/...'],
               ['apple_music_url', 'Apple Music URL', 'https://music.apple.com/artist/...'],
@@ -393,7 +393,7 @@ function EPKBuilder({ user, addToast, updateUser }) {
         </div>
       )}
 
-      {/* ── MEDIA & PRESS TAB ── */}
+      {/* â”€â”€ MEDIA & PRESS TAB â”€â”€ */}
       {activeTab === 'media' && (
         <div className="epk-tab-content">
           <Section title="Press Quotes" icon={Star}>
@@ -426,7 +426,7 @@ function EPKBuilder({ user, addToast, updateUser }) {
         </div>
       )}
 
-      {/* ── EVENTS TAB ── */}
+      {/* â”€â”€ EVENTS TAB â”€â”€ */}
       {activeTab === 'events' && (
         <div className="epk-tab-content">
           <Section title="Upcoming Shows" icon={Calendar}>
@@ -447,7 +447,7 @@ function EPKBuilder({ user, addToast, updateUser }) {
         </div>
       )}
 
-      {/* ── CONTACT TAB ── */}
+      {/* â”€â”€ CONTACT TAB â”€â”€ */}
       {activeTab === 'contact' && (
         <div className="epk-tab-content">
           <Section title="Contact Information" icon={Mail}>
@@ -472,7 +472,7 @@ function EPKBuilder({ user, addToast, updateUser }) {
         </div>
       )}
 
-      {/* ── DESIGN TAB ── */}
+      {/* â”€â”€ DESIGN TAB â”€â”€ */}
       {activeTab === 'design' && (
         <div className="epk-tab-content">
           <Section title="Template" icon={Palette}>
@@ -511,7 +511,7 @@ function EPKBuilder({ user, addToast, updateUser }) {
         </div>
       )}
 
-      {/* ── HOSTING TAB ── */}
+      {/* â”€â”€ HOSTING TAB â”€â”€ */}
       {activeTab === 'hosting' && (
         <div className="epk-tab-content">
           <Section title="Hosting Options" icon={Globe}>
@@ -536,7 +536,7 @@ function EPKBuilder({ user, addToast, updateUser }) {
             <div className="form-group" style={{ marginTop: 16 }}>
               <label className="form-label">Custom Domain (optional)</label>
               <input className="form-input" placeholder="epk.yourname.com" value={form.hosting?.custom_domain || ''} onChange={e => handleChange('hosting.custom_domain', e.target.value)} />
-              <div className="social-hint" style={{ marginTop: 6 }}>Point your domain's CNAME to <code>epk.intermaven.io</code> — our team will configure SSL after you save.</div>
+              <div className="social-hint" style={{ marginTop: 6 }}>Point your domain's CNAME to <code>epk.intermaven.io</code> â€” our team will configure SSL after you save.</div>
             </div>
           </Section>
 
@@ -599,3 +599,4 @@ function EPKBuilder({ user, addToast, updateUser }) {
 }
 
 export default EPKBuilder;
+

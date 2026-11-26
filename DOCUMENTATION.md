@@ -1363,3 +1363,33 @@ Mother-CMS is positioned as a **product differentiator** in addition to internal
 *Document Version: 4.1*
 *Last Updated: January 2026*
 *Platform: Intermaven — Africa's Creative & Music Operating System*
+
+
+---
+
+# 15. Intermaven ↔ TuneMavens Reconciliation & Ecosystem Alignment (November 2026)
+
+## 15.1 Local Development Ports
+- **TuneMavens Portal:** `http://localhost:3000`
+- **TuneStream:** `http://localhost:3001`
+- **Intermaven Frontend:** `http://localhost:3005`
+- **Intermaven Backend:** `http://localhost:8001`
+
+## 15.2 Single Source of Truth (Shared MongoDB + JWT + Protocols)
+- **Database & Auth:** Intermaven and TuneMavens share `MONGO_URL` (`intermaven`) and `JWT_SECRET`. SSO (`backend/routes/sso.py`) registers `intermaven` (`localhost:3005`, `intermaven.io`), `tunemavens` (`localhost:3000`, `tunemavens.com`), `tunestream` (`localhost:3001`, `tunestream.co`), and `syncmavens` (`localhost:3002`, `syncmavens.com`).
+- **Distribution Tracker (`backend/routes/distro.py`, `outlets_data.py`, `DistroPanel.js`):** Reconciled to TuneMavens' 15-route, 181-outlet DDEX 3.8 pipeline.
+- **Smart CRM & Reachout (`backend/routes/crm_smart.py`, `services/reachout_service.py`, `CRMPanel.js`):** Reconciled to TuneMavens' 53-route Smart CRM & Reachout engine (Email-Only Target Groups, CSV import, Persona Playbooks, HTML Preview, Dispatch, Attribution, and In-App Inbox). Pitch Deck AI lives exclusively on TuneMavens.
+- **AI Assistant (Maven):** Renamed from Ayo to Maven across frontend and backend (`MavenChat.js`, `AppHelpAiControls.js`, `backend/routes/support.py` `/api/support/ask-ai`).
+
+## 15.3 Platform-Wide Personas & Landing Pages
+- **12 Unified Personas (`backend/routes/personas.py`, `frontend/src/data/personasCatalog.js`):**
+  - *Creative & Media:* `creator`, `podcaster`, `label`, `dj`, `supervisor`, `media-house`, `consumer`
+  - *Business & Enterprise:* `founder`, `merchant`, `agency`, `corporate`, `investor`
+- **Landing Pages:** `About` dropdown → **About Us** (`/about`) and **Perfect For** (`/for`, `/perfect-for`), plus persona-specific landing pages (`/for/:persona`) with sticky seat switcher, persona-specific onboarding checklists, and recommended reading linked to `/help?article=...`.
+
+## 15.4 Notifications, Admin, Billing, Localization & SEO
+- **Notifications (`backend/routes/notifications.py`):** Merges `db.notifications` and `db.user_inbox` with category tabs, unread-only filter, single-read, mark-all-read, and archive.
+- **Admin Analytics & Audit Log (`backend/routes/admin.py`):** Merges `db.audit_log` and `db.audit_logs`; accepts `is_admin`, `admin_role`, and `role` admin checks.
+- **Billing & Beta Credits:** 150 Free Beta Credits factored site-wide; Billing supports both Card/Bank (Stripe/PesaPal) and Mobile Payments (M-Pesa / Mobile Money).
+- **Localization (`RegionContext.js`, `RegionSwitcher.js`):** Mirrors TuneMavens with `en`, `sw`, `ki`, `es` quick-toggle + Country/Currency/Language selector synced via `intermaven_region`, `tunemavens_lang`, and `tunemavens_country`.
+- **SEO & Favicons:** Generated `favicon.ico`, `favicon-32x32.png`, `icon-192.png`, `icon-512.png`; added `SEO.js`, Open Graph/Twitter/JSON-LD metadata in `index.html`, `robots.txt`, and `sitemap.xml`.

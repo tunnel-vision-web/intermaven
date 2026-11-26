@@ -1,5 +1,5 @@
-"""
-Wizard router — AI-assisted business discovery, strategy generation,
+﻿"""
+Wizard router â€” AI-assisted business discovery, strategy generation,
 per-app wizard steps, and personalized how-to tips.
 
 Powered by Claude Sonnet 4.5 via Emergent LLM key (emergentintegrations).
@@ -61,11 +61,11 @@ DISCOVERY_QUESTIONS = [
     ("business_name", "What's the name of your business, brand, or artist project?"),
     ("industry", "What industry are you in? (e.g. music, fashion, hospitality, consulting, e-commerce)"),
     ("role", "What's your role? (e.g. solo artist, label, agency owner, small-business founder, creator)"),
-    ("audience", "Briefly describe your target audience — who are you trying to reach?"),
-    ("goals", "What are your top 1–3 goals for the next 90 days? (e.g. grow followers, drive sales, book gigs, get sync placements)"),
+    ("audience", "Briefly describe your target audience â€” who are you trying to reach?"),
+    ("goals", "What are your top 1â€“3 goals for the next 90 days? (e.g. grow followers, drive sales, book gigs, get sync placements)"),
     ("region", "Which region or country is your primary market?"),
     ("current_channels", "Which channels are you already using? (Instagram, TikTok, YouTube, email, in-person, none, etc.)"),
-    ("budget_band", "What's your monthly marketing budget? (none / under $100 / $100–500 / $500–2000 / $2000+)"),
+    ("budget_band", "What's your monthly marketing budget? (none / under $100 / $100â€“500 / $500â€“2000 / $2000+)"),
     ("brand_voice", "How would you describe your brand voice in 3 words? (e.g. playful, bold, premium)"),
 ]
 
@@ -117,7 +117,7 @@ def _next_missing_field(profile: dict) -> Optional[tuple]:
 
 
 async def _llm_chat(system_message: str, user_text: str, session_suffix: str, user_id: str) -> str:
-    """Thin wrapper around emergentintegrations LlmChat → Claude Sonnet 4.5."""
+    """Thin wrapper around emergentintegrations LlmChat â†’ Claude Sonnet 4.5."""
     from llm_fallback import run_llm_completion
     response = await run_llm_completion(
         prompt=user_text,
@@ -212,14 +212,14 @@ async def wizard_discover(
             {"user_id": current_user["_id"]},
             {"$set": {"completed": True, "updated_at": datetime.now(timezone.utc)}},
         )
-        return {"done": True, "message": "Great — that's everything I need! I'll now craft a strategy for you.", "profile": _strip_id(profile)}
+        return {"done": True, "message": "Great â€” that's everything I need! I'll now craft a strategy for you.", "profile": _strip_id(profile)}
 
     field, question = nxt
     # Personalize the question with a quick LLM rewrite using what we already know
     try:
         context = {k: profile.get(k) for k in REQUIRED_FIELDS + ["role", "brand_voice"] if profile.get(k)}
         system = (
-            "You are Ayo, Intermaven's friendly business strategist for African creatives and entrepreneurs. "
+            "You are Maven, Intermaven's friendly business strategist for African creatives and entrepreneurs. "
             "You ask ONE concise, conversational question at a time. Keep it under 30 words. "
             "Acknowledge prior answers briefly when relevant. Never list multiple questions."
         )
@@ -259,7 +259,7 @@ async def wizard_strategy(
         return {"strategy": profile["strategy"], "cached": True}
 
     system = (
-        "You are Ayo, Intermaven's senior creative-business strategist for African artists and "
+        "You are Maven, Intermaven's senior creative-business strategist for African artists and "
         "entrepreneurs. Given a business profile, return a JSON strategy plan with these EXACT keys:\n"
         "{\n"
         '  "headline": "1-line punchy summary",\n'
@@ -269,12 +269,12 @@ async def wizard_strategy(
         '  "kpis": [ {"metric": "Followers", "target_90d": "+1000"} ],\n'
         '  "first_30_days": [ "actionable step 1", "step 2", "step 3", "step 4" ]\n'
         "}\n"
-        "Recommend 2–4 channels max. Be specific to the user's region, audience, and budget.\n"
+        "Recommend 2â€“4 channels max. Be specific to the user's region, audience, and budget.\n"
         "Channels you may pick from include (but are not limited to): "
         "Instagram, TikTok, YouTube / YouTube Shorts, Facebook, X (Twitter), LinkedIn, Threads, "
         "WhatsApp Business, Email (Resend/SendGrid), SMS, "
-        "Google Local Services Ads (PRIMARY pick for ANY local SERVICE business — plumbers, "
-        "lawyers, mount-pros, cleaners, consultants — because it's pay-per-booked-lead and shows "
+        "Google Local Services Ads (PRIMARY pick for ANY local SERVICE business â€” plumbers, "
+        "lawyers, mount-pros, cleaners, consultants â€” because it's pay-per-booked-lead and shows "
         "the Google Guarantee badge), "
         "Google Search Ads, Google Business Profile, Google Display, YouTube Ads, "
         "Meta Ads, TikTok Ads, Spotify for Artists, Apple Music for Artists.\n"
@@ -333,7 +333,7 @@ APP_WIZARD_PROMPTS = {
     "social": (
         "You are guiding the user through Intermaven's Social AI wizard. "
         "Generate the NEXT wizard step as JSON: "
-        '{"title":"...","intent":"...","fields":[{"key":"platform","label":"...","type":"select","options":["Instagram","TikTok"]}],"tip":"one-line Ayo tip"}. '
+        '{"title":"...","intent":"...","fields":[{"key":"platform","label":"...","type":"select","options":["Instagram","TikTok"]}],"tip":"one-line Maven tip"}. '
         "Steps in order: 1) Pick primary platform, 2) Pick content goal, 3) Define tone, 4) Choose post type "
         "(carousel/reel/single), 5) Generate. Return ONLY JSON."
     ),
@@ -389,7 +389,7 @@ async def wizard_app_step(
     except Exception as e:
         step = {
             "title": "Step paused",
-            "intent": "AI unavailable — proceed manually using Advanced Settings.",
+            "intent": "AI unavailable â€” proceed manually using Advanced Settings.",
             "fields": [],
             "tip": "Switch to Advanced Settings to continue without AI.",
             "error": str(e),
@@ -406,15 +406,15 @@ async def wizard_howto(
 ):
     profile = _get_or_init_profile(current_user["_id"])
     system = (
-        "You are Ayo, Intermaven's how-to coach. Given a user's business profile and a how-to topic, "
-        "return a SHORT (90–150 words) personalized tip. Use second person. Include 2–3 concrete actions. "
+        "You are Maven, Intermaven's how-to coach. Given a user's business profile and a how-to topic, "
+        "return a SHORT (90â€“150 words) personalized tip. Use second person. Include 2â€“3 concrete actions. "
         "End with a punchy 1-line call-to-action. Plain text only, no markdown."
     )
     user_text = (
         f"Profile: {json.dumps({k: profile.get(k) for k in REQUIRED_FIELDS + ['role','brand_voice']})}\n"
         f"App: {req.app_id}\n"
         f"Topic: {req.topic}\n"
-        f"User question: {req.user_question or '(none — give the general personalized tip for this topic)'}\n"
+        f"User question: {req.user_question or '(none â€” give the general personalized tip for this topic)'}\n"
     )
     try:
         tip = await _llm_chat(system, user_text, f"howto-{req.app_id}", str(current_user["_id"]))
@@ -425,3 +425,4 @@ async def wizard_howto(
             "Open the Wizard to lock in your channel."
         )
     return {"app_id": req.app_id, "topic": req.topic, "tip": tip.strip()}
+

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import Netbar from './Netbar';
 import Navbar from './Navbar';
 import Footer from './Footer';
@@ -26,7 +26,7 @@ const pageComponents = {
   cms: CmsPage,
 };
 
-function LandingLayout({ page = 'home', onOpenAuth, onOpenSignIn, addToast }) {
+function LandingLayout({ page = 'home', onOpenAuth, onOpenSignIn, addToast, children }) {
   const region = useRegion();
   const [scrolled, setScrolled] = useState(false);
   const [portal, setPortal] = useState('business'); // Business is the default

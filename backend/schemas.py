@@ -8,6 +8,8 @@ class UserCreate(BaseModel):
     last_name: Optional[str] = ""
     phone: Optional[str] = ""
     portal: Optional[str] = "music"
+    persona: Optional[str] = None
+    secondary_personas: Optional[List[str]] = None
 
 class UserLogin(BaseModel):
     email: EmailStr
@@ -28,6 +30,8 @@ class UserUpdate(BaseModel):
     password: Optional[str] = None
     avatar: Optional[str] = None
     preferred_channel: Optional[str] = None
+    persona: Optional[str] = None
+    secondary_personas: Optional[List[str]] = None
 
 class UserResponse(BaseModel):
     id: str
@@ -45,6 +49,9 @@ class UserResponse(BaseModel):
     avatar: Optional[str] = ""
     preferred_channel: Optional[str] = "email"
     admin_role: Optional[str] = ""
+    persona: Optional[str] = "creator"
+    secondary_personas: List[str] = []
+    role: Optional[str] = ""
 
 class TokenResponse(BaseModel):
     access_token: str

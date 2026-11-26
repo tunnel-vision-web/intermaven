@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { 
   Upload, CheckCircle2, AlertTriangle, FileText, X, ChevronRight, 
   ShieldAlert, ArrowLeft, LifeBuoy, Send, MessageSquare, LifeBuoy as SupportIcon
 } from 'lucide-react';
 import { useAuth, useToast, api } from '../../App';
+import AppHelpAiControls from '../AppHelpAiControls';
+import FlatIcon from '../FlatIcon';
+import { HELP_ARTICLES, getHelpArticleBySlug } from '../../data/helpArticles';
 
 const HelpPage = () => {
   const { user } = useAuth();
   const { addToast } = useToast();
+  const location = useLocation();
+  const selectedArticleSlug = new URLSearchParams(location.search).get('article');
+  const highlightedArticle = selectedArticleSlug ? getHelpArticleBySlug(selectedArticleSlug) : null;
 
   const [activeTab, setActiveTab] = useState('kb'); // 'kb' or 'support'
   const [loading, setLoading] = useState(false);
@@ -303,10 +309,58 @@ const HelpPage = () => {
       {activeTab === 'kb' ? (
         // ================= KNOWLEDGE BASE TAB =================
         <div>
-          <div className="help-header" style={{ marginBottom: '40px' }}>
-            <p style={{ color: '#94a3b8', fontSize: '15px', maxWidth: '620px' }}>
-              Find answers, guides, and support for all Intermaven features. Click on a topic to view its articles below.
+          <div className="help-header" style={{ marginBottom: '28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+            <p style={{ color: '#94a3b8', fontSize: '15px', maxWidth: '620px', margin: 0 }}>
+              Find answers, guides, and support for all Intermaven & TuneMavens features. Use Get Help or Ask Maven AI anytime.
             </p>
+            <AppHelpAiControls appId={highlightedArticle?.appId || 'overview'} persona={user?.persona || 'creator'} />
+          </div>
+
+          {highlightedArticle && (
+            <div style={{ background: 'rgba(13,17,23,0.9)', border: '1px solid rgba(34,211,238,0.35)', borderRadius: '14px', padding: '24px', marginBottom: '32px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
+                <FlatIcon name={highlightedArticle.appId} size={36} />
+                <div>
+                  <div style={{ fontSize: '11px', textTransform: 'uppercase', color: '#22d3ee', fontWeight: 700 }}>
+                    {highlightedArticle.category} · {highlightedArticle.readTime}
+                  </div>
+                  <h2 style={{ margin: '2px 0 0', fontSize: '20px', color: '#f8fafc' }}>{highlightedArticle.title}</h2>
+                </div>
+              </div>
+              <p style={{ color: '#94a3b8', fontSize: '14px', marginBottom: '12px' }}>{highlightedArticle.summary}</p>
+              <div style={{ whiteSpace: 'pre-line', lineHeight: 1.65, color: '#cbd5e1', fontSize: '14px', background: 'rgba(255,255,255,0.03)', padding: '16px', borderRadius: '10px' }}>
+                {highlightedArticle.content}
+              </div>
+            </div>
+          )}
+
+          {/* Featured Ecosystem Guides */}
+          <div style={{ marginBottom: '36px' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '14px', color: '#e2e8f0' }}>Ecosystem App Guides</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '14px' }}>
+              {HELP_ARTICLES.map((art) => (
+                <Link
+                  key={art.slug}
+                  to={`/help?article=${art.slug}`}
+                  style={{
+                    textDecoration: 'none',
+                    background: selectedArticleSlug === art.slug ? 'rgba(34,211,238,0.12)' : 'rgba(13,17,23,0.75)',
+                    border: selectedArticleSlug === art.slug ? '1px solid #22d3ee' : '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: '12px',
+                    padding: '16px',
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: '12px',
+                  }}
+                >
+                  <FlatIcon name={art.appId} size={30} />
+                  <div>
+                    <div style={{ fontSize: '11px', color: '#38bdf8', fontWeight: 700 }}>{art.category}</div>
+                    <div style={{ fontSize: '14px', fontWeight: 700, color: '#f8fafc', marginTop: '2px' }}>{art.title}</div>
+                  </div>
+                </Link>
+              ))}
+            </div>
           </div>
 
           <div className="help-content">

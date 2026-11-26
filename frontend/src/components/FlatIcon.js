@@ -1,253 +1,216 @@
-import React, { useState } from 'react';
-import { getAppIconSrc } from '../imageRegistry';
+import React from 'react';
 
-// Centralized flat icon system for Intermaven
-// Checks for custom PNG icon first (from public/icons/apps/)
-// Falls back to SVG if PNG not found or fails to load
+// Centralized flat color icon system for Intermaven (frontend & dashboard).
+// Every app and tool renders a crisp flat color badge with a two-tone vector glyph.
 
-export const FlatIcon = ({ name, size = 24, color = 'currentColor', className = '' }) => {
-  const [pngFailed, setPngFailed] = useState(false);
+export const APP_ICON_META = {
+  brandkit:  { bg: '#10b981', fg: '#ffffff', accent: '#a7f3d0', label: 'Brand Kit AI' },
+  musicbio:  { bg: '#06b6d4', fg: '#ffffff', accent: '#a5f3fc', label: 'EPK & Music Bio' },
+  epk:       { bg: '#06b6d4', fg: '#ffffff', accent: '#a5f3fc', label: 'EPK Builder' },
+  social:    { bg: '#f43f5e', fg: '#ffffff', accent: '#fecdd3', label: 'Social AI' },
+  syncpitch: { bg: '#f59e0b', fg: '#ffffff', accent: '#fde68a', label: 'Sync Pitch AI' },
+  bizpitch:  { bg: '#8b5cf6', fg: '#ffffff', accent: '#ddd6fe', label: 'Pitch Deck AI' },
+  pitchdeck: { bg: '#8b5cf6', fg: '#ffffff', accent: '#ddd6fe', label: 'Pitch Deck AI' },
+  pos:       { bg: '#0ea5e9', fg: '#ffffff', accent: '#bae6fd', label: 'Intermaven POS' },
+  distro:    { bg: '#14b8a6', fg: '#ffffff', accent: '#99f6e4', label: 'Distribution Tracker' },
+  hosting:   { bg: '#22c55e', fg: '#ffffff', accent: '#bbf7d0', label: 'Hosting Manager' },
+  crm:       { bg: '#3b82f6', fg: '#ffffff', accent: '#bfdbfe', label: 'Smart CRM & Reachout' },
+  files:     { bg: '#6366f1', fg: '#ffffff', accent: '#c7d2fe', label: 'File Manager' },
+  channels:  { bg: '#ec4899', fg: '#ffffff', accent: '#fbcfe8', label: 'Channels' },
+  wizard:    { bg: '#00c8ff', fg: '#061224', accent: '#ffffff', label: 'Business Wizard' },
+  strategy:  { bg: '#eab308', fg: '#ffffff', accent: '#fef08a', label: 'Strategy' },
+  admin:     { bg: '#ef4444', fg: '#ffffff', accent: '#fecaca', label: 'Admin Console' },
+  settings:  { bg: '#64748b', fg: '#ffffff', accent: '#cbd5e1', label: 'Settings' },
+  help:      { bg: '#0ea5e9', fg: '#ffffff', accent: '#bae6fd', label: 'Get Help' },
+  maven:     { bg: '#22d3ee', fg: '#061224', accent: '#ffffff', label: 'Maven AI' },
+  ai:        { bg: '#a855f7', fg: '#ffffff', accent: '#e9d5ff', label: 'Ask AI' },
+  overview:  { bg: '#0284c7', fg: '#ffffff', accent: '#bae6fd', label: 'Overview' },
+  invoicing: { bg: '#059669', fg: '#ffffff', accent: '#a7f3d0', label: 'Invoicing' },
+  contracts: { bg: '#7c3aed', fg: '#ffffff', accent: '#ddd6fe', label: 'Contracts' },
+};
 
-  // Check for custom PNG icon
-  const pngSrc = getAppIconSrc(name);
-  if (pngSrc && !pngFailed) {
-    return (
-      <img
-        src={pngSrc}
-        alt={name}
-        width={size}
-        height={size}
-        className={className}
-        style={{ objectFit: 'contain', display: 'block' }}
-        onError={() => setPngFailed(true)}
-      />
-    );
+function renderGlyph(name, fg, accent) {
+  switch (name) {
+    case 'brandkit':
+      return (
+        <>
+          <circle cx="12" cy="12" r="8" fill={accent} opacity="0.28" />
+          <path d="M12 4a8 8 0 0 0 0 16c1.2 0 2-.8 2-1.8 0-.5-.2-.9-.5-1.3-.3-.4-.5-.8-.5-1.3 0-1 .8-1.8 1.8-1.8H17a5 5 0 0 0 3-9 8 8 0 0 0-8-.8z" fill={fg} />
+          <circle cx="8.5" cy="10.5" r="1.3" fill="#10b981" />
+          <circle cx="11.5" cy="7.5" r="1.3" fill="#f59e0b" />
+          <circle cx="15.5" cy="9.5" r="1.3" fill="#f43f5e" />
+        </>
+      );
+    case 'musicbio':
+    case 'epk':
+      return (
+        <>
+          <path d="M9 17V6l10-2v11" stroke={fg} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+          <circle cx="6.5" cy="17.5" r="2.8" fill={fg} />
+          <circle cx="16.5" cy="15.5" r="2.8" fill={accent} />
+        </>
+      );
+    case 'social':
+      return (
+        <>
+          <line x1="8.5" y1="12" x2="15.5" y2="7.5" stroke={accent} strokeWidth="2.2" strokeLinecap="round" />
+          <line x1="8.5" y1="12" x2="15.5" y2="16.5" stroke={accent} strokeWidth="2.2" strokeLinecap="round" />
+          <circle cx="17" cy="6.5" r="3" fill={fg} />
+          <circle cx="6.5" cy="12" r="3" fill={fg} />
+          <circle cx="17" cy="17.5" r="3" fill={accent} />
+        </>
+      );
+    case 'syncpitch':
+      return (
+        <>
+          <rect x="4" y="5" width="16" height="14" rx="2.5" fill={fg} />
+          <polygon points="10,9 16,12 10,15" fill="#f59e0b" />
+          <rect x="6" y="7" width="2" height="2" fill={accent} />
+          <rect x="6" y="15" width="2" height="2" fill={accent} />
+        </>
+      );
+    case 'bizpitch':
+    case 'pitchdeck':
+      return (
+        <>
+          <rect x="4" y="4" width="16" height="12" rx="2" fill={fg} />
+          <path d="M8 12l3-3 2.5 2 3-3.5" stroke="#8b5cf6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+          <path d="M12 16v4M8.5 20h7" stroke={accent} strokeWidth="2.2" strokeLinecap="round" />
+        </>
+      );
+    case 'pos':
+      return (
+        <>
+          <rect x="3" y="6" width="18" height="12" rx="2.5" fill={fg} />
+          <rect x="3" y="9" width="18" height="3" fill="#0284c7" />
+          <rect x="6" y="14" width="5" height="2" rx="1" fill={accent} />
+        </>
+      );
+    case 'distro':
+      return (
+        <>
+          <circle cx="12" cy="12" r="8" fill={accent} opacity="0.25" />
+          <path d="M4 12h3.5l2-4.5 3.5 9 2.5-5.5 1.5 1H20" stroke={fg} strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        </>
+      );
+    case 'hosting':
+      return (
+        <>
+          <circle cx="12" cy="12" r="7.5" stroke={fg} strokeWidth="2" fill={accent} fillOpacity="0.22" />
+          <ellipse cx="12" cy="12" rx="3.5" ry="7.5" stroke={fg} strokeWidth="1.8" fill="none" />
+          <line x1="4.5" y1="12" x2="19.5" y2="12" stroke={fg} strokeWidth="1.8" />
+        </>
+      );
+    case 'crm':
+      return (
+        <>
+          <circle cx="9.5" cy="9" r="3.2" fill={fg} />
+          <path d="M4 18.5c0-2.8 2.5-4.5 5.5-4.5s5.5 1.7 5.5 4.5" fill={fg} />
+          <circle cx="16.5" cy="10" r="2.4" fill={accent} />
+          <path d="M15.5 18.5h4.5c0-2.1-1.5-3.5-3.5-3.8" stroke={accent} strokeWidth="2" strokeLinecap="round" fill="none" />
+        </>
+      );
+    case 'files':
+      return (
+        <>
+          <path d="M3.5 7.5A2 2 0 0 1 5.5 5.5h4l2 2h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2v-10z" fill={fg} />
+          <rect x="6.5" y="11" width="11" height="2" rx="1" fill={accent} />
+        </>
+      );
+    case 'channels':
+      return (
+        <>
+          <rect x="4" y="5" width="16" height="11" rx="2.5" fill={fg} />
+          <polygon points="9,16 12,20 15,16" fill={fg} />
+          <circle cx="9" cy="10.5" r="1.2" fill="#ec4899" />
+          <circle cx="12" cy="10.5" r="1.2" fill="#ec4899" />
+          <circle cx="15" cy="10.5" r="1.2" fill="#ec4899" />
+        </>
+      );
+    case 'wizard':
+    case 'ai':
+    case 'maven':
+      return (
+        <>
+          <path d="M12 3l2.2 5.8L20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2L12 3z" fill={fg} />
+          <circle cx="18.5" cy="5.5" r="1.5" fill={accent} />
+        </>
+      );
+    case 'admin':
+      return (
+        <>
+          <path d="M12 3l7 3v5.5c0 4.5-3 8.2-7 9.5-4-1.3-7-5-7-9.5V6l7-3z" fill={fg} />
+          <path d="M9.5 12l1.8 1.8 3.5-3.6" stroke="#ef4444" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+        </>
+      );
+    case 'settings':
+      return (
+        <>
+          <circle cx="12" cy="12" r="7" fill={accent} opacity="0.28" />
+          <circle cx="12" cy="12" r="3.2" stroke={fg} strokeWidth="2.4" fill="none" />
+          <path d="M12 4v2.2M12 17.8V20M4 12h2.2M17.8 12H20M6.3 6.3l1.6 1.6M16.1 16.1l1.6 1.6M17.7 6.3l-1.6 1.6M7.9 16.1l-1.6 1.6" stroke={fg} strokeWidth="2" strokeLinecap="round" />
+        </>
+      );
+    case 'help':
+      return (
+        <>
+          <circle cx="12" cy="12" r="8" fill={fg} />
+          <path d="M9.8 9.4a2.3 2.3 0 0 1 4.4.8c0 1.5-2.2 2-2.2 3.3" stroke="#0ea5e9" strokeWidth="2.1" strokeLinecap="round" fill="none" />
+          <circle cx="12" cy="16.5" r="1.2" fill="#0ea5e9" />
+        </>
+      );
+    case 'invoicing':
+    case 'contracts':
+      return (
+        <>
+          <rect x="5" y="3.5" width="14" height="17" rx="2" fill={fg} />
+          <line x1="8" y1="8.5" x2="16" y2="8.5" stroke={accent} strokeWidth="2" strokeLinecap="round" />
+          <line x1="8" y1="12.5" x2="16" y2="12.5" stroke={accent} strokeWidth="2" strokeLinecap="round" />
+          <line x1="8" y1="16.5" x2="13" y2="16.5" stroke={accent} strokeWidth="2" strokeLinecap="round" />
+        </>
+      );
+    default:
+      return (
+        <>
+          <rect x="4" y="4" width="7" height="7" rx="1.8" fill={fg} />
+          <rect x="13" y="4" width="7" height="7" rx="1.8" fill={accent} />
+          <rect x="4" y="13" width="7" height="7" rx="1.8" fill={accent} />
+          <rect x="13" y="13" width="7" height="7" rx="1.8" fill={fg} />
+        </>
+      );
   }
+}
 
-  // SVG fallback icons
-  const icons = {
-    // AI Tools
-    brandkit: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="13.5" cy="6.5" r="2.5"/>
-        <circle cx="19" cy="13" r="2"/>
-        <circle cx="6" cy="12" r="3"/>
-        <circle cx="12" cy="19" r="2"/>
-        <path d="M12 19V12"/>
-        <path d="M6 12h6"/>
-        <path d="M13.5 9v3"/>
-        <path d="M15 12h4"/>
-      </svg>
-    ),
-    musicbio: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M9 18V5l12-2v13"/>
-        <circle cx="6" cy="18" r="3"/>
-        <circle cx="18" cy="16" r="3"/>
-      </svg>
-    ),
-    social: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="18" cy="5" r="3"/>
-        <circle cx="6" cy="12" r="3"/>
-        <circle cx="18" cy="19" r="3"/>
-        <line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/>
-        <line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/>
-      </svg>
-    ),
-    syncpitch: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/>
-        <polyline points="14 2 14 8 20 8"/>
-        <line x1="16" x2="8" y1="13" y2="13"/>
-        <line x1="16" x2="8" y1="17" y2="17"/>
-        <line x1="10" x2="8" y1="9" y2="9"/>
-      </svg>
-    ),
-    pitchdeck: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect width="18" height="18" x="3" y="3" rx="2"/>
-        <path d="M3 9h18"/>
-        <path d="M9 21V9"/>
-      </svg>
-    ),
-    
-    // Apps
-    pos: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect width="20" height="14" x="2" y="5" rx="2"/>
-        <line x1="2" x2="22" y1="10" y2="10"/>
-      </svg>
-    ),
-    epk: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z"/>
-      </svg>
-    ),
-    distro: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10"/>
-        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
-        <path d="M2 12h20"/>
-      </svg>
-    ),
-    invoicing: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/>
-        <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/>
-        <path d="M12 17.5v-11"/>
-      </svg>
-    ),
-    contracts: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="m16 16 2 2 4-4"/>
-        <path d="M21 10V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l2-1.14"/>
-        <path d="m7.5 4.27 9 5.15"/>
-        <polyline points="3.29 7 12 12 20.71 7"/>
-        <line x1="12" x2="12" y1="22" y2="12"/>
-      </svg>
-    ),
-    
-    // Navigation / General
-    rocket: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/>
-        <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/>
-        <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/>
-        <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
-      </svg>
-    ),
-    zap: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-      </svg>
-    ),
-    mpesa: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect width="14" height="20" x="5" y="2" rx="2" ry="2"/>
-        <path d="M12 18h.01"/>
-      </svg>
-    ),
-    refresh: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-        <path d="M3 3v5h5"/>
-        <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
-        <path d="M16 16h5v5"/>
-      </svg>
-    ),
-    unlock: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
-        <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
-      </svg>
-    ),
-    globe: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <circle cx="12" cy="12" r="10"/>
-        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
-        <path d="M2 12h20"/>
-      </svg>
-    ),
-    lightbulb: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/>
-        <path d="M9 18h6"/>
-        <path d="M10 22h4"/>
-      </svg>
-    ),
-    handshake: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="m11 17 2 2a1 1 0 1 0 3-3"/>
-        <path d="m14 14 2.5 2.5a1 1 0 1 0 3-3l-3.88-3.88a3 3 0 0 0-4.24 0l-.88.88a1 1 0 1 1-3-3l2.81-2.81a5.79 5.79 0 0 1 7.06-.87l.47.28a2 2 0 0 0 1.42.25L21 4"/>
-        <path d="m21 3 1 11h-2"/>
-        <path d="M3 3 2 14l6.5 6.5a1 1 0 1 0 3-3"/>
-        <path d="M3 4h8"/>
-      </svg>
-    ),
-    whatsapp: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
-      </svg>
-    ),
-    mail: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect width="20" height="16" x="2" y="4" rx="2"/>
-        <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
-      </svg>
-    ),
-    location: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
-        <circle cx="12" cy="10" r="3"/>
-      </svg>
-    ),
-    fire: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
-      </svg>
-    ),
-    more: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M5 12h14"/>
-        <path d="M12 5v14"/>
-      </svg>
-    ),
-    building: (
-      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect width="16" height="20" x="4" y="2" rx="2" ry="2"/>
-        <path d="M9 22v-4h6v4"/>
-        <path d="M8 6h.01"/>
-        <path d="M16 6h.01"/>
-        <path d="M12 6h.01"/>
-        <path d="M12 10h.01"/>
-        <path d="M12 14h.01"/>
-        <path d="M16 10h.01"/>
-        <path d="M16 14h.01"/>
-        <path d="M8 10h.01"/>
-        <path d="M8 14h.01"/>
-      </svg>
-    ),
-  };
+export const FlatIcon = ({ name, size = 28, color, className = '' }) => {
+  const meta = APP_ICON_META[name] || APP_ICON_META.overview;
+  const bg = color || meta.bg;
+  const radius = Math.max(6, Math.round(size * 0.24));
 
   return (
-    <span className={`flat-icon ${className}`} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
-      {icons[name] || icons.more}
+    <span
+      className={`flat-color-icon ${className}`}
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: size,
+        height: size,
+        minWidth: size,
+        borderRadius: radius,
+        background: bg,
+        boxShadow: `0 4px 12px ${bg}33`,
+      }}
+    >
+      <svg
+        width={Math.round(size * 0.66)}
+        height={Math.round(size * 0.66)}
+        viewBox="0 0 24 24"
+        fill="none"
+      >
+        {renderGlyph(name, meta.fg, meta.accent)}
+      </svg>
     </span>
   );
-};
-
-// Color constants for icon categories
-export const ICON_COLORS = {
-  brandkit: '#10b981',
-  musicbio: '#22d3ee',
-  social: '#f43f5e',
-  syncpitch: '#f59e0b',
-  pitchdeck: '#8b5cf6',
-  pos: '#0e9499',
-  epk: '#ec4899',
-  distro: '#0ea5e9',
-  invoicing: '#f59e0b',
-  contracts: '#64748b',
-  primary: 'var(--btn)',
-  secondary: 'var(--a2)',
-  success: 'var(--gr)',
-  warning: 'var(--am)',
-  muted: 'var(--mu)'
-};
-
-// Map tool/app ID to icon name
-export const APP_ICONS = {
-  brandkit: 'brandkit',
-  musicbio: 'musicbio',
-  social: 'social',
-  syncpitch: 'syncpitch',
-  bizpitch: 'pitchdeck',
-  pos: 'pos',
-  epk: 'epk',
-  distro: 'distro',
-  invoicing: 'invoicing',
-  contracts: 'contracts'
 };
 
 export default FlatIcon;
