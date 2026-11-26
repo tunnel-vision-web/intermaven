@@ -43,8 +43,8 @@ function RegionSwitcher() {
   };
 
   return (
-    <div className="region-switcher" ref={ref} data-testid="region-switcher" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', position: 'relative' }}>
-      <div className="region-trigger" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '5px 10px' }}>
+    <div className="region-switcher" ref={ref} data-testid="region-switcher" style={{ display: 'inline-flex', alignItems: 'center', position: 'relative', flexShrink: 0 }}>
+      <div className="region-trigger" style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '4px 8px', whiteSpace: 'nowrap' }}>
         <button
           type="button"
           onClick={() => setOpen((o) => !o)}
@@ -56,15 +56,16 @@ function RegionSwitcher() {
             color: 'inherit',
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '5px',
+            gap: '4px',
             cursor: 'pointer',
             padding: 0,
             font: 'inherit',
+            whiteSpace: 'nowrap',
           }}
         >
-          <Globe size={14} style={{ color: '#22d3ee' }} />
-          <span style={{ fontWeight: 700 }}>{country} · {currencyInfo?.symbol || currency} {currency}</span>
-          <ChevronDown size={13} className={`region-chevron ${open ? 'open' : ''}`} />
+          <Globe size={13} style={{ color: '#22d3ee' }} />
+          <span style={{ fontWeight: 700, fontSize: '11px' }}>{country} · {currency}</span>
+          <ChevronDown size={12} className={`region-chevron ${open ? 'open' : ''}`} />
         </button>
 
         <span style={{ opacity: 0.3, padding: '0 2px', userSelect: 'none' }}>|</span>

@@ -107,7 +107,8 @@ async def generate_ai_content(request: AIGenerateRequest, current_user: dict = D
         "syncpitch": settings.get("syncpitch_cost", 20),
         "bizpitch": settings.get("bizpitch_cost", 18)
     }
-    cost = cost_map.get(tool_id, TOOL_COSTS.get(tool_id, 0))
+    beta_free = os.environ.get("BETA_FREE_MODE", "true").lower() == "true"
+    cost = 0 if beta_free else cost_map.get(tool_id, TOOL_COSTS.get(tool_id, 0))
     if cost > 0 and current_user.get("credits", 0) < cost:
         raise HTTPException(status_code=402, detail="Insufficient credits")
 

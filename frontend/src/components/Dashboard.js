@@ -441,23 +441,29 @@ function Dashboard() {
         <div style={{ 
           width: sidebarWidth, 
           display: 'flex', 
+          flexDirection: 'column',
           justifyContent: 'center', 
           alignItems: 'center',
           transition: 'all 0.3s ease',
           height: '100%'
         }}>
-          <img 
-            src="/images/logos/intermaven/intermaven-logo-web.png" 
-            alt="Intermaven" 
-            style={{ 
-              height: '42px', 
-              cursor: 'pointer', 
-              maxWidth: collapsed ? '45px' : '180px', 
-              transition: 'all 0.3s ease',
-              objectFit: 'contain'
-            }} 
-            onClick={handleLogoClick} 
-          />
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+            <img 
+              src="/images/logos/intermaven/intermaven-logo-web.png" 
+              alt="Intermaven" 
+              style={{ 
+                height: '38px', 
+                cursor: 'pointer', 
+                maxWidth: collapsed ? '45px' : '180px', 
+                transition: 'all 0.3s ease',
+                objectFit: 'contain'
+              }} 
+              onClick={handleLogoClick} 
+            />
+            {!collapsed && (
+              <span style={{ fontSize: '9px', fontWeight: 800, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#00f0ff', marginTop: '-3px' }}>beta</span>
+            )}
+          </div>
         </div>
 
         {/* Top-Right Header Elements */}

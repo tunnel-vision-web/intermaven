@@ -243,11 +243,11 @@ const TOOL_PAGE_COPY = {
 
 // Tool definitions for landing page (Smart CRM featured on top row; Pitch Deck AI lives on TuneMavens)
 const TOOL_CARDS = [
-  { icon: 'crm', color: '#3b82f6', n: 'Smart CRM & Reachout', d: 'Email-only target groups, persona playbooks & tracked reachout', cost: 'BETA FREE CREDITS', costColor: 'var(--gr)', page: '/smartcrm' },
-  { icon: 'brandkit', color: '#10b981', n: 'Brand Kit AI', d: 'Name, taglines, tone of voice, colour direction', cost: '10 CREDITS · BETA FREE', costColor: 'var(--a2)', page: '/brandkit' },
-  { icon: 'social', color: '#f43f5e', n: 'Social AI', d: 'Captions, hashtags, posting times for any platform', cost: 'FREE', costColor: 'var(--gr)', page: '/social' },
-  { icon: 'musicbio', color: '#22d3ee', n: 'Music Bio & Press Kit', d: 'Bio, press narrative, media pitch, interview angles', cost: '15 CREDITS · BETA FREE', costColor: 'var(--a2)', page: '/musicbio' },
-  { icon: 'syncpitch', color: '#f59e0b', n: 'Sync Pitch AI', d: 'Pitches for film, TV and advertising supervisors', cost: '20 CREDITS · BETA FREE', costColor: 'var(--a2)', page: '/syncpitch' }
+  { icon: 'crm', color: '#3b82f6', n: 'Smart CRM & Reachout', d: 'Email-only target groups, persona playbooks & tracked reachout', cost: 'FREE DURING BETA', costColor: 'var(--gr)', page: '/smartcrm' },
+  { icon: 'brandkit', color: '#10b981', n: 'Brand Kit AI', d: 'Name, taglines, tone of voice, colour direction', cost: 'FREE DURING BETA', costColor: 'var(--gr)', page: '/brandkit' },
+  { icon: 'social', color: '#f43f5e', n: 'Social AI', d: 'Captions, hashtags, posting times for any platform', cost: 'FREE DURING BETA', costColor: 'var(--gr)', page: '/social' },
+  { icon: 'musicbio', color: '#22d3ee', n: 'Music Bio & Press Kit', d: 'Bio, press narrative, media pitch, interview angles', cost: 'FREE DURING BETA', costColor: 'var(--gr)', page: '/musicbio' },
+  { icon: 'syncpitch', color: '#f59e0b', n: 'Sync Pitch AI', d: 'Pitches for film, TV and advertising supervisors', cost: 'FREE DURING BETA', costColor: 'var(--gr)', page: '/syncpitch' }
 ];
 
 function ToolsPage({ portal = 'music', subdomainPage = null, onOpenAuth, onToast }) {

@@ -66,8 +66,11 @@ class BrandKitSaveRequest(BaseModel):
 @router.get("/config")
 async def get_brandkit_config():
     settings = get_system_settings()
+    beta_free = os.environ.get("BETA_FREE_MODE", "true").lower() == "true"
     return {
-        "cost": settings.get("brandkit_cost", 10),
+        "cost": 0 if beta_free else settings.get("brandkit_cost", 10),
+        "standard_cost": settings.get("brandkit_cost", 10),
+        "beta_free": beta_free,
         "free_beta_credits": settings.get("free_credits", 150),
         "dimensions": BRAND_DIMENSIONS,
         "vibes": BRAND_VIBES,
@@ -118,7 +121,8 @@ def _build_structured_fallback(req: BrandKitGenerateRequest) -> dict:
 @router.post("/generate")
 async def generate_brand_kit(req: BrandKitGenerateRequest, current_user: dict = Depends(get_current_user)):
     settings = get_system_settings()
-    cost = int(settings.get("brandkit_cost", 10))
+    beta_free = os.environ.get("BETA_FREE_MODE", "true").lower() == "true"
+    cost = 0 if beta_free else int(settings.get("brandkit_cost", 10))
     user_credits = int(current_user.get("credits", 0))
     if cost > 0 and user_credits < cost:
         raise HTTPException(status_code=402, detail=f"Insufficient credits ({cost} credits required)")

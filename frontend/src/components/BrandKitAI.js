@@ -40,7 +40,8 @@ export default function BrandKitAI(props) {
 
   // Shared backend config (cost, dimensions, vibes, keywords)
   const [config, setConfig] = useState({
-    cost: 10,
+    cost: 0,
+    beta_free: true,
     free_beta_credits: 150,
     dimensions: [],
     vibes: FALLBACK_VIBES,
@@ -162,7 +163,7 @@ export default function BrandKitAI(props) {
           <div>
             <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 700, color: '#f8fafc' }}>Brand Kit AI Studio</h2>
             <p style={{ margin: '2px 0 0', fontSize: '13px', color: '#94a3b8' }}>
-              6-Dimension Name Analysis · Taglines · Tone Guide · Hex Palette · {config.cost} Credits (150 Free Beta Credits)
+              6-Dimension Name Analysis · Taglines · Tone Guide · Hex Palette · Free During Beta (0 Credits)
             </p>
           </div>
         </div>
@@ -323,7 +324,7 @@ export default function BrandKitAI(props) {
                   <ArrowLeft size={15} /> Back
                 </button>
                 <button type="button" disabled={loading} onClick={handleGenerate} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px', borderRadius: '8px', border: 'none', background: 'linear-gradient(135deg, #10b981, #22d3ee)', color: '#061224', fontWeight: 800, fontSize: '13px', cursor: 'pointer' }}>
-                  <Zap size={15} /> {loading ? 'Analyzing 6 Dimensions...' : `Generate Brand Kit (${config.cost} Credits)`}
+                  <Zap size={15} /> {loading ? 'Analyzing 6 Dimensions...' : (config.cost === 0 ? 'Generate Brand Kit (Free in Beta)' : `Generate Brand Kit (${config.cost} Credits)`)}
                 </button>
               </div>
             </div>

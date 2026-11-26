@@ -2666,7 +2666,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
 }
 .logo {
   display: inline-flex;
@@ -2708,9 +2708,9 @@
 .landing-wrapper.scrolled .lbdg { transform: scale(0.85); }
 .navl {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 .nl,
 .ncta {
@@ -3280,7 +3280,7 @@
   border: none; border-radius: var(--r); color: #fff; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.15s; text-decoration: none;
 }
 .app-cta-primary:hover { filter: brightness(1.1); transform: translateY(-1px); }
-.app-hero-trust { display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: wrap; font-size: 13px; color: var(--mu); }
+.app-hero-trust { display: flex; align-items: center; justify-content: center; gap: 20px; flex-wrap: nowrap; font-size: 13px; color: var(--mu); }
 .app-hero-trust span { display: flex; align-items: center; gap: 5px; }
 .app-section { padding: 60px 24px; max-width: 900px; margin: 0 auto; }
 .app-section.alt { background: var(--bg2); max-width: 100%; }

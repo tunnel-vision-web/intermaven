@@ -67,12 +67,15 @@ function Navbar({ onOpenAuth, onOpenSignIn, portal = 'music', onToast }) {
         <div className="nav-inner">
           <Link to="/" className={`logo${logoLoaded ? ' has-image' : ''}`} data-testid="logo">
             {logoLoaded ? (
-              <img
-                src={INTERMAVEN_LOGO}
-                alt="Intermaven"
-                className="logo-image"
-                onError={() => setLogoLoaded(false)}
-              />
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                <img
+                  src={INTERMAVEN_LOGO}
+                  alt="Intermaven"
+                  className="logo-image"
+                  onError={() => setLogoLoaded(false)}
+                />
+                <span style={{ fontSize: '10px', fontWeight: 800, letterSpacing: '1.2px', textTransform: 'uppercase', color: '#00f0ff', marginTop: '-3px', alignSelf: 'flex-end' }}>beta</span>
+              </div>
             ) : null}
             <span className="logo-text">INTER<span>MAVEN</span></span>
           </Link>
