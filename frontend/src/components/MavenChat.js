@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { MessageCircle, X, Send, Sparkles, ChevronDown, Ticket, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
+import { MessageCircle, X, Send, Sparkles, ChevronDown } from 'lucide-react';
 import './MavenChat.css';
 import { useRegion } from '../RegionContext';
 
@@ -7,78 +8,235 @@ const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 const AYO_SUGGESTIONS = {
   homepage: [
-    "What can Intermaven do for me?",
-    "How do I get started?",
-    "Tell me about the AI tools"
+    'What can Intermaven do for me?',
+    'How do I get started?',
+    'Tell me about the AI tools'
   ],
   tools: [
-    "Which AI tool should I use first?",
-    "How many credits does each tool cost?",
-    "Can I try the tools for free?"
+    'Which AI tool should I use first?',
+    'How many credits does each tool cost?',
+    'Can I try the tools for free?'
+  ],
+  brandkit: [
+    'How do I generate a Brand Kit?',
+    'What does Brand Kit AI include?',
+    'Are beta generations free right now?'
+  ],
+  'social-ai': [
+    'How does Social AI help my brand?',
+    'What is the difference between tools and apps?',
+    'How do I get started?'
+  ],
+  'smart-crm': [
+    'How does Smart CRM & Reachout work?',
+    'How do I get started?',
+    'How many credits does each tool cost?'
+  ],
+  distro: [
+    'How does Distribution Tracker work?',
+    'What is the difference between tools and apps?',
+    'How do I get started?'
   ],
   pricing: [
     "What's included in the free plan?",
-    "How do M-Pesa payments work?",
-    "Can I upgrade anytime?"
+    'How do M-Pesa payments work?',
+    'Can I upgrade anytime?'
   ],
   apps: [
     "What's the difference between tools and apps?",
-    "When will EPK Builder launch?",
-    "How do I join the beta?"
+    'When will EPK Builder launch?',
+    'How do I join the beta?'
+  ],
+  help: [
+    'How do I create a support ticket?',
+    'How do M-Pesa payments work?',
+    'How many credits does each tool cost?'
+  ],
+  affiliates: [
+    'How much commission do affiliates earn?',
+    'How do 90-day cookies and payouts work?',
+    'How do I join the affiliate program?'
+  ],
+  for: [
+    'Which AI tool should I use first?',
+    'What can Intermaven do for me?',
+    'How do I get started?'
+  ],
+  legal: [
+    "What is Intermaven's refund policy?",
+    'How is my data protected?',
+    'How can you help me?'
   ],
   dashboard: [
-    "How do I generate my first brand kit?",
-    "Where can I see my saved outputs?",
-    "How do I add more credits?"
+    'How do I generate my first brand kit?',
+    'Where can I see my saved outputs?',
+    'How do I add more credits?'
   ],
   default: [
-    "What is Intermaven?",
-    "How can you help me?",
-    "Show me what you can do"
+    'What is Intermaven?',
+    'How can you help me?',
+    'Show me what you can do'
   ]
 };
 
-const AYO_RESPONSES = {
-  "what can intermaven do": "Intermaven is your AI-powered toolkit for African creatives! I can help you create professional brand kits, compelling music bios, social media content, sync licensing pitches, and business pitch decks. All powered by AI, designed for Africa. ðŸŒ",
-  
-  "how do i get started": "Getting started is easy! 1ï¸âƒ£ Click 'Start free' to create your account. 2ï¸âƒ£ You'll receive 150 free credits. 3ï¸âƒ£ Head to your dashboard and try any AI tool. I recommend starting with the Brand Kit Generator - it's a fan favorite!",
-  
-  "tell me about the ai tools": "We have 5 powerful AI tools:\n\nðŸŽ¨ **Brand Kit** - Generate logos, color palettes, and brand guidelines\nðŸ“ **Music Bio** - Create professional artist bios and press materials\nðŸ“± **Social AI** - Craft engaging social media content\nðŸŽµ **Sync Pitch** - Write pitches for music licensing opportunities\nðŸ’¼ **Pitch Deck** - Create business presentations\n\nEach tool costs between 5-25 credits per use.",
-  
-  "which ai tool should i use first": "Great question! It depends on your needs:\n\n* **Musicians/Artists** â†’ Start with Music Bio Generator\n* **Building a brand** â†’ Try Brand Kit Generator\n* **Need social content** â†’ Social AI is your friend\n* **Pitching to labels/supervisors** â†’ Sync Pitch Generator\n* **Business presentations** â†’ Pitch Deck Generator\n\nAll tools are available in your dashboard!",
-  
-  "how many credits": "Here's the credit breakdown:\n\nðŸŽ¨ Brand Kit: 25 credits\nðŸ“ Music Bio: 10 credits\nðŸ“± Social AI: 5 credits\nðŸŽµ Sync Pitch: 15 credits\nðŸ’¼ Pitch Deck: 20 credits\n\nFree accounts get 150 credits to start. That's enough for several generations!",
-  
-  "free plan": "The free plan includes:\n\nâœ… 150 credits (valid for 90 days)\nâœ… Access to all 5 AI tools\nâœ… Basic dashboard features\nâœ… Email support\n\nNo credit card required to start. Upgrade anytime for more credits!",
-  
-  "m-pesa": "We accept M-Pesa payments! Here's how it works:\n\n1ï¸âƒ£ Choose your plan (Creator KES 500 or Pro KES 1,500)\n2ï¸âƒ£ Select M-Pesa as payment method\n3ï¸âƒ£ Enter your phone number\n4ï¸âƒ£ Confirm the STK push on your phone\n5ï¸âƒ£ Credits are added instantly!\n\nWe also accept Visa and Mastercard.",
-  
-  "upgrade": "Yes, you can upgrade anytime! Just go to Settings â†’ Billing in your dashboard. Choose between:\n\nðŸ’œ **Creator Plan** - KES 500 for 600 credits\nðŸ’Ž **Pro Plan** - KES 1,500 for 2,500 credits\n\nPaid credits never expire!",
-  
-  "difference between tools and apps": "Good question!\n\n**AI Tools** are our core generators - they create content using AI (brand kits, bios, social posts, etc.)\n\n**Apps** are standalone modules for specific workflows - like EPK Builder for press kits, POS for businesses, etc.\n\nThink of tools as the engine, and apps as complete vehicles built with those engines!",
-  
-  "epk builder": "EPK Builder is coming soon! ðŸŽ‰\n\nIt will let you create professional Electronic Press Kits with:\n* Hosted profile pages at intermaven.io/artist/yourname\n* Downloadable PDF exports\n* Built-in analytics\n* Integration with your Music Bio\n\nJoin the waitlist on the Apps page to get early access!",
-  
-  "join the beta": "To join any beta program:\n\n1ï¸âƒ£ Go to the Apps page\n2ï¸âƒ£ Find the app marked 'Coming Soon'\n3ï¸âƒ£ Choose how you want to be notified (Email, WhatsApp, or SMS)\n4ï¸âƒ£ Enter your contact info\n5ï¸âƒ£ You're on the list!\n\nWe'll notify you the moment it launches.",
-  
-  "brand kit": "To generate a brand kit:\n\n1ï¸âƒ£ Go to your Dashboard\n2ï¸âƒ£ Click on 'Brand Kit Generator'\n3ï¸âƒ£ Enter your brand name and description\n4ï¸âƒ£ Add any style preferences\n5ï¸âƒ£ Click 'Generate'\n\nThe AI will create a complete brand identity with colors, fonts, and logo concepts! Costs 25 credits.",
-  
-  "saved outputs": "Your generated content is saved automatically! Find it in:\n\nðŸ“ Dashboard â†’ My Library (coming soon)\n\nFor now, you can copy or download outputs directly after generation. We're building a full asset library where all your AI creations will be stored.",
-  
-  "add credits": "To add more credits:\n\n1ï¸âƒ£ Go to Dashboard â†’ Settings â†’ Billing\n2ï¸âƒ£ Choose a plan:\n   * Creator: 600 credits for KES 500\n   * Pro: 2,500 credits for KES 1,500\n3ï¸âƒ£ Pay via M-Pesa or Card\n4ï¸âƒ£ Credits added instantly!\n\nPaid credits never expire.",
-  
-  "what is intermaven": "Intermaven is an AI-powered platform built specifically for African creatives and entrepreneurs. ðŸŒ\n\nWe provide tools to help you:\n* Build professional brands\n* Create compelling content\n* Pitch your work effectively\n* Grow your creative business\n\nOur mission is to democratize access to professional creative tools across Africa.",
-  
-  "help me": "I'm Maven, your AI assistant! I can help you with:\n\nðŸ’¡ Understanding our AI tools\nðŸ“– Navigating the platform\nðŸ’³ Billing and payment questions\nðŸš€ Getting started tips\nâ“ General questions about Intermaven\n\nJust type your question or click one of my suggestions!",
-  
-  "default": "I'm here to help! I can answer questions about:\n\n* Our AI tools (Brand Kit, Music Bio, Social AI, etc.)\n* Pricing and credits\n* How to get started\n* Technical support\n* Upcoming features\n\nWhat would you like to know?"
+const getPageContext = (pathname, search) => {
+  const path = (pathname || '/').toLowerCase();
+  const params = new URLSearchParams(search || '');
+  const article = params.get('article');
+
+  if (path === '/' || path === '') {
+    return {
+      key: 'homepage',
+      label: 'Home',
+      bubble: 'Exploring Intermaven? Ask Maven how to get started!',
+      greeting: "Welcome! I'm Maven. Seeing you on the home page — would you like help picking the right AI tool, Smart CRM workflow, or starting free with 150 Beta Credits?"
+    };
+  }
+  if (path.startsWith('/brandkit')) {
+    return {
+      key: 'brandkit',
+      label: 'Brand Kit AI',
+      bubble: 'Need help with Brand Kit AI?',
+      greeting: 'I see you are viewing Brand Kit AI. Would you like help generating a logo, color palette, typography pairing, or brand guideline — free during Beta?'
+    };
+  }
+  if (path.startsWith('/social')) {
+    return {
+      key: 'social-ai',
+      label: 'Social AI',
+      bubble: 'Need help planning Social AI campaigns?',
+      greeting: 'I see you are checking out Social AI. Need help crafting posts, content calendars, or launch hooks for your audience?'
+    };
+  }
+  if (path.startsWith('/smart-crm') || path.startsWith('/crm')) {
+    return {
+      key: 'smart-crm',
+      label: 'Smart CRM & Reachout',
+      bubble: 'Questions about Smart CRM & Reachout?',
+      greeting: 'You are browsing Smart CRM & Reachout. Ask me how ecosystem form leads sync automatically or how Email & WhatsApp follow-ups work!'
+    };
+  }
+  if (path.startsWith('/distro')) {
+    return {
+      key: 'distro',
+      label: 'Distribution Tracker',
+      bubble: 'Questions about Distribution Tracker?',
+      greeting: 'Checking out Distribution Tracker? I can help explain release tracking, split sheets, and DSP analytics.'
+    };
+  }
+  if (path.startsWith('/tools')) {
+    return {
+      key: 'tools',
+      label: 'AI Tools',
+      bubble: 'Comparing AI Tools? Ask Maven which to try first!',
+      greeting: 'I see you are browsing AI Tools. Tell me what project you are working on and I will recommend the best tool to launch first!'
+    };
+  }
+  if (path.startsWith('/pricing')) {
+    return {
+      key: 'pricing',
+      label: 'Pricing',
+      bubble: 'Comparing plans or credits? Ask Maven!',
+      greeting: 'Reviewing Pricing? Ask me about free Beta zero-credit generations, Creator/Pro plans, or M-Pesa and card checkout.'
+    };
+  }
+  if (path.startsWith('/apps')) {
+    return {
+      key: 'apps',
+      label: 'Apps Ecosystem',
+      bubble: 'Curious about our standalone Apps?',
+      greeting: 'Exploring the Apps ecosystem? Ask me how EPK Builder, TuneMavens, and our connected beta apps work together.'
+    };
+  }
+  if (path.startsWith('/help')) {
+    const articleNote = article ? ` Reading "${article.replace(/-/g, ' ')}"?` : '';
+    return {
+      key: 'help',
+      label: 'Help Center',
+      bubble: article ? 'Questions about this help guide?' : 'Need help finding a guide or opening a ticket?',
+      greeting: `Browsing the Help Center?${articleNote} Ask me any question or tell me about an issue and I can log a support ticket right here.`
+    };
+  }
+  if (path.startsWith('/affiliates')) {
+    return {
+      key: 'affiliates',
+      label: 'Affiliate Program',
+      bubble: 'Questions about Affiliate commissions or payouts?',
+      greeting: 'Checking out the Affiliate Program? Ask me about our 3% to 12% commission tiers, 90-day cookies, or instant M-Pesa & global payouts!'
+    };
+  }
+  if (path.startsWith('/for')) {
+    const persona = path.replace('/for/', '').replace('/for', '').replace(/-/g, ' ').trim();
+    const personaTitle = persona ? `Intermaven for ${persona}` : 'Perfect For You';
+    return {
+      key: 'for',
+      label: personaTitle,
+      bubble: persona ? `Questions on how Intermaven helps ${persona}s?` : 'Find the right Intermaven setup for your role!',
+      greeting: persona
+        ? `I see you are exploring Intermaven for ${persona}s. Want me to walk you through the best tools and Smart CRM workflows for your role?`
+        : 'Exploring tailored workflows? Tell me what you create or build and I will point you to the best setup.'
+    };
+  }
+  if (path.startsWith('/terms') || path.startsWith('/privacy') || path.startsWith('/refund') || path.startsWith('/cookies')) {
+    return {
+      key: 'legal',
+      label: 'Policies & Legal',
+      bubble: 'Questions about our Terms, Privacy, or Refund Policy?',
+      greeting: 'Reading our policy pages? I can help clarify account terms, data protection, or refund eligibility.'
+    };
+  }
+  if (path.startsWith('/dashboard')) {
+    return {
+      key: 'dashboard',
+      label: 'Dashboard',
+      bubble: 'Need a hand in your Dashboard?',
+      greeting: 'Inside your Dashboard! Need help generating a Brand Kit, launching Social AI, or managing Smart CRM contacts?'
+    };
+  }
+  return {
+    key: 'default',
+    label: 'Intermaven',
+    bubble: 'Need help? Ask Maven!',
+    greeting: "Hi! I'm Maven, your AI guide to Intermaven. How can I help you with what you're browsing?"
+  };
 };
 
-function MavenChat({ currentPage = 'default', isLoggedIn = false, userEmail = null }) {
+const AYO_RESPONSES = {
+  'what can intermaven do': 'Intermaven is your AI-powered toolkit for creatives and businesses. I can help you create professional brand kits, compelling music bios, social media content, sync licensing pitches, Smart CRM outreach, and business pitch decks.',
+  'how do i get started': "Getting started is easy:\n1. Click 'Start free' to create your account.\n2. Receive 150 free starter credits (with 0 credit deduction during Beta).\n3. Open your dashboard and try Brand Kit AI, Social AI, or Smart CRM.",
+  'tell me about the ai tools': "We have 5 core AI tools:\n\n- **Brand Kit AI**: Generate logos, color palettes, and brand guidelines\n- **Music Bio**: Create professional artist bios and press materials\n- **Social AI**: Craft engaging social media content\n- **Sync Pitch**: Write pitches for music licensing opportunities\n- **Pitch Deck**: Create business presentations\n\nAll AI tools have 0 credit deduction during Beta.",
+  'which ai tool should i use first': "It depends on what you are building:\n\n- **Musicians / Artists**: Start with Music Bio Generator\n- **Building a brand**: Try Brand Kit AI\n- **Need social content**: Use Social AI\n- **Pitching to labels / supervisors**: Sync Pitch Generator\n- **Business presentations**: Pitch Deck Generator",
+  'how many credits': "Standard tool costs (currently 0 credits charged during Beta):\n\n- Brand Kit: 25 credits\n- Music Bio: 10 credits\n- Social AI: 5 credits\n- Sync Pitch: 15 credits\n- Pitch Deck: 20 credits\n\nFree accounts receive 150 starter credits.",
+  'free plan': "The Free Plan includes:\n\n- 150 starter credits (valid for 90 days)\n- Zero-credit usage during the Beta phase\n- Access to core AI tools & Smart CRM\n- Email & Help Center support\n\nNo credit card required to start.",
+  'm-pesa': "We accept M-Pesa payments:\n\n1. Choose your plan (Creator KES 500 or Pro KES 1,500)\n2. Select M-Pesa as payment method\n3. Enter your phone number and confirm the STK push\n4. Credits are added instantly\n\nWe also accept Visa and Mastercard.",
+  'upgrade': "Yes, you can upgrade anytime in Settings -> Billing:\n\n- **Creator Plan**: KES 500 for 600 credits\n- **Pro Plan**: KES 1,500 for 2,500 credits\n\nPaid credits never expire.",
+  'difference between tools and apps': '**AI Tools** are our core content generators (Brand Kit, Music Bio, Social AI, Sync Pitch, Pitch Deck).\n\n**Apps** are complete workflow modules such as EPK Builder, Smart CRM & Reachout, and Distribution Tracker.',
+  'epk builder': "EPK Builder lets you build professional Electronic Press Kits with:\n- Hosted profile pages at intermaven.io\n- Downloadable PDF exports\n- Built-in analytics\n- Direct integration with your Music Bio",
+  'join the beta': "To join any beta program:\n\n1. Go to the Apps page\n2. Select any app marked 'Coming Soon' or 'Beta'\n3. Enter your Email, WhatsApp, or SMS preference to be notified.",
+  'brand kit': "To generate a Brand Kit:\n\n1. Open Brand Kit AI from your Dashboard\n2. Enter your brand name, industry, and style preferences\n3. Click 'Generate' to get logos, color palettes, typography, and brand guidelines.",
+  'smart crm': 'Smart CRM & Reachout automatically syncs every inbound form lead across Intermaven and lets you automate Email and WhatsApp follow-up campaigns.',
+  'affiliate': 'Our Affiliate Program pays 3% to 12% revenue share with 90-day cookie attribution, real-time click and conversion tracking, and fast payouts via M-Pesa STK push or global bank/PayPal from $20 (KES 2,600).',
+  'refund': 'Credit top-ups are generally non-refundable once delivered, though duplicate gateway charges, failed credit loads, or platform crash deductions are refunded promptly. See the Refund Policy page or email billing@intermaven.io.',
+  'data protected': 'All traffic is encrypted over TLS/SSL, passwords are hashed, and role-based access controls protect your account data. See our Privacy Policy page for full details.',
+  'distribution': 'Distribution Tracker helps you track release deliveries across DSPs, manage split percentages, and monitor streaming performance.',
+  'saved outputs': 'Your generated content is saved in your Dashboard library so you can copy, download, or reuse assets anytime.',
+  'add credits': "To add more credits:\n\n1. Go to Dashboard -> Settings -> Billing\n2. Choose Creator (600 credits for KES 500) or Pro (2,500 credits for KES 1,500)\n3. Pay via M-Pesa or Card for instant delivery.",
+  'what is intermaven': 'Intermaven is an AI-powered platform built for creatives and entrepreneurs to build brands, automate CRM outreach, create content, and scale their businesses globally.',
+  'help me': "I'm Maven, your AI assistant. I can help you with:\n\n- Understanding AI tools on the page you're browsing\n- Navigating the platform\n- Billing, M-Pesa, and affiliate questions\n- Creating a support ticket anytime\n\nType your question or choose a suggestion below!",
+  'default': "I'm here to help! Ask me about:\n- AI tools (Brand Kit AI, Social AI, Smart CRM, Music Bio)\n- Pricing, free Beta credits, and M-Pesa payments\n- The Affiliate Program\n- Technical support & step-by-step guides"
+};
+
+function MavenChat({ currentPage, isLoggedIn = false, userEmail = null }) {
   const region = useRegion();
+  const location = useLocation();
   const country = region ? region.country : 'KE';
   const isWestern = ['US', 'CA', 'GB', 'IE', 'AU', 'NZ', 'FR', 'DE', 'IT', 'ES', 'NL', 'BE', 'SE', 'NO', 'FI', 'DK', 'AT', 'CH', 'PT', 'PL', 'CZ', 'HU', 'GR'].includes(country?.toUpperCase());
-  const isUSorCA = ['US', 'CA'].includes(country?.toUpperCase());
+
+  const pageContext = useMemo(
+    () => getPageContext(location.pathname, location.search),
+    [location.pathname, location.search]
+  );
+  const resolvedPageKey = pageContext.key !== 'default' ? pageContext.key : (currentPage || 'default');
 
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
@@ -95,29 +253,35 @@ function MavenChat({ currentPage = 'default', isLoggedIn = false, userEmail = nu
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  // Keywords that indicate support issues
   const SUPPORT_KEYWORDS = [
     'not working', "doesn't work", 'broken', 'error', 'bug', 'issue', 'problem',
-    'help me', 'support', 'refund', 'charged', 'payment failed', 'stuck',
-    'can\'t login', 'cannot login', 'locked out', 'reset password'
+    'support', 'refund', 'charged', 'payment failed', 'stuck', 'ticket',
+    "can't login", 'cannot login', 'locked out', 'reset password'
   ];
 
-  // Show greeting bubble after delay
+  // Show context-aware greeting bubble when landing or navigating to a new page
   useEffect(() => {
+    const delay = hasGreeted ? 1200 : 3500;
     const timer = setTimeout(() => {
-      if (!hasGreeted && !isOpen) {
+      if (!isOpen) {
         setShowBubble(true);
       }
-    }, 5000);
+    }, delay);
     return () => clearTimeout(timer);
-  }, [hasGreeted, isOpen]);
+  }, [location.pathname, isOpen, hasGreeted]);
 
-  // Auto-scroll to bottom
+  // Keep initial greeting synced with what the user is currently browsing if they haven't chatted yet
+  useEffect(() => {
+    if (isOpen && hasGreeted && messages.length === 1 && messages[0]?.role === 'assistant') {
+      const prefix = isLoggedIn ? 'Welcome back! ' : (isWestern ? 'Hello! ' : 'Jambo! ');
+      setMessages([{ role: 'assistant', content: `${prefix}${pageContext.greeting}` }]);
+    }
+  }, [location.pathname, location.search, pageContext.greeting, isOpen, hasGreeted, isLoggedIn, isWestern, messages.length]);
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Focus input when opened
   useEffect(() => {
     if (isOpen && !isMinimized) {
       inputRef.current?.focus();
@@ -128,16 +292,11 @@ function MavenChat({ currentPage = 'default', isLoggedIn = false, userEmail = nu
     setIsOpen(true);
     setShowBubble(false);
     setIsMinimized(false);
-    
+
     if (!hasGreeted) {
       setHasGreeted(true);
-      const greeting = isLoggedIn 
-        ? "Welcome back! ðŸ‘‹ I'm Maven, your AI assistant. How can I help you today?"
-        : isWestern
-          ? "Hello! ðŸ‘‹ I'm Maven, your AI guide to Intermaven. I can help you discover our AI tools, answer questions, or get you started. What would you like to know?"
-          : "Jambo! ðŸ‘‹ I'm Maven, your AI guide to Intermaven. I can help you discover our AI tools, answer questions, or get you started. What would you like to know?";
-      
-      setMessages([{ role: 'assistant', content: greeting }]);
+      const prefix = isLoggedIn ? 'Welcome back! ' : (isWestern ? 'Hello! ' : 'Jambo! ');
+      setMessages([{ role: 'assistant', content: `${prefix}${pageContext.greeting}` }]);
     }
   };
 
@@ -153,48 +312,53 @@ function MavenChat({ currentPage = 'default', isLoggedIn = false, userEmail = nu
     const lower = input.toLowerCase();
 
     const getLocalizedResponse = (key) => {
-      let response = AYO_RESPONSES[key];
-      if (!response) return AYO_RESPONSES['default'];
+      const response = AYO_RESPONSES[key];
+      if (!response) return AYO_RESPONSES.default;
       if (!isWestern) return response;
-      
+
       if (key === 'what can intermaven do') {
-        return "Intermaven is your AI-powered toolkit for creatives and entrepreneurs! I can help you create professional brand kits, compelling music bios, social media content, sync licensing pitches, and business pitch decks. All powered by AI, designed for global creators. ðŸŒ";
+        return 'Intermaven is your AI-powered toolkit for creatives and entrepreneurs globally. Build brand kits, social campaigns, Smart CRM workflows, and pitches in minutes.';
       }
       if (key === 'm-pesa') {
-        return "We accept credit card, PayPal, Apple Pay, Google Pay, and regional mobile transfers! Here's how it works:\n\n1ï¸âƒ£ Choose your plan (Creator USD $4.99 or Pro USD $14.99 equivalent)\n2ï¸âƒ£ Select your preferred payment method\n3ï¸âƒ£ Complete the checkout / confirmation\n4ï¸âƒ£ Credits are added instantly!";
+        return "We accept credit card, PayPal, Apple Pay, Google Pay, and regional mobile transfers:\n\n1. Choose your plan (Creator USD $4.99 or Pro USD $14.99 equivalent)\n2. Select your payment method\n3. Complete checkout for instant credits!";
       }
       if (key === 'upgrade') {
-        return "Yes, you can upgrade anytime! Just go to Settings â†’ Billing in your dashboard. Choose between:\n\nðŸ’œ **Creator Plan** - USD $4.99 for 600 credits\nðŸ’Ž **Pro Plan** - USD $14.99 for 2,500 credits\n\nPaid credits never expire!";
+        return "Yes, you can upgrade anytime in Settings -> Billing:\n\n- **Creator Plan**: USD $4.99 for 600 credits\n- **Pro Plan**: USD $14.99 for 2,500 credits\n\nPaid credits never expire.";
       }
       if (key === 'add credits') {
-        return "To add more credits:\n\n1ï¸âƒ£ Go to Dashboard â†’ Settings â†’ Billing\n2ï¸âƒ£ Choose a plan:\n   * Creator: 600 credits for USD $4.99 equivalent\n   * Pro: 2,500 credits for USD $14.99 equivalent\n3ï¸âƒ£ Pay via Card, PayPal, or regional mobile transfer\n4ï¸âƒ£ Credits added instantly!\n\nPaid credits never expire.";
+        return "To add credits:\n\n1. Go to Dashboard -> Settings -> Billing\n2. Choose Creator ($4.99) or Pro ($14.99)\n3. Complete checkout via Card, PayPal, or regional payment.";
       }
-      if (key === 'what is intermaven') {
-        return "Intermaven is an AI-powered platform built for creatives and entrepreneurs to brand, pitch, and grow their businesses globally. ðŸŒ";
-      }
-      
       return response;
     };
-    
-    // Check if this is a support issue that needs a ticket
-    const isSupportIssue = SUPPORT_KEYWORDS.some(keyword => lower.includes(keyword));
-    
-    if (isSupportIssue && !ticketId) {
+
+    const isSupportIssue = SUPPORT_KEYWORDS.some((keyword) => lower.includes(keyword));
+    if (isSupportIssue && !ticketId && !lower.includes('refund policy')) {
       setSupportMode(true);
       return {
-        text: `I can see you're experiencing an issue. Let me create a support ticket to help you properly.\n\n**How would you like me to keep you updated?**`,
+        text: "I can help log a support ticket for this right away.\n\n**How would you like me to keep you updated?**",
         showChannelPrompt: true
       };
     }
-    
-    for (const [key, response] of Object.entries(AYO_RESPONSES)) {
+
+    for (const [key] of Object.entries(AYO_RESPONSES)) {
       if (key !== 'default' && lower.includes(key)) {
         return { text: getLocalizedResponse(key) };
       }
     }
-    
-    // Check for keywords
-    if (lower.includes('credit') || lower.includes('cost')) {
+
+    if (lower.includes('affiliate') || lower.includes('commission') || lower.includes('cookie')) {
+      return { text: getLocalizedResponse('affiliate') };
+    }
+    if (lower.includes('crm') || lower.includes('reachout') || lower.includes('lead')) {
+      return { text: getLocalizedResponse('smart crm') };
+    }
+    if (lower.includes('distro') || lower.includes('distribution')) {
+      return { text: getLocalizedResponse('distribution') };
+    }
+    if (lower.includes('privacy') || lower.includes('data')) {
+      return { text: getLocalizedResponse('data protected') };
+    }
+    if (lower.includes('credit') || lower.includes('cost') || lower.includes('beta')) {
       return { text: getLocalizedResponse('how many credits') };
     }
     if (lower.includes('pay') || lower.includes('mpesa') || lower.includes('m-pesa') || lower.includes('venmo') || lower.includes('cash app') || lower.includes('zelle')) {
@@ -210,13 +374,13 @@ function MavenChat({ currentPage = 'default', isLoggedIn = false, userEmail = nu
       return { text: getLocalizedResponse('free plan') };
     }
     if (lower.includes('hello') || lower.includes('hi') || lower.includes('hey')) {
-      return { text: isWestern ? "Hello! ðŸ‘‹ Great to meet you. I'm Maven, here to help you navigate Intermaven. What would you like to know about our AI tools?" : "Hello! ðŸ‘‹ Great to meet you. I'm Maven, here to help you navigate Intermaven. What would you like to know about our AI tools for African creatives?" };
+      return { text: `Hello! You are currently viewing ${pageContext.label}. What would you like to know?` };
     }
     if (lower.includes('thank')) {
-      return { text: "You're welcome! ðŸ˜Š Feel free to ask if you have more questions. I'm always here to help!" };
+      return { text: "You're welcome! Let me know if there's anything else I can help with." };
     }
-    
-    return { text: AYO_RESPONSES['default'] };
+
+    return { text: AYO_RESPONSES.default };
   };
 
   const createSupportTicket = async (subject, message, channel, contact) => {
@@ -225,8 +389,8 @@ function MavenChat({ currentPage = 'default', isLoggedIn = false, userEmail = nu
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          subject: subject,
-          message: message,
+          subject,
+          message,
           category: detectCategory(message),
           preferred_channel: channel,
           email: channel === 'email' ? contact : null,
@@ -234,10 +398,9 @@ function MavenChat({ currentPage = 'default', isLoggedIn = false, userEmail = nu
           user_id: userEmail
         })
       });
-      
+
       if (response.ok) {
-        const data = await response.json();
-        return data;
+        return await response.json();
       }
     } catch (error) {
       console.error('Failed to create ticket:', error);
@@ -262,44 +425,42 @@ function MavenChat({ currentPage = 'default', isLoggedIn = false, userEmail = nu
   const handleChannelSelect = async (channel) => {
     setPreferredChannel(channel);
     setShowChannelPrompt(false);
-    
+
     const placeholder = channel === 'email' ? 'your email address' : 'your phone number (+254...)';
-    setMessages(prev => [...prev, { 
-      role: 'assistant', 
-      content: `Great! Please provide ${placeholder} so I can keep you updated on your ticket.` 
+    setMessages((prev) => [...prev, {
+      role: 'assistant',
+      content: `Great! Please provide ${placeholder} so I can keep you updated on your ticket.`
     }]);
   };
 
-  const handleContactSubmit = async () => {
-    if (!contactInfo.trim()) return;
-    
-    setMessages(prev => [...prev, { role: 'user', content: contactInfo }]);
+  const handleContactSubmit = async (contactText) => {
+    const value = (contactText || contactInfo).trim();
+    if (!value) return;
+
+    setMessages((prev) => [...prev, { role: 'user', content: value }]);
     setIsTyping(true);
-    
-    // Find the original issue message
-    const issueMessage = messages.find(m => m.role === 'user')?.content || 'Support request';
-    
-    // Create the ticket
+
+    const issueMessage = messages.find((m) => m.role === 'user')?.content || 'Support request';
     const ticketResult = await createSupportTicket(
       issueMessage.substring(0, 100),
       issueMessage,
       preferredChannel,
-      contactInfo
+      value
     );
-    
+
     setIsTyping(false);
-    
+
     if (ticketResult?.success) {
       setTicketId(ticketResult.ticket_id);
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: `âœ… **Ticket Created: ${ticketResult.ticket_id}**\n\nI've logged your issue and started investigating. Here's my initial assessment:\n\n${ticketResult.ai_response}\n\nI'll send updates via ${preferredChannel === 'email' ? 'email' : preferredChannel === 'whatsapp' ? 'WhatsApp' : 'SMS'} as I work on this. You can also check your ticket status anytime.`,
+      setMessages((prev) => [...prev, {
+        role: 'assistant',
+        content: `**Ticket Created: ${ticketResult.ticket_id}**\n\nI've logged your issue and started investigating:\n\n${ticketResult.ai_response}\n\nUpdates will be sent via ${preferredChannel === 'email' ? 'email' : preferredChannel === 'whatsapp' ? 'WhatsApp' : 'SMS'}.`,
         isTicket: true
       }]);
       setSupportMode(false);
     } else {
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
+      setMessages((prev) => [...prev, {
+        role: 'assistant',
         content: 'I encountered an issue creating the ticket. Please try again or email support@intermaven.io directly.'
       }]);
     }
@@ -308,30 +469,27 @@ function MavenChat({ currentPage = 'default', isLoggedIn = false, userEmail = nu
 
   const handleSend = async (text = inputValue) => {
     if (!text.trim()) return;
-    
-    // Check if we're waiting for contact info
+
     if (supportMode && showChannelPrompt === false && !ticketId) {
       setContactInfo(text);
-      await handleContactSubmit();
       setInputValue('');
+      await handleContactSubmit(text);
       return;
     }
-    
+
     const userMessage = { role: 'user', content: text };
-    setMessages(prev => [...prev, userMessage]);
+    setMessages((prev) => [...prev, userMessage]);
     setInputValue('');
     setIsTyping(true);
 
-    // Simulate typing delay
-    await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 700));
-    
+    await new Promise((resolve) => setTimeout(resolve, 600 + Math.random() * 500));
+
     const responseObj = findResponse(text);
-    
     if (responseObj.showChannelPrompt) {
       setShowChannelPrompt(true);
     }
-    
-    setMessages(prev => [...prev, { role: 'assistant', content: responseObj.text }]);
+
+    setMessages((prev) => [...prev, { role: 'assistant', content: responseObj.text }]);
     setIsTyping(false);
   };
 
@@ -346,24 +504,22 @@ function MavenChat({ currentPage = 'default', isLoggedIn = false, userEmail = nu
     }
   };
 
-  const suggestions = AYO_SUGGESTIONS[currentPage] || AYO_SUGGESTIONS.default;
+  const suggestions = AYO_SUGGESTIONS[resolvedPageKey] || AYO_SUGGESTIONS.default;
 
   return (
     <div className="maven-container" data-testid="maven-chat">
-      {/* Chat Bubble */}
       {showBubble && !isOpen && (
         <div className="maven-bubble" onClick={handleOpen} data-testid="maven-bubble">
-          <span>Need help? I'm Maven! ðŸ‘‹</span>
+          <span>{pageContext.bubble}</span>
           <button className="maven-bubble-close" onClick={(e) => { e.stopPropagation(); setShowBubble(false); }}>
             <X size={12} />
           </button>
         </div>
       )}
 
-      {/* Chat Button */}
       {!isOpen && (
-        <button 
-          className="maven-trigger" 
+        <button
+          className="maven-trigger"
           onClick={handleOpen}
           data-testid="maven-trigger"
           aria-label="Open chat with Maven"
@@ -373,10 +529,8 @@ function MavenChat({ currentPage = 'default', isLoggedIn = false, userEmail = nu
         </button>
       )}
 
-      {/* Chat Window */}
       {isOpen && (
         <div className={`maven-window ${isMinimized ? 'minimized' : ''}`} data-testid="maven-window">
-          {/* Header */}
           <div className="maven-header">
             <div className="maven-header-info">
               <div className="maven-avatar">
@@ -384,14 +538,14 @@ function MavenChat({ currentPage = 'default', isLoggedIn = false, userEmail = nu
               </div>
               <div>
                 <h4>Maven</h4>
-                <span className="maven-status">AI Assistant</span>
+                <span className="maven-status">Viewing: {pageContext.label}</span>
               </div>
             </div>
             <div className="maven-header-actions">
-              <button onClick={handleMinimize} aria-label={isMinimized ? 'Expand' : 'Minimize'}>
-                <ChevronDown size={18} className={isMinimized ? 'rotated' : ''} />
+              <button onClick={handleMinimize} title={isMinimized ? 'Expand' : 'Minimize'}>
+                <ChevronDown size={18} style={{ transform: isMinimized ? 'rotate(180deg)' : 'none' }} />
               </button>
-              <button onClick={handleClose} aria-label="Close chat">
+              <button onClick={handleClose} title="Close">
                 <X size={18} />
               </button>
             </div>
@@ -399,13 +553,12 @@ function MavenChat({ currentPage = 'default', isLoggedIn = false, userEmail = nu
 
           {!isMinimized && (
             <>
-              {/* Messages */}
               <div className="maven-messages">
                 {messages.map((msg, idx) => (
-                  <div key={idx} className={`maven-message ${msg.role} ${msg.isTicket ? 'ticket' : ''}`}>
+                  <div key={idx} className={`maven-message ${msg.role}`}>
                     {msg.role === 'assistant' && (
                       <div className="maven-message-avatar">
-                        {msg.isTicket ? <Ticket size={12} /> : <Sparkles size={12} />}
+                        <Sparkles size={12} />
                       </div>
                     )}
                     <div className="maven-message-content">
@@ -415,22 +568,21 @@ function MavenChat({ currentPage = 'default', isLoggedIn = false, userEmail = nu
                     </div>
                   </div>
                 ))}
-                
-                {/* Channel Selection Buttons */}
+
                 {showChannelPrompt && (
                   <div className="maven-channel-select">
                     <button onClick={() => handleChannelSelect('email')} className="maven-channel-btn">
-                      ðŸ“§ Email
+                      Email
                     </button>
                     <button onClick={() => handleChannelSelect('whatsapp')} className="maven-channel-btn">
-                      ðŸ’¬ WhatsApp
+                      WhatsApp
                     </button>
                     <button onClick={() => handleChannelSelect('sms')} className="maven-channel-btn">
-                      ðŸ“± SMS
+                      SMS
                     </button>
                   </div>
                 )}
-                
+
                 {isTyping && (
                   <div className="maven-message assistant">
                     <div className="maven-message-avatar">
@@ -444,7 +596,6 @@ function MavenChat({ currentPage = 'default', isLoggedIn = false, userEmail = nu
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Suggestions */}
               {messages.length <= 1 && (
                 <div className="maven-suggestions">
                   {suggestions.map((suggestion, idx) => (
@@ -460,7 +611,6 @@ function MavenChat({ currentPage = 'default', isLoggedIn = false, userEmail = nu
                 </div>
               )}
 
-              {/* Input */}
               <div className="maven-input-area">
                 <input
                   ref={inputRef}
@@ -468,11 +618,11 @@ function MavenChat({ currentPage = 'default', isLoggedIn = false, userEmail = nu
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Ask me anything..."
+                  placeholder={`Ask about ${pageContext.label}...`}
                   disabled={isTyping}
                   data-testid="maven-input"
                 />
-                <button 
+                <button
                   onClick={() => handleSend()}
                   disabled={!inputValue.trim() || isTyping}
                   data-testid="maven-send"
@@ -490,4 +640,3 @@ function MavenChat({ currentPage = 'default', isLoggedIn = false, userEmail = nu
 }
 
 export default MavenChat;
-

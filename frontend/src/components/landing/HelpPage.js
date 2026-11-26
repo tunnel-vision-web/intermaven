@@ -17,6 +17,7 @@ const HelpPage = () => {
   const highlightedArticle = selectedArticleSlug ? getHelpArticleBySlug(selectedArticleSlug) : null;
 
   const [activeTab, setActiveTab] = useState('kb'); // 'kb' or 'support'
+  const [activeKbSection, setActiveKbSection] = useState('all'); // 'all', 'ecosystem', or category.slug
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   
@@ -246,11 +247,8 @@ const HelpPage = () => {
     { slug: "mobile-payments-mpesa-guide", title: "M-Pesa Payments: Complete Setup Guide", category: "Billing & Plans", readTime: "4 min" }
   ];
 
-  const scrollToSection = (id) => {
-    const el = document.getElementById(id);
-    if (el) {
-      el.scrollIntoView({ behavior: 'smooth' });
-    }
+  const selectKbSection = (slug) => {
+    setActiveKbSection(slug);
   };
 
   return (
@@ -334,139 +332,206 @@ const HelpPage = () => {
             </div>
           )}
 
-          {/* Featured Ecosystem Guides */}
-          <div style={{ marginBottom: '36px' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '14px', color: '#e2e8f0' }}>Ecosystem App Guides</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '14px' }}>
-              {HELP_ARTICLES.map((art) => (
-                <Link
-                  key={art.slug}
-                  to={`/help?article=${art.slug}`}
+          {/* Section Tabbed Menu */}
+          <div
+            data-testid="help-section-tabs"
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: '8px',
+              marginBottom: '28px',
+              padding: '8px',
+              background: '#0f172a',
+              border: '1px solid #1e293b',
+              borderRadius: '8px'
+            }}
+          >
+            {[
+              { slug: 'all', label: 'All Sections', icon: '📚' },
+              { slug: 'ecosystem', label: 'Ecosystem Guides', icon: '✨' },
+              ...categories.map((c) => ({ slug: c.slug, label: c.title, icon: c.icon }))
+            ].map((tab) => {
+              const isActive = activeKbSection === tab.slug;
+              return (
+                <button
+                  key={tab.slug}
+                  type="button"
+                  onClick={() => selectKbSection(tab.slug)}
                   style={{
-                    textDecoration: 'none',
-                    background: selectedArticleSlug === art.slug ? 'rgba(34,211,238,0.12)' : 'rgba(13,17,23,0.75)',
-                    border: selectedArticleSlug === art.slug ? '1px solid #22d3ee' : '1px solid rgba(255,255,255,0.08)',
-                    borderRadius: '12px',
-                    padding: '16px',
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: '12px',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '8px 14px',
+                    borderRadius: '4px',
+                    border: isActive ? '1px solid #10b981' : '1px solid transparent',
+                    background: isActive ? '#10b981' : 'transparent',
+                    color: isActive ? '#0f172a' : '#94a3b8',
+                    fontSize: '13px',
+                    fontWeight: isActive ? 700 : 600,
+                    cursor: 'pointer',
+                    transition: 'all 0.2s'
                   }}
                 >
-                  <FlatIcon name={art.appId} size={30} />
-                  <div>
-                    <div style={{ fontSize: '11px', color: '#38bdf8', fontWeight: 700 }}>{art.category}</div>
-                    <div style={{ fontSize: '14px', fontWeight: 700, color: '#f8fafc', marginTop: '2px' }}>{art.title}</div>
-                  </div>
-                </Link>
-              ))}
-            </div>
+                  <span>{tab.icon}</span>
+                  <span>{tab.label}</span>
+                </button>
+              );
+            })}
           </div>
 
+          {/* Ecosystem App Guides (visible on All or Ecosystem Guides tab) */}
+          {(activeKbSection === 'all' || activeKbSection === 'ecosystem') && (
+            <div style={{ marginBottom: '36px' }}>
+              <h3 style={{ fontSize: '17px', fontWeight: 700, marginBottom: '16px', color: '#f0f0f5', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span>✨</span>
+                <span>Ecosystem App Guides</span>
+              </h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
+                {HELP_ARTICLES.map((art) => (
+                  <Link
+                    key={art.slug}
+                    to={`/help?article=${art.slug}`}
+                    style={{
+                      textDecoration: 'none',
+                      background: selectedArticleSlug === art.slug ? 'rgba(34,211,238,0.12)' : '#0f172a',
+                      border: selectedArticleSlug === art.slug ? '1px solid #22d3ee' : '1px solid #1e2937',
+                      borderRadius: '8px',
+                      padding: '18px',
+                      minHeight: '116px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      gap: '10px',
+                      transition: 'border-color 0.2s, background-color 0.2s'
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+                      <FlatIcon name={art.appId} size={30} />
+                      <div>
+                        <div style={{ fontSize: '11px', color: '#38bdf8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>{art.category}</div>
+                        <div style={{ fontSize: '14px', fontWeight: 700, color: '#f8fafc', marginTop: '4px', lineHeight: 1.4 }}>{art.title}</div>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#64748b' }}>
+                      <span>Ecosystem Guide</span>
+                      <span>{art.readTime || '5 min'} read</span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="help-content">
-            <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '20px', textAlign: 'center' }}>Help Topics</h2>
-            
-            <div className="help-categories" style={{ 
-              display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', 
-              gap: '16px',
-              marginBottom: '48px'
-            }}>
-              {categories.map((cat, index) => (
-                <div 
-                  key={index}
-                  className="category-card"
-                  onClick={() => scrollToSection(cat.slug)}
+            {activeKbSection === 'all' && (
+              <>
+                <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '20px' }}>Help Topics</h2>
+                <div
+                  className="help-categories"
                   style={{
-                    background: '#1e2937',
-                    border: '1px solid #334155',
-                    borderRadius: '3px',
-                    padding: '20px',
-                    display: 'flex',
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
                     gap: '16px',
-                    alignItems: 'flex-start',
-                    cursor: 'pointer',
-                    transition: 'border-color 0.2s, transform 0.2s'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = '#10b981';
-                    e.currentTarget.style.transform = 'translateY(-2px)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.borderColor = '#334155';
-                    e.currentTarget.style.transform = 'none';
+                    marginBottom: '40px'
                   }}
                 >
-                  <div style={{ fontSize: '28px', lineHeight: 1 }}>{cat.icon}</div>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: '16px', marginBottom: '4px' }}>{cat.title}</div>
-                    <div style={{ color: '#94a3b8', fontSize: '14px' }}>{cat.desc}</div>
-                  </div>
+                  {categories.map((cat, index) => (
+                    <div
+                      key={index}
+                      className="category-card"
+                      onClick={() => selectKbSection(cat.slug)}
+                      style={{
+                        background: '#1e2937',
+                        border: '1px solid #334155',
+                        borderRadius: '8px',
+                        padding: '20px',
+                        display: 'flex',
+                        gap: '16px',
+                        alignItems: 'flex-start',
+                        cursor: 'pointer',
+                        transition: 'border-color 0.2s, transform 0.2s'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = '#10b981';
+                        e.currentTarget.style.transform = 'translateY(-2px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = '#334155';
+                        e.currentTarget.style.transform = 'none';
+                      }}
+                    >
+                      <div style={{ fontSize: '28px', lineHeight: 1 }}>{cat.icon}</div>
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: '16px', marginBottom: '4px' }}>{cat.title}</div>
+                        <div style={{ color: '#94a3b8', fontSize: '14px' }}>{cat.desc}</div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-
-            <h2 style={{ fontSize: '20px', fontWeight: 700, marginBottom: '28px', borderBottom: '1px solid #334155', paddingBottom: '12px' }}>
-              All Articles
-            </h2>
+              </>
+            )}
 
             <div className="help-articles-sections" style={{ display: 'grid', gap: '32px', marginBottom: '48px' }}>
-              {categories.map((cat, idx) => {
-                const articlesInCat = helpArticles.filter(a => a.category === cat.title);
-                return (
-                  <div key={idx} id={cat.slug} style={{ scrollMarginTop: '100px' }}>
-                    <h3 style={{ fontSize: '17px', fontWeight: 700, marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px', color: '#f0f0f5' }}>
-                      <span>{cat.icon}</span>
-                      <span>{cat.title}</span>
-                    </h3>
-                    {articlesInCat.length === 0 ? (
-                      <p style={{ color: '#64748b', fontSize: '14px', fontStyle: 'italic', paddingLeft: '28px' }}>No articles under this category yet.</p>
-                    ) : (
-                      <div style={{ 
-                        display: 'grid', 
-                        gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', 
-                        gap: '12px',
-                        paddingLeft: '28px'
-                      }}>
-                        {articlesInCat.map((art, aIdx) => (
-                          <Link 
-                            key={aIdx} 
-                            to={`/help/article/${art.slug}`}
-                            style={{
-                              background: '#0f172a',
-                              border: '1px solid #1e2937',
-                              borderRadius: '3px',
-                              padding: '16px',
-                              textDecoration: 'none',
-                              color: 'inherit',
-                              display: 'flex',
-                              flexDirection: 'column',
-                              justifyContent: 'space-between',
-                              transition: 'border-color 0.2s, background-color 0.2s'
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.borderColor = '#10b981';
-                              e.currentTarget.style.backgroundColor = '#1e2937';
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.borderColor = '#1e2937';
-                              e.currentTarget.style.backgroundColor = '#0f172a';
-                            }}
-                          >
-                            <div style={{ fontWeight: 600, fontSize: '14px', color: '#e2e8f0', marginBottom: '8px', lineHeight: '1.4' }}>
-                              {art.title}
-                            </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#64748b' }}>
-                              <span>Guide</span>
-                              <span>{art.readTime} read</span>
-                            </div>
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
+              {categories
+                .filter((cat) => activeKbSection === 'all' || activeKbSection === cat.slug)
+                .map((cat, idx) => {
+                  const articlesInCat = helpArticles.filter((a) => a.category === cat.title);
+                  return (
+                    <div key={cat.slug || idx} id={cat.slug} style={{ scrollMarginTop: '100px' }}>
+                      <h3 style={{ fontSize: '17px', fontWeight: 700, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px', color: '#f0f0f5' }}>
+                        <span>{cat.icon}</span>
+                        <span>{cat.title}</span>
+                      </h3>
+                      {articlesInCat.length === 0 ? (
+                        <p style={{ color: '#64748b', fontSize: '14px', fontStyle: 'italic' }}>No articles under this category yet.</p>
+                      ) : (
+                        <div
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+                            gap: '16px'
+                          }}
+                        >
+                          {articlesInCat.map((art, aIdx) => (
+                            <Link
+                              key={aIdx}
+                              to={`/help/article/${art.slug}`}
+                              style={{
+                                background: '#0f172a',
+                                border: '1px solid #1e2937',
+                                borderRadius: '8px',
+                                padding: '18px',
+                                minHeight: '116px',
+                                textDecoration: 'none',
+                                color: 'inherit',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'space-between',
+                                transition: 'border-color 0.2s, background-color 0.2s'
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.borderColor = '#10b981';
+                                e.currentTarget.style.backgroundColor = '#1e2937';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.borderColor = '#1e2937';
+                                e.currentTarget.style.backgroundColor = '#0f172a';
+                              }}
+                            >
+                              <div style={{ fontWeight: 600, fontSize: '14px', color: '#e2e8f0', marginBottom: '10px', lineHeight: '1.45' }}>
+                                {art.title}
+                              </div>
+                              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#64748b' }}>
+                                <span>{cat.title}</span>
+                                <span>{art.readTime} read</span>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
             </div>
 
             <div style={{ 

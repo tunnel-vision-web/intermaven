@@ -15,7 +15,7 @@ function CookiesPage() {
         <div className="phc">
           <div className="bc">Legal</div>
           <h1 className="pht">Cookie Policy</h1>
-          <p className="phs">Last updated: December 2025</p>
+          <p className="phs">Last updated: November 26, 2026</p>
         </div>
       </div>
 
