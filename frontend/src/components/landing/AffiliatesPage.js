@@ -31,6 +31,7 @@ export default function AffiliatesPage({ onOpenAuth, onOpenSignIn }) {
   });
   const [submitting, setSubmitting] = useState(false);
   const [submittedRef, setSubmittedRef] = useState('');
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   useEffect(() => {
     api.get('/api/affiliates/matrix')
@@ -48,6 +49,10 @@ export default function AffiliatesPage({ onOpenAuth, onOpenSignIn }) {
 
   const handleApply = async (e) => {
     e.preventDefault();
+    if (!acceptedTerms) {
+      addToast('Terms Required', 'Please read and accept the Terms of Service and Privacy Policy.', 'error');
+      return;
+    }
     setSubmitting(true);
     try {
       const res = await api.post('/api/affiliates/apply', {
@@ -88,8 +93,18 @@ export default function AffiliatesPage({ onOpenAuth, onOpenSignIn }) {
         subtitle="Earn 3% to 12% revenue share across Intermaven, TuneMavens, TuneStream, and SyncMavens — with 90-day attribution, M-Pesa mobile money, and global payouts."
       />
 
-      <main style={{ padding: '44px 0 72px' }}>
-        <div className="cn" style={{ display: 'flex', flexDirection: 'column', gap: '36px' }}>
+      <main style={{ padding: '28px 0 64px' }}>
+        <div className="cn" style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+          {/* Program Overview Content Box */}
+          <div style={{ background: 'var(--ca)', border: '1px solid var(--b1)', borderRadius: 'var(--r)', padding: '24px' }}>
+            <div className="sl2" style={{ marginBottom: '8px' }}>How the Partner Network Works</div>
+            <p style={{ margin: 0, color: 'var(--mu)', fontSize: '14px', lineHeight: 1.65 }}>
+              Share your unique referral link across creator communities, labels, startups, and events. Every signup is tracked with a 90-day attribution window and synced across Intermaven and TuneMavens.
+            </p>
+          </div>
+
+          <hr style={{ border: 'none', borderTop: '1px solid var(--b1)', margin: 0 }} />
+
           {/* Active Partner Dashboard */}
           {myAffiliate && (
             <div style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.35)', borderRadius: 'var(--r)', padding: '24px' }}>
@@ -169,7 +184,16 @@ export default function AffiliatesPage({ onOpenAuth, onOpenSignIn }) {
                 <option value="pesapal">PesaPal / Bank</option>
                 <option value="stripe">Card / Stripe Connect</option>
               </select>
-              <button type="submit" disabled={submitting} className="hbp" style={{ justifyContent: 'center' }}>
+              <label style={{ display: 'flex', gap: '8px', alignItems: 'flex-start', fontSize: '12px', color: 'var(--mu)', cursor: 'pointer', lineHeight: 1.4 }}>
+                <input type="checkbox" checked={acceptedTerms} onChange={(e) => setAcceptedTerms(e.target.checked)} required style={{ marginTop: '3px' }} />
+                <span>
+                  I have read and agree to the{' '}
+                  <a href="/terms" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--a2)', textDecoration: 'underline' }}>Terms of Service</a>
+                  {' '}and{' '}
+                  <a href="/privacy" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--a2)', textDecoration: 'underline' }}>Privacy Policy</a>
+                </span>
+              </label>
+              <button type="submit" disabled={submitting || !acceptedTerms} className="hbp" style={{ justifyContent: 'center', opacity: (!acceptedTerms || submitting) ? 0.6 : 1 }}>
                 {submitting ? 'Submitting...' : 'Activate Partner Link'} <ArrowRight size={15} />
               </button>
             </form>

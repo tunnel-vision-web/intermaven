@@ -26,10 +26,20 @@ export default function PerfectForPage({ onOpenAuth, onOpenSignIn }) {
         subtitle="Whether you are a creator, record label, music supervisor, startup founder, merchant, or investor — Intermaven & TuneMavens adapt to your exact workflow."
       />
 
-      <section style={{ padding: '44px 0 72px' }}>
-        <div className="cn">
+      <section style={{ padding: '28px 0 64px' }}>
+        <div className="cn" style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+          {/* Themed Intro Content Box */}
+          <div style={{ background: 'var(--ca)', border: '1px solid var(--b1)', borderRadius: 'var(--r)', padding: '24px' }}>
+            <div className="sl2" style={{ marginBottom: '8px' }}>Choose Your Seat Across Business &amp; Creative</div>
+            <p style={{ margin: 0, color: 'var(--mu)', fontSize: '14px', lineHeight: 1.65 }}>
+              Every seat unlocks a tailored workspace, persona-specific AI onboarding with Maven, and unified Single Sign-On across Intermaven, TuneMavens, TuneStream, and SyncMavens.
+            </p>
+          </div>
+
+          <hr style={{ border: 'none', borderTop: '1px solid var(--b1)', margin: 0 }} />
+
           {/* Filter Pills */}
-          <div className="apf" style={{ justifyContent: 'center', marginBottom: '28px' }}>
+          <div className="apf" style={{ justifyContent: 'center', margin: 0 }}>
             {[
               { id: 'all', label: `All Personas (${PERSONAS.length})` },
               { id: 'creative', label: 'Creative & Media (TuneMavens)' },
