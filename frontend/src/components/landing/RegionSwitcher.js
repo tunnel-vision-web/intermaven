@@ -63,7 +63,7 @@ function RegionSwitcher() {
           }}
         >
           <Globe size={14} style={{ color: '#22d3ee' }} />
-          <span style={{ fontWeight: 700 }}>{countryFlag || '🌍'} {currencyInfo?.symbol || currency} {currency}</span>
+          <span style={{ fontWeight: 700 }}>{country} · {currencyInfo?.symbol || currency} {currency}</span>
           <ChevronDown size={13} className={`region-chevron ${open ? 'open' : ''}`} />
         </button>
 
@@ -87,7 +87,7 @@ function RegionSwitcher() {
             lineHeight: 1.3,
           }}
         >
-          <span>{activeLang.flag} {activeLang.short || activeLang.code.toUpperCase()}</span>
+          <span>{activeLang.short || activeLang.code.toUpperCase()}</span>
         </button>
       </div>
 
@@ -127,7 +127,7 @@ function RegionSwitcher() {
               data-testid="region-language-select"
             >
               {langList.map((l) => (
-                <option key={l.code} value={l.code}>{l.flag} {l.native} ({l.name})</option>
+                <option key={l.code} value={l.code}>{l.short} — {l.native} ({l.name})</option>
               ))}
             </select>
           </label>

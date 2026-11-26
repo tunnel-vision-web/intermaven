@@ -23,6 +23,7 @@ from .crm_smart import router as crm_smart_router
 from .personas import router as personas_router
 from .support import router as support_router
 from .social_ai import router as social_ai_router
+from .brandkit import router as brandkit_router
 
 __all__ = [
     "auth_router",
@@ -51,4 +52,5 @@ __all__ = [
     "personas_router",
     "support_router",
     "social_ai_router",
+    "brandkit_router",
 ]

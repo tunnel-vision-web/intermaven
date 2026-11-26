@@ -15,10 +15,10 @@ export const useRegion = () => useContext(RegionContext);
 const STORAGE_KEY = 'intermaven_region';
 
 export const LANGUAGES_LIST = [
-  { code: 'en', short: 'EN', name: 'English', native: 'English', flag: 'ðŸ‡¬ðŸ‡§', accent: '#22d3ee', textDark: '#060813' },
-  { code: 'sw', short: 'SW', name: 'Swahili', native: 'Kiswahili', flag: 'ðŸ‡°ðŸ‡ª', accent: '#10b981', textDark: '#042f2e' },
-  { code: 'ki', short: 'KI', name: 'Kikuyu', native: 'GÄ©kÅ©yÅ©', flag: 'ðŸ‡°ðŸ‡ª', accent: '#f59e0b', textDark: '#1c1917' },
-  { code: 'es', short: 'ES', name: 'Spanish', native: 'EspaÃ±ol', flag: 'ðŸ‡ºðŸ‡¸', accent: '#a855f7', textDark: '#ffffff' }
+  { code: 'en', short: 'EN', name: 'English', native: 'English', flag: 'LOC', accent: '#22d3ee', textDark: '#060813' },
+  { code: 'sw', short: 'SW', name: 'Swahili', native: 'Kiswahili', flag: 'LOC', accent: '#10b981', textDark: '#042f2e' },
+  { code: 'ki', short: 'KI', name: 'Kikuyu', native: 'GÄ©kÅ©yÅ©', flag: 'LOC', accent: '#f59e0b', textDark: '#1c1917' },
+  { code: 'es', short: 'ES', name: 'Spanish', native: 'EspaÃ±ol', flag: 'LOC', accent: '#a855f7', textDark: '#ffffff' }
 ];
 
 export const COUNTRY_FLAGS = {

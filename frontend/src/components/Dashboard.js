@@ -13,6 +13,7 @@ import {
   XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend
 } from 'recharts';
 import SocialAI from './SocialAI';
+import BrandKitAI from './BrandKitAI';
 import CRMPanel from './CRMPanel';
 import EPKBuilder from './EPKBuilder';
 import FileManager from './FileManager';
@@ -1482,6 +1483,7 @@ function Dashboard() {
           )}
 
           {/* Real apps - full container */}
+          {activePanel === 'brandkit' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><WizardShell appId="brandkit" appName="Brand Kit AI" color="#10b981" howToTopics={HOW_TO_GUIDES.brandkit} onGoToChannels={() => setActivePanel('channels')}><BrandKitAI /></WizardShell></div>}
           {activePanel === 'social' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><WizardShell appId="social" appName="Social AI" color="#f43f5e" howToTopics={HOW_TO_GUIDES.social} onGoToChannels={() => setActivePanel('channels')}><SocialAI /></WizardShell></div>}
           {activePanel === 'crm' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><WizardShell appId="crm" appName="Smart CRM" color="#22d3ee" howToTopics={HOW_TO_GUIDES.crm} onGoToChannels={() => setActivePanel('channels')}><CRMPanel /></WizardShell></div>}
           {activePanel === 'epk' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><WizardShell appId="epk" appName="EPK Builder" color="#22d3ee" howToTopics={HOW_TO_GUIDES.epk} onGoToChannels={() => setActivePanel('channels')}><EPKBuilder /></WizardShell></div>}
@@ -1496,7 +1498,7 @@ function Dashboard() {
             </div>
           )}
 
-          {APPS[activePanel] && !['social','crm','epk','filemanager','settings','channels','pos','distro','hosting'].includes(activePanel) && (
+          {APPS[activePanel] && !['brandkit','social','crm','epk','filemanager','settings','channels','pos','distro','hosting'].includes(activePanel) && (
             <div style={{ flex: 1, height: '100%', overflow: 'auto' }}>
               <WizardShell
                 appId={activePanel}

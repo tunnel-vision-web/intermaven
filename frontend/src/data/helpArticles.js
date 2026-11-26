@@ -63,19 +63,21 @@ export const HELP_ARTICLES = [
   {
     slug: 'brand-kit-guide',
     appId: 'brandkit',
-    appTitle: 'Brand Kit AI',
+    appTitle: 'Brand Kit AI Studio',
     category: 'AI Tools',
-    readTime: '4 min read',
-    title: 'From Idea to Brand Kit in 10 Minutes',
-    summary: 'Generate a cohesive color palette, typography direction, voice guidelines, and tagline with Brand Kit AI.',
-    content: `Brand Kit AI helps founders, creators, and agencies establish a consistent visual and verbal identity.
+    readTime: '5 min read',
+    title: 'Brand Kit AI Studio: 6-Dimension Analysis, Palette & Saved Kits',
+    summary: 'Evaluate your brand name across 6 strategic dimensions, generate 3+ taglines, 4 tone-of-voice principles, a live hex palette, and save kits to your profile.',
+    content: `Brand Kit AI Studio gives founders, creators, labels, and agencies a complete brand foundation in 3 guided steps.
 
-1. Describe Your Brand & Audience: Enter your brand name, industry, and target persona.
-2. Generate Palette & Voice: Brand Kit AI produces primary/accent hex colors, tone-of-voice rules, and messaging pillars.
-3. Apply Across Apps: Use your Brand Kit consistently in Social AI, Pitch Deck AI, and your EPK.`,
+1. Step 1 (Basics & Persona): Enter your brand name, industry, and target audience tailored to your active persona.
+2. Step 2 (Vibe & Shared Keywords): Choose a visual vibe (Bold & Disruptive, Minimal & Luxury, Afro-Futurist, etc.) and strategic focus keywords synced with Backend & Admin.
+3. Step 3 (6-Dimension Kit & Palette): Review your 6-dimension brand name scorecards, 3+ tagline options with rationale, 4 Tone of Voice Do/Don't principles, clickable hex color swatches, positioning statement, and personality adjectives.
+4. Save & Apply: Save any kit to your Brand Kits Library and click "Apply to Profile" to sync your brand name across Social AI and EPK Builder.`,
     suggestedQuestions: [
-      'How do I generate a color palette and brand voice?',
-      'Can I save multiple brand kits for agency clients?',
+      'What are the 6 strategic dimensions in Brand Name Analysis?',
+      'How do I save a Brand Kit and apply it to my profile?',
+      'How many credits does Brand Kit AI use during the beta phase?',
     ],
   },
   {

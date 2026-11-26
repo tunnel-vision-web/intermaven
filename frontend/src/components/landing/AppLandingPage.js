@@ -62,9 +62,9 @@ const APP_CONFIGS = {
       { dot: '#10b981', badge: 'Complete Kit', h: 'From name to positioning in one click', s: "Taglines, tone, colors, personality — everything you need to launch your brand.", b1: 'Generate kit', b1link: '#', b2: 'Pricing', b2link: '#pricing' }
     ],
     backgrounds: [
-      'linear-gradient(180deg, #10b98122 0%, #10b98144 50%, #08090d 100%)',
-      'linear-gradient(180deg, #10b98133 0%, #10b98155 50%, #08090d 100%)',
-      'linear-gradient(180deg, #10b98144 0%, #10b98166 50%, #08090d 100%)'
+      "linear-gradient(180deg, rgba(6,8,19,0.45) 0%, rgba(16,185,129,0.22) 50%, #08090d 100%), url('/images/hero/brandkit/hero-1.jpg')",
+      "linear-gradient(180deg, rgba(6,8,19,0.45) 0%, rgba(16,185,129,0.28) 50%, #08090d 100%), url('/images/hero/brandkit/hero-2.jpg')",
+      "linear-gradient(180deg, rgba(6,8,19,0.45) 0%, rgba(16,185,129,0.32) 50%, #08090d 100%), url('/images/hero/intermaven/hero-3.jpg')"
     ],
     social: {
       twitter: 'https://twitter.com/intermaven_brand',
@@ -402,7 +402,7 @@ function AppLandingPage({ appId, onOpenAuth, onOpenSignIn }) {
   const { name, color, cost, features, steps, testimonials, faqs, social } = config;
 
   return (
-    <div className="app-landing">
+    <div className="landing-page app-landing">
       <Netbar portal="business" />
       <Navbar onOpenAuth={onOpenAuth} onOpenSignIn={onOpenSignIn} portal="business" />
 
