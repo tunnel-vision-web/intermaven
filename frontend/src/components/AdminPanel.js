@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { api } from '../App';
 import CMSEditor from './CMSEditor';
 import { INTERMAVEN_LOGO } from '../imageRegistry';
@@ -95,7 +95,7 @@ function Pagination({ page, total, perPage, onChange }) {
   return (
     <div className="admin-pagination">
       <span className="admin-pagination-info">
-        {(page - 1) * perPage + 1}â€“{Math.min(page * perPage, total)} of {total}
+        {(page - 1) * perPage + 1}-{Math.min(page * perPage, total)} of {total}
       </span>
       <button disabled={page <= 1} onClick={() => onChange(page - 1)} className="admin-page-btn">
         <ChevronLeft size={14} />
@@ -285,7 +285,7 @@ function UsersPanel({ addToast, adminRole }) {
                   </div>
                 </td>
                 <td><Badge color={u.portal}>{u.portal}</Badge></td>
-                <td className="admin-muted">{u.created_at ? new Date(u.created_at).toLocaleDateString() : 'â€”'}</td>
+                <td className="admin-muted">{u.created_at ? new Date(u.created_at).toLocaleDateString() : '-'}</td>
                 <td>
                   <div className="admin-row-actions">
                     <button className="admin-action-btn" title="View" onClick={() => setViewUser(u)}><Eye size={13} /></button>
@@ -410,7 +410,7 @@ function UserDetailModal({ user, onClose, onEdit, onCredit, addToast, onRefresh 
             </div>
             <div className="admin-detail-card">
               <div className="admin-detail-card-title">Joined</div>
-              <div className="admin-detail-big">{user.created_at ? new Date(user.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'â€”'}</div>
+              <div className="admin-detail-big">{user.created_at ? new Date(user.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'}</div>
             </div>
             <div className="admin-detail-card" style={{ gridColumn: '1 / -1' }}>
               <div className="admin-detail-card-title">Bio</div>
@@ -425,8 +425,8 @@ function UserDetailModal({ user, onClose, onEdit, onCredit, addToast, onRefresh 
               <div key={i} className="admin-activity-item">
                 <div className="admin-activity-dot" />
                 <div>
-                  <div className="admin-activity-text">{a.type?.replace('_', ' ') || 'Action'} â€” {a.tool_id || ''}</div>
-                  <div className="admin-activity-time">{a.created_at ? new Date(a.created_at).toLocaleString() : 'â€”'}</div>
+                  <div className="admin-activity-text">{a.type?.replace('_', ' ') || 'Action'} - {a.tool_id || ''}</div>
+                  <div className="admin-activity-time">{a.created_at ? new Date(a.created_at).toLocaleString() : '-'}</div>
                 </div>
               </div>
             ))}
@@ -439,7 +439,7 @@ function UserDetailModal({ user, onClose, onEdit, onCredit, addToast, onRefresh 
               <div key={i} className="admin-tx-row">
                 <div>
                   <div style={{ fontSize: 13, fontWeight: 600 }}>{t.plan?.charAt(0).toUpperCase() + t.plan?.slice(1)} Plan</div>
-                  <div className="admin-muted" style={{ fontSize: 11 }}>{t.created_at ? new Date(t.created_at).toLocaleString() : 'â€”'}</div>
+                  <div className="admin-muted" style={{ fontSize: 11 }}>{t.created_at ? new Date(t.created_at).toLocaleString() : '-'}</div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontSize: 13, fontWeight: 600 }}>KES {t.amount?.toLocaleString()}</div>
@@ -556,7 +556,7 @@ function UserEditModal({ user, onClose, addToast, onRefresh }) {
           <div className="form-group">
             <label className="form-label">Admin Role</label>
             <select className={`admin-select ${changes.admin_role ? 'changed' : ''}`} value={form.admin_role} onChange={e => handleChange('admin_role', e.target.value)}>
-              <option value="">â€” User (no admin) â€”</option>
+              <option value="">- User (no admin) -</option>
               {Object.entries(ADMIN_ROLES).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
             </select>
           </div>
@@ -613,7 +613,7 @@ function CreditModal({ user, onClose, addToast, onRefresh }) {
   };
 
   return (
-    <Modal title={`Grant Credits â€” ${user.first_name} ${user.last_name}`} onClose={onClose} width={480}>
+    <Modal title={`Grant Credits - ${user.first_name} ${user.last_name}`} onClose={onClose} width={480}>
       <div className="admin-credit-modal">
         <div className="admin-credit-current">
           <div className="admin-credit-current-label">Current balance</div>
@@ -810,7 +810,7 @@ function AnalyticsPanel({ addToast }) {
               </div>
               <Badge color={u.plan}>{u.plan}</Badge>
               <Badge color={u.portal}>{u.portal}</Badge>
-              <div className="admin-muted" style={{ fontSize: 11 }}>{u.created_at ? new Date(u.created_at).toLocaleDateString() : 'â€”'}</div>
+              <div className="admin-muted" style={{ fontSize: 11 }}>{u.created_at ? new Date(u.created_at).toLocaleDateString() : '-'}</div>
             </div>
           ))}
         </div>
@@ -866,12 +866,12 @@ function AuditPanel({ addToast }) {
               <tr><td colSpan={5} className="admin-table-empty">No audit logs yet</td></tr>
             ) : logs.map((l, i) => (
               <tr key={i}>
-                <td className="admin-muted" style={{ fontSize: 11 }}>{l.created_at ? new Date(l.created_at).toLocaleString() : 'â€”'}</td>
+                <td className="admin-muted" style={{ fontSize: 11 }}>{l.created_at ? new Date(l.created_at).toLocaleString() : '-'}</td>
                 <td style={{ fontSize: 13 }}>{l.admin_name || l.admin_id}</td>
                 <td><Badge color={ACTION_COLORS[l.action] || '#9096b8'}>{l.action?.replace('_', ' ')}</Badge></td>
                 <td style={{ fontSize: 13 }}>{l.target_user_name || l.target_user_id}</td>
                 <td className="admin-muted" style={{ fontSize: 11 }}>
-                  {l.details ? JSON.stringify(l.details).slice(0, 80) : 'â€”'}
+                  {l.details ? JSON.stringify(l.details).slice(0, 80) : '-'}
                 </td>
               </tr>
             ))}

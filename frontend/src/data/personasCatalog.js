@@ -1,4 +1,4 @@
-﻿// Single source of truth for all Business & Creative personas across Intermaven & TuneMavens.
+// Single source of truth for all Business & Creative personas across Intermaven & TuneMavens.
 // Mirrors backend/routes/personas.py and TuneMavens role_tiers_router.py.
 
 export const PERSONAS = [
@@ -211,7 +211,7 @@ export const PERSONAS = [
     onboardingSteps: [
       { title: 'Set up your Agency Workspace', desc: 'Enable both Business and Creative portals for full client coverage.' },
       { title: 'Segment Client Target Groups in Smart CRM', desc: 'Organize client outreach lists and track attribution.' },
-      { title: 'Schedule Multi-Brand Content with Social AI', desc: 'Keep every clientâ€™s social channels active from one console.' },
+      { title: 'Schedule Multi-Brand Content with Social AI', desc: "Keep every client's social channels active from one console." },
     ],
     recommendedReading: [
       { slug: 'smart-crm-reachout', title: 'Managing Multi-Client Campaigns in Smart CRM', category: 'Agency Ops' },

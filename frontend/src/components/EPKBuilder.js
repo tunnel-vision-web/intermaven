@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { api } from '../App';
 import {
   Music, Globe, Image, Video, FileText, Mail, Phone,
@@ -239,7 +239,7 @@ function EPKBuilder({ user, addToast, updateUser }) {
         <span className="tool-icon"><FileText size={26} color="#ec4899" /></span>
         <div className="tool-info">
           <h2>EPK Builder</h2>
-          <p>Electronic Press Kit â€” build, publish, and host your artist profile</p>
+          <p>Electronic Press Kit - build, publish, and host your artist profile</p>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           {epk?.id && (
@@ -265,7 +265,7 @@ function EPKBuilder({ user, addToast, updateUser }) {
           <div className={`epk-status-dot ${form.is_published ? 'live' : ''}`} />
           {form.is_published
             ? <>Live at <a href={`https://intermaven.io/artist/${form.username}`} target="_blank" rel="noopener noreferrer">intermaven.io/artist/{form.username}</a></>
-            : 'Draft â€” not publicly visible'}
+            : 'Draft - not publicly visible'}
         </div>
       )}
 
@@ -346,7 +346,7 @@ function EPKBuilder({ user, addToast, updateUser }) {
                 <label className="form-label" style={{ margin: 0 }}>Full Bio</label>
                 <button className="admin-btn-sm" onClick={() => handleAutoGenerate('bio_full')}><Sparkles size={11} /> AI Generate</button>
               </div>
-              <textarea className="admin-textarea" rows={6} placeholder="Your full story â€” career highlights, collaborations, achievements..." value={form.bio_full} onChange={e => handleChange('bio_full', e.target.value)} />
+              <textarea className="admin-textarea" rows={6} placeholder="Your full story - career highlights, collaborations, achievements..." value={form.bio_full} onChange={e => handleChange('bio_full', e.target.value)} />
             </div>
             <div className="form-group">
               <label className="form-label">Career Highlights / Timeline</label>
@@ -376,7 +376,7 @@ function EPKBuilder({ user, addToast, updateUser }) {
       {activeTab === 'music' && (
         <div className="epk-tab-content">
           <Section title="Streaming Platforms" icon={Music}>
-            <p className="social-hint">Add your profile links â€” these will embed your music directly on your EPK.</p>
+            <p className="social-hint">Add your profile links - these will embed your music directly on your EPK.</p>
             {[
               ['spotify_artist_id', 'Spotify Artist URL', 'https://open.spotify.com/artist/...'],
               ['apple_music_url', 'Apple Music URL', 'https://music.apple.com/artist/...'],
@@ -536,7 +536,7 @@ function EPKBuilder({ user, addToast, updateUser }) {
             <div className="form-group" style={{ marginTop: 16 }}>
               <label className="form-label">Custom Domain (optional)</label>
               <input className="form-input" placeholder="epk.yourname.com" value={form.hosting?.custom_domain || ''} onChange={e => handleChange('hosting.custom_domain', e.target.value)} />
-              <div className="social-hint" style={{ marginTop: 6 }}>Point your domain's CNAME to <code>epk.intermaven.io</code> â€” our team will configure SSL after you save.</div>
+              <div className="social-hint" style={{ marginTop: 6 }}>Point your domain's CNAME to <code>epk.intermaven.io</code> - our team will configure SSL after you save.</div>
             </div>
           </Section>
 

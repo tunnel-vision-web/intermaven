@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, X, Send, Sparkles, ChevronDown, Ticket, AlertCircle } from 'lucide-react';
 import './MavenChat.css';
 import { useRegion } from '../RegionContext';
@@ -45,7 +45,7 @@ const AYO_RESPONSES = {
   
   "tell me about the ai tools": "We have 5 powerful AI tools:\n\nðŸŽ¨ **Brand Kit** - Generate logos, color palettes, and brand guidelines\nðŸ“ **Music Bio** - Create professional artist bios and press materials\nðŸ“± **Social AI** - Craft engaging social media content\nðŸŽµ **Sync Pitch** - Write pitches for music licensing opportunities\nðŸ’¼ **Pitch Deck** - Create business presentations\n\nEach tool costs between 5-25 credits per use.",
   
-  "which ai tool should i use first": "Great question! It depends on your needs:\n\nâ€¢ **Musicians/Artists** â†’ Start with Music Bio Generator\nâ€¢ **Building a brand** â†’ Try Brand Kit Generator\nâ€¢ **Need social content** â†’ Social AI is your friend\nâ€¢ **Pitching to labels/supervisors** â†’ Sync Pitch Generator\nâ€¢ **Business presentations** â†’ Pitch Deck Generator\n\nAll tools are available in your dashboard!",
+  "which ai tool should i use first": "Great question! It depends on your needs:\n\n* **Musicians/Artists** â†’ Start with Music Bio Generator\n* **Building a brand** â†’ Try Brand Kit Generator\n* **Need social content** â†’ Social AI is your friend\n* **Pitching to labels/supervisors** â†’ Sync Pitch Generator\n* **Business presentations** â†’ Pitch Deck Generator\n\nAll tools are available in your dashboard!",
   
   "how many credits": "Here's the credit breakdown:\n\nðŸŽ¨ Brand Kit: 25 credits\nðŸ“ Music Bio: 10 credits\nðŸ“± Social AI: 5 credits\nðŸŽµ Sync Pitch: 15 credits\nðŸ’¼ Pitch Deck: 20 credits\n\nFree accounts get 150 credits to start. That's enough for several generations!",
   
@@ -57,7 +57,7 @@ const AYO_RESPONSES = {
   
   "difference between tools and apps": "Good question!\n\n**AI Tools** are our core generators - they create content using AI (brand kits, bios, social posts, etc.)\n\n**Apps** are standalone modules for specific workflows - like EPK Builder for press kits, POS for businesses, etc.\n\nThink of tools as the engine, and apps as complete vehicles built with those engines!",
   
-  "epk builder": "EPK Builder is coming soon! ðŸŽ‰\n\nIt will let you create professional Electronic Press Kits with:\nâ€¢ Hosted profile pages at intermaven.io/artist/yourname\nâ€¢ Downloadable PDF exports\nâ€¢ Built-in analytics\nâ€¢ Integration with your Music Bio\n\nJoin the waitlist on the Apps page to get early access!",
+  "epk builder": "EPK Builder is coming soon! ðŸŽ‰\n\nIt will let you create professional Electronic Press Kits with:\n* Hosted profile pages at intermaven.io/artist/yourname\n* Downloadable PDF exports\n* Built-in analytics\n* Integration with your Music Bio\n\nJoin the waitlist on the Apps page to get early access!",
   
   "join the beta": "To join any beta program:\n\n1ï¸âƒ£ Go to the Apps page\n2ï¸âƒ£ Find the app marked 'Coming Soon'\n3ï¸âƒ£ Choose how you want to be notified (Email, WhatsApp, or SMS)\n4ï¸âƒ£ Enter your contact info\n5ï¸âƒ£ You're on the list!\n\nWe'll notify you the moment it launches.",
   
@@ -65,13 +65,13 @@ const AYO_RESPONSES = {
   
   "saved outputs": "Your generated content is saved automatically! Find it in:\n\nðŸ“ Dashboard â†’ My Library (coming soon)\n\nFor now, you can copy or download outputs directly after generation. We're building a full asset library where all your AI creations will be stored.",
   
-  "add credits": "To add more credits:\n\n1ï¸âƒ£ Go to Dashboard â†’ Settings â†’ Billing\n2ï¸âƒ£ Choose a plan:\n   â€¢ Creator: 600 credits for KES 500\n   â€¢ Pro: 2,500 credits for KES 1,500\n3ï¸âƒ£ Pay via M-Pesa or Card\n4ï¸âƒ£ Credits added instantly!\n\nPaid credits never expire.",
+  "add credits": "To add more credits:\n\n1ï¸âƒ£ Go to Dashboard â†’ Settings â†’ Billing\n2ï¸âƒ£ Choose a plan:\n   * Creator: 600 credits for KES 500\n   * Pro: 2,500 credits for KES 1,500\n3ï¸âƒ£ Pay via M-Pesa or Card\n4ï¸âƒ£ Credits added instantly!\n\nPaid credits never expire.",
   
-  "what is intermaven": "Intermaven is an AI-powered platform built specifically for African creatives and entrepreneurs. ðŸŒ\n\nWe provide tools to help you:\nâ€¢ Build professional brands\nâ€¢ Create compelling content\nâ€¢ Pitch your work effectively\nâ€¢ Grow your creative business\n\nOur mission is to democratize access to professional creative tools across Africa.",
+  "what is intermaven": "Intermaven is an AI-powered platform built specifically for African creatives and entrepreneurs. ðŸŒ\n\nWe provide tools to help you:\n* Build professional brands\n* Create compelling content\n* Pitch your work effectively\n* Grow your creative business\n\nOur mission is to democratize access to professional creative tools across Africa.",
   
   "help me": "I'm Maven, your AI assistant! I can help you with:\n\nðŸ’¡ Understanding our AI tools\nðŸ“– Navigating the platform\nðŸ’³ Billing and payment questions\nðŸš€ Getting started tips\nâ“ General questions about Intermaven\n\nJust type your question or click one of my suggestions!",
   
-  "default": "I'm here to help! I can answer questions about:\n\nâ€¢ Our AI tools (Brand Kit, Music Bio, Social AI, etc.)\nâ€¢ Pricing and credits\nâ€¢ How to get started\nâ€¢ Technical support\nâ€¢ Upcoming features\n\nWhat would you like to know?"
+  "default": "I'm here to help! I can answer questions about:\n\n* Our AI tools (Brand Kit, Music Bio, Social AI, etc.)\n* Pricing and credits\n* How to get started\n* Technical support\n* Upcoming features\n\nWhat would you like to know?"
 };
 
 function MavenChat({ currentPage = 'default', isLoggedIn = false, userEmail = null }) {
@@ -167,7 +167,7 @@ function MavenChat({ currentPage = 'default', isLoggedIn = false, userEmail = nu
         return "Yes, you can upgrade anytime! Just go to Settings â†’ Billing in your dashboard. Choose between:\n\nðŸ’œ **Creator Plan** - USD $4.99 for 600 credits\nðŸ’Ž **Pro Plan** - USD $14.99 for 2,500 credits\n\nPaid credits never expire!";
       }
       if (key === 'add credits') {
-        return "To add more credits:\n\n1ï¸âƒ£ Go to Dashboard â†’ Settings â†’ Billing\n2ï¸âƒ£ Choose a plan:\n   â€¢ Creator: 600 credits for USD $4.99 equivalent\n   â€¢ Pro: 2,500 credits for USD $14.99 equivalent\n3ï¸âƒ£ Pay via Card, PayPal, or regional mobile transfer\n4ï¸âƒ£ Credits added instantly!\n\nPaid credits never expire.";
+        return "To add more credits:\n\n1ï¸âƒ£ Go to Dashboard â†’ Settings â†’ Billing\n2ï¸âƒ£ Choose a plan:\n   * Creator: 600 credits for USD $4.99 equivalent\n   * Pro: 2,500 credits for USD $14.99 equivalent\n3ï¸âƒ£ Pay via Card, PayPal, or regional mobile transfer\n4ï¸âƒ£ Credits added instantly!\n\nPaid credits never expire.";
       }
       if (key === 'what is intermaven') {
         return "Intermaven is an AI-powered platform built for creatives and entrepreneurs to brand, pitch, and grow their businesses globally. ðŸŒ";

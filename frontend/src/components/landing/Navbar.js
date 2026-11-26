@@ -149,6 +149,13 @@ function Navbar({ onOpenAuth, onOpenSignIn, portal = 'music', onToast }) {
                   >
                     Forum
                   </Link>
+                  <Link
+                    to="/affiliates"
+                    className="nav-dropdown-item"
+                    data-testid="nav-affiliates"
+                  >
+                    Affiliates
+                  </Link>
                 </div>
               )}
             </div>

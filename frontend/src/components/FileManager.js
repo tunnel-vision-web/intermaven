@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { api } from '../App';
 import {
   Folder, FolderPlus, Upload, Download, Trash2, Search,
@@ -30,7 +30,7 @@ const getFileType = (mime = '') => {
 };
 
 const formatSize = (bytes) => {
-  if (!bytes) return 'â€”';
+  if (!bytes) return '-';
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)} KB`;
   if (bytes < 1073741824) return `${(bytes / 1048576).toFixed(1)} MB`;
@@ -88,7 +88,7 @@ function FolderCard({ folder, onOpen, onDelete, onRename, viewMode }) {
           <span className="fm-list-name" onDoubleClick={() => setRenaming(true)}>{folder.name}</span>
         )}
         <span className="fm-list-meta">Folder</span>
-        <span className="fm-list-date">{folder.created_at ? new Date(folder.created_at).toLocaleDateString() : 'â€”'}</span>
+        <span className="fm-list-date">{folder.created_at ? new Date(folder.created_at).toLocaleDateString() : '-'}</span>
         <button className="admin-action-btn" onClick={e => { e.stopPropagation(); setMenu(m => !m); }}><MoreHorizontal size={13} /></button>
         {menu && (
           <div className="fm-context-menu">
@@ -129,7 +129,7 @@ function FileCard({ file, selected, onSelect, onDownload, onDelete, onShare, onP
         <FileIcon mime={file.mime_type} size={16} />
         <span className="fm-list-name">{file.filename}</span>
         <span className="fm-list-meta">{formatSize(file.size)}</span>
-        <span className="fm-list-date">{file.created_at ? new Date(file.created_at).toLocaleDateString() : 'â€”'}</span>
+        <span className="fm-list-date">{file.created_at ? new Date(file.created_at).toLocaleDateString() : '-'}</span>
         <div style={{ display: 'flex', gap: 4 }}>
           <button className="admin-action-btn" onClick={e => { e.stopPropagation(); onPreview(file); }}><Eye size={12} /></button>
           <button className="admin-action-btn" onClick={e => { e.stopPropagation(); onDownload(file); }}><Download size={12} /></button>

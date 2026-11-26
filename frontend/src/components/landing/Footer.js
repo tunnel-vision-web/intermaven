@@ -48,12 +48,17 @@ function Footer({ onShowLegal, onToast }) {
           </div>
           
           <div className="footer-col">
-            <h4>Company</h4>
+            <h4>Company &amp; Legal</h4>
             <div className="footer-links">
               <Link to="/about" className="footer-link">About us</Link>
+              <Link to="/for" className="footer-link">Perfect For</Link>
+              <Link to="/affiliates" className="footer-link">Affiliate Program</Link>
               <Link to="/help" className="footer-link">Help Center</Link>
               <Link to="/forum" className="footer-link">Forum</Link>
               <Link to="/careers" className="footer-link">Careers</Link>
+              <Link to="/terms" className="footer-link">Terms of Service</Link>
+              <Link to="/privacy" className="footer-link">Privacy Policy</Link>
+              <Link to="/refund" className="footer-link">Refund Policy</Link>
             </div>
           </div>
           

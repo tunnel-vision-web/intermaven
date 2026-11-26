@@ -24,6 +24,7 @@ from .personas import router as personas_router
 from .support import router as support_router
 from .social_ai import router as social_ai_router
 from .brandkit import router as brandkit_router
+from .affiliates import router as affiliates_router
 
 __all__ = [
     "auth_router",
@@ -53,4 +54,5 @@ __all__ = [
     "support_router",
     "social_ai_router",
     "brandkit_router",
+    "affiliates_router",
 ]

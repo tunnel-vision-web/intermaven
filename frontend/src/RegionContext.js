@@ -1,4 +1,4 @@
-﻿import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import fallbackData from './fallbackData.json';
 
@@ -213,29 +213,28 @@ export function RegionProvider({ children }) {
   }, []);
 
   const changeCountry = useCallback((code) => {
+    const local = resolveRegionLocally(code);
+    setCountry(local.country);
+    setCountryName(local.country_name);
+    setCurrency(local.currency);
+    setCurrencyInfo(local.currency_info);
+    persist({ country: local.country, currency: local.currency, currencyInfo: local.currency_info, language });
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('synergyLocaleChanged', { detail: { language, country: local.country, currency: local.currency } }));
+    }
     axios.get(`${API_URL}/api/geo/resolve?country=${code}`).then((r) => {
       const d = r.data;
-      setCountry(d.country);
-      setCountryName(d.country_name);
-      setCurrency(d.currency);
-      setCurrencyInfo(d.currency_info);
-      setLanguages(d.languages || []);
-      const lang = (d.languages && d.languages[0] && d.languages[0].code) || 'en';
-      setLanguage(lang);
-      persist({ country: d.country, currency: d.currency, currencyInfo: d.currency_info, language: lang });
+      if (d && d.country) {
+        setCountry(d.country);
+        setCountryName(d.country_name || local.country_name);
+        setCurrency(d.currency || local.currency);
+        setCurrencyInfo(d.currency_info || local.currency_info);
+        persist({ country: d.country, currency: d.currency || local.currency, currencyInfo: d.currency_info || local.currency_info, language });
+      }
     }).catch(() => {
-      // Local Fallback
-      const d = resolveRegionLocally(code);
-      setCountry(d.country);
-      setCountryName(d.country_name);
-      setCurrency(d.currency);
-      setCurrencyInfo(d.currency_info);
-      setLanguages(d.languages || []);
-      const lang = d.default_language || 'en';
-      setLanguage(lang);
-      persist({ country: d.country, currency: d.currency, currencyInfo: d.currency_info, language: lang });
+      // Already resolved locally above
     });
-  }, [persist]);
+  }, [language, persist]);
 
   const changeCurrency = useCallback((code) => {
     const info = (options.currencies || []).find((c) => c.code === code) || { code, symbol: code, name: code };

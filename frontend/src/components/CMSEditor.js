@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { api } from '../App';
 import { INTERMAVEN_LOGO } from '../imageRegistry';
 import {
@@ -31,7 +31,7 @@ const SITE_PAGES = [
         id: 'hero_slide_1',
         name: 'Slide 1 (Hero Main)',
         keys: [
-          { id: 'homepage.hero.slide1.badge', label: 'Slide 1 Top Badge', type: 'text', default: 'Now live â€” AI tools for Africa & Beyond' },
+          { id: 'homepage.hero.slide1.badge', label: 'Slide 1 Top Badge', type: 'text', default: 'Now live - AI tools for Africa & Beyond' },
           { id: 'homepage.hero.slide1.title', label: 'Slide 1 Headline Title (HTML enabled)', type: 'richtext', default: 'Build your brand.<br/><em style="color:#c084fc">Grow your career.</em>' },
           { id: 'homepage.hero.slide1.subtitle', label: 'Slide 1 Subtitle Paragraph', type: 'richtext', default: 'Intermaven gives musicians, creators, and entrepreneurs the AI tools to brand, market, and scale.' },
           { id: 'homepage.hero.slide1.b1', label: 'Primary Button Label', type: 'text', default: 'Try AI tools free' },
@@ -47,7 +47,7 @@ const SITE_PAGES = [
         keys: [
           { id: 'homepage.hero.slide2.badge', label: 'Slide 2 Top Badge', type: 'text', default: 'For musicians & artists' },
           { id: 'homepage.hero.slide2.title', label: 'Slide 2 Headline Title', type: 'richtext', default: 'Your music.<br/><em style="color:#22d3ee">The world\'s stage.</em>' },
-          { id: 'homepage.hero.slide2.subtitle', label: 'Slide 2 Subtitle Paragraph', type: 'richtext', default: 'From a polished press kit to a Hollywood sync pitch â€” our AI tools help creators break through globally.' },
+          { id: 'homepage.hero.slide2.subtitle', label: 'Slide 2 Subtitle Paragraph', type: 'richtext', default: 'From a polished press kit to a Hollywood sync pitch - our AI tools help creators break through globally.' },
           { id: 'homepage.hero.slide2.b1', label: 'Primary Button Label', type: 'text', default: 'Write my press kit' },
           { id: 'homepage.hero.slide2.b1link', label: 'Primary Button Link', type: 'text', default: '/tools' },
           { id: 'homepage.hero.slide2.b2', label: 'Secondary Button Label', type: 'text', default: 'See all apps' },
@@ -61,7 +61,7 @@ const SITE_PAGES = [
         keys: [
           { id: 'homepage.hero.slide3.badge', label: 'Slide 3 Top Badge', type: 'text', default: 'For creative brands & SMEs' },
           { id: 'homepage.hero.slide3.title', label: 'Slide 3 Headline Title', type: 'richtext', default: 'Brand it right.<br/><em style="color:#f59e0b">From day one.</em>' },
-          { id: 'homepage.hero.slide3.subtitle', label: 'Slide 3 Subtitle Paragraph', type: 'richtext', default: 'Whether you are an artist, studio, or business owner â€” generate your full brand kit in seconds.' },
+          { id: 'homepage.hero.slide3.subtitle', label: 'Slide 3 Subtitle Paragraph', type: 'richtext', default: 'Whether you are an artist, studio, or business owner - generate your full brand kit in seconds.' },
           { id: 'homepage.hero.slide3.b1', label: 'Primary Button Label', type: 'text', default: 'Generate brand kit' },
           { id: 'homepage.hero.slide3.b1link', label: 'Primary Button Link', type: 'text', default: '/tools' },
           { id: 'homepage.hero.slide3.b2', label: 'Secondary Button Label', type: 'text', default: 'Explore apps' },
@@ -117,7 +117,7 @@ const SITE_PAGES = [
           { id: 'about.email_label', label: 'Email Card Label', type: 'text', default: 'EMAIL US' },
           { id: 'about.email', label: 'Primary Contact Email', type: 'text', default: 'hello@intermaven.io' },
           { id: 'about.phone_label', label: 'Phone Card Label', type: 'text', default: 'WHATSAPP / PHONE' },
-          { id: 'about.business_hours', label: 'Business Hours Line', type: 'text', default: 'Monâ€“Fri, 9amâ€“5pm EAT' },
+          { id: 'about.business_hours', label: 'Business Hours Line', type: 'text', default: 'Mon-Fri, 9am-5pm EAT' },
           { id: 'about.based_in', label: 'Based In Location Line', type: 'text', default: 'Nairobi, Kenya' }
         ]
       }
@@ -170,7 +170,7 @@ const SITE_PAGES = [
           { id: 'pricing.header', label: 'Pricing Page Header Title', type: 'text', default: 'Simple, Transparent Pricing' },
           { id: 'pricing.subtitle', label: 'Pricing Page Subtitle', type: 'richtext', default: 'Choose the plan that fits your stage of growth. Upgrade or downgrade anytime.' },
           { id: 'pricing.callout.title', label: 'Payment Callout Banner Title', type: 'text', default: 'Pay instantly with M-Pesa' },
-          { id: 'pricing.callout.body', label: 'Payment Callout Body', type: 'richtext', default: 'Send to Paybill 522900. Credits load the moment your payment confirms â€” no waiting, no approval.' },
+          { id: 'pricing.callout.body', label: 'Payment Callout Body', type: 'richtext', default: 'Send to Paybill 522900. Credits load the moment your payment confirms - no waiting, no approval.' },
           { id: 'pricing.payment_methods', label: 'Supported Payment Methods', type: 'text', default: 'M-Pesa, Visa, Mastercard, PayPal' }
         ]
       }
@@ -284,7 +284,7 @@ function LiveHeroPreview({ slideNum, slideData, activePortal }) {
       marginBottom: '20px'
     }}>
       <div style={{ position: 'absolute', top: '12px', right: '12px', display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(16, 185, 129, 0.4)', borderRadius: '4px', padding: '3px 8px', fontSize: '10px', fontWeight: 'bold', color: '#10b981' }}>
-        <Eye size={12} /> LIVE PREVIEW (SLIDE {slideNum} Â· {activePortal.toUpperCase()})
+        <Eye size={12} /> LIVE PREVIEW (SLIDE {slideNum} · {activePortal.toUpperCase()})
       </div>
 
       <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '20px', padding: '3px 10px', fontSize: '11px', fontWeight: 'bold', color: '#10b981', width: 'fit-content', marginBottom: '10px' }}>
@@ -590,7 +590,7 @@ function CMSEditor() {
   const getSlidePreviewData = (num) => {
     const prefix = `homepage.hero.slide${num}`;
     return {
-      badge: getResolvedValue(`${prefix}.badge`, 'Now live â€” AI tools'),
+      badge: getResolvedValue(`${prefix}.badge`, 'Now live - AI tools'),
       title: getResolvedValue(`${prefix}.title`, 'Build your brand.<br/><em style="color:#c084fc">Grow your career.</em>'),
       subtitle: getResolvedValue(`${prefix}.subtitle`, 'Intermaven gives musicians and creatives AI tools to brand and scale.'),
       b1: getResolvedValue(`${prefix}.b1`, 'Try AI tools free'),

@@ -41,7 +41,7 @@ try:
         payments_router, epk_router, notifications_router, ai_router,
         public_router, crm_router, admin_router, geo_router, pricing_router,
         sso_router, wizard_router, strategies_router, channels_router, avatar_router, cms_router,
-        distro_router, hosting_router, crm_smart_router, personas_router, support_router, social_ai_router, brandkit_router,
+        distro_router, hosting_router, crm_smart_router, personas_router, support_router, social_ai_router, brandkit_router, affiliates_router,
     )
     # region agent log
     _debug_log("H1", "backend/server.py:import-mode", "Imported local modules using root-style imports", {"mode": "root-style"})
@@ -56,7 +56,7 @@ except ModuleNotFoundError as import_err:
         payments_router, epk_router, notifications_router, ai_router,
         public_router, crm_router, admin_router, geo_router, pricing_router,
         sso_router, wizard_router, strategies_router, channels_router, avatar_router, cms_router,
-        distro_router, hosting_router, crm_smart_router, personas_router, support_router, social_ai_router, brandkit_router,
+        distro_router, hosting_router, crm_smart_router, personas_router, support_router, social_ai_router, brandkit_router, affiliates_router,
     )
     # region agent log
     _debug_log("H1", "backend/server.py:import-mode-fallback-success", "Package-style imports succeeded", {"mode": "package-style"})
@@ -205,6 +205,7 @@ app.include_router(personas_router)
 app.include_router(support_router)
 app.include_router(social_ai_router)
 app.include_router(brandkit_router)
+app.include_router(affiliates_router)
 
 # ============== SEED CURATED CONTENT ==============
 try:

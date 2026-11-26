@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, createContext, useContext } from 'react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import './App.css';
@@ -22,6 +22,7 @@ import DevelopersPage from './components/landing/DevelopersPage';
 import AppLandingPage from './components/landing/AppLandingPage';
 import PerfectForPage from './components/landing/PerfectForPage';
 import PersonaLandingPage from './components/landing/PersonaLandingPage';
+import AffiliatesPage from './components/landing/AffiliatesPage';
 import { RegionProvider } from './RegionContext';
 import { CmsProvider } from './cms/CmsContext';
 import GeoWelcomeToast from './components/landing/GeoWelcomeToast';
@@ -119,7 +120,7 @@ function LandingWithAuth({ page, addToast, user }) {
   );
 }
 
-// EPK Public Page â€” renders artist EPK by username
+// EPK Public Page - renders artist EPK by username
 function EPKPublicPage() {
   const { username } = require('react-router-dom').useParams();
   const [epk, setEpk] = React.useState(null);
@@ -167,7 +168,7 @@ function EPKPublicPage() {
             {epk.press_quotes.map((q, i) => (
               <div key={i} style={{ borderLeft: `3px solid ${color}`, paddingLeft: 16, marginBottom: 16 }}>
                 <p style={{ fontSize: 14, fontStyle: 'italic', color: '#c8cce8', marginBottom: 4 }}>"{q.quote}"</p>
-                <span style={{ fontSize: 12, color: '#555870' }}>{q.source}{q.date ? ` Â· ${q.date}` : ''}</span>
+                <span style={{ fontSize: 12, color: '#555870' }}>{q.source}{q.date ? ` · ${q.date}` : ''}</span>
               </div>
             ))}
           </div>
@@ -443,6 +444,7 @@ function App() {
             <Route path="/for" element={<PerfectForPage />} />
             <Route path="/perfect-for" element={<PerfectForPage />} />
             <Route path="/for/:persona" element={<PersonaLandingPage />} />
+            <Route path="/affiliates" element={<AffiliatesPage />} />
             <Route 
               path="/cms" 
               element={<LandingWithAuth page="cms" addToast={addToast} user={user} />} 
