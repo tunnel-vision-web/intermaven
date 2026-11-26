@@ -9,6 +9,7 @@ from pydantic import BaseModel, EmailStr
 
 from config import db
 from utils import get_current_user
+from services.crm_ingest import sync_lead_to_smart_crm
 
 try:
     from routes.sso import ALLOWED_CLIENTS
@@ -67,6 +68,19 @@ async def add_to_waitlist(data: WaitlistSignup):
     }
 
     db.crm_waitlist.insert_one(waitlist_entry)
+
+    sync_lead_to_smart_crm(
+        email=data.email,
+        name=data.name,
+        phone=data.phone,
+        company=data.company,
+        source=data.source or f"Waitlist ({data.list_type})",
+        system_key="inbound_app_waitlist",
+        group_name="App Waitlist Signups",
+        group_description="Leads captured from app and beta waitlist forms.",
+        list_type=data.list_type,
+        notes=data.notes,
+    )
 
     return {"success": True, "message": f"Added to {data.list_type} waitlist"}
 

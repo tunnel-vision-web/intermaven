@@ -6,6 +6,7 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr
 
 from config import db
+from services.crm_ingest import sync_lead_to_smart_crm
 
 router = APIRouter(tags=["public"])
 
@@ -27,6 +28,15 @@ async def subscribe_newsletter(data: NewsletterSubscribe):
         "subscribed_at": datetime.now(timezone.utc),
         "status": "active"
     })
+
+    sync_lead_to_smart_crm(
+        email=data.email,
+        source="Stay in the Loop (Newsletter)",
+        system_key="inbound_newsletter",
+        group_name="Stay in the Loop (Newsletter)",
+        group_description="Subscribers from the Intermaven 'Stay in the loop' newsletter form.",
+        list_type="newsletter",
+    )
 
     return {"success": True, "message": "Successfully subscribed"}
 
@@ -69,6 +79,16 @@ async def signup_beta(data: BetaSignup):
     }
 
     db.beta_signups.insert_one(signup_data)
+
+    sync_lead_to_smart_crm(
+        email=data.email,
+        phone=data.phone,
+        source=f"Beta Signup ({data.app_id})",
+        system_key="inbound_beta_waitlist",
+        group_name="Beta Waitlist Signups",
+        group_description="Users who signed up for beta app access.",
+        list_type=f"beta_{data.app_id}",
+    )
 
     return {"success": True, "message": "Successfully joined waitlist"}
 
@@ -215,6 +235,18 @@ async def create_support_ticket(data: SupportTicketCreate):
     }
 
     db.support_tickets.insert_one(ticket_data)
+
+    sync_lead_to_smart_crm(
+        email=data.email,
+        name=data.client_name,
+        phone=data.phone,
+        source=f"Support Ticket ({data.category})",
+        system_key="inbound_support_leads",
+        group_name="Support & Help Inquiries",
+        group_description="Users who submitted support or help inquiries.",
+        list_type="support",
+        notes=data.subject,
+    )
 
     ai_response = generate_ai_ticket_response(data.subject, data.message, data.category)
 

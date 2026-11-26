@@ -7,6 +7,7 @@ import uuid
 
 from config import db
 from utils import get_current_user, get_optional_user
+from services.crm_ingest import sync_lead_to_smart_crm
 
 router = APIRouter(prefix="/api/support", tags=["support"])
 
@@ -129,6 +130,17 @@ async def create_ticket(req: TicketCreate, current_user: dict = Depends(get_curr
         "created_at": datetime.now(timezone.utc),
     }
     res = db.support_tickets.insert_one(doc)
+    sync_lead_to_smart_crm(
+        email=current_user.get("email"),
+        name=f"{current_user.get('first_name', '')} {current_user.get('last_name', '')}".strip(),
+        phone=current_user.get("phone"),
+        source="Dashboard Support Ticket",
+        system_key="inbound_support_leads",
+        group_name="Support & Help Inquiries",
+        group_description="Users who submitted support or help inquiries.",
+        list_type="support",
+        notes=req.subject,
+    )
     doc["id"] = str(res.inserted_id)
     doc.pop("_id", None)
     doc["created_at"] = doc["created_at"].isoformat()
