@@ -14,7 +14,7 @@ const API_URL =
   process.env.REACT_APP_BACKEND_URL ||
   (typeof window !== 'undefined' &&
   (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-    ? 'http://localhost:8001'
+    ? 'http://localhost:8005'
     : '');
 
 // Keys we know we will need on the public site. The provider preloads these.

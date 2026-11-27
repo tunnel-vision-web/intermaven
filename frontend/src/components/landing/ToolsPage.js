@@ -4,7 +4,7 @@ import { FlatIcon } from '../FlatIcon';
 import PageHeader from './PageHeader';
 import { useCms } from '../../cms/CmsContext';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+import { API_URL } from '../../App';
 
 const PLATFORM_OPTIONS = ['Instagram', 'TikTok', 'X (Twitter)', 'LinkedIn', 'Facebook'];
 

@@ -28,6 +28,7 @@ import { CmsProvider } from './cms/CmsContext';
 import GeoWelcomeToast from './components/landing/GeoWelcomeToast';
 import SSOAuthorizePage from './components/SSOAuthorizePage';
 import EmbedAppPage from './components/EmbedAppPage';
+import { SEORouteListener } from './components/SEO';
 
 // Context
 const AuthContext = createContext(null);
@@ -36,11 +37,11 @@ const ToastContext = createContext(null);
 export const useAuth = () => useContext(AuthContext);
 export const useToast = () => useContext(ToastContext);
 
-// API Configuration - Updated to match your running backend (port 8001)
+// API Configuration - Dedicated Intermaven backend port 8005 (port 8001 is reserved for TuneMavens)
 const FALLBACK_LOCAL_API =
   typeof window !== 'undefined' &&
   (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-    ? 'http://localhost:8001'   // â† Changed from 8002 to 8001
+    ? 'http://localhost:8005'   // â† Changed from 8002 to 8001
     : '';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || FALLBACK_LOCAL_API;
@@ -63,7 +64,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-export { api };
+export { api, API_URL };
 
 // Wrapper component for landing pages with optional auth modal
 function LandingWithAuth({ page, addToast, user }) {
@@ -262,13 +263,7 @@ function App() {
 
   const login = async (email, password) => {
     try {
-      // #region agent log
-      fetch('http://127.0.0.1:7592/ingest/2b858072-d19e-40a8-b4df-586d28188f3b',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4d502b'},body:JSON.stringify({sessionId:'4d502b',runId:'pre-fix',hypothesisId:'H2',location:'frontend/src/App.js:login:start',message:'Attempting login API call',data:{apiUrl:API_URL||'(empty)',endpoint:'/api/auth/login',emailDomain:email.includes('@')?email.split('@')[1]:'invalid'},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
       const response = await api.post('/api/auth/login', { email, password });
-      // #region agent log
-      fetch('http://127.0.0.1:7592/ingest/2b858072-d19e-40a8-b4df-586d28188f3b',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4d502b'},body:JSON.stringify({sessionId:'4d502b',runId:'pre-fix',hypothesisId:'H5',location:'frontend/src/App.js:login:success',message:'Login API succeeded',data:{hasToken:!!response?.data?.access_token,userId:response?.data?.user?.id||null},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
       localStorage.setItem('token', response.data.access_token);
       setInMemoryToken(response.data.access_token);
       setUser(response.data.user);
@@ -276,9 +271,6 @@ function App() {
       return { success: true };
     } catch (error) {
       const message = error.response?.data?.detail || 'Login failed';
-      // #region agent log
-      fetch('http://127.0.0.1:7592/ingest/2b858072-d19e-40a8-b4df-586d28188f3b',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4d502b'},body:JSON.stringify({sessionId:'4d502b',runId:'pre-fix',hypothesisId:'H5',location:'frontend/src/App.js:login:failure',message:'Login API failed',data:{status:error?.response?.status||null,detail:error?.response?.data?.detail||null,message},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
       addToast('Login Failed', message, 'error');
       return { success: false, error: message };
     }
@@ -286,14 +278,8 @@ function App() {
 
   const register = async (userData) => {
     try {
-      // #region agent log
-      fetch('http://127.0.0.1:7592/ingest/2b858072-d19e-40a8-b4df-586d28188f3b',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4d502b'},body:JSON.stringify({sessionId:'4d502b',runId:'pre-fix',hypothesisId:'H2',location:'frontend/src/App.js:register:start',message:'Attempting register API call',data:{apiUrl:API_URL||'(empty)',endpoint:'/api/auth/register',hasFirstName:!!userData?.first_name,hasLastName:!!userData?.last_name,emailDomain:userData?.email?.includes('@')?userData.email.split('@')[1]:'invalid',hasPhone:!!userData?.phone,portal:userData?.portal||null,hasConfirmPassword:typeof userData?.confirm_password==='string'},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
       console.log('[App] register called with:', { email: userData.email, first_name: userData.first_name });
       const response = await api.post('/api/auth/register', userData);
-      // #region agent log
-      fetch('http://127.0.0.1:7592/ingest/2b858072-d19e-40a8-b4df-586d28188f3b',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4d502b'},body:JSON.stringify({sessionId:'4d502b',runId:'pre-fix',hypothesisId:'H5',location:'frontend/src/App.js:register:success',message:'Register API succeeded',data:{hasToken:!!response?.data?.access_token,userId:response?.data?.user?.id||null,userEmail:response?.data?.user?.email||null},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
       console.log('[App] register successful, user:', response.data.user);
       localStorage.setItem('token', response.data.access_token);
       setInMemoryToken(response.data.access_token);
@@ -302,9 +288,6 @@ function App() {
       return { success: true };
     } catch (error) {
       const message = error.response?.data?.detail || 'Registration failed';
-      // #region agent log
-      fetch('http://127.0.0.1:7592/ingest/2b858072-d19e-40a8-b4df-586d28188f3b',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4d502b'},body:JSON.stringify({sessionId:'4d502b',runId:'pre-fix',hypothesisId:'H5',location:'frontend/src/App.js:register:failure',message:'Register API failed',data:{status:error?.response?.status||null,detail:error?.response?.data?.detail||null,message,networkError:!error?.response},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
       console.error('[App] register failed:', message, error);
       addToast('Registration Failed', message, 'error');
       return { success: false, error: message };
@@ -328,7 +311,7 @@ function App() {
       localStorage.setItem('token', response.data.access_token);
       setInMemoryToken(response.data.access_token);
       setUser(response.data.user);
-      addToast('âš¡ Sandbox Login Active', `Signed in as ${response.data.user.first_name} (${response.data.user.email})`, 'success');
+      addToast('⚡ Sandbox Login Active', `Signed in as ${response.data.user.first_name} (${response.data.user.email})`, 'success');
       return { success: true, user: response.data.user };
     } catch (error) {
       const message = error.response?.data?.detail || 'Sandbox login failed';
@@ -395,7 +378,13 @@ function App() {
     <AuthContext.Provider value={{ user, login, register, logout, sandboxLogin, updateUser }}>
       <ToastContext.Provider value={{ addToast }}>
         <Router>
+          <SEORouteListener />
           <Routes>
+            {/* Admin SEO Direct Route */}
+            <Route
+              path="/admin/seo"
+              element={user ? <Dashboard initialPanel="seo" /> : <Navigate to="/auth" />}
+            />
             {/* Embed App Route */}
             <Route 
               path="/embed/:appId" 

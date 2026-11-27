@@ -1,14 +1,62 @@
 import os
 from datetime import datetime, timezone, timedelta
-from typing import Optional
+from typing import Dict, Any, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from bson import ObjectId
+from fastapi import APIRouter, Depends, HTTPException, Request, Query
 from pydantic import BaseModel
 
 from config import db
 from utils import get_current_user, get_system_settings
 
 router = APIRouter(tags=["ai"])
+
+TOOL_LABELS = {
+    "brandkit": "Brand Kit AI",
+    "musicbio": "Music Bio AI",
+    "social": "Social AI",
+    "syncpitch": "Sync Pitch AI",
+    "bizpitch": "Pitch Deck AI",
+    "pressrelease": "Press Release AI",
+    "lyrichook": "Lyric & Hook AI",
+    "merchbrief": "Merch Designer Brief",
+}
+
+
+def _derive_output_title(tool_id: str, inputs: Dict[str, Any]) -> str:
+    for key in ("brand_name", "artist_name", "company_name", "track_title", "topic", "title", "project_name"):
+        val = inputs.get(key)
+        if isinstance(val, str) and val.strip():
+            return f"{TOOL_LABELS.get(tool_id, tool_id)}: {val.strip()[:60]}"
+    return f"{TOOL_LABELS.get(tool_id, tool_id)} Output"
+
+
+def save_ai_output(
+    user_id: Any,
+    tool_id: str,
+    content: str,
+    inputs: Optional[Dict[str, Any]] = None,
+    credits_used: int = 0,
+    title: Optional[str] = None,
+) -> Optional[str]:
+    """Persist an AI generation to db.ai_outputs for the AI Output Library."""
+    if db is None:
+        return None
+    safe_inputs = inputs or {}
+    now = datetime.now(timezone.utc)
+    doc = {
+        "user_id": user_id,
+        "tool_id": tool_id,
+        "title": title or _derive_output_title(tool_id, safe_inputs),
+        "content": content,
+        "inputs": safe_inputs,
+        "credits_used": credits_used,
+        "is_favorite": False,
+        "created_at": now,
+        "updated_at": now,
+    }
+    res = db.ai_outputs.insert_one(doc)
+    return str(res.inserted_id)
 
 
 class AIGenerateRequest(BaseModel):
@@ -34,7 +82,10 @@ TOOL_COSTS = {
     "musicbio": 15,
     "social": 0,
     "syncpitch": 20,
-    "bizpitch": 18
+    "bizpitch": 18,
+    "pressrelease": 10,
+    "lyrichook": 8,
+    "merchbrief": 8,
 }
 
 TOOL_PROMPTS = {
@@ -68,6 +119,55 @@ Create:
 2. 8 relevant hashtags
 3. Best posting time for Nairobi audiences
 4. One engagement tip""",
+
+    "pressrelease": lambda v: f"""Senior PR director writing a newsroom-ready press release.
+Announcement Type: {v.get('announcement_type', 'Launch')}
+Organization / Artist: {v.get('company_name', '')}
+Headline / Topic: {v.get('topic', '')}
+Location / Dateline: {v.get('location', 'Nairobi, Kenya')}
+Release Date: {v.get('release_date', 'Immediate')}
+Key Facts & Milestones: {v.get('key_facts', '')}
+Executive / Artist Quote: {v.get('quote', '')}
+Media Contact: {v.get('media_contact', '')}
+
+Write a complete, publication-ready AP-style press release with:
+1. FOR IMMEDIATE RELEASE header & dateline
+2. Compelling Headline + Subheadline
+3. Lead paragraph (Who, What, When, Where, Why)
+4. 2-3 Body paragraphs with the attributed quote
+5. Boilerplate ("About {v.get('company_name', 'the Organization')}")
+6. ### End mark & Media Contact block""",
+
+    "lyrichook": lambda v: f"""Hit songwriter and vocal arranger for African & global contemporary music.
+Song Title / Concept: {v.get('title', '')}
+Genre: {v.get('genre', 'Afrobeats')}
+Mood / Vibe: {v.get('mood', 'Uplifting')}
+Tempo / BPM: {v.get('bpm', '105 BPM')}
+Language / Slang Mix: {v.get('language_mix', 'English / Swahili / Sheng')}
+Key Themes / Story: {v.get('theme', '')}
+
+Write:
+1. 3 CATCHY CHORUS / HOOK OPTIONS (with rhythmic phrasing & ad-libs)
+2. VERSE 1 (8–12 bars with rhyme scheme markers)
+3. PRE-CHORUS / BRIDGE
+4. DELIVERY & VOCAL CADENCE NOTES""",
+
+    "merchbrief": lambda v: f"""Creative director & apparel production specialist for creator and brand merchandise.
+Brand / Artist Name: {v.get('brand_name', '')}
+Drop / Collection Theme: {v.get('theme', '')}
+Garment / Product Types: {v.get('garments', 'Heavyweight Tees, Hoodies, Tote Bags')}
+Target Audience & Price Tier: {v.get('audience', 'Streetwear / Mid-Premium')}
+Color Palette / Aesthetic: {v.get('colors', 'Black, Forest Green, Cream')}
+Print / Branding Method: {v.get('print_method', 'Screenprint + Woven Label')}
+Estimated Quantity & Sizes: {v.get('quantity', '100 units (S–XXL)')}
+
+Produce a complete Merch Designer & Production Brief with:
+1. COLLECTION CONCEPT & VISUAL DIRECTION
+2. GARMENT & FABRIC SPECIFICATIONS (GSM, fit, blanks)
+3. ARTWORK PLACEMENT & PRINT DIMENSIONS (Front, Back, Sleeve, Neck label)
+4. COLORWAYS & INK / EMBROIDERY CALLOUTS
+5. SIZE CURVE & PACKAGING / HANGTAG NOTES
+6. VENDOR PRODUCTION CHECKLIST""",
 
     "syncpitch": lambda v: f"""Sync licensing agent placing African music globally.
 Artist: {v.get('artist', '')} Track: {v.get('track', '')} Target: {v.get('target', '')} Mood: {v.get('mood', '')} Extra: {v.get('extra', '')}
@@ -135,6 +235,14 @@ async def generate_ai_content(request: AIGenerateRequest, current_user: dict = D
             "created_at": datetime.now(timezone.utc)
         })
 
+        output_id = save_ai_output(
+            user_id=current_user["_id"],
+            tool_id=tool_id,
+            content=response,
+            inputs=inputs,
+            credits_used=cost,
+        )
+
         db.activities.insert_one({
             "user_id": current_user["_id"],
             "type": "ai_generation",
@@ -146,6 +254,7 @@ async def generate_ai_content(request: AIGenerateRequest, current_user: dict = D
 
         return {
             "success": True,
+            "output_id": output_id,
             "content": response,
             "credits_used": cost,
             "credits_remaining": updated_user.get("credits", 0)
@@ -275,3 +384,103 @@ async def cms_ai_assist(request: CmsAiAssistRequest, current_user: dict = Depend
         return {"success": True, "key_id": key_id, "suggestion": clean_result}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI assistance failed: {str(e)}")
+
+
+# ============== AI OUTPUT LIBRARY ==============
+
+class AiOutputUpdate(BaseModel):
+    title: Optional[str] = None
+    is_favorite: Optional[bool] = None
+
+
+def _serialize_output(doc: dict) -> dict:
+    return {
+        "id": str(doc["_id"]),
+        "tool_id": doc.get("tool_id", ""),
+        "title": doc.get("title", "AI Output"),
+        "content": doc.get("content", ""),
+        "inputs": doc.get("inputs", {}),
+        "credits_used": doc.get("credits_used", 0),
+        "is_favorite": bool(doc.get("is_favorite", False)),
+        "created_at": doc["created_at"].isoformat() if isinstance(doc.get("created_at"), datetime) else str(doc.get("created_at", "")),
+        "updated_at": doc["updated_at"].isoformat() if isinstance(doc.get("updated_at"), datetime) else str(doc.get("updated_at", "")),
+    }
+
+
+@router.get("/api/ai/outputs")
+async def list_ai_outputs(
+    tool_id: Optional[str] = None,
+    search: Optional[str] = None,
+    favorites: Optional[bool] = None,
+    limit: int = Query(50, ge=1, le=200),
+    current_user: dict = Depends(get_current_user),
+):
+    if db is None:
+        return {"outputs": []}
+
+    query: Dict[str, Any] = {"user_id": current_user["_id"]}
+    if tool_id and tool_id != "all":
+        query["tool_id"] = tool_id
+    if favorites:
+        query["is_favorite"] = True
+    if search and search.strip():
+        pattern = {"$regex": search.strip(), "$options": "i"}
+        query["$or"] = [{"title": pattern}, {"content": pattern}]
+
+    docs = list(db.ai_outputs.find(query).sort("created_at", -1).limit(limit))
+    return {"outputs": [_serialize_output(d) for d in docs]}
+
+
+@router.get("/api/ai/outputs/{output_id}")
+async def get_ai_output(output_id: str, current_user: dict = Depends(get_current_user)):
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database unavailable.")
+    try:
+        oid = ObjectId(output_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid output ID")
+
+    doc = db.ai_outputs.find_one({"_id": oid, "user_id": current_user["_id"]})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Output not found")
+    return {"output": _serialize_output(doc)}
+
+
+@router.patch("/api/ai/outputs/{output_id}")
+async def update_ai_output(output_id: str, payload: AiOutputUpdate, current_user: dict = Depends(get_current_user)):
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database unavailable.")
+    try:
+        oid = ObjectId(output_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid output ID")
+
+    updates: Dict[str, Any] = {"updated_at": datetime.now(timezone.utc)}
+    if payload.title is not None:
+        updates["title"] = payload.title.strip()[:120] or "AI Output"
+    if payload.is_favorite is not None:
+        updates["is_favorite"] = payload.is_favorite
+
+    res = db.ai_outputs.find_one_and_update(
+        {"_id": oid, "user_id": current_user["_id"]},
+        {"$set": updates},
+        return_document=True,
+    )
+    if not res:
+        raise HTTPException(status_code=404, detail="Output not found")
+    return {"success": True, "output": _serialize_output(res)}
+
+
+@router.delete("/api/ai/outputs/{output_id}")
+async def delete_ai_output(output_id: str, current_user: dict = Depends(get_current_user)):
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database unavailable.")
+    try:
+        oid = ObjectId(output_id)
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid output ID")
+
+    res = db.ai_outputs.delete_one({"_id": oid, "user_id": current_user["_id"]})
+    if res.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Output not found")
+    return {"success": True}

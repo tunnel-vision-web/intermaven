@@ -142,6 +142,7 @@ def serialize_user(user: dict) -> dict:
         "avatar": user.get("avatar", ""),
         "preferred_channel": user.get("preferred_channel", "email"),
         "admin_role": user.get("admin_role", ""),
+        "is_admin": bool(user.get("is_admin", False)),
         "persona": persona,
         "secondary_personas": user.get("secondary_personas", []),
         "role": user.get("role") or persona,

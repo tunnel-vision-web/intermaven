@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from bson import ObjectId
 
 from config import db, STORAGE_BUCKET

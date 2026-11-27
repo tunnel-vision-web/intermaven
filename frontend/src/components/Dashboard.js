@@ -17,6 +17,16 @@ import BrandKitAI from './BrandKitAI';
 import CRMPanel from './CRMPanel';
 import EPKBuilder from './EPKBuilder';
 import FileManager from './FileManager';
+import AIOutputLibrary from './AIOutputLibrary';
+import ContractBuilder from './ContractBuilder';
+import PressReleaseAI from './PressReleaseAI';
+import InvoicePanel from './InvoicePanel';
+import RoyaltyCalculator from './RoyaltyCalculator';
+import LyricHookAI from './LyricHookAI';
+import TourManager from './TourManager';
+import MerchBriefAI from './MerchBriefAI';
+import GrantFinder from './GrantFinder';
+import ContentCalendar from './ContentCalendar';
 import Channels from './Channels';
 import POSPanel from './POSPanel';
 import DistroPanel from './DistroPanel';
@@ -57,12 +67,19 @@ const AVATAR_PRESETS = [
   { id: 'admin', emoji: '⚡', label: 'Admin' }
 ];
 
-function Dashboard() {
+function Dashboard({ initialPanel = 'overview' }) {
   const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
 
-  const [activePanel, setActivePanel] = useState('overview');
+  const [activePanel, setActivePanel] = useState(initialPanel || 'overview');
   const [collapsed, setCollapsed] = useState(false);
+  const [openCategories, setOpenCategories] = useState({
+    apps: true,
+    tools: true,
+    admin: true,
+  });
+  const toggleCategory = (cat) =>
+    setOpenCategories((prev) => ({ ...prev, [cat]: !prev[cat] }));
   const [settingsTab, setSettingsTab] = useState('profile');
 
   // Notifications & Top-Right Menu State
@@ -423,12 +440,13 @@ function Dashboard() {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: '#0f172a' }} className="backend-container">
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', overflow: 'hidden', backgroundColor: '#0f172a' }} className="backend-container">
       
       {/* TOP LOGO BAR */}
       <div style={{ 
         width: '100%', 
         height: '70px', 
+        flexShrink: 0,
         backgroundColor: '#1e2937', 
         borderBottom: '1px solid #334155', 
         display: 'flex', 
@@ -743,13 +761,15 @@ function Dashboard() {
         </div>
       </div>
 
-      <div style={{ display: 'flex', flex: 1 }}>
+      <div style={{ display: 'flex', flex: 1, minHeight: 0, overflow: 'hidden' }}>
 
         {/* SIDEBAR */}
         <div style={{ 
           width: sidebarWidth, 
           minWidth: collapsed ? '70px' : '20%', 
           maxWidth: collapsed ? '70px' : '20%', 
+          height: '100%',
+          overflow: 'hidden',
           backgroundColor: '#1e2937', 
           display: 'flex', 
           flexDirection: 'column', 
@@ -757,7 +777,7 @@ function Dashboard() {
           borderRight: '1px solid #334155'
         }}>
 
-          <div style={{ padding: '20px 16px', borderBottom: '1px solid #334155', display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'space-between', gap: '12px' }}>
+          <div style={{ padding: '20px 16px', flexShrink: 0, borderBottom: '1px solid #334155', display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'space-between', gap: '12px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               {renderAvatar(user, 36)}
               {!collapsed && (
@@ -776,94 +796,180 @@ function Dashboard() {
             </button>
           </div>
 
-          <div style={{ flex: 1, padding: '12px 0', overflowY: 'auto' }}>
+          <div className="dashboard-sidebar-nav" style={{ flex: 1, minHeight: 0, padding: '12px 0', overflowY: 'auto', fontSize: '12px' }}>
 
-            <button onClick={() => setActivePanel('overview')} style={{ width: '100%', padding: collapsed ? '16px' : '16px 24px', display: 'flex', alignItems: 'center', gap: '16px', background: activePanel === 'overview' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer' }}>
-              <Home size={24} color="#22d3ee" />
+            <button onClick={() => setActivePanel('overview')} style={{ width: '100%', padding: collapsed ? '12px' : '10px 24px', display: 'flex', alignItems: 'center', gap: '12px', background: activePanel === 'overview' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer', fontSize: '12px' }}>
+              <Home size={18} color="#22d3ee" />
               {!collapsed && <span>Dashboard</span>}
             </button>
 
-            <div style={{ padding: collapsed ? '12px 16px' : '12px 24px', fontSize: '13px', color: '#64748b', fontWeight: 600 }}>
-              {!collapsed && 'MY APPS'}
-            </div>
+            <button
+              type="button"
+              className="sidebar-cat-toggle"
+              onClick={() => toggleCategory('apps')}
+              style={{ width: '100%', padding: collapsed ? '10px 16px' : '10px 24px 6px', display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'space-between', background: 'transparent', border: 'none', fontSize: '10px', color: '#94a3b8', fontWeight: 700, letterSpacing: '0.06em', cursor: 'pointer', marginTop: '6px' }}
+            >
+              {!collapsed && <span>MY APPS</span>}
+              <span style={{ fontSize: '10px', opacity: 0.85 }}>{openCategories.apps ? '▾' : '▸'}</span>
+            </button>
 
-            {visibleApps.map(app => (
+            {openCategories.apps && visibleApps.map(app => (
               <button
                 key={app.id}
                 onClick={() => openApp(app.id)}
-                style={{ width: '100%', padding: collapsed ? '16px' : '16px 24px', display: 'flex', alignItems: 'center', gap: '16px', background: activePanel === app.id ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer' }}
+                style={{ width: '100%', padding: collapsed ? '12px' : '10px 24px', display: 'flex', alignItems: 'center', gap: '12px', background: activePanel === app.id ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer', fontSize: '12px' }}
               >
-                <FlatIcon name={app.id} size={24} />
+                <FlatIcon name={app.id} size={20} />
                 {!collapsed && <span>{app.name}</span>}
               </button>
             ))}
 
-            <div style={{ padding: collapsed ? '12px 16px' : '12px 24px', fontSize: '13px', color: '#64748b', fontWeight: 600, marginTop: '16px' }}>
-              {!collapsed && 'TOOLS'}
-            </div>
+            <button
+              type="button"
+              className="sidebar-cat-toggle"
+              onClick={() => toggleCategory('tools')}
+              style={{ width: '100%', padding: collapsed ? '10px 16px' : '10px 24px 6px', display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'space-between', background: 'transparent', border: 'none', fontSize: '10px', color: '#94a3b8', fontWeight: 700, letterSpacing: '0.06em', cursor: 'pointer', marginTop: '10px' }}
+            >
+              {!collapsed && <span>TOOLS</span>}
+              <span style={{ fontSize: '10px', opacity: 0.85 }}>{openCategories.tools ? '▾' : '▸'}</span>
+            </button>
 
-            <button onClick={() => setActivePanel('filemanager')} style={{ width: '100%', padding: collapsed ? '16px' : '16px 24px', display: 'flex', alignItems: 'center', gap: '16px', background: activePanel === 'filemanager' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer' }}>
-              <HardDrive size={24} color="#22d3ee" />
+            {openCategories.tools && (
+              <>
+            <button onClick={() => setActivePanel('filemanager')} style={{ width: '100%', padding: collapsed ? '12px' : '10px 24px', display: 'flex', alignItems: 'center', gap: '12px', background: activePanel === 'filemanager' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer', fontSize: '12px' }}>
+              <HardDrive size={18} color="#22d3ee" />
               {!collapsed && <span>File Manager</span>}
             </button>
 
-            <button onClick={() => setActivePanel('epk')} style={{ width: '100%', padding: collapsed ? '16px' : '16px 24px', display: 'flex', alignItems: 'center', gap: '16px', background: activePanel === 'epk' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer' }}>
-              <FileText size={24} color="#22d3ee" />
+            <button onClick={() => setActivePanel('outputs')} style={{ width: '100%', padding: collapsed ? '12px' : '10px 24px', display: 'flex', alignItems: 'center', gap: '12px', background: activePanel === 'outputs' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer', fontSize: '12px' }}>
+              <Sparkles size={18} color="#10b981" />
+              {!collapsed && <span>AI Output Library</span>}
+            </button>
+
+            <button onClick={() => setActivePanel('contracts')} style={{ width: '100%', padding: collapsed ? '12px' : '10px 24px', display: 'flex', alignItems: 'center', gap: '12px', background: activePanel === 'contracts' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer', fontSize: '12px' }}>
+              <Shield size={18} color="#a78bfa" />
+              {!collapsed && <span>Contract Builder</span>}
+            </button>
+
+            <button onClick={() => setActivePanel('pressrelease')} style={{ width: '100%', padding: collapsed ? '12px' : '10px 24px', display: 'flex', alignItems: 'center', gap: '12px', background: activePanel === 'pressrelease' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer', fontSize: '12px' }}>
+              <BookOpen size={18} color="#38bdf8" />
+              {!collapsed && <span>Press Release AI</span>}
+            </button>
+
+            <button onClick={() => setActivePanel('invoices')} style={{ width: '100%', padding: collapsed ? '12px' : '10px 24px', display: 'flex', alignItems: 'center', gap: '12px', background: activePanel === 'invoices' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer', fontSize: '12px' }}>
+              <Receipt size={18} color="#10b981" />
+              {!collapsed && <span>Invoices & Payments</span>}
+            </button>
+
+            <button onClick={() => setActivePanel('royalties')} style={{ width: '100%', padding: collapsed ? '12px' : '10px 24px', display: 'flex', alignItems: 'center', gap: '12px', background: activePanel === 'royalties' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer', fontSize: '12px' }}>
+              <DollarSign size={18} color="#f59e0b" />
+              {!collapsed && <span>Royalty Calculator</span>}
+            </button>
+
+            <button onClick={() => setActivePanel('lyrichook')} style={{ width: '100%', padding: collapsed ? '12px' : '10px 24px', display: 'flex', alignItems: 'center', gap: '12px', background: activePanel === 'lyrichook' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer', fontSize: '12px' }}>
+              <Music size={18} color="#f43f5e" />
+              {!collapsed && <span>Lyric & Hook AI</span>}
+            </button>
+
+            <button onClick={() => setActivePanel('tours')} style={{ width: '100%', padding: collapsed ? '12px' : '10px 24px', display: 'flex', alignItems: 'center', gap: '12px', background: activePanel === 'tours' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer', fontSize: '12px' }}>
+              <Globe size={18} color="#22d3ee" />
+              {!collapsed && <span>Tour Manager</span>}
+            </button>
+
+            <button onClick={() => setActivePanel('merchbrief')} style={{ width: '100%', padding: collapsed ? '12px' : '10px 24px', display: 'flex', alignItems: 'center', gap: '12px', background: activePanel === 'merchbrief' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer', fontSize: '12px' }}>
+              <ShoppingBag size={18} color="#10b981" />
+              {!collapsed && <span>Merch Designer Brief</span>}
+            </button>
+
+            <button onClick={() => setActivePanel('grants')} style={{ width: '100%', padding: collapsed ? '12px' : '10px 24px', display: 'flex', alignItems: 'center', gap: '12px', background: activePanel === 'grants' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer', fontSize: '12px' }}>
+              <Library size={18} color="#34d399" />
+              {!collapsed && <span>Grant Finder</span>}
+            </button>
+
+            <button onClick={() => setActivePanel('calendar')} style={{ width: '100%', padding: collapsed ? '12px' : '10px 24px', display: 'flex', alignItems: 'center', gap: '12px', background: activePanel === 'calendar' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer', fontSize: '12px' }}>
+              <Share2 size={18} color="#f43f5e" />
+              {!collapsed && <span>Content Calendar</span>}
+            </button>
+
+            <button onClick={() => setActivePanel('epk')} style={{ width: '100%', padding: collapsed ? '12px' : '10px 24px', display: 'flex', alignItems: 'center', gap: '12px', background: activePanel === 'epk' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer', fontSize: '12px' }}>
+              <FileText size={18} color="#22d3ee" />
               {!collapsed && <span>EPK Builder</span>}
             </button>
 
-            <button onClick={() => setActivePanel('crm')} style={{ width: '100%', padding: collapsed ? '16px' : '16px 24px', display: 'flex', alignItems: 'center', gap: '16px', background: activePanel === 'crm' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer' }}>
-              <Users size={24} color="#22d3ee" />
+            <button onClick={() => setActivePanel('crm')} style={{ width: '100%', padding: collapsed ? '12px' : '10px 24px', display: 'flex', alignItems: 'center', gap: '12px', background: activePanel === 'crm' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer', fontSize: '12px' }}>
+              <Users size={18} color="#22d3ee" />
               {!collapsed && <span>Smart CRM</span>}
             </button>
 
-            <button onClick={() => setActivePanel('channels')} data-testid="sidebar-channels-btn" style={{ width: '100%', padding: collapsed ? '16px' : '16px 24px', display: 'flex', alignItems: 'center', gap: '16px', background: activePanel === 'channels' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer' }}>
-              <Plug size={24} color="#22d3ee" />
+            <button onClick={() => setActivePanel('channels')} data-testid="sidebar-channels-btn" style={{ width: '100%', padding: collapsed ? '12px' : '10px 24px', display: 'flex', alignItems: 'center', gap: '12px', background: activePanel === 'channels' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer', fontSize: '12px' }}>
+              <Plug size={18} color="#22d3ee" />
               {!collapsed && <span>Channels</span>}
             </button>
+              </>
+            )}
+          </div>
 
-            <button onClick={() => setActivePanel('settings')} style={{ width: '100%', padding: collapsed ? '16px' : '16px 24px', display: 'flex', alignItems: 'center', gap: '16px', background: activePanel === 'settings' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer' }}>
-              <Settings size={24} color="#22d3ee" />
-              {!collapsed && <span>Settings</span>}
-            </button>
-
+          {/* PINNED BOTTOM DOCK: ADMIN & CMS + SETTINGS + LOG OUT (always visible) */}
+          <div className="dashboard-sidebar-nav" style={{ flexShrink: 0, borderTop: '1px solid #334155', padding: '6px 0 10px', backgroundColor: '#1e2937', fontSize: '12px' }}>
             {(user?.admin_role || user?.is_admin || user?.role === 'admin') && (
               <>
-                <div style={{ padding: collapsed ? '12px 16px' : '12px 24px', fontSize: '13px', color: '#10b981', fontWeight: 600, marginTop: '16px' }}>
-                  {!collapsed && 'ADMIN & CMS'}
-                </div>
-
                 <button
-                  onClick={() => setActivePanel('cms')}
-                  data-testid="sidebar-cms-btn"
-                  style={{ width: '100%', padding: collapsed ? '16px' : '16px 24px', display: 'flex', alignItems: 'center', gap: '16px', background: activePanel === 'cms' ? '#334155' : 'transparent', border: 'none', color: '#10b981', textAlign: 'left', cursor: 'pointer', fontWeight: 600 }}
+                  type="button"
+                  className="sidebar-cat-toggle"
+                  onClick={() => toggleCategory('admin')}
+                  style={{ width: '100%', padding: collapsed ? '8px 16px' : '6px 24px', display: 'flex', alignItems: 'center', justifyContent: collapsed ? 'center' : 'space-between', background: 'transparent', border: 'none', fontSize: '10px', color: '#10b981', fontWeight: 700, letterSpacing: '0.06em', cursor: 'pointer' }}
                 >
-                  <Globe size={24} color="#10b981" />
-                  {!collapsed && <span>Mother-CMS</span>}
+                  {!collapsed && <span>ADMIN & CMS</span>}
+                  <span style={{ fontSize: '10px', opacity: 0.85 }}>{openCategories.admin ? '▾' : '▸'}</span>
                 </button>
 
-                <button
-                  onClick={() => setActivePanel('admin')}
-                  data-testid="sidebar-admin-btn"
-                  style={{ width: '100%', padding: collapsed ? '16px' : '16px 24px', display: 'flex', alignItems: 'center', gap: '16px', background: activePanel === 'admin' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer' }}
-                >
-                  <Shield size={24} color="#f59e0b" />
-                  {!collapsed && <span>Admin Console</span>}
-                </button>
+                {openCategories.admin && (
+                  <>
+                    <button
+                      onClick={() => setActivePanel('cms')}
+                      data-testid="sidebar-cms-btn"
+                      style={{ width: '100%', padding: collapsed ? '10px 12px' : '8px 24px', display: 'flex', alignItems: 'center', gap: '12px', background: activePanel === 'cms' ? '#334155' : 'transparent', border: 'none', color: '#10b981', textAlign: 'left', cursor: 'pointer', fontWeight: 600, fontSize: '12px' }}
+                    >
+                      <Globe size={18} color="#10b981" />
+                      {!collapsed && <span>Mother-CMS</span>}
+                    </button>
+
+                    <button
+                      onClick={() => setActivePanel('seo')}
+                      data-testid="sidebar-seo-btn"
+                      style={{ width: '100%', padding: collapsed ? '10px 12px' : '8px 24px', display: 'flex', alignItems: 'center', gap: '12px', background: activePanel === 'seo' ? '#334155' : 'transparent', border: 'none', color: '#22d3ee', textAlign: 'left', cursor: 'pointer', fontWeight: 600, fontSize: '12px' }}
+                    >
+                      <TrendingUp size={18} color="#22d3ee" />
+                      {!collapsed && <span>SEO Manager</span>}
+                    </button>
+
+                    <button
+                      onClick={() => setActivePanel('admin')}
+                      data-testid="sidebar-admin-btn"
+                      style={{ width: '100%', padding: collapsed ? '10px 12px' : '8px 24px', display: 'flex', alignItems: 'center', gap: '12px', background: activePanel === 'admin' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer', fontSize: '12px' }}
+                    >
+                      <Shield size={18} color="#f59e0b" />
+                      {!collapsed && <span>Admin Console</span>}
+                    </button>
+                  </>
+                )}
               </>
             )}
 
-            <div style={{ marginTop: 'auto', padding: '20px 24px' }}>
-              <button onClick={logout} style={{ width: '100%', padding: '12px 0', display: 'flex', alignItems: 'center', gap: '16px', background: 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer' }}>
-                <LogOut size={24} color="#22d3ee" />
-                {!collapsed && <span>Log Out</span>}
-              </button>
-            </div>
+            <button onClick={() => setActivePanel('settings')} style={{ width: '100%', padding: collapsed ? '10px 12px' : '8px 24px', display: 'flex', alignItems: 'center', gap: '12px', background: activePanel === 'settings' ? '#334155' : 'transparent', border: 'none', color: '#e2e8f0', textAlign: 'left', cursor: 'pointer', fontSize: '12px' }}>
+              <Settings size={18} color="#22d3ee" />
+              {!collapsed && <span>Settings</span>}
+            </button>
+
+            <button onClick={logout} style={{ width: '100%', padding: collapsed ? '10px 12px' : '8px 24px', display: 'flex', alignItems: 'center', gap: '12px', background: 'transparent', border: 'none', color: '#94a3b8', textAlign: 'left', cursor: 'pointer', fontSize: '12px' }}>
+              <LogOut size={18} color="#22d3ee" />
+              {!collapsed && <span>Log Out</span>}
+            </button>
           </div>
         </div>
 
         {/* MAIN CONTENT */}
-        <div style={{ flex: 1, padding: '16px 32px', overflowY: 'auto', backgroundColor: '#0f172a' }}>
+        <div style={{ flex: 1, height: '100%', minHeight: 0, padding: '16px 32px', overflowY: 'auto', backgroundColor: '#0f172a' }}>
 
           {activePanel === 'overview' && (
             <div>
@@ -1208,7 +1314,7 @@ function Dashboard() {
                     </label>
                     {(user?.role === 'admin' || user?.is_admin) && (
                       <a
-                        href={`${process.env.REACT_APP_BACKEND_URL || ''}/api/admin/users/export`}
+                        href={`${api.defaults.baseURL || ''}/api/admin/users/export`}
                         target="_blank"
                         rel="noopener noreferrer"
                         data-testid="export-users-btn"
@@ -1494,13 +1600,27 @@ function Dashboard() {
           {activePanel === 'crm' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><WizardShell appId="crm" appName="Smart CRM" color="#22d3ee" howToTopics={HOW_TO_GUIDES.crm} onGoToChannels={() => setActivePanel('channels')}><CRMPanel /></WizardShell></div>}
           {activePanel === 'epk' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><WizardShell appId="epk" appName="EPK Builder" color="#22d3ee" howToTopics={HOW_TO_GUIDES.epk} onGoToChannels={() => setActivePanel('channels')}><EPKBuilder /></WizardShell></div>}
           {activePanel === 'filemanager' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><FileManager /></div>}
+          {activePanel === 'outputs' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><AIOutputLibrary /></div>}
+          {activePanel === 'contracts' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><ContractBuilder /></div>}
+          {activePanel === 'pressrelease' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><PressReleaseAI /></div>}
+          {activePanel === 'invoices' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><InvoicePanel /></div>}
+          {activePanel === 'royalties' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><RoyaltyCalculator /></div>}
+          {activePanel === 'lyrichook' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><LyricHookAI /></div>}
+          {activePanel === 'tours' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><TourManager /></div>}
+          {activePanel === 'merchbrief' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><MerchBriefAI /></div>}
+          {activePanel === 'grants' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><GrantFinder /></div>}
+          {activePanel === 'calendar' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><ContentCalendar /></div>}
           {activePanel === 'channels' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><Channels /></div>}
           {activePanel === 'pos' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><POSPanel /></div>}
           {activePanel === 'distro' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><DistroPanel /></div>}
           {activePanel === 'hosting' && <div style={{ flex: 1, height: '100%', overflow: 'auto' }}><HostingPanel /></div>}
-          {(activePanel === 'admin' || activePanel === 'cms') && (
+          {(activePanel === 'admin' || activePanel === 'cms' || activePanel === 'seo') && (
             <div style={{ flex: 1, height: '100%', overflow: 'auto' }}>
-              <AdminPanel user={user} onBack={() => setActivePanel('overview')} initialTab={activePanel === 'cms' ? 'cms' : 'users'} />
+              <AdminPanel
+                user={user}
+                onBack={() => setActivePanel('overview')}
+                initialTab={activePanel === 'cms' ? 'cms' : activePanel === 'seo' ? 'seo' : 'users'}
+              />
             </div>
           )}
 

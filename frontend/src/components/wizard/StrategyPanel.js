@@ -86,7 +86,12 @@ export default function StrategyPanel({ businessProfile, onStrategyChanged }) {
     setDownloading(true);
     try {
       const token = localStorage.getItem('token');
-      const url = `${process.env.REACT_APP_BACKEND_URL || ''}/api/business-profile/playbook.pdf`;
+      const baseUrl =
+        process.env.REACT_APP_BACKEND_URL ||
+        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+          ? 'http://localhost:8005'
+          : '');
+      const url = `${baseUrl}/api/business-profile/playbook.pdf`;
       const res = await fetch(url, { headers: { Authorization: `Bearer ${token}` } });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const blob = await res.blob();

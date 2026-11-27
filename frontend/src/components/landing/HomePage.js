@@ -386,7 +386,11 @@ function HomePage({ portal = 'music', subdomainPage = null, onOpenAppModal, onOp
     
     setNewsletterLoading(true);
     try {
-      const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+      const API_URL =
+        process.env.REACT_APP_BACKEND_URL ||
+        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+          ? 'http://localhost:8005'
+          : '');
       const response = await fetch(`${API_URL}/api/newsletter/subscribe`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -414,7 +418,11 @@ function HomePage({ portal = 'music', subdomainPage = null, onOpenAppModal, onOp
   }, [portal, subdomainPage]);
 
   useEffect(() => {
-    const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+    const API_URL =
+      process.env.REACT_APP_BACKEND_URL ||
+      (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:8005'
+        : '');
     const fetchSettings = async () => {
       try {
         const response = await fetch(`${API_URL}/api/settings`);

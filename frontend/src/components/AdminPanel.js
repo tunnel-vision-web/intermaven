@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { api } from '../App';
 import CMSEditor from './CMSEditor';
+import SentinelPanel from './SentinelPanel';
+import AdminSEOPanel from './AdminSEOPanel';
 import { INTERMAVEN_LOGO } from '../imageRegistry';
 import {
   Users, BarChart2, Settings, LogOut, Search, Filter,
@@ -13,7 +15,7 @@ import {
   FileText, Globe, RotateCcw
 } from 'lucide-react';
 
-// â”€â”€ Constants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Constants ────────────────────────────────────────────────────
 const PLANS = ['free', 'creator', 'pro'];
 const PORTALS = ['music', 'business'];
 const PLAN_CREDITS = { free: 150, creator: 600, pro: 2500 };
@@ -33,7 +35,7 @@ const ADMIN_ROLES = {
   finance: { label: 'Finance', color: '#10b981', perms: ['payments', 'analytics.revenue'] },
 };
 
-// â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Helpers ───────────────────────────────────────────────────────
 function Badge({ color, children }) {
   const colors = {
     free: '#9096b8', creator: '#10b981', pro: '#f59e0b',
@@ -122,7 +124,7 @@ function Pagination({ page, total, perPage, onChange }) {
   );
 }
 
-// â”€â”€ Users Panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Users Panel ───────────────────────────────────────────────────
 function UsersPanel({ addToast, adminRole }) {
   const [users, setUsers] = useState([]);
   const [total, setTotal] = useState(0);
@@ -308,7 +310,7 @@ function UsersPanel({ addToast, adminRole }) {
   );
 }
 
-// â”€â”€ User Detail Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── User Detail Modal ─────────────────────────────────────────────
 function UserDetailModal({ user, onClose, onEdit, onCredit, addToast, onRefresh }) {
   const [tab, setTab] = useState('overview');
   const [activity, setActivity] = useState([]);
@@ -479,7 +481,7 @@ function UserDetailModal({ user, onClose, onEdit, onCredit, addToast, onRefresh 
   );
 }
 
-// â”€â”€ User Edit Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── User Edit Modal ───────────────────────────────────────────────
 function UserEditModal({ user, onClose, addToast, onRefresh }) {
   const [form, setForm] = useState({
     first_name: user.first_name || '',
@@ -568,7 +570,7 @@ function UserEditModal({ user, onClose, addToast, onRefresh }) {
               <div key={k} className="admin-change-item">
                 <span className="admin-change-field">{k}</span>
                 <span className="admin-change-from">{String(from) || '(empty)'}</span>
-                <span>â†’</span>
+                <span>→</span>
                 <span className="admin-change-to">{String(to) || '(empty)'}</span>
               </div>
             ))}
@@ -585,7 +587,7 @@ function UserEditModal({ user, onClose, addToast, onRefresh }) {
   );
 }
 
-// â”€â”€ Credit Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Credit Modal ──────────────────────────────────────────────────
 function CreditModal({ user, onClose, addToast, onRefresh }) {
   const [method, setMethod] = useState('preset');
   const [preset, setPreset] = useState(null);
@@ -688,7 +690,7 @@ function CreditModal({ user, onClose, addToast, onRefresh }) {
   );
 }
 
-// â”€â”€ Analytics Panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Analytics Panel ───────────────────────────────────────────────
 function AnalyticsPanel({ addToast }) {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -819,7 +821,7 @@ function AnalyticsPanel({ addToast }) {
   );
 }
 
-// â”€â”€ Audit Log Panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Audit Log Panel ───────────────────────────────────────────────
 function AuditPanel({ addToast }) {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -883,7 +885,7 @@ function AuditPanel({ addToast }) {
   );
 }
 
-// â”€â”€ Settings Panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Settings Panel ────────────────────────────────────────────────
 function AdminSettingsPanel({ addToast }) {
   const [settings, setSettings] = useState(null);
   const [selectedHeroScope, setSelectedHeroScope] = useState('music');
@@ -1311,7 +1313,7 @@ function AdminSettingsPanel({ addToast }) {
   );
 }
 
-// â”€â”€ CMS Asset Picker Modal â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── CMS Asset Picker Modal ──────────────────────────────────────────
 function AssetPickerModal({ onClose, onSelect, addToast }) {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -1407,7 +1409,7 @@ function AssetPickerModal({ onClose, onSelect, addToast }) {
   );
 }
 
-// â”€â”€ CMS Rich Formatting Toolbar â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── CMS Rich Formatting Toolbar ─────────────────────────────────────
 function CmsToolbar({ textareaId, value, onChange, addToast }) {
   const [showPicker, setShowPicker] = useState(false);
 
@@ -1445,7 +1447,7 @@ function CmsToolbar({ textareaId, value, onChange, addToast }) {
       <button className="admin-action-btn" type="button" title="Heading 3" onClick={() => applyFormat('<h3>', '</h3>', 'Heading 3')} style={{ fontSize: '10px', width: '30px', height: '22px', padding: 0 }}>H3</button>
       <button className="admin-action-btn" type="button" title="List Item" onClick={() => applyFormat('<ul>\n  <li>', '</li>\n</ul>', 'list item')} style={{ fontSize: '10px', width: '32px', height: '22px', padding: 0 }}>List</button>
       <button className="admin-action-btn" type="button" title="Insert Media/Image" onClick={() => setShowPicker(true)} style={{ fontSize: '11px', height: '22px', padding: '0 6px', marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '3px', color: 'var(--cyan)' }}>
-        ðŸ–¼ï¸ Media
+        🖼️ Media
       </button>
 
       {showPicker && (
@@ -1459,7 +1461,7 @@ function CmsToolbar({ textareaId, value, onChange, addToast }) {
   );
 }
 
-// â”€â”€ CMS Manager Panel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── CMS Manager Panel ──────────────────────────────────────────────
 function CmsManagerPanel({ addToast }) {
   const [keys, setKeys] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -1991,15 +1993,21 @@ function CmsManagerPanel({ addToast }) {
   );
 }
 
-// â”€â”€ Main AdminPanel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Main AdminPanel ────────────────────────────────────────────────
 function AdminPanel({ user, onBack, addToast, initialTab = 'users' }) {
   const [tab, setTab] = useState(initialTab || 'users');
   const adminRole = user?.admin_role;
+
+  useEffect(() => {
+    if (initialTab) setTab(initialTab);
+  }, [initialTab]);
 
   const tabs = [
     { id: 'users', label: 'Users', icon: Users },
     { id: 'analytics', label: 'Analytics', icon: BarChart2 },
     { id: 'cms', label: 'CMS Manager', icon: FileText },
+    { id: 'seo', label: 'SEO Manager', icon: Globe },
+    { id: 'sentinel', label: 'Sentinel QA', icon: Activity },
     { id: 'audit', label: 'Audit Log', icon: Shield },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
@@ -2053,6 +2061,8 @@ function AdminPanel({ user, onBack, addToast, initialTab = 'users' }) {
           {tab === 'users' && <UsersPanel addToast={addToast} adminRole={adminRole} />}
           {tab === 'analytics' && <AnalyticsPanel addToast={addToast} />}
           {tab === 'cms' && <CMSEditor addToast={addToast} />}
+          {tab === 'seo' && <AdminSEOPanel addToast={addToast} />}
+          {tab === 'sentinel' && <SentinelPanel addToast={addToast} />}
           {tab === 'audit' && <AuditPanel addToast={addToast} />}
           {tab === 'settings' && <AdminSettingsPanel addToast={addToast} />}
         </div>

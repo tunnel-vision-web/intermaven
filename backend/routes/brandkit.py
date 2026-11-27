@@ -170,6 +170,18 @@ async def generate_brand_kit(req: BrandKitGenerateRequest, current_user: dict = 
             "inputs": req.model_dump(),
             "created_at": datetime.now(timezone.utc),
         })
+        try:
+            from routes.ai import save_ai_output
+            save_ai_output(
+                user_id=current_user["_id"],
+                tool_id="brandkit",
+                content=json.dumps(result, indent=2),
+                inputs=req.model_dump(),
+                credits_used=cost,
+                title=f"Brand Kit AI: {req.brand_name}",
+            )
+        except Exception:
+            pass
 
     return {
         "success": True,

@@ -3,36 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from datetime import datetime, timezone
 import os
-import json
-import uuid
 from dotenv import load_dotenv
-
-# region agent log
-def _debug_log(hypothesis_id: str, location: str, message: str, data: dict):
-    try:
-        with open("debug-ef0398.log", "a", encoding="utf-8") as _f:
-            _f.write(json.dumps({
-                "sessionId": "ef0398",
-                "runId": os.environ.get("RENDER_GIT_COMMIT", "local"),
-                "hypothesisId": hypothesis_id,
-                "id": f"log_{uuid.uuid4().hex}",
-                "location": location,
-                "message": message,
-                "data": data,
-                "timestamp": int(datetime.now(timezone.utc).timestamp() * 1000),
-            }) + "\n")
-    except Exception:
-        pass
-# endregion
-
-# region agent log
-_debug_log(
-    "H2",
-    "backend/server.py:import-bootstrap",
-    "Server import bootstrap context",
-    {"cwd": os.getcwd(), "pythonpath": os.environ.get("PYTHONPATH", ""), "port": os.environ.get("PORT", "")},
-)
-# endregion
 
 try:
     from config import logger
@@ -41,26 +12,17 @@ try:
         payments_router, epk_router, notifications_router, ai_router,
         public_router, crm_router, admin_router, geo_router, pricing_router,
         sso_router, wizard_router, strategies_router, channels_router, avatar_router, cms_router,
-        distro_router, hosting_router, crm_smart_router, personas_router, support_router, social_ai_router, brandkit_router, affiliates_router,
+        distro_router, hosting_router, crm_smart_router, personas_router, support_router, social_ai_router, brandkit_router, affiliates_router, contracts_router, invoices_router, events_api_router, grants_router, sentinel_router, seo_router,
     )
-    # region agent log
-    _debug_log("H1", "backend/server.py:import-mode", "Imported local modules using root-style imports", {"mode": "root-style"})
-    # endregion
-except ModuleNotFoundError as import_err:
-    # region agent log
-    _debug_log("H1", "backend/server.py:import-mode-fallback", "Root-style imports failed; trying package-style imports", {"error": str(import_err)})
-    # endregion
+except ModuleNotFoundError:
     from backend.config import logger
     from backend.routes import (
         auth_router, user_router, apps_router, files_router, folders_router,
         payments_router, epk_router, notifications_router, ai_router,
         public_router, crm_router, admin_router, geo_router, pricing_router,
         sso_router, wizard_router, strategies_router, channels_router, avatar_router, cms_router,
-        distro_router, hosting_router, crm_smart_router, personas_router, support_router, social_ai_router, brandkit_router, affiliates_router,
+        distro_router, hosting_router, crm_smart_router, personas_router, support_router, social_ai_router, brandkit_router, affiliates_router, contracts_router, invoices_router, events_api_router, grants_router, sentinel_router, seo_router,
     )
-    # region agent log
-    _debug_log("H1", "backend/server.py:import-mode-fallback-success", "Package-style imports succeeded", {"mode": "package-style"})
-    # endregion
 
 load_dotenv()
 
@@ -74,10 +36,12 @@ app.add_middleware(
         "http://localhost:3001",
         "http://localhost:3002",
         "http://localhost:3004",
+        "http://localhost:3005",
         "http://127.0.0.1:3000",
         "http://127.0.0.1:3001",
         "http://127.0.0.1:3002",
         "http://127.0.0.1:3004",
+        "http://127.0.0.1:3005",
         "https://intermaven.onrender.com",
     ],
     allow_origin_regex=r"http://(localhost|127\.0\.0\.1)(:[0-9]+)?",
@@ -206,13 +170,21 @@ app.include_router(support_router)
 app.include_router(social_ai_router)
 app.include_router(brandkit_router)
 app.include_router(affiliates_router)
+app.include_router(contracts_router)
+app.include_router(invoices_router)
+app.include_router(events_api_router)
+app.include_router(grants_router)
+app.include_router(sentinel_router)
+app.include_router(seo_router)
 
 # ============== SEED CURATED CONTENT ==============
 try:
     from seed_strategies import seed_curated_strategies
     from seed_cms_keys import seed_default_cms_keys
+    from routes.seo import seed_default_seo
     seed_curated_strategies()
     seed_default_cms_keys()
+    seed_default_seo()
 except Exception as _seed_err:
     import logging
     logging.warning(f"Curated strategy seed skipped: {_seed_err}")
@@ -230,6 +202,6 @@ async def health_check():
 
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.environ.get("PORT", 8001))
+    port = int(os.environ.get("PORT", 8005))
     uvicorn.run(app, host="0.0.0.0", port=port)
 

@@ -1,34 +1,60 @@
 from fastapi import APIRouter, Depends, HTTPException, Request, Response
-from datetime import datetime, timezone
-import json
+from datetime import datetime, timedelta, timezone
+import hashlib
+import logging
 import os
-import uuid
+import secrets
+import httpx
 
 from config import db
-from schemas import UserCreate, UserLogin, UserResponse, TokenResponse, SandboxLogin
+from schemas import (
+    UserCreate, UserLogin, UserResponse, TokenResponse, SandboxLogin,
+    ForgotPasswordRequest, ResetPasswordRequest, ChangePasswordRequest,
+)
 from utils import create_access_token, get_current_user, serialize_user, get_password_hash, verify_password, get_system_settings, get_plan_credits
 
 router = APIRouter(prefix="/api/auth")
+logger = logging.getLogger("intermaven.auth")
 
-# region agent log
-_DEBUG_LOG_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "debug-4d502b.log"))
+RESET_TOKEN_TTL_MINUTES = 60
+RESET_COOLDOWN_SECONDS = 60
 
-def _debug_log(hypothesis_id: str, location: str, message: str, data: dict, run_id: str = "pre-fix"):
+
+def _hash_reset_token(raw_token: str) -> str:
+    return hashlib.sha256(raw_token.encode("utf-8")).hexdigest()
+
+
+async def _send_password_reset_email(to_email: str, reset_url: str, first_name: str = "") -> None:
+    """Send password reset email via Resend if configured; otherwise log for local dev."""
+    resend_key = os.getenv("RESEND_API_KEY", "").strip()
+    from_email = os.getenv("RESEND_FROM_EMAIL", "Intermaven <noreply@intermaven.io>")
+    if not resend_key:
+        logger.info("RESEND_API_KEY not set — password reset link for %s: %s", to_email, reset_url)
+        return
+
+    greeting = f"Hi {first_name}," if first_name else "Hi,"
+    html_body = (
+        f"<p>{greeting}</p>"
+        "<p>We received a request to reset your Intermaven password. "
+        f"<a href=\"{reset_url}\">Click here to reset your password</a> (valid for {RESET_TOKEN_TTL_MINUTES} minutes).</p>"
+        "<p>If you didn't request this, you can safely ignore this email.</p>"
+    )
     try:
-        with open(_DEBUG_LOG_PATH, "a", encoding="utf-8") as f:
-            f.write(json.dumps({
-                "sessionId": "4d502b",
-                "runId": run_id,
-                "hypothesisId": hypothesis_id,
-                "id": f"log_{uuid.uuid4().hex}",
-                "location": location,
-                "message": message,
-                "data": data,
-                "timestamp": int(datetime.now(timezone.utc).timestamp() * 1000),
-            }) + "\n")
-    except Exception:
-        pass
-# endregion
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.post(
+                "https://api.resend.com/emails",
+                headers={"Authorization": f"Bearer {resend_key}", "Content-Type": "application/json"},
+                json={
+                    "from": from_email,
+                    "to": [to_email],
+                    "subject": "Reset your Intermaven password",
+                    "html": html_body,
+                },
+            )
+            if resp.status_code >= 400:
+                logger.warning("Resend password reset email failed (%s): %s", resp.status_code, resp.text)
+    except Exception as exc:
+        logger.warning("Failed to send password reset email via Resend: %s", exc)
 
 
 @router.post("/register", response_model=TokenResponse)
@@ -40,28 +66,8 @@ async def register(user_data: UserCreate, request: Request, response: Response):
     if not settings.get("registrations_open", True):
         raise HTTPException(status_code=403, detail="Registration is temporarily closed.")
 
-    _debug_log(
-        "H3",
-        "backend/routes/auth.py:register:start",
-        "Register endpoint invoked",
-        {
-            "email_domain": user_data.email.split("@")[1] if "@" in user_data.email else "invalid",
-            "has_first_name": bool(user_data.first_name),
-            "has_last_name": bool(user_data.last_name),
-            "has_phone": bool(user_data.phone),
-            "portal": user_data.portal,
-            "password_length": len(user_data.password),
-        },
-    )
-
     existing_user = db.users.find_one({"email": user_data.email.lower()})
     if existing_user:
-        _debug_log(
-            "H4",
-            "backend/routes/auth.py:register:duplicate-email",
-            "Duplicate email blocked registration",
-            {"email_domain": user_data.email.split("@")[1] if "@" in user_data.email else "invalid"},
-        )
         raise HTTPException(status_code=400, detail="Email already registered")
 
     hashed_password = get_password_hash(user_data.password)
@@ -88,13 +94,6 @@ async def register(user_data: UserCreate, request: Request, response: Response):
 
     result = db.users.insert_one(new_user)
     new_user["_id"] = result.inserted_id
-
-    _debug_log(
-        "H4",
-        "backend/routes/auth.py:register:inserted",
-        "User inserted successfully",
-        {"user_id": str(result.inserted_id), "plan": new_user["plan"], "portal": new_user["portal"]},
-    )
 
     access_token = create_access_token(data={"sub": str(result.inserted_id)})
 
@@ -227,13 +226,6 @@ async def login(user_data: UserLogin, request: Request, response: Response):
     if db is None:
         raise HTTPException(status_code=503, detail="Database unavailable. Check MONGO_URL and Atlas IP whitelist.")
 
-    _debug_log(
-        "H5",
-        "backend/routes/auth.py:login:start",
-        "Login endpoint invoked",
-        {"email_domain": user_data.email.split("@")[1] if "@" in user_data.email else "invalid"},
-    )
-
     user = db.users.find_one({"email": user_data.email.lower()})
     if not user or not verify_password(user_data.password, user["password"]):
         # Sandbox fallback during build phase
@@ -246,21 +238,9 @@ async def login(user_data: UserLogin, request: Request, response: Response):
             role = "admin" if ("admin" in user_data.email.lower() or "admin" in user_data.password.lower()) else "music"
             return await sandbox_login(SandboxLogin(role=role, email=user_data.email), request, response)
 
-        _debug_log(
-            "H5",
-            "backend/routes/auth.py:login:invalid-credentials",
-            "Login rejected due to invalid credentials",
-            {"user_found": bool(user)},
-        )
         raise HTTPException(status_code=401, detail="Invalid email or password")
 
     access_token = create_access_token(data={"sub": str(user["_id"])})
-    _debug_log(
-        "H5",
-        "backend/routes/auth.py:login:success",
-        "Login succeeded",
-        {"user_id": str(user["_id"])},
-    )
 
     cookie_domain = os.getenv("COOKIE_DOMAIN", ".tunemavens.com")
     host = request.headers.get("host", "")
@@ -303,3 +283,95 @@ async def logout(request: Request, response: Response):
 @router.get("/me", response_model=UserResponse)
 async def get_me(current_user: dict = Depends(get_current_user)):
     return UserResponse(**serialize_user(current_user))
+
+
+@router.post("/forgot-password")
+async def forgot_password(payload: ForgotPasswordRequest, request: Request):
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database unavailable.")
+
+    email = payload.email.lower().strip()
+    generic_response = {
+        "success": True,
+        "message": "If an account with that email exists, a password reset link has been sent.",
+    }
+
+    user = db.users.find_one({"email": email})
+    if not user:
+        return generic_response
+
+    now = datetime.now(timezone.utc)
+    recent_cutoff = now - timedelta(seconds=RESET_COOLDOWN_SECONDS)
+    recent_request = db.password_resets.find_one({
+        "user_id": user["_id"],
+        "created_at": {"$gte": recent_cutoff},
+    })
+    if recent_request:
+        return generic_response
+
+    # Invalidate any prior unused tokens for this user
+    db.password_resets.update_many(
+        {"user_id": user["_id"], "used": False},
+        {"$set": {"used": True, "invalidated_at": now}},
+    )
+
+    raw_token = secrets.token_urlsafe(32)
+    db.password_resets.insert_one({
+        "user_id": user["_id"],
+        "email": email,
+        "token_hash": _hash_reset_token(raw_token),
+        "used": False,
+        "created_at": now,
+        "expires_at": now + timedelta(minutes=RESET_TOKEN_TTL_MINUTES),
+    })
+
+    frontend_origin = request.headers.get("origin") or os.getenv("FRONTEND_URL", "https://intermaven.io")
+    reset_url = f"{frontend_origin.rstrip('/')}/auth?mode=reset&token={raw_token}"
+    await _send_password_reset_email(email, reset_url, user.get("first_name", ""))
+    return generic_response
+
+
+@router.post("/reset-password")
+async def reset_password(payload: ResetPasswordRequest):
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database unavailable.")
+
+    now = datetime.now(timezone.utc)
+    token_doc = db.password_resets.find_one({
+        "token_hash": _hash_reset_token(payload.token),
+        "used": False,
+    })
+    if not token_doc:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset token.")
+
+    expires_at = token_doc.get("expires_at")
+    if expires_at and expires_at.tzinfo is None:
+        expires_at = expires_at.replace(tzinfo=timezone.utc)
+    if not expires_at or expires_at < now:
+        db.password_resets.update_one({"_id": token_doc["_id"]}, {"$set": {"used": True}})
+        raise HTTPException(status_code=400, detail="Reset token has expired. Please request a new one.")
+
+    db.users.update_one(
+        {"_id": token_doc["user_id"]},
+        {"$set": {"password": get_password_hash(payload.new_password), "updated_at": now}},
+    )
+    db.password_resets.update_one(
+        {"_id": token_doc["_id"]},
+        {"$set": {"used": True, "used_at": now}},
+    )
+    return {"success": True, "message": "Password has been reset. You can now sign in."}
+
+
+@router.post("/change-password")
+async def change_password(payload: ChangePasswordRequest, current_user: dict = Depends(get_current_user)):
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database unavailable.")
+
+    if not verify_password(payload.current_password, current_user["password"]):
+        raise HTTPException(status_code=400, detail="Current password is incorrect.")
+
+    db.users.update_one(
+        {"_id": current_user["_id"]},
+        {"$set": {"password": get_password_hash(payload.new_password), "updated_at": datetime.now(timezone.utc)}},
+    )
+    return {"success": True, "message": "Password updated successfully."}

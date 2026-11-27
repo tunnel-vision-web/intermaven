@@ -41,7 +41,7 @@ def serialize_epk(epk: dict) -> dict:
 async def get_my_epk(current_user: dict = Depends(get_current_user)):
     epk = db.epk_profiles.find_one({"user_id": current_user["_id"]})
     if not epk:
-        raise HTTPException(404, "No EPK found")
+        return {"epk": None}
     return {"epk": serialize_epk(epk)}
 
 @router.post("/create")

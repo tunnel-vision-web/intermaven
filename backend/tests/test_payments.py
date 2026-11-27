@@ -3,7 +3,7 @@ import requests
 import os
 import random
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8001').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://localhost:8005').rstrip('/')
 
 class TestMpesaPayments:
     """Integration tests for M-Pesa POS payments"""

@@ -25,6 +25,12 @@ from .support import router as support_router
 from .social_ai import router as social_ai_router
 from .brandkit import router as brandkit_router
 from .affiliates import router as affiliates_router
+from .contracts import router as contracts_router
+from .invoices import router as invoices_router
+from .events_router import router as events_api_router
+from .grants import router as grants_router
+from .sentinel import router as sentinel_router
+from .seo import router as seo_router
 
 __all__ = [
     "auth_router",
@@ -55,4 +61,10 @@ __all__ = [
     "social_ai_router",
     "brandkit_router",
     "affiliates_router",
+    "contracts_router",
+    "invoices_router",
+    "events_api_router",
+    "grants_router",
+    "sentinel_router",
+    "seo_router",
 ]

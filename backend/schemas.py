@@ -19,6 +19,17 @@ class SandboxLogin(BaseModel):
     role: Optional[str] = "admin"
     email: Optional[str] = None
 
+class ForgotPasswordRequest(BaseModel):
+    email: EmailStr
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str = Field(..., min_length=8)
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str
+    new_password: str = Field(..., min_length=8)
+
 class UserUpdate(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
@@ -49,6 +60,7 @@ class UserResponse(BaseModel):
     avatar: Optional[str] = ""
     preferred_channel: Optional[str] = "email"
     admin_role: Optional[str] = ""
+    is_admin: Optional[bool] = False
     persona: Optional[str] = "creator"
     secondary_personas: List[str] = []
     role: Optional[str] = ""

@@ -1370,10 +1370,10 @@ Mother-CMS is positioned as a **product differentiator** in addition to internal
 # 15. Intermaven ↔ TuneMavens Reconciliation & Ecosystem Alignment (November 2026)
 
 ## 15.1 Local Development Ports
-- **TuneMavens Portal:** `http://localhost:3000`
-- **TuneStream:** `http://localhost:3001`
+- **TuneMavens Portal & Backend:** `http://localhost:3000` (Frontend) · `http://localhost:8001` (Backend)
+- **TuneStream / SyncMavens:** `http://localhost:3001` · `http://localhost:3002`
 - **Intermaven Frontend:** `http://localhost:3005`
-- **Intermaven Backend:** `http://localhost:8001`
+- **Intermaven Backend:** `http://localhost:8005` (Dedicated port preventing localhost collisions with TuneMavens on `8001`)
 
 ## 15.2 Single Source of Truth (Shared MongoDB + JWT + Protocols)
 - **Database & Auth:** Intermaven and TuneMavens share `MONGO_URL` (`intermaven`) and `JWT_SECRET`. SSO (`backend/routes/sso.py`) registers `intermaven` (`localhost:3005`, `intermaven.io`), `tunemavens` (`localhost:3000`, `tunemavens.com`), `tunestream` (`localhost:3001`, `tunestream.co`), and `syncmavens` (`localhost:3002`, `syncmavens.com`).
@@ -1411,3 +1411,26 @@ Mother-CMS is positioned as a **product differentiator** in addition to internal
   - Cleaned all mojibake/encoding artifacts and wired `useLocation()` so Maven shows route-aware proactive bubbles, greetings, and suggestions based on the page the user is browsing.
 - **App Marketplace Parity (`AppInfoModal.js`, `AppsPage.js`):**
   - Consolidated **Music Bio & Press Kit** and **Electronic Press Kit** into the live **EPK Builder & Music Bio** (`TuneMavens`) app and added all TuneMavens apps (**Distribution Tracker**, **Catalogue Machine & Release Engine**, **Split Cascade Ledger**, **M-Pesa & Card POS Terminal**, **Hosting & Domain Manager**, **Smart CRM & Reachout**) alongside Intermaven's **Brand Kit AI**, **Social AI**, **Sync Pitch AI**, and **Pitch Deck AI**, with a **TuneMavens** filter tab and ecosystem badges.
+
+
+## 15.6 November 27, 2026 Master Platform Release (22 Apps, Mother-CMS Wave 2, Sentinel QA, Phase 9 SEO Manager & Grant Submission Suite)
+- **Dedicated Local Port Separation (`8005` vs. `8001`):**
+  - Intermaven backend runs on `http://localhost:8005` (paired with Intermaven frontend on `http://localhost:3005`), leaving `http://localhost:8001` dedicated to TuneMavens so both platforms run concurrently without port collisions.
+- **Self-Serve Password Reset & Hardened Auth (`backend/routes/auth.py`, `AuthModal.js`, `schemas.py`, `utils.py`):**
+  - Added SHA-256 single-use `POST /api/auth/forgot-password`, `/reset-password`, and `/change-password` endpoints (`db.password_resets`, 60-minute TTL, 60-second cooldown, Resend delivery + dev fallback), removed legacy debug log scaffolding, and exposed `is_admin` alongside `admin_role` in `UserResponse`.
+- **Full 22-App Suite & Dashboard Modules (`Dashboard.js`, `AppInfoModal.js`, `AppsPage.js`):**
+  - **AI Output Library (`routes/ai.py`, `AIOutputLibrary.js`):** Auto-archives all AI generations (`db.ai_outputs`) with tool filters, search, title editing, and favorites.
+  - **Business Contract Builder (`routes/contracts.py`, `ContractBuilder.js`):** NDA, Work-for-Hire, Collaboration, and Client Service templates (`db.contracts`) with custom clauses and digital signing.
+  - **Invoice & Payments (`routes/invoices.py`, `InvoicePanel.js`):** Line-item client invoicing (`db.invoices`) with multi-currency totals and status tracking.
+  - **AI Creative Additions (`routes/ai.py`):** Added **Press Release AI** (`PressReleaseAI.js`), **Lyric & Hook AI** (`LyricHookAI.js`), **Merch Designer Brief AI** (`MerchBriefAI.js`), and **Royalty Calculator** (`RoyaltyCalculator.js`).
+  - **Tour Manager & TuneMavens Events Network (`routes/events_router.py`, `TourManager.js`):** Tour routing, settlements, VIP guest lists (`db.events`), and live sync to public Artist EPK `events_upcoming`.
+  - **Content Calendar (`routes/social_ai.py`, `ContentCalendar.js`):** Monthly campaign planner with `PATCH /api/social-ai/scheduled/{post_id}` status workflow.
+  - **Grant Finder, Submission & Pipeline Tracker (`routes/grants.py`, `GrantFinder.js`):** 10 curated African & global grants (`db.grants`), **Maven AI Auto-Prefill** (`POST /api/grants/{id}/prefill` synthesizing User Account, Ayo Business Profile, Brand Kit AI, and Artist EPK with funder requirements & timelines), **Direct Email Packet Dispatch & Assisted Portal Submission** (`db.grant_applications`), **6-Stage Pipeline Tracker**, and a **Multi-Channel Communications Hub** (`POST /api/grants/applications/{id}/communicate` + `/ai-message` supporting Email, WhatsApp, SMS, and Inbound Funder Reply logging).
+- **Mother-CMS Wave 2 (`seed_cms_keys.py`, `CMSEditor.js`, `public/docs/cms-overview.md`, `public/docs/cms-api.md`):**
+  - Seeded 69 portal-aware & region-aware keys across **Global**, **Business**, **Music (TuneMavens)**, and **Hospitality** portals; fixed scoped `(portal, region, key)` draft isolation and non-destructive portal saving; resolved all UTF-8 mojibake across CMS & Admin panels.
+- **Sentinel Cross-Platform QA Agent (`routes/sentinel.py`, `SentinelPanel.js`):**
+  - Portable `/api/admin/test-agent` runner verifying 14 local ASGI checks on `intermaven` plus remote health/API checks across `tunemavens`, `tunestream`, and `syncmavens` with AI triage summaries (`db.sentinel_runs`).
+- **Phase 9 Admin SEO Management Module (`routes/seo.py`, `AdminSEOPanel.js`, `SEO.js`, `public/robots.txt`):**
+  - Admin SEO Control Center (`/admin/seo` & Admin Console `SEO Manager` tab) managing `db.seo_config`, 18 `db.seo_pages` route overrides, dynamic `/sitemap.xml` & `/robots.txt`, Organization + `sameAs` JSON-LD `@graph`, consent-gated pixels, local-safe Open Graph / X Card & Google SERP previews, AI meta suggestions, and 1-click **Post-Audit Remediation** (`POST /api/admin/seo/remediate`, `100/100` verified SEO Audit score).
+- **Sidebar UX & Pinned Bottom Dock (`Dashboard.js`, `App.css`):**
+  - Independent scrollable nav (`12px` items, `10px` collapsible `MY APPS` / `TOOLS` / `ADMIN & CMS` headers) with a pinned bottom footer dock keeping `Mother-CMS`, `SEO Manager`, `Admin Console`, `Settings`, and `Log Out` permanently visible.

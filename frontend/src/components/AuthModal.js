@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../App';
+import { useAuth, api } from '../App';
 import { Mail, Lock, User, Phone, X, Eye, EyeOff } from 'lucide-react';
 import { INTERMAVEN_LOGO } from '../imageRegistry';
 import { useRegion } from '../RegionContext';
@@ -15,6 +15,9 @@ function AuthModal({ onClose }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [isLogin, setIsLogin] = useState(true);
+  const [authSubMode, setAuthSubMode] = useState(null); // null | 'forgot' | 'reset'
+  const [resetToken, setResetToken] = useState('');
+  const [infoMessage, setInfoMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -51,18 +54,26 @@ function AuthModal({ onClose }) {
     setRegisterStep(1);
   }, [isLogin]);
 
-  // Check if we should show sign in or register
+  // Check if we should show sign in, register, or password reset
   useEffect(() => {
-    console.log('[AuthModal] Mounted on path:', location.pathname);
-    if (location.state?.mode === 'signin') {
-      console.log('[AuthModal] Setting mode to signin');
+    const params = new URLSearchParams(location.search);
+    const urlMode = params.get('mode');
+    const urlToken = params.get('token');
+    if (urlMode === 'reset' && urlToken) {
       setIsLogin(true);
+      setAuthSubMode('reset');
+      setResetToken(urlToken);
+      return;
+    }
+    if (location.state?.mode === 'signin') {
+      setIsLogin(true);
+      setAuthSubMode(null);
     } else if (location.state?.mode === 'register') {
-      console.log('[AuthModal] Setting mode to register');
       setIsLogin(false);
+      setAuthSubMode(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.state]);
+  }, [location.state, location.search]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -117,19 +128,59 @@ function AuthModal({ onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    setPasswordError('');
+    setFormError('');
+    setInfoMessage('');
+
+    if (authSubMode === 'forgot') {
+      if (!formData.email.trim()) {
+        setFormError('Email is required');
+        return;
+      }
+      setLoading(true);
+      try {
+        const res = await api.post('/api/auth/forgot-password', { email: formData.email.trim() });
+        setInfoMessage(res.data?.message || 'If an account with that email exists, a password reset link has been sent.');
+      } catch (err) {
+        setFormError(err.response?.data?.detail || 'Unable to process password reset request.');
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
+    if (authSubMode === 'reset') {
+      if (formData.password.length < 8) {
+        setPasswordError('Password must be at least 8 characters');
+        return;
+      }
+      if (formData.password !== formData.confirm_password) {
+        setPasswordError('Passwords do not match');
+        return;
+      }
+      setLoading(true);
+      try {
+        const res = await api.post('/api/auth/reset-password', {
+          token: resetToken,
+          new_password: formData.password,
+        });
+        setInfoMessage(res.data?.message || 'Password has been reset. You can now sign in.');
+        setAuthSubMode(null);
+        setIsLogin(true);
+        setFormData({ ...formData, password: '', confirm_password: '' });
+      } catch (err) {
+        setFormError(err.response?.data?.detail || 'Invalid or expired reset token.');
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
     if (!isLogin && registerStep < 3) {
       if (registerStep === 1) handleStep1Next();
       else if (registerStep === 2) handleStep2Next();
       return;
     }
-
-    // #region agent log
-    fetch('http://127.0.0.1:7592/ingest/2b858072-d19e-40a8-b4df-586d28188f3b',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4d502b'},body:JSON.stringify({sessionId:'4d502b',runId:'pre-fix',hypothesisId:'H1',location:'frontend/src/components/AuthModal.js:handleSubmit:start',message:'Auth submit triggered',data:{isLogin,acceptedTerms,hasFirstName:!!formData.first_name.trim(),hasLastName:!!formData.last_name.trim(),hasEmail:!!formData.email.trim(),passwordLength:formData.password.length,confirmMatches:formData.password===formData.confirm_password,portal:formData.portal},timestamp:Date.now()})}).catch(()=>{});
-    // #endregion
-    
-    // Clear previous errors
-    setPasswordError('');
-    setFormError('');
     
     // Validate password match on signup
     if (!isLogin) {
@@ -169,20 +220,10 @@ function AuthModal({ onClose }) {
     let result;
     try {
       if (isLogin) {
-        // #region agent log
-        fetch('http://127.0.0.1:7592/ingest/2b858072-d19e-40a8-b4df-586d28188f3b',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4d502b'},body:JSON.stringify({sessionId:'4d502b',runId:'pre-fix',hypothesisId:'H2',location:'frontend/src/components/AuthModal.js:handleSubmit:login-call',message:'Calling login()',data:{emailDomain:formData.email.includes('@')?formData.email.split('@')[1]:'invalid'},timestamp:Date.now()})}).catch(()=>{});
-        // #endregion
         result = await login(formData.email, formData.password);
       } else {
-        // #region agent log
-        fetch('http://127.0.0.1:7592/ingest/2b858072-d19e-40a8-b4df-586d28188f3b',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4d502b'},body:JSON.stringify({sessionId:'4d502b',runId:'pre-fix',hypothesisId:'H2',location:'frontend/src/components/AuthModal.js:handleSubmit:register-call',message:'Calling register()',data:{emailDomain:formData.email.includes('@')?formData.email.split('@')[1]:'invalid',hasPhone:!!formData.phone.trim(),portal:formData.portal},timestamp:Date.now()})}).catch(()=>{});
-        // #endregion
         result = await register(formData);
       }
-
-      // #region agent log
-      fetch('http://127.0.0.1:7592/ingest/2b858072-d19e-40a8-b4df-586d28188f3b',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4d502b'},body:JSON.stringify({sessionId:'4d502b',runId:'pre-fix',hypothesisId:'H5',location:'frontend/src/components/AuthModal.js:handleSubmit:result',message:'Auth result returned to modal',data:{success:!!result?.success,error:result?.error||null,mode:isLogin?'login':'register'},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
 
       if (result.success) {
         const redirect = location.state?.redirect || '/dashboard';
@@ -191,9 +232,6 @@ function AuthModal({ onClose }) {
         setFormError(result.error || (isLogin ? 'Sign in failed' : 'Registration failed'));
       }
     } catch (error) {
-      // #region agent log
-      fetch('http://127.0.0.1:7592/ingest/2b858072-d19e-40a8-b4df-586d28188f3b',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'4d502b'},body:JSON.stringify({sessionId:'4d502b',runId:'pre-fix',hypothesisId:'H5',location:'frontend/src/components/AuthModal.js:handleSubmit:exception',message:'Unexpected auth exception in modal',data:{errorMessage:error?.message||'unknown'},timestamp:Date.now()})}).catch(()=>{});
-      // #endregion
       console.error('Auth error:', error);
       setFormError('An unexpected error occurred. Please try again.');
     } finally {
@@ -342,6 +380,20 @@ function AuthModal({ onClose }) {
             </div>
           </div>
 
+          {infoMessage && (
+            <div style={{
+              padding: '10px 12px',
+              marginBottom: '16px',
+              backgroundColor: 'rgba(16, 185, 129, 0.12)',
+              border: '1px solid rgba(16, 185, 129, 0.35)',
+              borderRadius: 'var(--r)',
+              color: '#34d399',
+              fontSize: '13px'
+            }}>
+              {infoMessage}
+            </div>
+          )}
+
           {formError && (
             <div className="form-error-banner" data-testid="form-error-banner" style={{
               padding: '10px 12px',
@@ -357,7 +409,91 @@ function AuthModal({ onClose }) {
           )}
 
           <form onSubmit={handleSubmit}>
-            {isLogin ? (
+            {authSubMode === 'forgot' ? (
+              <>
+                <div className="form-group">
+                  <label className="form-label">Account Email</label>
+                  <div className="form-input-icon">
+                    <Mail className="icon" size={16} />
+                    <input
+                      type="email"
+                      name="email"
+                      className="form-input"
+                      placeholder="you@example.com"
+                      value={formData.email}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                </div>
+                <button type="submit" className="btn btn-primary" disabled={loading}>
+                  {loading ? <span className="spinner"></span> : 'Send Reset Link →'}
+                </button>
+                <div style={{ marginTop: '12px', textAlign: 'center' }}>
+                  <button
+                    type="button"
+                    onClick={() => { setAuthSubMode(null); setFormError(''); setInfoMessage(''); }}
+                    style={{ background: 'none', border: 'none', color: '#9ca3af', fontSize: '13px', cursor: 'pointer', textDecoration: 'underline' }}
+                  >
+                    Back to Sign in
+                  </button>
+                </div>
+              </>
+            ) : authSubMode === 'reset' ? (
+              <>
+                <div className="form-group">
+                  <label className="form-label">New Password (min 8 chars)</label>
+                  <div className="form-input-icon password-field">
+                    <Lock className="icon" size={16} />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      name="password"
+                      className="form-input"
+                      placeholder="New password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      required
+                    />
+                    <button
+                      type="button"
+                      className="password-toggle"
+                      onClick={() => setShowPassword(!showPassword)}
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Confirm New Password</label>
+                  <div className="form-input-icon password-field">
+                    <Lock className="icon" size={16} />
+                    <input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      name="confirm_password"
+                      className="form-input"
+                      placeholder="Confirm new password"
+                      value={formData.confirm_password}
+                      onChange={handleChange}
+                      required
+                    />
+                  </div>
+                  {passwordError && <div style={{ color: '#ff6b6b', fontSize: '12px', marginTop: '6px' }}>{passwordError}</div>}
+                </div>
+                <button type="submit" className="btn btn-primary" disabled={loading}>
+                  {loading ? <span className="spinner"></span> : 'Reset Password →'}
+                </button>
+                <div style={{ marginTop: '12px', textAlign: 'center' }}>
+                  <button
+                    type="button"
+                    onClick={() => { setAuthSubMode(null); setFormError(''); setInfoMessage(''); }}
+                    style={{ background: 'none', border: 'none', color: '#9ca3af', fontSize: '13px', cursor: 'pointer', textDecoration: 'underline' }}
+                  >
+                    Back to Sign in
+                  </button>
+                </div>
+              </>
+            ) : isLogin ? (
               <>
                 <div className="form-group">
                   <label className="form-label">Email</label>
@@ -398,6 +534,15 @@ function AuthModal({ onClose }) {
                       aria-label={showPassword ? 'Hide password' : 'Show password'}
                     >
                       {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '6px' }}>
+                    <button
+                      type="button"
+                      onClick={() => { setAuthSubMode('forgot'); setFormError(''); setInfoMessage(''); }}
+                      style={{ background: 'none', border: 'none', color: '#10b981', fontSize: '12px', cursor: 'pointer', padding: 0 }}
+                    >
+                      Forgot password?
                     </button>
                   </div>
                 </div>

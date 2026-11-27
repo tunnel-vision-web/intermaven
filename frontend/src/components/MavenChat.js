@@ -4,7 +4,7 @@ import { MessageCircle, X, Send, Sparkles, ChevronDown } from 'lucide-react';
 import './MavenChat.css';
 import { useRegion } from '../RegionContext';
 
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+import { API_URL } from '../App';
 
 const AYO_SUGGESTIONS = {
   homepage: [

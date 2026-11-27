@@ -5,7 +5,12 @@ import { ALL_APPS } from './AppInfoModal';
 import BetaSignupCard, { BETA_APPS } from './BetaSignupCard';
 import { FlatIcon } from '../FlatIcon';
 
-const LIVE_APPS = ['smartcrm', 'brandkit', 'social', 'musicbio', 'epk', 'syncpitch', 'distro', 'pos', 'catalogue', 'ledger', 'hosting', 'bizpitch'];
+const LIVE_APPS = [
+  'smartcrm', 'brandkit', 'social', 'calendar', 'musicbio', 'syncpitch',
+  'distro', 'catalogue', 'ledger', 'royalties', 'lyrichook', 'tours',
+  'merchbrief', 'pos', 'hosting', 'bizpitch', 'contracts', 'pressrelease',
+  'invoices', 'grants', 'outputs', 'files',
+];
 
 const APP_PAGE_COPY = {
   default: {
@@ -50,7 +55,7 @@ function AppsPage({ portal = 'music', subdomainPage = null, onOpenAppModal, onOp
     if (activeFilter === 'all') return true;
     if (activeFilter === 'live') return LIVE_APPS.includes(app.id);
     if (activeFilter === 'tunemavens') return (app.ecosystem || '').includes('TuneMavens');
-    if (activeFilter === 'ai') return ['smartcrm', 'brandkit', 'musicbio', 'syncpitch', 'social', 'bizpitch'].includes(app.id);
+    if (activeFilter === 'ai') return ['smartcrm', 'brandkit', 'musicbio', 'syncpitch', 'social', 'bizpitch', 'pressrelease', 'lyrichook', 'merchbrief', 'grants', 'outputs'].includes(app.id);
     if (activeFilter === 'music') return app.p === 'music' || app.p === 'both';
     if (activeFilter === 'business') return app.p === 'business' || app.p === 'both';
     if (activeFilter === 'brand') return ['brandkit', 'social'].includes(app.id);

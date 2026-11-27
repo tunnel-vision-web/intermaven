@@ -12,11 +12,11 @@ import {
 
 // Recommended Dimensions Mapping
 const RECOMMENDED_DIMENSIONS = {
-  hero: { dims: '1920 Ã— 1080 px', aspect: '16:9 HD', format: 'JPG / WEBP', desc: 'Hero carousel background image' },
-  headers: { dims: '1920 Ã— 600 px', aspect: '3.2:1 Banner', format: 'JPG / WEBP', desc: 'Top page header banner graphic' },
-  logos: { dims: '400 Ã— 120 px', aspect: 'Transparent', format: 'PNG / SVG', desc: 'Primary site brand logo' },
-  icons: { dims: '512 Ã— 512 px', aspect: '1:1 Square', format: 'PNG / SVG', desc: 'Application & tool icon asset' },
-  'site-assets': { dims: '1200 Ã— 800 px', aspect: '3:2 Ratio', format: 'JPG / PNG', desc: 'General site media asset' }
+  hero: { dims: '1920 × 1080 px', aspect: '16:9 HD', format: 'JPG / WEBP', desc: 'Hero carousel background image' },
+  headers: { dims: '1920 × 600 px', aspect: '3.2:1 Banner', format: 'JPG / WEBP', desc: 'Top page header banner graphic' },
+  logos: { dims: '400 × 120 px', aspect: 'Transparent', format: 'PNG / SVG', desc: 'Primary site brand logo' },
+  icons: { dims: '512 × 512 px', aspect: '1:1 Square', format: 'PNG / SVG', desc: 'Application & tool icon asset' },
+  'site-assets': { dims: '1200 × 800 px', aspect: '3:2 Ratio', format: 'JPG / PNG', desc: 'General site media asset' }
 };
 
 // Structure of Site Pages & Sections
@@ -24,7 +24,7 @@ const SITE_PAGES = [
   {
     id: 'homepage',
     name: 'Homepage & Hero Carousel',
-    icon: 'ðŸ ',
+    icon: '🏠',
     description: 'Edit all 4 Hero Carousel slides, background images, titles, and buttons',
     sections: [
       {
@@ -97,7 +97,7 @@ const SITE_PAGES = [
   {
     id: 'about',
     name: 'About Page',
-    icon: 'â„¹ï¸',
+    icon: 'ℹ️',
     description: 'Company story, mission, hours, and contact details',
     sections: [
       {
@@ -126,7 +126,7 @@ const SITE_PAGES = [
   {
     id: 'tools',
     name: 'AI Tools Page',
-    icon: 'ðŸ› ï¸',
+    icon: '🛠️',
     description: 'AI Creative Studio headlines, tool cards, and CTAs',
     sections: [
       {
@@ -135,7 +135,7 @@ const SITE_PAGES = [
         keys: [
           { id: 'tools.header', label: 'Tools Page Main Title', type: 'text', default: 'AI Creative Studio' },
           { id: 'tools.subtitle', label: 'Tools Page Subtitle', type: 'richtext', default: 'Generate brand and music assets powered by AI' },
-          { id: 'tools.cta', label: 'CTA Button Text', type: 'text', default: 'Start free â†’' },
+          { id: 'tools.cta', label: 'CTA Button Text', type: 'text', default: 'Start free →' },
           { id: 'tools.cta_desc', label: 'CTA Description Note', type: 'richtext', default: 'Create a free account to access all AI tools with 150 free credits. No credit card required.' }
         ]
       }
@@ -144,7 +144,7 @@ const SITE_PAGES = [
   {
     id: 'apps',
     name: 'Apps Marketplace Page',
-    icon: 'ðŸ“±',
+    icon: '📱',
     description: 'App Marketplace titles and category descriptions',
     sections: [
       {
@@ -160,7 +160,7 @@ const SITE_PAGES = [
   {
     id: 'pricing',
     name: 'Pricing & Payments',
-    icon: 'ðŸ’³',
+    icon: '💳',
     description: 'Plans, pricing headlines, and payment callouts',
     sections: [
       {
@@ -179,14 +179,14 @@ const SITE_PAGES = [
   {
     id: 'header_footer',
     name: 'Header & Footer',
-    icon: 'âš“',
+    icon: '⚓',
     description: 'Global site address, support phone, tagline, and social links',
     sections: [
       {
         id: 'footer_info',
         name: 'Footer Contact & Copyright',
         keys: [
-          { id: 'footer.tagline', label: 'Footer Tagline', type: 'text', default: 'Made with â¤ in Nairobi' },
+          { id: 'footer.tagline', label: 'Footer Tagline', type: 'text', default: 'Made with ❤ in Nairobi' },
           { id: 'footer.contact.phone', label: 'Support Phone Number', type: 'text', default: '+254 700 000 000' },
           { id: 'footer.contact.address', label: 'Postal Address', type: 'text', default: 'Nairobi, Kenya' }
         ]
@@ -206,7 +206,7 @@ const SITE_PAGES = [
   {
     id: 'help_forum',
     name: 'Help & Community',
-    icon: 'â“',
+    icon: '❓',
     description: 'Help Center and Community Forum titles and support links',
     sections: [
       {
@@ -263,32 +263,278 @@ const tbBtnStyle = {
   fontWeight: 'bold'
 };
 
-// â”€â”€ Interactive Live Hero Carousel Preview Component â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+const PORTAL_META = {
+  global: {
+    id: 'global',
+    label: '🌐 Global / Default',
+    shortLabel: 'GLOBAL',
+    accent: '#10b981',
+    accentBg: 'rgba(16, 185, 129, 0.14)',
+    accentBorder: 'rgba(16, 185, 129, 0.35)',
+    desc: 'Base fallback content inherited by portals or regions without a specific override.'
+  },
+  business: {
+    id: 'business',
+    label: '💼 Business',
+    shortLabel: 'BUSINESS',
+    accent: '#22d3ee',
+    accentBg: 'rgba(34, 211, 238, 0.14)',
+    accentBorder: 'rgba(34, 211, 238, 0.35)',
+    desc: 'Intermaven Business — SMEs, agencies, Smart CRM, M-Pesa POS, invoicing, contracts, and AI growth.'
+  },
+  music: {
+    id: 'music',
+    label: '🎵 Music (TuneMavens)',
+    shortLabel: 'MUSIC',
+    accent: '#c084fc',
+    accentBg: 'rgba(192, 132, 252, 0.14)',
+    accentBorder: 'rgba(192, 132, 252, 0.35)',
+    desc: 'TuneMavens & Intermaven Music — Artists, DJs, labels, EPK Builder, DSP distribution, sync pitches, and tours.'
+  },
+  hospitality: {
+    id: 'hospitality',
+    label: '🏨 Hospitality',
+    shortLabel: 'HOSPITALITY',
+    accent: '#f59e0b',
+    accentBg: 'rgba(245, 158, 11, 0.14)',
+    accentBorder: 'rgba(245, 158, 11, 0.35)',
+    desc: 'Intermaven Hospitality — Restaurants, lounges, hotels, table-side POS, VIP reservations, and venue events.'
+  }
+};
+
+// Built-in portal fallback content when a key does not yet have a saved portal override in MongoDB
+const PORTAL_FALLBACKS = {
+  business: {
+    'homepage.hero.slide1.badge': 'Business tools for Nairobi SMEs & Agencies',
+    'homepage.hero.slide1.title': 'Run your business.<br/><em style="color:#22d3ee">Smarter every day.</em>',
+    'homepage.hero.slide1.subtitle': 'Intermaven Business gives entrepreneurs AI and operational tools — Smart CRM, invoicing, contracts, and POS — to manage, market, and scale.',
+    'homepage.hero.slide1.b1': 'Explore business tools',
+    'homepage.hero.slide1.b1link': '/tools',
+    'homepage.hero.slide1.b2': 'See business plans',
+    'homepage.hero.slide1.b2link': '/pricing',
+    'homepage.hero.slide1.image': '/images/hero/intermaven/hero-1.jpg',
+    'homepage.hero.slide2.badge': 'M-Pesa & Card native payments',
+    'homepage.hero.slide2.title': 'Payments & invoicing<br/><em style="color:#10b981">built for growth.</em>',
+    'homepage.hero.slide2.subtitle': 'Every billing tool on Intermaven Business works seamlessly with M-Pesa, Visa, Mastercard, and automated client invoices.',
+    'homepage.hero.slide2.b1': 'Explore POS & Invoicing',
+    'homepage.hero.slide2.b1link': '/apps',
+    'homepage.hero.slide2.b2': 'Learn more',
+    'homepage.hero.slide2.b2link': '/about',
+    'homepage.hero.slide2.image': '/images/hero/intermaven/hero-2.jpg',
+    'homepage.hero.slide3.badge': 'AI marketing & client CRM',
+    'homepage.hero.slide3.title': 'Brand your business.<br/><em style="color:#f59e0b">Win more clients.</em>',
+    'homepage.hero.slide3.subtitle': 'AI brand kits, legally structured business contracts, Smart CRM campaigns, and scheduled social content for modern teams.',
+    'homepage.hero.slide3.b1': 'Generate brand kit',
+    'homepage.hero.slide3.b1link': '/tools',
+    'homepage.hero.slide3.b2': 'Contract builder',
+    'homepage.hero.slide3.b2link': '/apps',
+    'homepage.hero.slide3.image': '/images/hero/intermaven/hero-3.jpg',
+    'homepage.hero.slide4.badge': 'The Business App Marketplace',
+    'homepage.hero.slide4.title': 'One platform.<br/><em style="color:#22d3ee">Every business tool.</em>',
+    'homepage.hero.slide4.subtitle': 'POS, invoicing, contracts, Smart CRM, content calendar, grant finder, and AI — unified under one business account.',
+    'homepage.hero.slide4.b1': 'Explore business apps',
+    'homepage.hero.slide4.b1link': '/apps',
+    'homepage.hero.slide4.b2': 'Our story',
+    'homepage.hero.slide4.b2link': '/about',
+    'homepage.hero.slide4.image': '/images/hero/intermaven/hero-1.jpg',
+    'homepage.features.title': 'AI and operational tools for modern businesses',
+    'homepage.marketplace.title': 'Business App Marketplace',
+    'homepage.marketplace.subtitle': 'Operational, billing, legal, and AI growth modules built for SMEs, agencies, and founders.',
+    'about.description': 'Intermaven Business is the operating system for ambitious SMEs, agencies, and founders — combining AI brand building, Smart CRM, legally structured contracts, invoicing, and POS.',
+    'about.story_title': 'Why We Built Intermaven Business',
+    'about.story_body_1': 'Small and medium businesses shouldn\'t have to stitch together ten expensive overseas SaaS subscriptions that don\'t support local mobile money, local tax invoices, or regional workflows.',
+    'about.story_body_2': 'Today, Intermaven Business powers retail shops, creative agencies, consultants, and fast-growing startups with AI marketing, automated outreach, contracts, and instant payments.',
+    'about.email_label': 'BUSINESS & ENTERPRISE',
+    'about.email': 'business@intermaven.io',
+    'about.phone_label': 'BUSINESS DESK / WHATSAPP',
+    'about.business_hours': 'Mon–Fri, 8am–6pm EAT',
+    'about.based_in': 'Nairobi, Kenya · Atlanta, USA',
+    'tools.header': 'AI Business & Marketing Studio',
+    'tools.subtitle': 'Generate SME brand kits, client proposals, press releases, and scheduled social campaigns in seconds.',
+    'tools.cta': 'Launch Business AI free →',
+    'tools.cta_desc': 'Open a free business workspace with 150 AI credits for branding, contracts, and social campaigns.',
+    'apps.header': 'Business App Marketplace',
+    'apps.subtitle': 'Activate Smart CRM, POS, Invoicing, Business Contracts, Grant Finder, and Content Calendar in one click.',
+    'pricing.header': 'Business Plans That Scale With Your Team',
+    'pricing.subtitle': 'Start free with AI branding and Smart CRM, then unlock unlimited invoicing, POS, and team seats.',
+    'pricing.callout.title': 'Instant M-Pesa Till, Paybill & Corporate Card Billing',
+    'pricing.callout.body': 'Pay via Paybill 522900 or Visa/Mastercard. Tax-compliant receipts and team credits activate immediately.',
+    'pricing.payment_methods': 'M-Pesa Paybill, Pesapal, Visa, Mastercard, Bank EFT',
+    'footer.tagline': 'Powering ambitious SMEs & founders across Africa & beyond',
+    'footer.contact.phone': '+254 700 100 200',
+    'footer.contact.address': 'Westlands Commercial Hub · Nairobi, Kenya',
+    'social.instagram': 'https://instagram.com/intermavenbusiness',
+    'social.tiktok': 'https://tiktok.com/@intermaven',
+    'social.x': 'https://x.com/intermaven',
+    'social.linkedin': 'https://linkedin.com/company/intermaven',
+    'help.header': 'Intermaven Business Help & Onboarding',
+    'forum.header': 'Founders & SME Operators Community'
+  },
+  music: {
+    'homepage.hero.slide1.badge': 'Now live - AI tools for Artists & Labels',
+    'homepage.hero.slide1.title': 'Build your sound.<br/><em style="color:#c084fc">Own your music career.</em>',
+    'homepage.hero.slide1.subtitle': 'TuneMavens & Intermaven Music give independent artists, DJs, and labels the AI tools to release, pitch, and monetize globally.',
+    'homepage.hero.slide1.b1': 'Launch artist studio',
+    'homepage.hero.slide1.b1link': '/tools',
+    'homepage.hero.slide1.b2': 'Artist plans',
+    'homepage.hero.slide1.b2link': '/pricing',
+    'homepage.hero.slide1.image': '/images/hero/intermavenmusic/hero-1.jpg',
+    'homepage.hero.slide2.badge': 'For musicians, DJs & record labels',
+    'homepage.hero.slide2.title': 'Your music.<br/><em style="color:#22d3ee">The world\'s stage.</em>',
+    'homepage.hero.slide2.subtitle': 'From an interactive EPK to Hollywood sync pitches and global DSP distribution tracking — break through worldwide.',
+    'homepage.hero.slide2.b1': 'Build my EPK',
+    'homepage.hero.slide2.b1link': '/apps',
+    'homepage.hero.slide2.b2': 'Distribution tracker',
+    'homepage.hero.slide2.b2link': '/apps',
+    'homepage.hero.slide2.image': '/images/hero/intermavenmusic/hero-2.jpg',
+    'homepage.hero.slide3.badge': 'Sync licensing, lyrics & tours',
+    'homepage.hero.slide3.title': 'Book bigger tours.<br/><em style="color:#f59e0b">Land sync deals.</em>',
+    'homepage.hero.slide3.subtitle': 'Manage tour routing, VIP guest lists on the TuneMavens Events Network, royalty splits, and AI lyric hooks in one studio.',
+    'homepage.hero.slide3.b1': 'Plan my tour',
+    'homepage.hero.slide3.b1link': '/apps',
+    'homepage.hero.slide3.b2': 'Royalty calculator',
+    'homepage.hero.slide3.b2link': '/apps',
+    'homepage.hero.slide3.image': '/images/hero/intermavenmusic/hero-3.jpg',
+    'homepage.hero.slide4.badge': 'TuneMavens Music Ecosystem',
+    'homepage.hero.slide4.title': 'One login.<br/><em style="color:#c084fc">Every music platform.</em>',
+    'homepage.hero.slide4.subtitle': 'Single sign-on across Intermaven, TuneMavens, TuneStream, and SyncMavens — built for artists, producers, and labels.',
+    'homepage.hero.slide4.b1': 'Explore music apps',
+    'homepage.hero.slide4.b1link': '/apps',
+    'homepage.hero.slide4.b2': 'About TuneMavens',
+    'homepage.hero.slide4.b2link': '/about',
+    'homepage.hero.slide4.image': '/images/hero/intermavenmusic/hero-1.jpg',
+    'homepage.features.title': 'AI studio & release tools for every stage of your music career',
+    'homepage.marketplace.title': 'TuneMavens Music & Creator Marketplace',
+    'homepage.marketplace.subtitle': 'EPK, DSP distribution, sync pitching, tour routing, and royalty tools for artists and labels.',
+    'about.description': 'Intermaven Music & TuneMavens empower independent artists, DJs, producers, and labels with AI press kits, global distribution tracking, sync licensing, and tour management.',
+    'about.story_title': 'The TuneMavens & Intermaven Music Story',
+    'about.story_body_1': 'Independent musicians and labels across Africa and the diaspora deserve direct access to global DSP tracking, Hollywood sync briefs, press-ready EPKs, and transparent royalty splits.',
+    'about.story_body_2': 'Connected natively with TuneMavens, TuneStream, and SyncMavens, our studio suite helps thousands of creators turn raw recordings into sustainable global music careers.',
+    'about.email_label': 'ARTIST & LABEL DESK',
+    'about.email': 'hello@tunemavens.com',
+    'about.phone_label': 'ARTIST RELATIONS / WHATSAPP',
+    'about.business_hours': 'Mon–Sat, 10am–7pm EAT',
+    'about.based_in': 'Nairobi · Lagos · Johannesburg · Atlanta',
+    'tools.header': 'AI Music, Bio & Sync Studio',
+    'tools.subtitle': 'Write press-ready artist bios, sync licensing pitches, lyric hooks, merch briefs, and release press kits.',
+    'tools.cta': 'Launch Artist Studio free →',
+    'tools.cta_desc': 'Create your free artist account with 150 credits for bios, sync pitches, hooks, and EPK copy.',
+    'apps.header': 'Music & Creator App Marketplace',
+    'apps.subtitle': 'Activate EPK Builder, Distribution Tracker, Tour Manager, Royalty Calculator, and Lyric AI in one workspace.',
+    'pricing.header': 'Creator & Label Plans Built for Releases',
+    'pricing.subtitle': 'Start with 150 free studio credits. Upgrade for unlimited EPKs, DSP distribution tracking, and sync pitches.',
+    'pricing.callout.title': 'Top up studio credits instantly via M-Pesa or Card',
+    'pricing.callout.body': 'Send to Paybill 522900 or pay by card — your AI credits and distribution slots unlock in seconds.',
+    'pricing.payment_methods': 'M-Pesa, Visa, Mastercard, PayPal',
+    'footer.tagline': 'Built for independent artists, DJs & labels worldwide',
+    'footer.contact.phone': '+254 700 300 400',
+    'footer.contact.address': 'Kilimani Creative Studios · Nairobi, Kenya',
+    'social.instagram': 'https://instagram.com/tunemavens',
+    'social.tiktok': 'https://tiktok.com/@tunemavens',
+    'social.x': 'https://x.com/tunemavens',
+    'social.linkedin': 'https://linkedin.com/company/tunemavens',
+    'help.header': 'Artist, Label & TuneMavens Support',
+    'forum.header': 'Artists, Producers & Labels Community'
+  },
+  hospitality: {
+    'homepage.hero.slide1.badge': 'Hospitality OS for Restaurants, Lounges & Hotels',
+    'homepage.hero.slide1.title': 'Run your venue.<br/><em style="color:#f59e0b">Delight every guest.</em>',
+    'homepage.hero.slide1.subtitle': 'Intermaven Hospitality powers restaurants, bars, lounges, and boutique hotels with table-side POS, VIP bookings, and AI guest marketing.',
+    'homepage.hero.slide1.b1': 'Launch venue POS',
+    'homepage.hero.slide1.b1link': '/apps',
+    'homepage.hero.slide1.b2': 'Book venue demo',
+    'homepage.hero.slide1.b2link': '/pricing',
+    'homepage.hero.slide1.image': '/images/hero/intermaven/hero-2.jpg',
+    'homepage.hero.slide2.badge': 'Table-side M-Pesa & Tab Management',
+    'homepage.hero.slide2.title': 'Faster table turns.<br/><em style="color:#10b981">Zero bill friction.</em>',
+    'homepage.hero.slide2.subtitle': 'Split tabs, kitchen & bar routing, QR digital menus, and instant M-Pesa STK or card settlement from any tablet.',
+    'homepage.hero.slide2.b1': 'Explore Hospitality POS',
+    'homepage.hero.slide2.b1link': '/apps',
+    'homepage.hero.slide2.b2': 'See venue features',
+    'homepage.hero.slide2.b2link': '/about',
+    'homepage.hero.slide2.image': '/images/hero/intermaven/hero-3.jpg',
+    'homepage.hero.slide3.badge': 'VIP Reservations, Events & Nightlife',
+    'homepage.hero.slide3.title': 'Pack every night.<br/><em style="color:#f59e0b">Own your guest list.</em>',
+    'homepage.hero.slide3.subtitle': 'Manage table bookings, bottle-service VIP RSVPs, resident DJ lineups, and automated WhatsApp/email guest retention.',
+    'homepage.hero.slide3.b1': 'Manage VIP & events',
+    'homepage.hero.slide3.b1link': '/apps',
+    'homepage.hero.slide3.b2': 'Hospitality CRM',
+    'homepage.hero.slide3.b2link': '/smartcrm',
+    'homepage.hero.slide3.image': '/images/hero/intermaven/hero-1.jpg',
+    'homepage.hero.slide4.badge': 'Connected Venue Ecosystem',
+    'homepage.hero.slide4.title': 'One system.<br/><em style="color:#10b981">Front house to back office.</em>',
+    'homepage.hero.slide4.subtitle': 'Connect POS inventory, staff shifts, vendor invoices, live entertainment calendars, and social promos in one hub.',
+    'homepage.hero.slide4.b1': 'Explore venue apps',
+    'homepage.hero.slide4.b1link': '/apps',
+    'homepage.hero.slide4.b2': 'Talk to sales',
+    'homepage.hero.slide4.b2link': '/about',
+    'homepage.hero.slide4.image': '/images/hero/intermaven/hero-2.jpg',
+    'homepage.features.title': 'POS, reservations, and AI marketing for hospitality venues',
+    'homepage.marketplace.title': 'Hospitality & Venue App Suite',
+    'homepage.marketplace.subtitle': 'Point-of-sale, digital menus, VIP table bookings, event calendars, and guest CRM for venues.',
+    'about.description': 'Intermaven Hospitality brings unified POS, M-Pesa table payments, VIP guest list management, and AI event marketing to restaurants, lounges, clubs, and boutique hotels.',
+    'about.story_title': 'Reinventing Hospitality Operations',
+    'about.story_body_1': 'Great hospitality venues thrive on speed, ambiance, and loyal regulars — yet legacy POS systems remain clunky, offline-hostile, and disconnected from event marketing.',
+    'about.story_body_2': 'From Nairobi rooftop lounges to boutique coastal hotels, Intermaven Hospitality connects front-of-house POS, VIP reservations, live DJ programming, and guest CRM in one cloud.',
+    'about.email_label': 'HOSPITALITY ONBOARDING',
+    'about.email': 'hospitality@intermaven.io',
+    'about.phone_label': '24/7 VENUE SUPPORT',
+    'about.business_hours': '24/7 Live Venue Support · EAT',
+    'about.based_in': 'Nairobi · Mombasa · Kigali',
+    'tools.header': 'AI Hospitality Menu, Promo & Guest Studio',
+    'tools.subtitle': 'Craft irresistible menu descriptions, weekend event promos, VIP invite copy, and hospitality brand kits.',
+    'tools.cta': 'Try Venue AI free →',
+    'tools.cta_desc': 'Start free with 150 AI credits to promote your restaurant, lounge, hotel, or upcoming event night.',
+    'apps.header': 'Hospitality & Venue App Marketplace',
+    'apps.subtitle': 'Activate Hospitality POS, VIP Event Manager, Guest Smart CRM, Invoicing, and Social Promo Calendar.',
+    'pricing.header': 'Venue & Multi-Branch Hospitality Pricing',
+    'pricing.subtitle': 'Transparent per-venue pricing with unlimited POS terminals, M-Pesa STK push, and VIP booking tools.',
+    'pricing.callout.title': 'Zero-downtime M-Pesa & Card settlement for venues',
+    'pricing.callout.body': 'Activate POS registers and hospitality modules instantly via Paybill 522900 or corporate card.',
+    'pricing.payment_methods': 'M-Pesa Till/Paybill, Visa, Mastercard, Corporate Invoice',
+    'footer.tagline': 'Crafted for restaurants, lounges, hotels & live venues',
+    'footer.contact.phone': '+254 700 500 600',
+    'footer.contact.address': 'Riverside Hospitality Suite · Nairobi, Kenya',
+    'social.instagram': 'https://instagram.com/intermavenhospitality',
+    'social.tiktok': 'https://tiktok.com/@intermavenhospitality',
+    'social.x': 'https://x.com/intermavenhosp',
+    'social.linkedin': 'https://linkedin.com/company/intermaven-hospitality',
+    'help.header': 'Hospitality POS & Venue Support Center',
+    'forum.header': 'Hospitality Owners & Venue Managers Hub'
+  }
+};
+
+// ── Interactive Live Hero Carousel Preview Component ────────────────
 function LiveHeroPreview({ slideNum, slideData, activePortal }) {
-  const bgImg = slideData.image || `/images/hero/intermaven/hero-${slideNum}.jpg`;
+  const portalMeta = PORTAL_META[activePortal] || PORTAL_META.global;
+  const defaultImg = activePortal === 'music'
+    ? `/images/hero/intermavenmusic/hero-${((slideNum - 1) % 3) + 1}.jpg`
+    : `/images/hero/intermaven/hero-${((slideNum - 1) % 3) + 1}.jpg`;
+  const bgImg = slideData.image || defaultImg;
 
   return (
     <div style={{
       position: 'relative',
       borderRadius: '8px',
       overflow: 'hidden',
-      border: '1px solid rgba(16, 185, 129, 0.3)',
+      border: `1px solid ${portalMeta.accentBorder}`,
       minHeight: '220px',
       padding: '24px',
       display: 'flex',
       flexDirection: 'column',
       justifyContent: 'center',
-      backgroundImage: `linear-gradient(rgba(8, 9, 13, 0.75), rgba(8, 9, 13, 0.85)), url(${bgImg})`,
+      backgroundImage: `linear-gradient(rgba(8, 9, 13, 0.72), rgba(8, 9, 13, 0.86)), url(${bgImg})`,
       backgroundSize: 'cover',
       backgroundPosition: 'center top',
-      marginBottom: '20px'
+      marginBottom: '20px',
+      transition: 'all 0.2s ease'
     }}>
-      <div style={{ position: 'absolute', top: '12px', right: '12px', display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(0,0,0,0.6)', border: '1px solid rgba(16, 185, 129, 0.4)', borderRadius: '4px', padding: '3px 8px', fontSize: '10px', fontWeight: 'bold', color: '#10b981' }}>
-        <Eye size={12} /> LIVE PREVIEW (SLIDE {slideNum} · {activePortal.toUpperCase()})
+      <div style={{ position: 'absolute', top: '12px', right: '12px', display: 'flex', alignItems: 'center', gap: '6px', background: 'rgba(0,0,0,0.7)', border: `1px solid ${portalMeta.accentBorder}`, borderRadius: '4px', padding: '3px 8px', fontSize: '10px', fontWeight: 'bold', color: portalMeta.accent }}>
+        <Eye size={12} /> LIVE PREVIEW (SLIDE {slideNum} · {portalMeta.shortLabel})
       </div>
 
-      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(16, 185, 129, 0.15)', border: '1px solid rgba(16, 185, 129, 0.3)', borderRadius: '20px', padding: '3px 10px', fontSize: '11px', fontWeight: 'bold', color: '#10b981', width: 'fit-content', marginBottom: '10px' }}>
-        <span>â—</span> {slideData.badge || 'Now live'}
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: portalMeta.accentBg, border: `1px solid ${portalMeta.accentBorder}`, borderRadius: '20px', padding: '3px 10px', fontSize: '11px', fontWeight: 'bold', color: portalMeta.accent, width: 'fit-content', marginBottom: '10px' }}>
+        <span>●</span> {slideData.badge || 'Now live'}
       </div>
 
       <h3
@@ -296,13 +542,13 @@ function LiveHeroPreview({ slideNum, slideData, activePortal }) {
         dangerouslySetInnerHTML={{ __html: slideData.title || 'Hero Slide Headline' }}
       />
 
-      <p style={{ fontSize: '13px', color: '#cbd5e1', margin: '0 0 16px', maxWidth: '500px', lineHeight: 1.4 }}>
+      <p style={{ fontSize: '13px', color: '#cbd5e1', margin: '0 0 16px', maxWidth: '540px', lineHeight: 1.45 }}>
         {slideData.subtitle || 'Hero slide description paragraph preview.'}
       </p>
 
       <div style={{ display: 'flex', gap: '10px' }}>
-        <span style={{ padding: '8px 16px', background: '#10b981', color: '#000000', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}>
-          {slideData.b1 || 'Primary CTA'} â†’
+        <span style={{ padding: '8px 16px', background: portalMeta.accent, color: '#000000', borderRadius: '4px', fontSize: '12px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px' }}>
+          {slideData.b1 || 'Primary CTA'} →
         </span>
         <span style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', color: '#ffffff', borderRadius: '4px', fontSize: '12px', fontWeight: '600' }}>
           {slideData.b2 || 'Secondary CTA'}
@@ -370,14 +616,11 @@ function CMSEditor() {
 
       const keysArray = keysRes.data?.keys || [];
       const keysMap = {};
-      const draftsMap = {};
       keysArray.forEach(k => {
         const id = k._id || k.key;
         keysMap[id] = k;
-        draftsMap[id] = k.default || '';
       });
       setCmsKeys(keysMap);
-      setKeyDrafts(prev => ({ ...draftsMap, ...prev }));
       setMediaList(mediaRes.data?.media || []);
     } catch (err) {
       console.error('Failed to load CMS data:', err);
@@ -397,33 +640,78 @@ function CMSEditor() {
     setHistoryOpen(false);
   };
 
-  const getResolvedValue = (kId, fallbackDef = '') => {
-    const draftVal = keyDrafts[kId];
-    if (draftVal !== undefined && draftVal !== null) return draftVal;
-    const kObj = cmsKeys[kId];
-    if (!kObj) return fallbackDef;
-    const reg = activeRegion === 'DEFAULT' ? '' : activeRegion;
-    if (activePortal !== 'global' && kObj.portals?.[activePortal]) {
-      const pObj = kObj.portals[activePortal];
-      if (reg && pObj[reg]) return pObj[reg];
-      if (pObj.default) return pObj.default;
-    }
-    if (reg && kObj.regions?.[reg]) return kObj.regions[reg];
-    return kObj.default || fallbackDef;
+  const getDraftScopeKey = (kId, portal = activePortal, region = activeRegion) =>
+    `${portal}::${region}::${kId}`;
+
+  const setScopedDraft = (kId, val) => {
+    const scopeKey = getDraftScopeKey(kId);
+    setKeyDrafts(prev => ({ ...prev, [scopeKey]: val }));
   };
 
+  const clearScopedDraft = (kId, portal = activePortal, region = activeRegion) => {
+    const scopeKey = getDraftScopeKey(kId, portal, region);
+    setKeyDrafts(prev => {
+      if (!(scopeKey in prev)) return prev;
+      const next = { ...prev };
+      delete next[scopeKey];
+      return next;
+    });
+  };
+
+  const getResolvedInfo = (kId, fallbackDef = '') => {
+    const scopeKey = getDraftScopeKey(kId);
+    if (keyDrafts[scopeKey] !== undefined && keyDrafts[scopeKey] !== null) {
+      return { value: keyDrafts[scopeKey], source: 'Unsaved Draft', isDraft: true };
+    }
+    const kObj = cmsKeys[kId];
+    const reg = activeRegion === 'DEFAULT' ? '' : activeRegion;
+
+    if (activePortal !== 'global') {
+      const pObj = kObj?.portals?.[activePortal];
+      if (pObj) {
+        if (reg && pObj[reg] !== undefined && pObj[reg] !== '') {
+          return { value: pObj[reg], source: `${activePortal.toUpperCase()} · ${reg} Override`, isDraft: false };
+        }
+        if (pObj.default !== undefined && pObj.default !== '') {
+          return { value: pObj.default, source: `${activePortal.toUpperCase()} Portal`, isDraft: false };
+        }
+      }
+      const builtinPortalVal = PORTAL_FALLBACKS[activePortal]?.[kId];
+      if (builtinPortalVal !== undefined) {
+        return { value: builtinPortalVal, source: `${activePortal.toUpperCase()} Default`, isDraft: false };
+      }
+    }
+
+    if (kObj) {
+      if (reg && kObj.regions?.[reg] !== undefined && kObj.regions[reg] !== '') {
+        return { value: kObj.regions[reg], source: `Global · ${reg} Region`, isDraft: false };
+      }
+      if (kObj.default !== undefined && kObj.default !== null) {
+        return {
+          value: kObj.default,
+          source: activePortal === 'global' ? 'Global Default' : 'Inherited from Global',
+          isDraft: false
+        };
+      }
+    }
+    return { value: fallbackDef, source: 'System Fallback', isDraft: false };
+  };
+
+  const getResolvedValue = (kId, fallbackDef = '') => getResolvedInfo(kId, fallbackDef).value;
+
   // 1-Click Per-Field Save Handler
-  const handleSaveSingleKey = async (keyId, currentVal) => {
+  const handleSaveSingleKey = async (keyId, currentVal, fallbackDef = '') => {
     setSavingKeyId(keyId);
     setSavedSuccessKeyId(null);
     setMsg({ type: '', text: '' });
     try {
       const existingObj = cmsKeys[keyId] || {};
+      const baseDefault = existingObj.default !== undefined ? existingObj.default : fallbackDef;
       let payload = {
-        default: currentVal,
+        default: (activePortal === 'global' && activeRegion === 'DEFAULT') ? currentVal : baseDefault,
         description: existingObj.description || `Key for ${keyId}`,
-        regions: existingObj.regions || {},
-        portals: existingObj.portals || {}
+        regions: { ...(existingObj.regions || {}) },
+        portals: { ...(existingObj.portals || {}) }
       };
 
       if (activePortal !== 'global') {
@@ -444,6 +732,7 @@ function CMSEditor() {
       const res = await api.put(`/api/admin/cms/${keyId}`, payload);
       const savedObj = res.data;
       setCmsKeys(prev => ({ ...prev, [keyId]: savedObj }));
+      clearScopedDraft(keyId);
       setSavedSuccessKeyId(keyId);
       setTimeout(() => setSavedSuccessKeyId(null), 3000);
     } catch (err) {
@@ -485,7 +774,7 @@ function CMSEditor() {
 
   const handleApplyAiSuggestion = () => {
     if (!aiTargetKeyId || !aiSuggestion) return;
-    setKeyDrafts(prev => ({ ...prev, [aiTargetKeyId]: aiSuggestion }));
+    setScopedDraft(aiTargetKeyId, aiSuggestion);
     setAiModalOpen(false);
   };
 
@@ -556,7 +845,7 @@ function CMSEditor() {
 
   const pickMediaForField = (assetUrl) => {
     if (targetPickerKeyId) {
-      setKeyDrafts(prev => ({ ...prev, [targetPickerKeyId]: assetUrl }));
+      setScopedDraft(targetPickerKeyId, assetUrl);
     }
     setMediaPickerOpen(false);
   };
@@ -578,7 +867,13 @@ function CMSEditor() {
       const res = await api.post(`/api/admin/cms/${focusedKeyId}/rollback/${revisionId}`);
       const savedObj = res.data;
       setCmsKeys(prev => ({ ...prev, [focusedKeyId]: savedObj }));
-      setKeyDrafts(prev => ({ ...prev, [focusedKeyId]: savedObj.default || '' }));
+      setKeyDrafts(prev => {
+        const next = { ...prev };
+        Object.keys(next).forEach(k => {
+          if (k.endsWith(`::${focusedKeyId}`)) delete next[k];
+        });
+        return next;
+      });
       setMsg({ type: 'success', text: 'Rolled back key successfully!' });
     } catch (err) {
       setMsg({ type: 'error', text: 'Rollback failed' });
@@ -586,6 +881,7 @@ function CMSEditor() {
   };
 
   const currentPageObj = SITE_PAGES.find(p => p.id === activeTab);
+  const activePortalMeta = PORTAL_META[activePortal] || PORTAL_META.global;
 
   const getSlidePreviewData = (num) => {
     const prefix = `homepage.hero.slide${num}`;
@@ -595,7 +891,7 @@ function CMSEditor() {
       subtitle: getResolvedValue(`${prefix}.subtitle`, 'Intermaven gives musicians and creatives AI tools to brand and scale.'),
       b1: getResolvedValue(`${prefix}.b1`, 'Try AI tools free'),
       b2: getResolvedValue(`${prefix}.b2`, 'See pricing'),
-      image: getResolvedValue(`${prefix}.image`, `/images/hero/intermaven/hero-${num}.jpg`)
+      image: getResolvedValue(`${prefix}.image`, `/images/hero/intermaven/hero-${((num - 1) % 3) + 1}.jpg`)
     };
   };
 
@@ -611,46 +907,45 @@ function CMSEditor() {
       {/* Hidden File Input for Image Replacement */}
       <input type="file" ref={replaceFileInputRef} accept="image/*" onChange={handleReplaceAssetFile} style={{ display: 'none' }} />
 
-      {/* â”€â”€ TOP HEADER BAR WITH OFFICIAL LOGO & PORTAL SWITCHER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
-      <div style={{ background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(59, 130, 246, 0.1))', border: '1px solid rgba(16, 185, 129, 0.25)', borderRadius: '8px', padding: '16px 20px', marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+      {/* ── TOP HEADER BAR WITH OFFICIAL LOGO & PORTAL SWITCHER ────────────────── */}
+      <div style={{ background: `linear-gradient(135deg, ${activePortalMeta.accentBg}, rgba(59, 130, 246, 0.08))`, border: `1px solid ${activePortalMeta.accentBorder}`, borderRadius: '8px', padding: '16px 20px', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', transition: 'all 0.2s ease' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
           <img src={INTERMAVEN_LOGO} alt="Intermaven Logo" style={{ height: '36px', objectFit: 'contain' }} />
           <div style={{ borderLeft: '1px solid rgba(255,255,255,0.2)', paddingLeft: '14px' }}>
             <h2 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <Globe size={18} style={{ color: '#10b981' }} /> Mother-CMS Control Center
+              <Globe size={18} style={{ color: activePortalMeta.accent }} /> Mother-CMS Control Center
             </h2>
             <p style={{ fontSize: '12px', color: '#9096b8', margin: '2px 0 0' }}>
-              Select target Portal and Region to edit live website copy, slide carousels, images, and marketing callouts.
+              {activePortalMeta.desc}
             </p>
           </div>
         </div>
 
         {/* Portal Selector Pills */}
-        <div style={{ display: 'flex', gap: '6px', background: 'rgba(0,0,0,0.4)', padding: '4px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)' }}>
-          {[
-            { id: 'global', label: 'ðŸŒ Global / Default' },
-            { id: 'business', label: 'ðŸ’¼ Business' },
-            { id: 'music', label: 'ðŸŽµ Music (TuneMavens)' },
-            { id: 'hospitality', label: 'ðŸ¨ Hospitality' },
-          ].map(p => (
-            <button
-              key={p.id}
-              onClick={() => setActivePortal(p.id)}
-              style={{
-                padding: '6px 12px',
-                borderRadius: '4px',
-                fontSize: '12px',
-                fontWeight: 'bold',
-                border: 'none',
-                background: activePortal === p.id ? '#10b981' : 'transparent',
-                color: activePortal === p.id ? '#000000' : '#cbd5e1',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              {p.label}
-            </button>
-          ))}
+        <div style={{ display: 'flex', gap: '6px', background: 'rgba(0,0,0,0.45)', padding: '4px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.1)', flexWrap: 'wrap' }}>
+          {Object.values(PORTAL_META).map(p => {
+            const isActive = activePortal === p.id;
+            return (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => setActivePortal(p.id)}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: '4px',
+                  fontSize: '12px',
+                  fontWeight: 'bold',
+                  border: isActive ? `1px solid ${p.accent}` : '1px solid transparent',
+                  background: isActive ? p.accent : 'transparent',
+                  color: isActive ? '#000000' : '#cbd5e1',
+                  cursor: 'pointer',
+                  transition: 'all 0.15s ease'
+                }}
+              >
+                {p.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* Region Target Selector */}
@@ -662,12 +957,12 @@ function CMSEditor() {
             style={{ padding: '6px 12px', background: '#12131a', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '4px', color: '#ffffff', fontSize: '12px', fontWeight: 'bold', outline: 'none' }}
           >
             <option value="DEFAULT">Global (Fallback)</option>
-            <option value="US">ðŸ‡ºðŸ‡¸ United States (US)</option>
-            <option value="KE">ðŸ‡°ðŸ‡ª Kenya (KE)</option>
-            <option value="GB">ðŸ‡¬ðŸ‡§ United Kingdom (GB)</option>
-            <option value="CA">ðŸ‡¨ðŸ‡¦ Canada (CA)</option>
-            <option value="NG">ðŸ‡³ðŸ‡¬ Nigeria (NG)</option>
-            <option value="ZA">ðŸ‡¿ðŸ‡¦ South Africa (ZA)</option>
+            <option value="US">🇺🇸 United States (US)</option>
+            <option value="KE">🇰🇪 Kenya (KE)</option>
+            <option value="GB">🇬🇧 United Kingdom (GB)</option>
+            <option value="CA">🇨🇦 Canada (CA)</option>
+            <option value="NG">🇳🇬 Nigeria (NG)</option>
+            <option value="ZA">🇿🇦 South Africa (ZA)</option>
           </select>
         </div>
       </div>
@@ -685,7 +980,7 @@ function CMSEditor() {
         </div>
       )}
 
-      {/* â”€â”€ MAIN WORKSPACE GRID: LEFT PAGE TREE SIDEBAR + RIGHT CONTENT EDITOR â”€â”€â”€â”€ */}
+      {/* ── MAIN WORKSPACE GRID: LEFT PAGE TREE SIDEBAR + RIGHT CONTENT EDITOR ──── */}
       <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '24px' }}>
 
         {/* LEFT COLUMN: PAGE NAVIGATION TREE */}
@@ -699,6 +994,7 @@ function CMSEditor() {
           {SITE_PAGES.map(page => (
             <button
               key={page.id}
+              type="button"
               onClick={() => {
                 setActiveTab(page.id);
                 if (page.sections?.[0]?.keys?.[0]?.id) {
@@ -710,9 +1006,9 @@ function CMSEditor() {
                 padding: '10px 12px',
                 borderRadius: '6px',
                 textAlign: 'left',
-                border: activeTab === page.id ? '1px solid #10b981' : '1px solid transparent',
-                background: activeTab === page.id ? 'rgba(16, 185, 129, 0.12)' : 'transparent',
-                color: activeTab === page.id ? '#10b981' : '#f0f0f5',
+                border: activeTab === page.id ? `1px solid ${activePortalMeta.accent}` : '1px solid transparent',
+                background: activeTab === page.id ? activePortalMeta.accentBg : 'transparent',
+                color: activeTab === page.id ? activePortalMeta.accent : '#f0f0f5',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
@@ -734,6 +1030,7 @@ function CMSEditor() {
 
           {/* Site Media Library Link */}
           <button
+            type="button"
             onClick={() => setActiveTab('media')}
             style={{
               width: '100%',
@@ -757,6 +1054,7 @@ function CMSEditor() {
 
           {/* Raw Keys Mode Link */}
           <button
+            type="button"
             onClick={() => setActiveTab('raw')}
             style={{
               width: '100%',
@@ -785,19 +1083,39 @@ function CMSEditor() {
           {/* TAB 1: HOMEPAGE / HERO CAROUSEL EDITOR */}
           {currentPageObj ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              <div style={{ borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '14px' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span>{currentPageObj.icon}</span> Editing {currentPageObj.name}
-                </h3>
-                <p style={{ fontSize: '12px', color: '#9096b8', margin: '4px 0 0' }}>{currentPageObj.description}</p>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', borderBottom: '1px solid rgba(255,255,255,0.08)', paddingBottom: '14px' }}>
+                <div>
+                  <h3 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span>{currentPageObj.icon}</span> Editing {currentPageObj.name}
+                  </h3>
+                  <p style={{ fontSize: '12px', color: '#9096b8', margin: '4px 0 0' }}>{currentPageObj.description}</p>
+                </div>
+
+                {/* Active Context Pill */}
+                <div style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  background: activePortalMeta.accentBg,
+                  border: `1px solid ${activePortalMeta.accentBorder}`,
+                  color: activePortalMeta.accent,
+                  fontSize: '12px',
+                  fontWeight: 'bold'
+                }}>
+                  <span>{activePortalMeta.label}</span>
+                  <span style={{ opacity: 0.5 }}>·</span>
+                  <span style={{ color: '#f0f0f5' }}>{activeRegion === 'DEFAULT' ? 'Global Fallback' : activeRegion}</span>
+                </div>
               </div>
 
               {/* LIVE HERO CAROUSEL PREVIEW (For Homepage) */}
               {activeTab === 'homepage' && (
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                    <span style={{ fontSize: '12px', fontWeight: 'bold', color: '#10b981', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                      Interactive Hero Carousel Live Preview
+                    <span style={{ fontSize: '12px', fontWeight: 'bold', color: activePortalMeta.accent, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                      Interactive Hero Carousel Live Preview ({activePortalMeta.shortLabel})
                     </span>
                     <div style={{ display: 'flex', gap: '6px' }}>
                       {[1, 2, 3, 4].map(num => (
@@ -810,9 +1128,9 @@ function CMSEditor() {
                             fontSize: '11px',
                             fontWeight: 'bold',
                             borderRadius: '4px',
-                            border: previewSlideNum === num ? '1px solid #10b981' : '1px solid rgba(255,255,255,0.1)',
-                            background: previewSlideNum === num ? 'rgba(16, 185, 129, 0.2)' : 'transparent',
-                            color: previewSlideNum === num ? '#10b981' : '#9096b8',
+                            border: previewSlideNum === num ? `1px solid ${activePortalMeta.accent}` : '1px solid rgba(255,255,255,0.1)',
+                            background: previewSlideNum === num ? activePortalMeta.accentBg : 'transparent',
+                            color: previewSlideNum === num ? activePortalMeta.accent : '#9096b8',
                             cursor: 'pointer'
                           }}
                         >
@@ -833,38 +1151,53 @@ function CMSEditor() {
               {/* Sections Accordion & Form Fields */}
               {currentPageObj.sections.map(sec => (
                 <div key={sec.id} style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '6px', padding: '18px' }}>
-                  <h4 style={{ fontSize: '14px', fontWeight: '700', color: '#10b981', margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <h4 style={{ fontSize: '14px', fontWeight: '700', color: activePortalMeta.accent, margin: '0 0 16px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <Folder size={16} /> {sec.name}
                   </h4>
 
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                     {sec.keys.map(kDef => {
                       const isFocused = focusedKeyId === kDef.id;
-                      const draftVal = keyDrafts[kDef.id] !== undefined ? keyDrafts[kDef.id] : getResolvedValue(kDef.id, kDef.default);
+                      const resolved = getResolvedInfo(kDef.id, kDef.default);
+                      const draftVal = resolved.value;
                       const isSaving = savingKeyId === kDef.id;
                       const isSaved = savedSuccessKeyId === kDef.id;
 
                       return (
                         <div
-                          key={kDef.id}
+                          key={`${activePortal}-${activeRegion}-${kDef.id}`}
                           onClick={() => selectKey(kDef.id)}
                           style={{
                             padding: '16px',
                             borderRadius: '6px',
-                            background: isFocused ? 'rgba(16, 185, 129, 0.04)' : 'rgba(255,255,255,0.01)',
-                            border: isFocused ? '1px solid rgba(16, 185, 129, 0.4)' : '1px solid rgba(255,255,255,0.05)',
+                            background: isFocused ? 'rgba(255, 255, 255, 0.03)' : 'rgba(255,255,255,0.01)',
+                            border: isFocused ? `1px solid ${activePortalMeta.accentBorder}` : '1px solid rgba(255,255,255,0.05)',
                             transition: 'all 0.15s ease'
                           }}
                         >
                           {/* Block Header with Label + Action Buttons */}
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px', flexWrap: 'wrap', gap: '8px' }}>
-                            <label style={{ fontSize: '13px', fontWeight: 'bold', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <label style={{ fontSize: '13px', fontWeight: 'bold', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                               <span>{kDef.label}</span>
                               <span style={{ fontSize: '11px', color: '#9096b8', fontFamily: 'monospace' }}>({kDef.id})</span>
+                              {resolved.isDraft && (
+                                <span style={{ fontSize: '10px', padding: '1px 6px', borderRadius: '4px', background: 'rgba(245, 158, 11, 0.2)', color: '#f59e0b' }}>
+                                  Unsaved edit
+                                </span>
+                              )}
                               {isSaved && <span style={{ fontSize: '11px', color: '#10b981', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '2px' }}><Check size={13} /> Saved!</span>}
                             </label>
 
                             <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                              {resolved.isDraft && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => { e.stopPropagation(); clearScopedDraft(kDef.id); }}
+                                  style={{ padding: '5px 10px', fontSize: '11px', background: 'rgba(245, 158, 11, 0.12)', border: '1px solid rgba(245, 158, 11, 0.3)', borderRadius: '4px', color: '#f59e0b', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }}
+                                >
+                                  <RotateCcw size={11} /> Reset
+                                </button>
+                              )}
                               {kDef.type === 'image_url' && (
                                 <button
                                   type="button"
@@ -885,13 +1218,13 @@ function CMSEditor() {
                               {/* PROMINENT DIRECT PER-FIELD SAVE BUTTON */}
                               <button
                                 type="button"
-                                onClick={(e) => { e.stopPropagation(); handleSaveSingleKey(kDef.id, draftVal); }}
+                                onClick={(e) => { e.stopPropagation(); handleSaveSingleKey(kDef.id, draftVal, kDef.default); }}
                                 disabled={isSaving}
                                 style={{
                                   padding: '6px 14px',
                                   fontSize: '12px',
                                   fontWeight: 'bold',
-                                  background: '#10b981',
+                                  background: activePortalMeta.accent,
                                   border: 'none',
                                   borderRadius: '4px',
                                   color: '#000000',
@@ -899,13 +1232,13 @@ function CMSEditor() {
                                   display: 'flex',
                                   alignItems: 'center',
                                   gap: '4px',
-                                  boxShadow: '0 2px 6px rgba(16, 185, 129, 0.3)'
+                                  boxShadow: '0 2px 6px rgba(0, 0, 0, 0.3)'
                                 }}
                               >
-                                <Save size={13} /> {isSaving ? 'Saving...' : 'Save Field'}
+                                <Save size={13} /> {isSaving ? 'Saving...' : `Save (${activePortalMeta.shortLabel})`}
                               </button>
 
-                              {/* ASK AI ASSISTANT BUTTON (Right below Save Field) */}
+                              {/* ASK AI ASSISTANT BUTTON */}
                               <button
                                 type="button"
                                 onClick={(e) => { e.stopPropagation(); selectKey(kDef.id); handleOpenAiAssistant(kDef.id); }}
@@ -934,7 +1267,7 @@ function CMSEditor() {
                               <RichTextToolbar
                                 textRef={textareaRef}
                                 onFormat={(newVal) => {
-                                  setKeyDrafts(prev => ({ ...prev, [kDef.id]: newVal }));
+                                  setScopedDraft(kDef.id, newVal);
                                 }}
                               />
                               <textarea
@@ -942,8 +1275,7 @@ function CMSEditor() {
                                 rows={3}
                                 value={draftVal}
                                 onChange={(e) => {
-                                  const val = e.target.value;
-                                  setKeyDrafts(prev => ({ ...prev, [kDef.id]: val }));
+                                  setScopedDraft(kDef.id, e.target.value);
                                 }}
                                 placeholder={`Enter ${kDef.label}...`}
                                 style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '0 0 4px 4px', color: '#ffffff', fontSize: '13px', fontFamily: 'Inter, sans-serif' }}
@@ -954,8 +1286,7 @@ function CMSEditor() {
                               type="text"
                               value={draftVal}
                               onChange={(e) => {
-                                const val = e.target.value;
-                                setKeyDrafts(prev => ({ ...prev, [kDef.id]: val }));
+                                setScopedDraft(kDef.id, e.target.value);
                               }}
                               placeholder={`Enter ${kDef.label}...`}
                               style={{ width: '100%', padding: '10px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '4px', color: '#ffffff', fontSize: '13px' }}
@@ -963,10 +1294,12 @@ function CMSEditor() {
                           )}
 
                           {/* Live Portal & Region Resolved Preview Badge */}
-                          <div style={{ marginTop: '8px', fontSize: '11px', color: '#9096b8', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <Eye size={12} style={{ color: '#10b981' }} />
-                            <span>Resolved for {activePortal.toUpperCase()} ({activeRegion}):</span>
-                            <span style={{ color: '#10b981', fontWeight: 'bold', fontStyle: 'italic' }}>"{draftVal || '(Empty)'}"</span>
+                          <div style={{ marginTop: '8px', fontSize: '11px', color: '#9096b8', display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                            <Eye size={12} style={{ color: activePortalMeta.accent }} />
+                            <span>Source: <strong style={{ color: activePortalMeta.accent }}>{resolved.source}</strong></span>
+                            <span style={{ opacity: 0.5 }}>·</span>
+                            <span>Resolved for {activePortalMeta.shortLabel} ({activeRegion}):</span>
+                            <span style={{ color: '#cbd5e1', fontStyle: 'italic' }}>"{draftVal || '(Empty)'}"</span>
                           </div>
                         </div>
                       );
@@ -1000,10 +1333,10 @@ function CMSEditor() {
                 <div style={{ display: 'flex', gap: '6px' }}>
                   {[
                     { id: 'all', label: 'All Assets' },
-                    { id: 'hero', label: 'ðŸ–¼ï¸ Hero Backgrounds' },
-                    { id: 'headers', label: 'ðŸŒ„ Page Banners' },
-                    { id: 'logos', label: 'âœ¨ Logos' },
-                    { id: 'icons', label: 'ðŸ§© App Icons' }
+                    { id: 'hero', label: '🖼️ Hero Backgrounds' },
+                    { id: 'headers', label: '🌄 Page Banners' },
+                    { id: 'logos', label: '✨ Logos' },
+                    { id: 'icons', label: '🧩 App Icons' }
                   ].map(cat => (
                     <button
                       key={cat.id}
@@ -1108,8 +1441,15 @@ function CMSEditor() {
 
             /* TAB 3: DEVELOPER RAW KEYS VIEW */
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: '#ffffff' }}>Developer Raw Keys View</h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px' }}>
+                <div>
+                  <h3 style={{ fontSize: '18px', fontWeight: '800', margin: 0, color: '#ffffff' }}>
+                    Developer Raw Keys View ({activePortalMeta.shortLabel} · {activeRegion})
+                  </h3>
+                  <div style={{ fontSize: '12px', color: '#9096b8', marginTop: '2px' }}>
+                    Showing resolved values for the currently selected portal & region
+                  </div>
+                </div>
                 <input
                   type="text"
                   placeholder="Filter keys..."
@@ -1124,13 +1464,19 @@ function CMSEditor() {
                   .filter(k => (k._id || k.key || '').toLowerCase().includes(rawSearch.toLowerCase()))
                   .map(k => {
                     const keyId = k._id || k.key;
+                    const resolved = getResolvedInfo(keyId, k.default || '');
                     return (
-                      <div key={keyId} onClick={() => selectKey(keyId)} style={{ padding: '10px 14px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}>
-                        <div>
-                          <span style={{ fontFamily: 'monospace', fontWeight: 'bold', color: '#c084fc', fontSize: '13px' }}>{keyId}</span>
-                          <div style={{ fontSize: '12px', color: '#9096b8' }}>{k.default || '(no default)'}</div>
+                      <div key={keyId} onClick={() => selectKey(keyId)} style={{ padding: '10px 14px', background: 'rgba(0,0,0,0.3)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
+                        <div style={{ minWidth: 0 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                            <span style={{ fontFamily: 'monospace', fontWeight: 'bold', color: activePortalMeta.accent, fontSize: '13px' }}>{keyId}</span>
+                            <span style={{ fontSize: '10px', padding: '1px 6px', borderRadius: '4px', background: activePortalMeta.accentBg, color: activePortalMeta.accent }}>{resolved.source}</span>
+                          </div>
+                          <div style={{ fontSize: '12px', color: '#cbd5e1', marginTop: '3px', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                            {resolved.value || '(no value)'}
+                          </div>
                         </div>
-                        <ChevronRight size={14} style={{ color: '#9096b8' }} />
+                        <ChevronRight size={14} style={{ color: '#9096b8', flexShrink: 0 }} />
                       </div>
                     );
                   })}
@@ -1140,7 +1486,7 @@ function CMSEditor() {
         </div>
       </div>
 
-      {/* â”€â”€ âœ¨ ASK AI COPYWRITER MODAL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* ── ✨ ASK AI COPYWRITER MODAL ────────────────────────────────────────── */}
       {aiModalOpen && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
           <div style={{ background: '#12131a', border: '1px solid #a855f7', borderRadius: '10px', width: '560px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px', boxShadow: '0 0 30px rgba(168, 85, 247, 0.3)' }}>
@@ -1148,7 +1494,7 @@ function CMSEditor() {
               <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 'bold', color: '#ffffff', display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Sparkles size={18} style={{ color: '#c084fc' }} /> Ask AI Copywriter & Assistant
               </h3>
-              <button onClick={() => setAiModalOpen(false)} style={{ background: 'none', border: 'none', color: '#9096b8', fontSize: '16px', cursor: 'pointer' }}>âœ•</button>
+              <button onClick={() => setAiModalOpen(false)} style={{ background: 'none', border: 'none', color: '#9096b8', fontSize: '16px', cursor: 'pointer' }}>✕</button>
             </div>
 
             <div style={{ fontSize: '12px', color: '#cbd5e1' }}>
@@ -1160,10 +1506,10 @@ function CMSEditor() {
               <label style={{ fontSize: '11px', fontWeight: 'bold', color: '#9096b8', textTransform: 'uppercase', display: 'block', marginBottom: '6px' }}>Select Copywriting Style</label>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
                 {[
-                  { id: 'hype', label: 'ðŸš€ Hype & High-Conversion', desc: 'Energetic for creators & artists' },
-                  { id: 'professional', label: 'ðŸ’¼ Professional & Enterprise', desc: 'Polished for business owners' },
-                  { id: 'concise', label: 'ðŸŽ¯ Concise & Punchy', desc: 'Shorten & refine existing copy' },
-                  { id: 'kenya', label: 'ðŸŒ Nairobi & African Context', desc: 'Tailored for East Africa market' },
+                  { id: 'hype', label: '🚀 Hype & High-Conversion', desc: 'Energetic for creators & artists' },
+                  { id: 'professional', label: '💼 Professional & Enterprise', desc: 'Polished for business owners' },
+                  { id: 'concise', label: '🎯 Concise & Punchy', desc: 'Shorten & refine existing copy' },
+                  { id: 'kenya', label: '🌍 Nairobi & African Context', desc: 'Tailored for East Africa market' },
                 ].map(t => (
                   <button
                     key={t.id}
@@ -1239,13 +1585,13 @@ function CMSEditor() {
         </div>
       )}
 
-      {/* â”€â”€ MEDIA PICKER MODAL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* -- MEDIA PICKER MODAL ----------------------------------------------- */}
       {mediaPickerOpen && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
           <div style={{ background: '#12131a', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', width: '680px', maxHeight: '80vh', overflowY: 'auto', padding: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 'bold', color: '#ffffff' }}>Select Asset from Site Media Catalog</h3>
-              <button onClick={() => setMediaPickerOpen(false)} style={{ background: 'none', border: 'none', color: '#9096b8', fontSize: '16px', cursor: 'pointer' }}>âœ•</button>
+              <button onClick={() => setMediaPickerOpen(false)} style={{ background: 'none', border: 'none', color: '#9096b8', fontSize: '16px', cursor: 'pointer' }}>✕</button>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '12px' }}>
@@ -1266,13 +1612,13 @@ function CMSEditor() {
         </div>
       )}
 
-      {/* â”€â”€ HISTORIC ROLLBACK MODAL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */}
+      {/* -- HISTORIC ROLLBACK MODAL ------------------------------------------ */}
       {historyOpen && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999 }}>
           <div style={{ background: '#12131a', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '8px', width: '500px', maxHeight: '80vh', overflowY: 'auto', padding: '24px' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 'bold', color: '#ffffff' }}>Revision History ({focusedKeyId})</h3>
-              <button onClick={() => setHistoryOpen(false)} style={{ background: 'none', border: 'none', color: '#9096b8', fontSize: '16px', cursor: 'pointer' }}>âœ•</button>
+              <button onClick={() => setHistoryOpen(false)} style={{ background: 'none', border: 'none', color: '#9096b8', fontSize: '16px', cursor: 'pointer' }}>✕</button>
             </div>
 
             {historyList.length === 0 ? (

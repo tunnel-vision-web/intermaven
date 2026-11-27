@@ -506,6 +506,38 @@ async def create_scheduled_post(req: ScheduledPostCreate, current_user: dict = D
     doc["created_at"] = doc["created_at"].isoformat()
     return {"success": True, "post": doc}
 
+class ScheduledPostUpdate(BaseModel):
+    scheduled_for: Optional[str] = None
+    status: Optional[str] = None
+    caption: Optional[str] = None
+    title: Optional[str] = None
+
+
+@router.patch("/scheduled/{post_id}")
+async def update_scheduled_post(post_id: str, req: ScheduledPostUpdate, current_user: dict = Depends(get_current_user)):
+    if db is None:
+        raise HTTPException(status_code=503, detail="Database unavailable")
+    updates = {}
+    for field in ("scheduled_for", "status", "caption", "title"):
+        val = getattr(req, field)
+        if val is not None:
+            updates[field] = val
+    if not updates:
+        raise HTTPException(status_code=400, detail="No updates provided")
+
+    doc = db.social_scheduled_posts.find_one_and_update(
+        {"_id": ObjectId(post_id), "user_id": str(current_user["_id"])},
+        {"$set": updates},
+        return_document=True,
+    )
+    if not doc:
+        raise HTTPException(status_code=404, detail="Scheduled post not found")
+    doc["id"] = str(doc.pop("_id"))
+    if isinstance(doc.get("created_at"), datetime):
+        doc["created_at"] = doc["created_at"].isoformat()
+    return {"success": True, "post": doc}
+
+
 @router.delete("/scheduled/{post_id}")
 async def delete_scheduled_post(post_id: str, current_user: dict = Depends(get_current_user)):
     if db is None:

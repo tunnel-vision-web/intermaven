@@ -1,6 +1,9 @@
 User-agent: *
 Allow: /
 Disallow: /dashboard
+Disallow: /admin
 Disallow: /api/
+Disallow: /sso/
+Disallow: /embed/
 
 Sitemap: https://intermaven.io/sitemap.xml

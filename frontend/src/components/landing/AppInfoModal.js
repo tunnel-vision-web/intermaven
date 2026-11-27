@@ -153,14 +153,25 @@ const ALL_APPS = [
   { id: 'smartcrm', n: 'Smart CRM & Reachout', icon: 'crm', col: '#3b82f6', d: 'Email target groups, persona playbooks & tracked reachout', p: 'both', ecosystem: 'Intermaven · TuneMavens', page: '/smartcrm' },
   { id: 'brandkit', n: 'Brand Kit AI', icon: 'brandkit', col: '#10b981', d: 'Brand names, taglines, color palettes & guidelines', p: 'both', ecosystem: 'Intermaven', page: '/brandkit' },
   { id: 'social', n: 'Social AI', icon: 'social', col: '#f43f5e', d: 'Multi-platform social management & campaigns', p: 'both', ecosystem: 'Intermaven', page: '/social' },
+  { id: 'calendar', n: 'Content Calendar', icon: 'social', col: '#fb7185', d: 'Cross-platform post scheduler with peak engagement windows', p: 'both', ecosystem: 'Intermaven', page: '/dashboard?tab=calendar' },
   { id: 'musicbio', n: 'EPK Builder & Music Bio', icon: 'epk', col: '#22d3ee', d: 'Hosted TuneMavens EPKs, artist bios & press materials', p: 'both', ecosystem: 'TuneMavens', page: '/musicbio' },
   { id: 'syncpitch', n: 'Sync Pitch AI', icon: 'syncpitch', col: '#f59e0b', d: 'Film, TV and advertising sync pitches', p: 'both', ecosystem: 'Intermaven · TuneMavens', page: '/syncpitch' },
-  { id: 'distro', n: 'Distribution Tracker', icon: 'distro', col: '#0ea5e9', d: '150+ DSPs & DDEX 3.8 release tracking', p: 'both', ecosystem: 'TuneMavens', page: '/distro' },
+  { id: 'distro', n: 'Distribution Tracker', icon: 'distro', col: '#0ea5e9', d: '181 DSPs & DDEX 3.8 release tracking, ISRC/UPC & bulk delivery', p: 'both', ecosystem: 'TuneMavens', page: '/distro' },
   { id: 'catalogue', n: 'Catalogue Machine & Release Engine', icon: 'distro', col: '#a855f7', d: 'ISRC/UPC catalog management & release readiness', p: 'both', ecosystem: 'TuneMavens', page: '/dashboard?tab=distro' },
   { id: 'ledger', n: 'Split Cascade Ledger', icon: 'crm', col: '#10b981', d: 'Automated collaborator royalty splits & payouts', p: 'both', ecosystem: 'TuneMavens', page: '/dashboard?tab=distro' },
+  { id: 'royalties', n: 'Royalty Calculator', icon: 'syncpitch', col: '#f59e0b', d: 'Multi-DSP streaming payout projections & split cascade modeling', p: 'both', ecosystem: 'Intermaven · TuneMavens', page: '/dashboard?tab=royalties' },
+  { id: 'lyrichook', n: 'Lyric & Hook AI', icon: 'epk', col: '#f43f5e', d: 'Genre-specific hooks, verse bars, rhyme schemes & cadence notes', p: 'music', ecosystem: 'Intermaven · TuneMavens', page: '/dashboard?tab=lyrichook' },
+  { id: 'tours', n: 'Tour Manager', icon: 'distro', col: '#22d3ee', d: 'Show routing, hotels, VIP guest lists & TuneMavens Events sync', p: 'both', ecosystem: 'Intermaven · TuneMavens', page: '/dashboard?tab=tours' },
+  { id: 'merchbrief', n: 'Merch Designer Brief', icon: 'brandkit', col: '#10b981', d: 'Apparel GSM specs, print dimensions & vendor checklists', p: 'both', ecosystem: 'Intermaven', page: '/dashboard?tab=merchbrief' },
   { id: 'pos', n: 'M-Pesa & Card POS Terminal', icon: 'pos', col: '#0e9499', d: 'Mobile money & card point of sale for events & merch', p: 'both', ecosystem: 'Intermaven · TuneMavens', page: '/dashboard?tab=pos' },
   { id: 'hosting', n: 'Hosting & Domain Manager', icon: 'brandkit', col: '#38bdf8', d: 'Custom domains, SSL & instant EPK/brand site hosting', p: 'both', ecosystem: 'TuneMavens', page: '/dashboard?tab=hosting' },
-  { id: 'bizpitch', n: 'Pitch Deck AI', icon: 'bizpitch', col: '#8b5cf6', d: 'Investor-ready business pitch decks & executive summaries', p: 'both', ecosystem: 'Intermaven', page: '/dashboard?tab=bizpitch' }
+  { id: 'bizpitch', n: 'Pitch Deck AI', icon: 'bizpitch', col: '#8b5cf6', d: 'Investor-ready business pitch decks & executive summaries', p: 'both', ecosystem: 'Intermaven', page: '/dashboard?tab=bizpitch' },
+  { id: 'contracts', n: 'Business Contract Builder', icon: 'contracts', col: '#a78bfa', d: 'NDAs, Work-for-Hire, Collaboration & Client Service agreements with e-sign', p: 'both', ecosystem: 'Intermaven', page: '/dashboard?tab=contracts' },
+  { id: 'pressrelease', n: 'Press Release AI', icon: 'bizpitch', col: '#38bdf8', d: 'AP-style newsroom press releases for launches, releases & events', p: 'both', ecosystem: 'Intermaven', page: '/dashboard?tab=pressrelease' },
+  { id: 'invoices', n: 'Invoice & Payments', icon: 'pos', col: '#10b981', d: 'Multi-currency client invoicing with Pesapal/M-Pesa & Stripe links', p: 'both', ecosystem: 'Intermaven', page: '/dashboard?tab=invoices' },
+  { id: 'grants', n: 'Grant Finder', icon: 'crm', col: '#34d399', d: 'Curated arts, music & SME grants with AI proposal drafting', p: 'both', ecosystem: 'Intermaven', page: '/dashboard?tab=grants' },
+  { id: 'outputs', n: 'AI Output Library', icon: 'brandkit', col: '#10b981', d: 'Auto-saved archive of all AI generations with search & export', p: 'both', ecosystem: 'Intermaven', page: '/dashboard?tab=outputs' },
+  { id: 'files', n: 'File Manager', icon: 'crm', col: '#22d3ee', d: 'Cloud-ready asset folders, sharing links & storage management', p: 'both', ecosystem: 'Intermaven', page: '/dashboard?tab=filemanager' }
 ];
 
 function AppInfoModal({ isOpen, appId, onClose, onGetStarted, onToast }) {

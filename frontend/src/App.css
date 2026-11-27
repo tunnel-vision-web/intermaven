@@ -4594,7 +4594,7 @@
 .backend-container .social-output-pre { font-size: 14px !important; }
 .backend-container .admin-sidebar-logo { font-size: 15px !important; }
 .backend-container .admin-sidebar-sub { font-size: 11px !important; }
-.backend-container .admin-nav-item { font-size: 14px !important; }
+.backend-container .admin-nav-item { font-size: 12px !important; }
 .backend-container .admin-title { font-size: 19px !important; }
 .backend-container .admin-search { font-size: 14px !important; }
 .backend-container .admin-btn-icon { font-size: 13px !important; }
@@ -4647,3 +4647,32 @@
 .backend-container :where(h3) { font-size: 21px; }
 .backend-container :where(h4) { font-size: 17px; }
 .backend-container :where(h5, h6) { font-size: 15px; }
+
+/* Force 12px sidebar menu items & 10px category toggles across Dashboard & Admin sidebars */
+.backend-container .dashboard-sidebar-nav button:not(.sidebar-cat-toggle),
+.backend-container .dashboard-sidebar-nav button:not(.sidebar-cat-toggle) span,
+.dashboard-sidebar-nav button:not(.sidebar-cat-toggle),
+.dashboard-sidebar-nav button:not(.sidebar-cat-toggle) span {
+  font-size: 12px !important;
+}
+
+.backend-container .dashboard-sidebar-nav button.sidebar-cat-toggle,
+.backend-container .dashboard-sidebar-nav button.sidebar-cat-toggle span,
+.dashboard-sidebar-nav button.sidebar-cat-toggle,
+.dashboard-sidebar-nav button.sidebar-cat-toggle span {
+  font-size: 10px !important;
+}
+
+.dashboard-sidebar-nav::-webkit-scrollbar {
+  width: 5px;
+}
+.dashboard-sidebar-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+.dashboard-sidebar-nav::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.28);
+  border-radius: 3px;
+}
+.dashboard-sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.5);
+}

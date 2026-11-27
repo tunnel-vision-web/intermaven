@@ -44,7 +44,11 @@ function BetaSignupCard({ appId, onToast }) {
 
     setLoading(true);
     try {
-      const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+      const API_URL =
+        process.env.REACT_APP_BACKEND_URL ||
+        (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+          ? 'http://localhost:8005'
+          : '');
       const payload = {
         app_id: appId,
         preferred_channel: channel,

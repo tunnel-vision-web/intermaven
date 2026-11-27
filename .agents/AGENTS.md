@@ -7,7 +7,7 @@ Welcome to the Intermaven workspace. This file defines the specific configuratio
   - Main configuration / API setup: [App.js](file:///C:/Users/judit/workspace/intermaven/frontend/src/App.js)
   - Run frontend dev server: `npm start` (inside the `frontend` folder)
 - **Backend**: Located in `backend/` (FastAPI + MongoDB).
-  - Port configuration: Starts on port `8001`
+  - Port configuration: Starts on port `8005` (paired with Intermaven frontend on `3005`; port `8001` is reserved for TuneMavens)
   - Active MongoDB connection details and environment variables are documented in [DOCUMENTATION.md](file:///C:/Users/judit/workspace/intermaven/DOCUMENTATION.md#L854-L907).
 
 ## Environment Setup
@@ -32,7 +32,7 @@ Create a `.env` file in the `frontend/` directory if you need to point to a cust
 ```env
 REACT_APP_BACKEND_URL=https://intermaven.onrender.com
 ```
-*(By default, it will fall back to `http://localhost:8001` for localhost developers).*
+*(By default, it will fall back to `http://localhost:8005` for localhost developers).*
 
 ## Guidelines
 1. Always prioritize modularization when modifying `server.py` in the backend (extract monolith sections to `routes/`).
