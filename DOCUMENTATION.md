@@ -1393,3 +1393,21 @@ Mother-CMS is positioned as a **product differentiator** in addition to internal
 - **Billing & Beta Credits:** 150 Free Beta Credits factored site-wide; Billing supports both Card/Bank (Stripe/PesaPal) and Mobile Payments (M-Pesa / Mobile Money).
 - **Localization (`RegionContext.js`, `RegionSwitcher.js`):** Mirrors TuneMavens with `en`, `sw`, `ki`, `es` quick-toggle + Country/Currency/Language selector synced via `intermaven_region`, `tunemavens_lang`, and `tunemavens_country`.
 - **SEO & Favicons:** Generated `favicon.ico`, `favicon-32x32.png`, `icon-192.png`, `icon-512.png`; added `SEO.js`, Open Graph/Twitter/JSON-LD metadata in `index.html`, `robots.txt`, and `sitemap.xml`.
+
+## 15.5 November 26–27, 2026 Updates (Legal, Help Center, Affiliates, Localization & App Parity)
+- **Legal Pages & Mandatory Signup Checkbox (`TermsPage.js`, `PrivacyPage.js`, `RefundPage.js`, `CookiesPage.js`, `AuthModal.js`, `AffiliatesPage.js`):**
+  - Updated legal effective dates to **November 26, 2026**, wrapped sections in themed `.legal-box` containers with `.legal-divider` horizontal breaks, and added `.scrolled` sticky navbar support.
+  - Enforced mandatory Terms of Service & Privacy Policy acceptance checkboxes on signup and affiliate onboarding forms.
+- **Sticky Navigation & Page Header Spacing (`index.css`, `App.css`):**
+  - Updated `html, body, #root` (`min-height: 100vh`, `body { overflow-x: clip }`) so `position: sticky` works site-wide.
+  - Tuned `.ph` and `.phc` spacing (`padding: 45px 24px 16px`) for clean header alignment below the sticky navbar.
+- **Help Center Tabbed Section Grid (`HelpPage.js`):**
+  - Added a top section tab bar (`All Sections`, `Ecosystem Guides`, `AI Tools`, `Smart CRM`, `EPK Builder`, `File Management`, `Music Portal`, `Billing & Plans`) rendering all guides in a uniform responsive grid.
+- **Sitewide Localization & TuneMavens Country Selector (`public/js/localization.js`, `public/index.html`, `RegionContext.js`, `RegionSwitcher.js`):**
+  - Integrated `window.SynergyLocalization` (`localization.js`) with real-time `MutationObserver` DOM translation across SPA routes and modals, plus TuneMavens' Country/Currency/Language dropdown, 2x2 language grid, and Admin Region Default Language controls.
+- **Affiliate Program Parity (`AffiliatesPage.js`, `AffiliatesPage.css`, `backend/routes/affiliates.py`):**
+  - Full TuneMavens-aligned `/affiliates` experience: 5-slide hero carousel (`affiliate_hero_1.png`–`5.png`), live `/api/affiliates/matrix` 3%–12% revenue-share matrix, interactive 5-slider earnings estimator, 4-step journey, stats lookup (`/api/affiliates/me`), dashboard preview, `?ref=` tracking, and instant partner signup (`/api/affiliates/apply`).
+- **Context-Aware Maven Chat (`MavenChat.js`):**
+  - Cleaned all mojibake/encoding artifacts and wired `useLocation()` so Maven shows route-aware proactive bubbles, greetings, and suggestions based on the page the user is browsing.
+- **App Marketplace Parity (`AppInfoModal.js`, `AppsPage.js`):**
+  - Consolidated **Music Bio & Press Kit** and **Electronic Press Kit** into the live **EPK Builder & Music Bio** (`TuneMavens`) app and added all TuneMavens apps (**Distribution Tracker**, **Catalogue Machine & Release Engine**, **Split Cascade Ledger**, **M-Pesa & Card POS Terminal**, **Hosting & Domain Manager**, **Smart CRM & Reachout**) alongside Intermaven's **Brand Kit AI**, **Social AI**, **Sync Pitch AI**, and **Pitch Deck AI**, with a **TuneMavens** filter tab and ecosystem badges.
