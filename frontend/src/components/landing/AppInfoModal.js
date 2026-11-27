@@ -16,16 +16,16 @@ const APP_INFO = {
     credits: '10 credits per run • Free on the starter plan'
   },
   musicbio: {
-    badge: 'Free • 15 credits per run',
+    badge: 'TuneMavens App • Live',
     badgeCol: 'rgba(34,211,238,.15)',
     badgeTx: '#22d3ee',
-    pitch: 'Music Bio AI writes your short bio, full press kit narrative, a cold pitch email, and three journalist interview angles — tailored to your genre, story, and tone.',
+    pitch: 'EPK Builder & Music Bio is the unified TuneMavens press kit studio — writing your short bio, full press narrative, cold pitch emails, and publishing a hosted Electronic Press Kit with audio, photos, and booking links.',
     steps: [
-      { n: '1', t: 'Tell us your story', d: 'Artist name, genre, origin, key milestones.', c: 'var(--btn)' },
-      { n: '2', t: 'Choose your tone', d: 'Professional, conversational, bold hype, or storytelling.', c: 'var(--a2)' },
-      { n: '3', t: 'Get 5 assets at once', d: 'Short bio, full bio, press narrative, media pitch email, and 3 hooks.', c: 'var(--gr)' }
+      { n: '1', t: 'Tell us your story', d: 'Artist name, genre, origin, key milestones, photos, and audio links.', c: 'var(--btn)' },
+      { n: '2', t: 'Generate bios & theme', d: 'AI writes your press kit narrative while EPK Builder styles your hosted page.', c: 'var(--a2)' },
+      { n: '3', t: 'Publish & share one link', d: 'Share your hosted TuneMavens/Intermaven EPK or export PDFs for bookers.', c: 'var(--gr)' }
     ],
-    credits: '15 credits per run • Included in all plans'
+    credits: 'Live now • Included in EPK Builder (0 credits during Beta)'
   },
   syncpitch: {
     badge: 'Free • 20 credits per run',
@@ -76,53 +76,104 @@ const APP_INFO = {
     credits: 'Coming soon • Register your interest'
   },
   epk: {
-    badge: 'Beta • Limited access',
+    badge: 'TuneMavens App • Live',
     badgeCol: 'rgba(236,72,153,.15)',
     badgeTx: '#ec4899',
-    pitch: 'EPK Builder creates a beautiful hosted page with your bio, photos, music embeds, press quotes, and booking contact — shareable via a single link.',
+    pitch: 'EPK Builder Studio (includes Music Bio & Press Kit) creates a hosted page with your AI-written bio, photos, music embeds, press quotes, and booking contact — shareable via a single link.',
     steps: [
       { n: '1', t: 'Fill in your artist profile', d: 'Bio, genre, photos, music links, social handles, and press quotes.', c: 'var(--btn)' },
-      { n: '2', t: 'Your EPK page goes live', d: 'A clean page at intermaven.io/yourname shareable with labels and bookers.', c: 'var(--a2)' },
+      { n: '2', t: 'Your EPK page goes live', d: 'A clean hosted page shareable with labels, press, and bookers.', c: 'var(--a2)' },
       { n: '3', t: 'Update anytime', d: 'Add new releases, tour dates, or press features without code.', c: 'var(--gr)' }
     ],
-    credits: 'Beta access • Join the waitlist'
+    credits: 'Live now • TuneMavens App'
   },
   distro: {
-    badge: 'Coming soon',
+    badge: 'TuneMavens App • Live',
     badgeCol: 'rgba(14,165,233,.15)',
     badgeTx: '#0ea5e9',
-    pitch: 'Distribution Tracker pulls your streams, downloads, and revenue data into one clean view across Spotify, YouTube, Boomplay, Mdundo, and more.',
+    pitch: 'Distribution Tracker pulls your streams, downloads, DDEX 3.8 deliveries, and revenue data into one clean view across 150+ DSPs including Spotify, YouTube, Boomplay, and Mdundo.',
     steps: [
       { n: '1', t: 'Connect your platforms', d: 'Link Spotify, YouTube, Apple Music, Boomplay, and your distributor.', c: 'var(--btn)' },
       { n: '2', t: 'See your data in one view', d: 'Streams, territory breakdown, playlist placements, and revenue.', c: 'var(--a2)' },
       { n: '3', t: 'Get AI insights', d: 'Weekly digest with what is growing, declining, and recommended next steps.', c: 'var(--gr)' }
     ],
-    credits: 'Coming soon • Register your interest'
+    credits: 'Live now • TuneMavens App'
+  },
+  catalogue: {
+    badge: 'TuneMavens App • Live',
+    badgeCol: 'rgba(168,85,247,.15)',
+    badgeTx: '#a855f7',
+    pitch: 'Catalogue Machine & Release Engine manages ISRC/UPC codes, album artwork validation, release scheduling, and metadata across labels and independent artists.',
+    steps: [
+      { n: '1', t: 'Upload tracks & metadata', d: 'Attach lossless WAV/FLAC masters, ISRCs, contributors, and artwork.', c: 'var(--btn)' },
+      { n: '2', t: 'Validate release readiness', d: 'Automated checks against DSP and DDEX 3.8 standards.', c: 'var(--a2)' },
+      { n: '3', t: 'Sync with Distribution', d: 'Push release states straight into Distribution Tracker & Split Ledger.', c: 'var(--gr)' }
+    ],
+    credits: 'Live now • TuneMavens App'
+  },
+  ledger: {
+    badge: 'TuneMavens App • Live',
+    badgeCol: 'rgba(16,185,129,.15)',
+    badgeTx: '#10b981',
+    pitch: 'Split Cascade Ledger automates transparent royalty accounting, collaborator split percentages, and instant M-Pesa / global payouts across every release.',
+    steps: [
+      { n: '1', t: 'Define collaborator splits', d: 'Assign master and publishing percentages to artists, producers, and writers.', c: 'var(--btn)' },
+      { n: '2', t: 'Verify & lock split sheets', d: 'Timestamped confirmations prevent royalty disputes.', c: 'var(--a2)' },
+      { n: '3', t: 'Cascade payouts automatically', d: 'Every stream, download, and sync check settles cleanly.', c: 'var(--gr)' }
+    ],
+    credits: 'Live now • TuneMavens App'
+  },
+  hosting: {
+    badge: 'TuneMavens App • Live',
+    badgeCol: 'rgba(56,189,248,.15)',
+    badgeTx: '#38bdf8',
+    pitch: 'Hosting & Domain Manager provisions custom domains, automatic SSL certificates, and fast edge hosting for your EPK pages and brand microsites.',
+    steps: [
+      { n: '1', t: 'Pick or connect a domain', d: 'Use a custom domain or instant subdomain.', c: 'var(--btn)' },
+      { n: '2', t: 'Automatic SSL & DNS', d: 'Zero-config HTTPS and routing.', c: 'var(--a2)' },
+      { n: '3', t: 'Publish in one click', d: 'Point directly to your EPK or brand page.', c: 'var(--gr)' }
+    ],
+    credits: 'Live now • TuneMavens App'
+  },
+  bizpitch: {
+    badge: 'Intermaven App • Live',
+    badgeCol: 'rgba(16,185,129,.15)',
+    badgeTx: '#10b981',
+    pitch: 'Pitch Deck AI builds investor-ready business pitch decks, financial narrative outlines, and executive summaries tailored to your venture.',
+    steps: [
+      { n: '1', t: 'Describe your venture', d: 'Problem, solution, traction, and market.', c: 'var(--btn)' },
+      { n: '2', t: 'Generate slide structure', d: 'AI writes concise, compelling slide copy.', c: 'var(--a2)' },
+      { n: '3', t: 'Export & present', d: 'Ready for investors, partners, and accelerators.', c: 'var(--gr)' }
+    ],
+    credits: 'Live now • 0 credits during Beta'
   }
 };
 
 const ALL_APPS = [
-  { id: 'smartcrm', n: 'Smart CRM & Reachout', icon: 'crm', col: '#3b82f6', d: 'Email target groups, persona playbooks & tracked reachout', p: 'both', page: '/smartcrm' },
-  { id: 'brandkit', n: 'Brand Kit AI', icon: 'brandkit', col: '#10b981', d: 'Brand names, taglines, tone of voice', p: 'both', page: '/brandkit' },
-  { id: 'social', n: 'Social AI', icon: 'social', col: '#f43f5e', d: 'Multi-platform social management', p: 'both', page: '/social' },
-  { id: 'musicbio', n: 'Music Bio & Press Kit', icon: 'musicbio', col: '#22d3ee', d: 'Artist bios and press materials', p: 'music', page: '/musicbio' },
-  { id: 'syncpitch', n: 'Sync Pitch AI', icon: 'syncpitch', col: '#f59e0b', d: 'Film, TV and advertising pitches', p: 'music', page: '/syncpitch' },
-  { id: 'pos', n: 'Intermaven POS', icon: 'pos', col: '#0e9499', d: 'Mobile money & card point of sale', p: 'business' },
-  { id: 'epk', n: 'Electronic Press Kit', icon: 'epk', col: '#ec4899', d: 'Hosted EPK pages for artists', p: 'music' },
-  { id: 'distro', n: 'Distribution Tracker', icon: 'distro', col: '#0ea5e9', d: '150+ DSPs & DDEX 3.8 tracking', p: 'music' }
+  { id: 'smartcrm', n: 'Smart CRM & Reachout', icon: 'crm', col: '#3b82f6', d: 'Email target groups, persona playbooks & tracked reachout', p: 'both', ecosystem: 'Intermaven · TuneMavens', page: '/smartcrm' },
+  { id: 'brandkit', n: 'Brand Kit AI', icon: 'brandkit', col: '#10b981', d: 'Brand names, taglines, color palettes & guidelines', p: 'both', ecosystem: 'Intermaven', page: '/brandkit' },
+  { id: 'social', n: 'Social AI', icon: 'social', col: '#f43f5e', d: 'Multi-platform social management & campaigns', p: 'both', ecosystem: 'Intermaven', page: '/social' },
+  { id: 'musicbio', n: 'EPK Builder & Music Bio', icon: 'epk', col: '#22d3ee', d: 'Hosted TuneMavens EPKs, artist bios & press materials', p: 'both', ecosystem: 'TuneMavens', page: '/musicbio' },
+  { id: 'syncpitch', n: 'Sync Pitch AI', icon: 'syncpitch', col: '#f59e0b', d: 'Film, TV and advertising sync pitches', p: 'both', ecosystem: 'Intermaven · TuneMavens', page: '/syncpitch' },
+  { id: 'distro', n: 'Distribution Tracker', icon: 'distro', col: '#0ea5e9', d: '150+ DSPs & DDEX 3.8 release tracking', p: 'both', ecosystem: 'TuneMavens', page: '/distro' },
+  { id: 'catalogue', n: 'Catalogue Machine & Release Engine', icon: 'distro', col: '#a855f7', d: 'ISRC/UPC catalog management & release readiness', p: 'both', ecosystem: 'TuneMavens', page: '/dashboard?tab=distro' },
+  { id: 'ledger', n: 'Split Cascade Ledger', icon: 'crm', col: '#10b981', d: 'Automated collaborator royalty splits & payouts', p: 'both', ecosystem: 'TuneMavens', page: '/dashboard?tab=distro' },
+  { id: 'pos', n: 'M-Pesa & Card POS Terminal', icon: 'pos', col: '#0e9499', d: 'Mobile money & card point of sale for events & merch', p: 'both', ecosystem: 'Intermaven · TuneMavens', page: '/dashboard?tab=pos' },
+  { id: 'hosting', n: 'Hosting & Domain Manager', icon: 'brandkit', col: '#38bdf8', d: 'Custom domains, SSL & instant EPK/brand site hosting', p: 'both', ecosystem: 'TuneMavens', page: '/dashboard?tab=hosting' },
+  { id: 'bizpitch', n: 'Pitch Deck AI', icon: 'bizpitch', col: '#8b5cf6', d: 'Investor-ready business pitch decks & executive summaries', p: 'both', ecosystem: 'Intermaven', page: '/dashboard?tab=bizpitch' }
 ];
 
 function AppInfoModal({ isOpen, appId, onClose, onGetStarted, onToast }) {
   if (!isOpen || !appId) return null;
 
-  const app = ALL_APPS.find(a => a.id === appId);
+  const app = ALL_APPS.find(a => a.id === appId) || (appId === 'epk' ? ALL_APPS.find(a => a.id === 'musicbio') : null);
   const info = APP_INFO[appId];
 
   if (!app || !info) {
     return null;
   }
 
-  const isLive = ['smartcrm', 'brandkit', 'musicbio', 'syncpitch', 'social', 'distro'].includes(appId);
+  const isLive = ['smartcrm', 'brandkit', 'musicbio', 'epk', 'syncpitch', 'social', 'distro', 'pos', 'catalogue', 'ledger', 'hosting', 'bizpitch'].includes(appId);
 
   const handleCTA = () => {
     onClose();

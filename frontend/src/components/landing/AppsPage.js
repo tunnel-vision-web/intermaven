@@ -5,7 +5,7 @@ import { ALL_APPS } from './AppInfoModal';
 import BetaSignupCard, { BETA_APPS } from './BetaSignupCard';
 import { FlatIcon } from '../FlatIcon';
 
-const LIVE_APPS = ['smartcrm', 'brandkit', 'social', 'musicbio', 'syncpitch', 'distro'];
+const LIVE_APPS = ['smartcrm', 'brandkit', 'social', 'musicbio', 'epk', 'syncpitch', 'distro', 'pos', 'catalogue', 'ledger', 'hosting', 'bizpitch'];
 
 const APP_PAGE_COPY = {
   default: {
@@ -49,16 +49,17 @@ function AppsPage({ portal = 'music', subdomainPage = null, onOpenAppModal, onOp
   const filteredApps = portalApps.filter(app => {
     if (activeFilter === 'all') return true;
     if (activeFilter === 'live') return LIVE_APPS.includes(app.id);
-    if (activeFilter === 'ai') return ['smartcrm', 'brandkit', 'musicbio', 'syncpitch', 'social'].includes(app.id);
+    if (activeFilter === 'tunemavens') return (app.ecosystem || '').includes('TuneMavens');
+    if (activeFilter === 'ai') return ['smartcrm', 'brandkit', 'musicbio', 'syncpitch', 'social', 'bizpitch'].includes(app.id);
     if (activeFilter === 'music') return app.p === 'music' || app.p === 'both';
     if (activeFilter === 'business') return app.p === 'business' || app.p === 'both';
-    if (activeFilter === 'brand') return ['brandkit'].includes(app.id);
+    if (activeFilter === 'brand') return ['brandkit', 'social'].includes(app.id);
     return true;
   });
 
   const filters = portal === 'music' 
-    ? { 'All': 'all', 'Live now': 'live', 'AI Tools': 'ai', 'Music': 'music', 'Branding': 'brand' }
-    : { 'All': 'all', 'Live now': 'live', 'Business': 'business', 'AI Tools': 'ai' };
+    ? { 'All': 'all', 'Live now': 'live', 'TuneMavens': 'tunemavens', 'AI Tools': 'ai', 'Branding': 'brand' }
+    : { 'All': 'all', 'Live now': 'live', 'TuneMavens': 'tunemavens', 'Business': 'business', 'AI Tools': 'ai' };
 
   return (
     <>
@@ -158,6 +159,11 @@ function AppsPage({ portal = 'music', subdomainPage = null, onOpenAppModal, onOp
                       {isLive ? 'Live' : 'Soon'}
                     </span>
                   </div>
+                  {app.ecosystem && (
+                    <div style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', color: app.ecosystem.includes('TuneMavens') ? '#22d3ee' : '#10b981', marginBottom: '4px' }}>
+                      {app.ecosystem}
+                    </div>
+                  )}
                   <h3>{app.n}</h3>
                   <p>{app.d}</p>
                   <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: 'auto' }} onClick={(e) => e.stopPropagation()}>
