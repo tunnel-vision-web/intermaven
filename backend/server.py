@@ -28,22 +28,31 @@ load_dotenv()
 
 app = FastAPI(title="Intermaven API", version="1.0.0")
 
-# CORS: allow frontend origins explicitly for local dev SSO to succeed
+# CORS: allow frontend origins explicitly for local dev and production SSO to succeed
+_default_origins = [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "http://localhost:3002",
+    "http://localhost:3004",
+    "http://localhost:3005",
+    "http://127.0.0.1:3000",
+    "http://127.0.0.1:3001",
+    "http://127.0.0.1:3002",
+    "http://127.0.0.1:3004",
+    "http://127.0.0.1:3005",
+    "https://intermaven.io",
+    "https://www.intermaven.io",
+    "https://api.intermaven.io",
+    "https://intermaven.onrender.com",
+    "https://tunemavens.com",
+    "https://www.tunemavens.com",
+]
+_extra_origins = [o.strip() for o in os.environ.get("CORS_ORIGINS", "").split(",") if o.strip()]
+_allow_origins = list(dict.fromkeys(_default_origins + _extra_origins))
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "http://localhost:3002",
-        "http://localhost:3004",
-        "http://localhost:3005",
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:3001",
-        "http://127.0.0.1:3002",
-        "http://127.0.0.1:3004",
-        "http://127.0.0.1:3005",
-        "https://intermaven.onrender.com",
-    ],
+    allow_origins=_allow_origins,
     allow_origin_regex=r"http://(localhost|127\.0\.0\.1)(:[0-9]+)?",
     allow_credentials=True,
     allow_methods=["*"],
