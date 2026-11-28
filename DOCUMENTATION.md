@@ -797,41 +797,51 @@ Icons resolve in this order:
 
 # 8. Deployment Configuration
 
-## 8.1 Frontend — Hostinger
+## 8.1 Frontend & VPS — intermaven.io
 
-Deploy target: `public_html/`
+- **Host**: Hostinger VPS (srv2178148.hstgr.cloud), proxied through Cloudflare.
+- **Nginx Config**: /etc/nginx/conf.d/intermaven.io.conf
+  - Static root: /opt/intermaven/frontend/build
+  - API proxy: http://127.0.0.1:8005 (intermaven.service; port 8001 is reserved for TuneMavens in /etc/nginx/conf.d/tunemavens.conf)
+- **Systemd Service**: /etc/systemd/system/intermaven.service (uvicorn server:app --host 127.0.0.1 --port 8005)
+- **Frontend API Fallback**: rontend/src/App.js defaults to http://localhost:8005 on localhost/127.0.0.1 and https://intermaven.onrender.com on non-localhost domains when REACT_APP_BACKEND_URL is unset.
 
-Build command:
-```
-cd frontend
+Build & VPS update commands:
+`ash
+# Local production build (from frontend/)
 REACT_APP_BACKEND_URL=https://intermaven.onrender.com npm run build
-```
 
-Upload all contents of `frontend/build/` to public_html including `.htaccess`.
-Upload `htpasswd_file` to `/home/u422251763/` renamed to `.htpasswd`.
+# On VPS (SSH)
+cd /opt/intermaven && git pull origin main
+/opt/intermaven/backend/.venv/bin/pip install -r /opt/intermaven/backend/requirements.txt
+sudo systemctl restart intermaven.service
+sudo nginx -t && sudo systemctl reload nginx
+`
 
-Build phase credentials: username `intermaven`, password `build2026`.
-To go public: delete the 4 Auth lines from `.htaccess`.
+*(Automated CI workflow: .github/workflows/deploy-frontend.yml)*
 
-## 8.2 Backend — Render
+## 8.2 Backend — Render (pi.intermaven.io)
 
-Service URL: https://intermaven.onrender.com
-Root directory: `backend`
-Build: nixpacks with `--break-system-packages` in nixpacks.toml
-
-Key files in `backend/`:
-- server.py — all routes in single FastAPI file
-- requirements.txt — full Python dependencies
-- Procfile — start command
-- railway.json — Railway config
-- nixpacks.toml — build config
+- **Service URL**: https://intermaven.onrender.com (custom domain: https://api.intermaven.io)
+- **Root directory**: ackend
+- **MongoDB Environment Variables** (use separate variables rather than a single MONGO_URL string to avoid Render UI paste truncation):
+  - MONGO_USER, MONGO_PASSWORD, MONGO_HOST, MONGO_SCHEME, MONGO_OPTIONS, DB_NAME
+- **Key files in ackend/**:
+  - server.py — FastAPI entrypoint & modular 
+outes/
+  - config.py — MongoDB connection assembly & Atlas fallback
+  - 
+equirements.txt — Python dependencies
+  - Procfile / 
+ailway.json / 
+ixpacks.toml — deployment configs
 
 ## 8.3 DNS Configuration
 
 | Type | Name | Value |
 |------|------|-------|
-| A | @ | Hostinger server IP |
-| A | www | Same Hostinger IP |
+| A | @ | VPS IP (proxied via Cloudflare) |
+| A | www | VPS IP (proxied via Cloudflare) |
 | CNAME | api | intermaven.onrender.com |
 
 ## 8.4 Set Admin Access
