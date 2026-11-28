@@ -42,7 +42,7 @@ const FALLBACK_LOCAL_API =
   typeof window !== 'undefined' &&
   (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
     ? 'http://localhost:8005'   // â† Changed from 8002 to 8001
-    : '';
+    : 'https://intermaven.onrender.com';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || FALLBACK_LOCAL_API;
 
